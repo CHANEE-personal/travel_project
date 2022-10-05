@@ -84,6 +84,41 @@ class AdminTravelRepositoryTest {
     }
 
     @Test
+    @DisplayName("여행지소개리스트Mockito검색조회테스트")
+    void 여행지소개리스트Mockito검색조회테스트() {
+        // given
+        Map<String, Object> travelMap = new HashMap<>();
+        travelMap.put("jpaStartPage", 1);
+        travelMap.put("size", 3);
+        travelMap.put("searchCode", 1);
+
+        List<AdminTravelDTO> travelList = new ArrayList<>();
+        travelList.add(AdminTravelDTO.builder().idx(1L).travelCode(1)
+                .travelTitle("여행지 소개").travelDescription("여행지 소개")
+                .travelAddr("인천광역시 서구").travelZipCode("123-456").visible("Y").build());
+
+        // when
+        when(mockAdminTravelRepository.findTravelsList(travelMap)).thenReturn(travelList);
+        List<AdminTravelDTO> newTravelList = mockAdminTravelRepository.findTravelsList(travelMap);
+
+        // then
+        assertThat(newTravelList.get(0).getIdx()).isEqualTo(travelList.get(0).getIdx());
+        assertThat(newTravelList.get(0).getTravelCode()).isEqualTo(travelList.get(0).getTravelCode());
+        assertThat(newTravelList.get(0).getTravelTitle()).isEqualTo(travelList.get(0).getTravelTitle());
+        assertThat(newTravelList.get(0).getTravelDescription()).isEqualTo(travelList.get(0).getTravelDescription());
+        assertThat(newTravelList.get(0).getTravelAddr()).isEqualTo(travelList.get(0).getTravelAddr());
+        assertThat(newTravelList.get(0).getTravelZipCode()).isEqualTo(travelList.get(0).getTravelZipCode());
+
+        // verify
+        verify(mockAdminTravelRepository, times(1)).findTravelsList(travelMap);
+        verify(mockAdminTravelRepository, atLeastOnce()).findTravelsList(travelMap);
+        verifyNoMoreInteractions(mockAdminTravelRepository);
+
+        InOrder inOrder = inOrder(mockAdminTravelRepository);
+        inOrder.verify(mockAdminTravelRepository).findTravelsList(travelMap);
+    }
+
+    @Test
     @DisplayName("여행지소개리스트Mockito조회테스트")
     void 여행지소개리스트Mockito조회테스트() {
         // given

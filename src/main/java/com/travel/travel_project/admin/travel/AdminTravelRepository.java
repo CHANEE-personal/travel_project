@@ -28,8 +28,28 @@ public class AdminTravelRepository {
     private final JPAQueryFactory queryFactory;
     private final EntityManager em;
 
-    private BooleanExpression searchTravel(Map<String, Object> travelMap) {
+    private BooleanExpression searchTravelCode(Map<String, Object> travelMap) {
+        int searchCode = getInt(travelMap.get("searchCode"), 0);
+
+        if (searchCode == 0) {
+            return null;
+        } else {
+            return adminTravelEntity.travelCode.eq(searchCode);
+        }
+    }
+
+    private BooleanExpression searchTravelInfo(Map<String, Object> travelMap) {
         String searchKeyword = getString(travelMap.get("searchKeyword"), "");
+
+        if (searchKeyword == null) {
+            return null;
+        } else {
+            return adminTravelEntity.travelTitle.contains(searchKeyword)
+                    .or(adminTravelEntity.travelDescription.contains(searchKeyword));
+        }
+    }
+
+    private BooleanExpression searchTravelDate(Map<String, Object> travelMap) {
         LocalDateTime searchStartTime = (LocalDateTime) travelMap.get("searchStartTime");
         LocalDateTime searchEndTime = (LocalDateTime) travelMap.get("searchEndTime");
 
@@ -41,12 +61,7 @@ public class AdminTravelRepository {
             searchEndTime = of(now().minusDays(now().getDayOfMonth()).plusMonths(1), LocalTime.of(23,59,59));
         }
 
-        if (!"".equals(searchKeyword)) {
-            return adminTravelEntity.travelTitle.contains(searchKeyword)
-                    .or(adminTravelEntity.travelDescription.contains(searchKeyword));
-        } else {
-            return adminTravelEntity.createTime.between(searchStartTime, searchEndTime);
-        }
+        return adminTravelEntity.createTime.between(searchStartTime, searchEndTime);
     }
 
     /**
@@ -60,7 +75,7 @@ public class AdminTravelRepository {
      */
     public Integer findTravelCount(Map<String, Object> travelMap) {
         return queryFactory.selectFrom(adminTravelEntity)
-                .where(searchTravel(travelMap))
+                .where(searchTravelCode(travelMap), searchTravelInfo(travelMap), searchTravelDate(travelMap))
                 .fetch().size();
     }
 
@@ -79,7 +94,7 @@ public class AdminTravelRepository {
                 .orderBy(adminTravelEntity.idx.desc())
                 .leftJoin(adminTravelEntity.newTravelCode, adminCommonEntity)
                 .fetchJoin()
-                .where(searchTravel(travelMap)
+                .where(searchTravelCode(travelMap), searchTravelInfo(travelMap), searchTravelDate(travelMap)
                         .and(adminTravelEntity.visible.eq("Y")))
                 .offset(getInt(travelMap.get("jpaStartPage"), 0))
                 .limit(getInt(travelMap.get("size"), 0))
