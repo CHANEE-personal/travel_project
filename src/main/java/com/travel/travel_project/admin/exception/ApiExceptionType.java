@@ -34,6 +34,10 @@ public enum ApiExceptionType implements BaseExceptionType {
     NOT_FOUND_COMMON_LIST("NOT_FOUND_COMMON_LIST", 200, "공통 코드 리스트 없음"),
 
     // 여행 코드 관련 TYPE
+    ERROR_TRAVEL("ERROR_TRAVEL", 500, "여행 등록 에러"),
+    ERROR_UPDATE_TRAVEL("ERROR_UPDATE_TRAVEL", 500, "여행 수정 에러"),
+    ERROR_DELETE_TRAVEL("ERROR_DELETE_TRAVEL", 500, "여행 삭제 에러"),
+    NOT_FOUND_TRAVEL("NOT_FOUND_TRAVEL", 200, "여행 상세 없음"),
     NOT_FOUND_TRAVEL_LIST("NOT_FOUND_TRAVEL_LIST", 200, "여행 소개 리스트 없음");
 
     private final String errorCode;

@@ -5,6 +5,7 @@ import lombok.*;
 import lombok.experimental.SuperBuilder;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotEmpty;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,13 +27,16 @@ public class AdminCommonEntity extends NewCommonMappedClass {
     @Column(name = "idx")
     private Long idx;
 
-    @Column(name = "travel_code")
-    private Integer travelCode;
+    @Column(name = "common_code")
+    @NotEmpty(message = "공통 코드 입력은 필수입니다.")
+    private Integer commonCode;
 
-    @Column(name = "travel_name")
-    private String travelName;
+    @Column(name = "common_name")
+    @NotEmpty(message = "공통 코드명 입력은 필수입니다.")
+    private String commonName;
 
     @Column(name = "visible")
+    @NotEmpty(message = "공통 코드 사용 여부는 필수입니다.")
     private String visible;
 
     @OneToMany(mappedBy = "newTravelCode", cascade = MERGE, fetch = LAZY)
