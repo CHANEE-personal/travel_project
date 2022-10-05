@@ -18,7 +18,6 @@ import javax.persistence.EntityListeners;
 import javax.persistence.MappedSuperclass;
 import javax.persistence.Temporal;
 import java.time.LocalDateTime;
-import java.util.Date;
 
 import static javax.persistence.TemporalType.TIMESTAMP;
 
