@@ -131,6 +131,46 @@ public class TravelRepository {
 
     /**
      * <pre>
+     * 1. MethodName : findOnePrevTravel
+     * 2. ClassName  : TravelRepository.java
+     * 3. Comment    : 이전 여행지 소개 상세 조회
+     * 4. 작성자       : CHO
+     * 5. 작성일       : 2022. 10. 05.
+     * </pre>
+     */
+    public TravelDTO findOnePrevTravel(Long idx) {
+        TravelEntity findOnePrevTravel = queryFactory
+                .selectFrom(travelEntity)
+                .orderBy(travelEntity.idx.desc())
+                .where(travelEntity.idx.lt(idx)
+                        .and(travelEntity.visible.eq("Y")))
+                .fetchFirst();
+
+        return INSTANCE.toDto(findOnePrevTravel);
+    }
+
+    /**
+     * <pre>
+     * 1. MethodName : findOneNextTravel
+     * 2. ClassName  : TravelRepository.java
+     * 3. Comment    : 다음 여행지 소개 상세 조회
+     * 4. 작성자       : CHO
+     * 5. 작성일       : 2022. 10. 05.
+     * </pre>
+     */
+    public TravelDTO findOneNextTravel(Long idx) {
+        TravelEntity findOneNextTravel = queryFactory
+                .selectFrom(travelEntity)
+                .orderBy(travelEntity.idx.desc())
+                .where(travelEntity.idx.gt(idx)
+                        .and(travelEntity.visible.eq("Y")))
+                .fetchFirst();
+
+        return INSTANCE.toDto(findOneNextTravel);
+    }
+
+    /**
+     * <pre>
      * 1. MethodName : insertTravel
      * 2. ClassName  : TravelRepository.java
      * 3. Comment    : 관리자 > 여행지 등록
@@ -219,5 +259,18 @@ public class TravelRepository {
         em.clear();
 
         return em.find(TravelEntity.class, idx).getViewCount();
+    }
+
+    /**
+     * <pre>
+     * 1. MethodName : replyTravel
+     * 2. ClassName  : TravelRepository.java
+     * 3. Comment    : 여행지 댓글 달기
+     * 4. 작성자       : CHO
+     * 5. 작성일       : 2022. 10. 06.
+     * </pre>
+     */
+    public TravelDTO replyTravel() {
+        return null;
     }
 }
