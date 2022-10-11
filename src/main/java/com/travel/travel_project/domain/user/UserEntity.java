@@ -1,6 +1,7 @@
 package com.travel.travel_project.domain.user;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.travel.travel_project.domain.common.NewCommonMappedClass;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
@@ -24,7 +25,7 @@ import static javax.persistence.TemporalType.TIMESTAMP;
 @AllArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Table(name = "travel_user")
-public class UserEntity {
+public class UserEntity extends NewCommonMappedClass {
     @Transient
     private Integer rnum;
 
@@ -33,7 +34,7 @@ public class UserEntity {
     @Column(name = "idx")
     private Long idx;
 
-    @Column(name = "user_id")
+    @Column(name = "user_id", unique = true)
     @NotEmpty(message = "유저 ID 입력은 필수입니다.")
     private String userId;
 
@@ -45,7 +46,7 @@ public class UserEntity {
     @NotEmpty(message = "유저 이름 입력은 필수입니다.")
     private String name;
 
-    @Column(name = "email")
+    @Column(name = "email", unique = true)
     @Email
     @NotEmpty(message = "유저 이메일 입력은 필수입니다.")
     private String email;
@@ -62,24 +63,4 @@ public class UserEntity {
 
     @Enumerated(value = STRING)
     private Role role;
-
-    @Column(name = "creator", updatable = false)
-    @ApiModelProperty(required = true, value = "등록자")
-    private Long creator;
-
-    @Column(name = "updater", insertable = false)
-    @ApiModelProperty(required = true, value = "수정자")
-    private Long updater;
-
-    @Column(name = "create_time", updatable = false)
-    @Temporal(value = TIMESTAMP)
-    @ApiModelProperty(required = true, value = "등록 일자")
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
-    private LocalDateTime createTime;
-
-    @Column(name = "update_time", insertable = false)
-    @Temporal(value = TIMESTAMP)
-    @ApiModelProperty(required = true, value = "수정 일자")
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
-    private LocalDateTime updateTime;
 }
