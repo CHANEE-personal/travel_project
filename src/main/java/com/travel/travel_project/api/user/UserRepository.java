@@ -4,6 +4,10 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.travel.travel_project.domain.user.UserDTO;
 import com.travel.travel_project.domain.user.UserEntity;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
@@ -12,7 +16,9 @@ import java.util.List;
 import java.util.Map;
 
 import static com.travel.travel_project.api.user.mapper.UserMapper.INSTANCE;
+import static com.travel.travel_project.common.StringUtils.nullStrToStr;
 import static com.travel.travel_project.domain.user.QUserEntity.userEntity;
+import static org.springframework.security.core.context.SecurityContextHolder.getContext;
 
 @Repository
 @RequiredArgsConstructor
@@ -20,6 +26,25 @@ public class UserRepository {
 
     private final JPAQueryFactory queryFactory;
     private final EntityManager em;
+
+    private final PasswordEncoder passwordEncoder;
+    private final AuthenticationManager authenticationManager;
+
+    public String adminLogin(UserEntity existUserEntity) {
+        final String db_pw = nullStrToStr(findOneUser(existUserEntity.getIdx()).getPassword());
+        String result;
+
+        if (passwordEncoder.matches(existUserEntity.getPassword(), db_pw)) {
+            Authentication authentication = authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(existUserEntity.getUserId(), existUserEntity.getPassword())
+            );
+            getContext().setAuthentication(authentication);
+            result = "Y";
+        } else {
+            result = "N";
+        }
+        return result;
+    }
 
     /**
      * <pre>

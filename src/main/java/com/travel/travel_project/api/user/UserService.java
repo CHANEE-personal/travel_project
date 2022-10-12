@@ -21,6 +21,15 @@ public class UserService {
 
     private final UserRepository userRepository;
 
+    @Transactional(readOnly = true)
+    public String adminLogin(UserEntity userEntity) throws TravelException {
+        try {
+            return userRepository.adminLogin(userEntity);
+        } catch (Exception e) {
+            throw new TravelException(NOT_FOUND_USER, e);
+        }
+    }
+
     /**
      * <pre>
      * 1. MethodName : findUsersList

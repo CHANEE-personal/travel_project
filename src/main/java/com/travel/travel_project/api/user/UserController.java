@@ -16,11 +16,14 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.HttpClientErrorException;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.rmi.ServerError;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -59,51 +62,51 @@ public class UserController {
         return userService.findUsersList(searchCommon.searchCommon(page, paramMap));
     }
 
-//    /**
-//     * <pre>
-//     * 1. MethodName : login
-//     * 2. ClassName  : UserController.java
-//     * 3. Comment    : 유저 로그인 처리
-//     * 4. 작성자       : CHO
-//     * 5. 작성일       : 2022. 10. 11.
-//     * </pre>
-//     */
-//    @ApiOperation(value = "유저 로그인 처리", notes = "유저 로그인 처리한다.")
-//    @ApiResponses(value = {
-//            @ApiResponse(code = 200, message = "유저 로그인 성공", response = Map.class),
-//            @ApiResponse(code = 400, message = "잘못된 요청", response = HttpClientErrorException.BadRequest.class),
-//            @ApiResponse(code = 401, message = "허용되지 않는 관리자", response = HttpClientErrorException.Unauthorized.class),
-//            @ApiResponse(code = 403, message = "접근거부", response = HttpClientErrorException.class),
-//            @ApiResponse(code = 500, message = "서버 에러", response = ServerError.class)
-//    })
-//    @PostMapping("/login")
-//    public Map<String, Object> login(@RequestBody AuthenticationRequest authenticationRequest, HttpServletResponse response) throws Exception {
-//        Map<String, Object> userMap = new HashMap<>();
-//
-//        UserEntity userEntity = UserEntity.builder()
-//                .userId(authenticationRequest.getUserId())
-//                .password(authenticationRequest.getPassword())
-//                .build();
-//
-//        if ("Y".equals(userService.adminLogin(userEntity))) {
-//            userMap.put("loginYn", "Y");
-//            userMap.put("userId", userEntity.getUserId());
-//            userMap.put("token", createAuthenticationToken(authenticationRequest));
-//
-//            // 로그인 완료 시 생성된 token 값 DB에 저장
-//            UserDetails userDetails = userDetailsService.loadUserByUsername(authenticationRequest.getUserId());
-//            String accessToken = jwtTokenUtil.generateToken(userDetails);
-//            String refreshToken = jwtTokenUtil.generateRefreshToken(userDetails);
-//            userEntity.setUserToken(accessToken);
-//            userEntity.setUserRefreshToken(refreshToken);
-//            jwtTokenUtil.setHeaderAccessToken(response, accessToken);
-//            jwtTokenUtil.setHeaderRefreshToken(response, refreshToken);
-//
-//            userService.insertToken(adminUserEntity);
-//        }
-//
-//        return userMap;
-//    }
+    /**
+     * <pre>
+     * 1. MethodName : login
+     * 2. ClassName  : UserController.java
+     * 3. Comment    : 유저 로그인 처리
+     * 4. 작성자       : CHO
+     * 5. 작성일       : 2022. 10. 11.
+     * </pre>
+     */
+    @ApiOperation(value = "유저 로그인 처리", notes = "유저 로그인 처리한다.")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "유저 로그인 성공", response = Map.class),
+            @ApiResponse(code = 400, message = "잘못된 요청", response = HttpClientErrorException.BadRequest.class),
+            @ApiResponse(code = 401, message = "허용되지 않는 관리자", response = HttpClientErrorException.Unauthorized.class),
+            @ApiResponse(code = 403, message = "접근거부", response = HttpClientErrorException.class),
+            @ApiResponse(code = 500, message = "서버 에러", response = ServerError.class)
+    })
+    @PostMapping("/login")
+    public Map<String, Object> login(@RequestBody AuthenticationRequest authenticationRequest, HttpServletResponse response) throws Exception {
+        Map<String, Object> userMap = new HashMap<>();
+
+        UserEntity userEntity = UserEntity.builder()
+                .userId(authenticationRequest.getUserId())
+                .password(authenticationRequest.getPassword())
+                .build();
+
+        if ("Y".equals(userService.adminLogin(userEntity))) {
+            userMap.put("loginYn", "Y");
+            userMap.put("userId", userEntity.getUserId());
+            userMap.put("token", createAuthenticationToken(authenticationRequest));
+
+            // 로그인 완료 시 생성된 token 값 DB에 저장
+            UserDetails userDetails = userDetailsService.loadUserByUsername(authenticationRequest.getUserId());
+            String accessToken = jwtTokenUtil.generateToken(userDetails);
+            String refreshToken = jwtTokenUtil.generateRefreshToken(userDetails);
+            userEntity.setUserToken(accessToken);
+            userEntity.setUserRefreshToken(refreshToken);
+            jwtTokenUtil.setHeaderAccessToken(response, accessToken);
+            jwtTokenUtil.setHeaderRefreshToken(response, refreshToken);
+
+            userService.insertToken(userEntity);
+        }
+
+        return userMap;
+    }
 
     /**
      * <pre>
