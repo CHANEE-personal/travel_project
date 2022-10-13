@@ -1,5 +1,6 @@
 package com.travel.travel_project.api.user;
 
+import com.travel.travel_project.api.user.mapper.UserMapper;
 import com.travel.travel_project.domain.user.UserDTO;
 import com.travel.travel_project.domain.user.UserEntity;
 import com.travel.travel_project.exception.TravelException;
@@ -27,6 +28,18 @@ public class UserService {
             return userRepository.adminLogin(userEntity);
         } catch (Exception e) {
             throw new TravelException(NOT_FOUND_USER, e);
+        }
+    }
+
+    @CachePut("user")
+    @Modifying(clearAutomatically = true)
+    @Transactional
+    public void insertToken(UserEntity paramUserEntity) throws TravelException {
+        try {
+            UserEntity userEntity = UserMapper.INSTANCE.toEntity(userRepository.findOneUser(paramUserEntity.getIdx()));
+            userRepository.insertUserToken(userEntity);
+        } catch (Exception e) {
+            throw new TravelException(ERROR_USER, e);
         }
     }
 

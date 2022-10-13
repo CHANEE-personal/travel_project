@@ -48,6 +48,23 @@ public class UserRepository {
 
     /**
      * <pre>
+     * 1. MethodName : insertUserToken
+     * 2. ClassName  : UserRepository.java
+     * 3. Comment    : 회원 로그인 후 토큰 등록 By EntityManager
+     * 4. 작성자       : CHO
+     * 5. 작성일       : 2022. 10. 13.
+     * </pre>
+     */
+    public Long insertUserToken(UserEntity userEntity) {
+        em.merge(userEntity);
+        em.flush();
+        em.clear();
+
+        return userEntity.getIdx();
+    }
+
+    /**
+     * <pre>
      * 1. MethodName : findUsersCount
      * 2. ClassName  : UserRepository.java
      * 3. Comment    : 관리자 > 유저 리스트 갯수 조회
