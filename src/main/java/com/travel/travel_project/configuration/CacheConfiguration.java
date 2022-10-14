@@ -26,7 +26,8 @@ public class CacheConfiguration {
         SimpleCacheManager cacheManager = new SimpleCacheManager();
         cacheManager.setCaches(of(
                 new ConcurrentMapCache("user"),
-                new ConcurrentMapCache("travel")));
+                new ConcurrentMapCache("travel"),
+                new ConcurrentMapCache("post")));
         return cacheManager;
     }
 }
