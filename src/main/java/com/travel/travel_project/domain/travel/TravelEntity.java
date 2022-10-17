@@ -7,6 +7,7 @@ import lombok.experimental.SuperBuilder;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 
 import static javax.persistence.FetchType.LAZY;
 import static javax.persistence.GenerationType.IDENTITY;
@@ -18,7 +19,7 @@ import static javax.persistence.GenerationType.IDENTITY;
 @EqualsAndHashCode(of = "idx", callSuper = false)
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "travel")
+@Table(name = "tv_info_mst")
 public class TravelEntity extends NewCommonMappedClass {
 
     @Transient
@@ -39,12 +40,12 @@ public class TravelEntity extends NewCommonMappedClass {
     private String travelDescription;
 
     @Column(name = "travel_code")
-    @NotEmpty(message = "여행지 코드 입력은 필수입니다.")
+    @NotNull(message = "여행지 코드 입력은 필수입니다.")
     private Integer travelCode;
 
-    @Column(name = "travel_addr")
+    @Column(name = "travel_address")
     @NotEmpty(message = "여행지 주소 입력은 필수입니다.")
-    private String travelAddr;
+    private String travelAddress;
 
     @Column(name = "travel_zip_code")
     @NotEmpty(message = "여행지 우편 주소 입력은 필수입니다.")

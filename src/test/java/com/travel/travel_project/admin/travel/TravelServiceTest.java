@@ -56,7 +56,7 @@ class TravelServiceTest {
                 .travelCode(1)
                 .travelTitle("여행지 소개")
                 .travelDescription("여행지 소개")
-                .travelAddr("인천광역시 서구")
+                .travelAddress("인천광역시 서구")
                 .travelZipCode("123-456")
                 .visible("Y")
                 .build();
@@ -216,7 +216,7 @@ class TravelServiceTest {
         adminTravelEntity = TravelEntity.builder()
                 .travelCode(1)
                 .travelTitle("여행지 테스트").travelDescription("여행지 테스트")
-                .travelAddr("인천광역시 서구").travelZipCode("123-456").visible("Y")
+                .travelAddress("인천광역시 서구").travelZipCode("123-456").visible("Y")
                 .build();
 
         adminTravelDTO = TravelMapper.INSTANCE.toDto(adminTravelEntity);
@@ -229,7 +229,7 @@ class TravelServiceTest {
         assertThat(newAdminTravel.getTravelCode()).isEqualTo(adminTravelEntity.getTravelCode());
         assertThat(newAdminTravel.getTravelTitle()).isEqualTo(adminTravelEntity.getTravelTitle());
         assertThat(newAdminTravel.getTravelDescription()).isEqualTo(adminTravelEntity.getTravelDescription());
-        assertThat(newAdminTravel.getTravelAddr()).isEqualTo(adminTravelEntity.getTravelAddr());
+        assertThat(newAdminTravel.getTravelAddr()).isEqualTo(adminTravelEntity.getTravelAddress());
         assertThat(newAdminTravel.getTravelZipCode()).isEqualTo(adminTravelEntity.getTravelZipCode());
 
         // verify
@@ -248,7 +248,7 @@ class TravelServiceTest {
         adminTravelEntity = TravelEntity.builder()
                 .travelCode(1)
                 .travelTitle("여행지 테스트").travelDescription("여행지 테스트")
-                .travelAddr("인천광역시 서구").travelZipCode("123-456").visible("Y")
+                .travelAddress("인천광역시 서구").travelZipCode("123-456").visible("Y")
                 .build();
 
         adminTravelDTO = TravelMapper.INSTANCE.toDto(adminTravelEntity);
@@ -261,7 +261,7 @@ class TravelServiceTest {
         assertThat(newAdminTravel.getTravelCode()).isEqualTo(adminTravelEntity.getTravelCode());
         assertThat(newAdminTravel.getTravelTitle()).isEqualTo(adminTravelEntity.getTravelTitle());
         assertThat(newAdminTravel.getTravelDescription()).isEqualTo(adminTravelEntity.getTravelDescription());
-        assertThat(newAdminTravel.getTravelAddr()).isEqualTo(adminTravelEntity.getTravelAddr());
+        assertThat(newAdminTravel.getTravelAddr()).isEqualTo(adminTravelEntity.getTravelAddress());
         assertThat(newAdminTravel.getTravelZipCode()).isEqualTo(adminTravelEntity.getTravelZipCode());
 
         // verify
@@ -277,7 +277,7 @@ class TravelServiceTest {
         adminTravelEntity = TravelEntity.builder()
                 .travelCode(1)
                 .travelTitle("여행지 테스트").travelDescription("여행지 테스트")
-                .travelAddr("인천광역시 서구").travelZipCode("123-456").visible("Y")
+                .travelAddress("인천광역시 서구").travelZipCode("123-456").visible("Y")
                 .build();
 
         TravelDTO adminTravelDTO = adminTravelService.insertTravel(adminTravelEntity);
@@ -286,7 +286,7 @@ class TravelServiceTest {
                 .idx(adminTravelDTO.getIdx())
                 .travelCode(1)
                 .travelTitle("여행지 수정 테스트").travelDescription("여행지 수정 테스트")
-                .travelAddr("서울특별시 강남구").travelZipCode("123-456")
+                .travelAddress("서울특별시 강남구").travelZipCode("123-456")
                 .visible("Y").build();
 
         adminTravelService.updateTravel(newAdminTravelEntity);
@@ -318,7 +318,7 @@ class TravelServiceTest {
         adminTravelEntity = TravelEntity.builder()
                 .travelCode(1)
                 .travelTitle("여행지 테스트").travelDescription("여행지 테스트")
-                .travelAddr("인천광역시 서구").travelZipCode("123-456").visible("Y")
+                .travelAddress("인천광역시 서구").travelZipCode("123-456").visible("Y")
                 .build();
 
         TravelDTO adminTravelDTO = adminTravelService.insertTravel(adminTravelEntity);
@@ -327,7 +327,7 @@ class TravelServiceTest {
                 .idx(adminTravelDTO.getIdx())
                 .travelCode(1)
                 .travelTitle("여행지 수정 테스트").travelDescription("여행지 수정 테스트")
-                .travelAddr("서울특별시 강남구").travelZipCode("123-456")
+                .travelAddress("서울특별시 강남구").travelZipCode("123-456")
                 .visible("Y").build();
 
         adminTravelService.updateTravel(newAdminTravelEntity);

@@ -41,14 +41,12 @@ public abstract class NewCommonMappedClass {
 
     @CreationTimestamp
     @Column(name = "create_time", updatable = false)
-    @Temporal(value = TIMESTAMP)
     @ApiModelProperty(required = true, value = "등록 일자")
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDateTime createTime;
 
     @UpdateTimestamp
     @Column(name = "update_time")
-    @Temporal(TIMESTAMP)
     @ApiModelProperty(required = true, value = "수정 일자")
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDateTime updateTime;

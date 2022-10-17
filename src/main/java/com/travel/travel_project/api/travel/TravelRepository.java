@@ -273,4 +273,31 @@ public class TravelRepository {
     public TravelDTO replyTravel() {
         return null;
     }
+
+    /**
+     * <pre>
+     * 1. MethodName : popularityTravel
+     * 2. ClassName  : TravelRepository.java
+     * 3. Comment    : 인기 여행지 리스트 조회
+     * 4. 작성자       : CHO
+     * 5. 작성일       : 2022. 10. 14.
+     * </pre>
+     */
+    public List<TravelDTO> popularityTravel(Map<String, Object> travelMap) {
+        List<TravelEntity> travelList = queryFactory
+                .selectFrom(travelEntity)
+                .orderBy(travelEntity.favoriteCount.desc())
+                .leftJoin(travelEntity.newTravelCode, commonEntity)
+                .fetchJoin()
+                .where(searchTravelCode(travelMap), searchTravelInfo(travelMap), searchTravelDate(travelMap)
+                        .and(travelEntity.visible.eq("Y")))
+                .offset(getInt(travelMap.get("jpaStartPage"), 0))
+                .limit(getInt(travelMap.get("size"), 0))
+                .fetch();
+
+        travelList.forEach(list -> travelList.get(travelList.indexOf(list))
+                .setRnum(getInt(travelMap.get("startPage"), 1) * (getInt(travelMap.get("size"), 1)) - (2 - travelList.indexOf(list))));
+
+        return INSTANCE.toDtoList(travelList);
+    }
 }

@@ -3,7 +3,7 @@ CREATE TABLE `tv_info_mst` (
                                 `travel_code` varchar(255) NOT NULL,
                                 `travel_title` longtext NOT NULL,
                                 `travel_description` longtext NOT NULL,
-                                `travel_addr` varchar(255) NOT NULL,
+                                `travel_address` varchar(255) NOT NULL,
                                 `travel_zip_code` varchar(255) NOT NULL,
                                 `view_count` int(11) NOT NULL DEFAULT 0,
                                 `favorite_count` int(11) NOT NULL DEFAULT 0,

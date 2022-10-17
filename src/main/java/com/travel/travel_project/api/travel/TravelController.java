@@ -179,4 +179,44 @@ public class TravelController {
     public Integer favoriteTravel(@PathVariable Long idx) {
         return adminTravelService.favoriteTravel(idx);
     }
+
+    /**
+     * <pre>
+     * 1. MethodName : popularityTravel
+     * 2. ClassName  : TravelController.java
+     * 3. Comment    : 인기 여행지 리스트 조회
+     * 4. 작성자       : CHO
+     * 5. 작성일       : 2022. 10. 14.
+     * </pre>
+     */
+    @ApiOperation(value = "인기 여행지 리스트 조회", notes = "인기 여행지 리스트를 조회한다.")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "인기 여행지 리스트 조회 성공", response = Map.class),
+            @ApiResponse(code = 400, message = "잘못된 요청", response = HttpClientErrorException.BadRequest.class),
+            @ApiResponse(code = 401, message = "허용되지 않는 관리자", response = HttpClientErrorException.Unauthorized.class),
+            @ApiResponse(code = 403, message = "접근거부", response = HttpClientErrorException.class),
+            @ApiResponse(code = 500, message = "서버 에러", response = ServerError.class)
+    })
+    @GetMapping("/popularity")
+    public Map<String, Object> popularityTravel(@RequestParam(required = false) Map<String, Object> paramMap, Page page) {
+        Map<String, Object> travelMap = new HashMap<>();
+
+        int travelCount = this.adminTravelService.findTravelCount(searchCommon.searchCommon(page, paramMap));
+        List<TravelDTO> travelList = new ArrayList<>();
+
+        if (travelCount > 0) {
+            travelList = this.adminTravelService.popularityTravel(searchCommon.searchCommon(page, paramMap));
+        }
+
+        // 리스트 수
+        travelMap.put("pageSize", page.getSize());
+        // 전체 페이지 수
+        travelMap.put("perPageListCnt", ceil((double) travelCount / page.getSize()));
+        // 전체 아이템 수
+        travelMap.put("travelListCnt", travelCount);
+
+        travelMap.put("travelList", travelList);
+
+        return travelMap;
+    }
 }

@@ -20,7 +20,7 @@ import static javax.persistence.GenerationType.IDENTITY;
 @EqualsAndHashCode(of = "idx", callSuper = false)
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "travel_cmm_code")
+@Table(name = "tv_cmm_code")
 public class CommonEntity extends NewCommonMappedClass {
     @Id
     @GeneratedValue(strategy = IDENTITY)

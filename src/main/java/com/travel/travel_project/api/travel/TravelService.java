@@ -154,4 +154,22 @@ public class TravelService {
             throw new TravelException(ERROR_FAVORITE_TRAVEL, e);
         }
     }
+
+    /**
+     * <pre>
+     * 1. MethodName : popularityTravel
+     * 2. ClassName  : TravelService.java
+     * 3. Comment    : 인기 여행지 리스트 조회
+     * 4. 작성자       : CHO
+     * 5. 작성일       : 2022. 10. 14.
+     * </pre>
+     */
+    @Transactional(readOnly = true)
+    public List<TravelDTO> popularityTravel(Map<String, Object> travelMap) throws TravelException {
+        try {
+            return adminTravelRepository.popularityTravel(travelMap);
+        } catch (Exception e) {
+            throw new TravelException(NOT_FOUND_TRAVEL_LIST, e);
+        }
+    }
 }
