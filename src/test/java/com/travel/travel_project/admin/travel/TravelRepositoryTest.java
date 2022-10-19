@@ -329,7 +329,7 @@ class TravelRepositoryTest {
         travelDTO = TravelMapper.INSTANCE.toDto(travelEntity);
 
         // when
-        when(mockTravelRepository.insertTravel(travelEntity)).thenReturn(travelDTO);
+        when(mockTravelRepository.findOneTravel(travelEntity.getIdx())).thenReturn(travelDTO);
         TravelDTO newAdminTravel = mockTravelRepository.insertTravel(travelEntity);
 
         // then
@@ -392,7 +392,7 @@ class TravelRepositoryTest {
         TravelEntity newAdminTravelEntity = TravelEntity.builder()
                 .idx(adminTravelDTO.getIdx())
                 .travelCode(1)
-                .travelTitle("여행지 수정 테스트").travelDescription("여행지 수정 테스트")
+                .travelTitle("여행지 수정 테스트").travelDescription("여행지 수정 테스트").favoriteCount(0).viewCount(0)
                 .travelAddress("서울특별시 강남구").travelZipCode("123-456")
                 .visible("Y").build();
 
@@ -433,7 +433,7 @@ class TravelRepositoryTest {
         TravelEntity newAdminTravelEntity = TravelEntity.builder()
                 .idx(adminTravelDTO.getIdx())
                 .travelCode(1)
-                .travelTitle("여행지 수정 테스트").travelDescription("여행지 수정 테스트")
+                .travelTitle("여행지 수정 테스트").travelDescription("여행지 수정 테스트").favoriteCount(0).viewCount(0)
                 .travelAddress("서울특별시 강남구").travelZipCode("123-456")
                 .visible("Y").build();
 
