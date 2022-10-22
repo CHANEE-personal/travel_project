@@ -44,15 +44,15 @@ import static org.springframework.test.context.TestConstructor.AutowireMode.ALL;
 @DisplayName("여행지 Service Test")
 class TravelServiceTest {
     @Mock
-    private TravelService mockAdminTravelService;
-    private final TravelService adminTravelService;
+    private TravelService mockTravelService;
+    private final TravelService travelService;
     private final EntityManager em;
 
-    private TravelEntity adminTravelEntity;
-    private TravelDTO adminTravelDTO;
+    private TravelEntity travelEntity;
+    private TravelDTO travelDTO;
 
     void createTravel() {
-        adminTravelEntity = TravelEntity.builder()
+        travelEntity = TravelEntity.builder()
                 .travelCode(1)
                 .travelTitle("여행지 소개")
                 .travelDescription("여행지 소개")
@@ -61,7 +61,7 @@ class TravelServiceTest {
                 .visible("Y")
                 .build();
 
-        adminTravelDTO = TravelMapper.INSTANCE.toDto(adminTravelEntity);
+        travelDTO = TravelMapper.INSTANCE.toDto(travelEntity);
     }
 
     @BeforeEach
@@ -80,7 +80,7 @@ class TravelServiceTest {
         travelMap.put("size", 3);
 
         // then
-        assertThat(adminTravelService.findTravelsList(travelMap)).isNotEmpty();
+        assertThat(travelService.findTravelsList(travelMap)).isNotEmpty();
     }
 
     @Test
@@ -97,8 +97,8 @@ class TravelServiceTest {
                 .travelAddr("인천광역시 서구").travelZipCode("123-456").visible("Y").build());
 
         // when
-        when(mockAdminTravelService.findTravelsList(travelMap)).thenReturn(travelList);
-        List<TravelDTO> newTravelList = mockAdminTravelService.findTravelsList(travelMap);
+        when(mockTravelService.findTravelsList(travelMap)).thenReturn(travelList);
+        List<TravelDTO> newTravelList = mockTravelService.findTravelsList(travelMap);
 
         // then
         assertThat(newTravelList.get(0).getIdx()).isEqualTo(travelList.get(0).getIdx());
@@ -109,12 +109,12 @@ class TravelServiceTest {
         assertThat(newTravelList.get(0).getTravelZipCode()).isEqualTo(travelList.get(0).getTravelZipCode());
 
         // verify
-        verify(mockAdminTravelService, times(1)).findTravelsList(travelMap);
-        verify(mockAdminTravelService, atLeastOnce()).findTravelsList(travelMap);
-        verifyNoMoreInteractions(mockAdminTravelService);
+        verify(mockTravelService, times(1)).findTravelsList(travelMap);
+        verify(mockTravelService, atLeastOnce()).findTravelsList(travelMap);
+        verifyNoMoreInteractions(mockTravelService);
 
-        InOrder inOrder = inOrder(mockAdminTravelService);
-        inOrder.verify(mockAdminTravelService).findTravelsList(travelMap);
+        InOrder inOrder = inOrder(mockTravelService);
+        inOrder.verify(mockTravelService).findTravelsList(travelMap);
     }
 
     @Test
@@ -131,8 +131,8 @@ class TravelServiceTest {
                 .travelAddr("인천광역시 서구").travelZipCode("123-456").visible("Y").build());
 
         // when
-        given(mockAdminTravelService.findTravelsList(travelMap)).willReturn(travelList);
-        List<TravelDTO> newTravelList = mockAdminTravelService.findTravelsList(travelMap);
+        given(mockTravelService.findTravelsList(travelMap)).willReturn(travelList);
+        List<TravelDTO> newTravelList = mockTravelService.findTravelsList(travelMap);
 
         // then
         assertThat(newTravelList.get(0).getIdx()).isEqualTo(travelList.get(0).getIdx());
@@ -143,16 +143,16 @@ class TravelServiceTest {
         assertThat(newTravelList.get(0).getTravelZipCode()).isEqualTo(travelList.get(0).getTravelZipCode());
 
         // verify
-        then(mockAdminTravelService).should(times(1)).findTravelsList(travelMap);
-        then(mockAdminTravelService).should(atLeastOnce()).findTravelsList(travelMap);
-        then(mockAdminTravelService).shouldHaveNoMoreInteractions();
+        then(mockTravelService).should(times(1)).findTravelsList(travelMap);
+        then(mockTravelService).should(atLeastOnce()).findTravelsList(travelMap);
+        then(mockTravelService).shouldHaveNoMoreInteractions();
     }
 
     @Test
     @DisplayName("여행지소개상세Mockito테스트")
     void 여행지소개상세Mockito테스트() {
         // given
-        adminTravelDTO = TravelDTO.builder()
+        travelDTO = TravelDTO.builder()
                 .idx(1L)
                 .travelCode(1)
                 .travelTitle("여행지 테스트").travelDescription("여행지 테스트")
@@ -160,31 +160,31 @@ class TravelServiceTest {
                 .build();
 
         // when
-        given(mockAdminTravelService.findOneTravel(1L)).willReturn(adminTravelDTO);
-        TravelDTO newAdminTravel = mockAdminTravelService.findOneTravel(1L);
+        given(mockTravelService.findOneTravel(1L)).willReturn(travelDTO);
+        TravelDTO newAdminTravel = mockTravelService.findOneTravel(1L);
 
         // then
-        assertThat(newAdminTravel.getIdx()).isEqualTo(adminTravelDTO.getIdx());
-        assertThat(newAdminTravel.getTravelCode()).isEqualTo(adminTravelDTO.getTravelCode());
-        assertThat(newAdminTravel.getTravelTitle()).isEqualTo(adminTravelDTO.getTravelTitle());
-        assertThat(newAdminTravel.getTravelDescription()).isEqualTo(adminTravelDTO.getTravelDescription());
-        assertThat(newAdminTravel.getTravelAddr()).isEqualTo(adminTravelDTO.getTravelAddr());
-        assertThat(newAdminTravel.getTravelZipCode()).isEqualTo(adminTravelDTO.getTravelZipCode());
+        assertThat(newAdminTravel.getIdx()).isEqualTo(travelDTO.getIdx());
+        assertThat(newAdminTravel.getTravelCode()).isEqualTo(travelDTO.getTravelCode());
+        assertThat(newAdminTravel.getTravelTitle()).isEqualTo(travelDTO.getTravelTitle());
+        assertThat(newAdminTravel.getTravelDescription()).isEqualTo(travelDTO.getTravelDescription());
+        assertThat(newAdminTravel.getTravelAddr()).isEqualTo(travelDTO.getTravelAddr());
+        assertThat(newAdminTravel.getTravelZipCode()).isEqualTo(travelDTO.getTravelZipCode());
 
         // verify
-        verify(mockAdminTravelService, times(1)).findOneTravel(1L);
-        verify(mockAdminTravelService, atLeastOnce()).findOneTravel(1L);
-        verifyNoMoreInteractions(mockAdminTravelService);
+        verify(mockTravelService, times(1)).findOneTravel(1L);
+        verify(mockTravelService, atLeastOnce()).findOneTravel(1L);
+        verifyNoMoreInteractions(mockTravelService);
 
-        InOrder inOrder = inOrder(mockAdminTravelService);
-        inOrder.verify(mockAdminTravelService).findOneTravel(1L);
+        InOrder inOrder = inOrder(mockTravelService);
+        inOrder.verify(mockTravelService).findOneTravel(1L);
     }
 
     @Test
     @DisplayName("여행지소개상세BDD테스트")
     void 여행지소개상세BDD테스트() {
         // given
-        adminTravelDTO = TravelDTO.builder()
+        travelDTO = TravelDTO.builder()
                 .idx(1L)
                 .travelCode(1)
                 .travelTitle("여행지 테스트").travelDescription("여행지 테스트")
@@ -192,110 +192,110 @@ class TravelServiceTest {
                 .build();
 
         // when
-        when(mockAdminTravelService.findOneTravel(1L)).thenReturn(adminTravelDTO);
-        TravelDTO newAdminTravel = mockAdminTravelService.findOneTravel(1L);
+        when(mockTravelService.findOneTravel(1L)).thenReturn(travelDTO);
+        TravelDTO newAdminTravel = mockTravelService.findOneTravel(1L);
 
         // then
-        assertThat(newAdminTravel.getIdx()).isEqualTo(adminTravelDTO.getIdx());
-        assertThat(newAdminTravel.getTravelCode()).isEqualTo(adminTravelDTO.getTravelCode());
-        assertThat(newAdminTravel.getTravelTitle()).isEqualTo(adminTravelDTO.getTravelTitle());
-        assertThat(newAdminTravel.getTravelDescription()).isEqualTo(adminTravelDTO.getTravelDescription());
-        assertThat(newAdminTravel.getTravelAddr()).isEqualTo(adminTravelDTO.getTravelAddr());
-        assertThat(newAdminTravel.getTravelZipCode()).isEqualTo(adminTravelDTO.getTravelZipCode());
+        assertThat(newAdminTravel.getIdx()).isEqualTo(travelDTO.getIdx());
+        assertThat(newAdminTravel.getTravelCode()).isEqualTo(travelDTO.getTravelCode());
+        assertThat(newAdminTravel.getTravelTitle()).isEqualTo(travelDTO.getTravelTitle());
+        assertThat(newAdminTravel.getTravelDescription()).isEqualTo(travelDTO.getTravelDescription());
+        assertThat(newAdminTravel.getTravelAddr()).isEqualTo(travelDTO.getTravelAddr());
+        assertThat(newAdminTravel.getTravelZipCode()).isEqualTo(travelDTO.getTravelZipCode());
 
         // verify
-        then(mockAdminTravelService).should(times(1)).findOneTravel(1L);
-        then(mockAdminTravelService).should(atLeastOnce()).findOneTravel(1L);
-        then(mockAdminTravelService).shouldHaveNoMoreInteractions();
+        then(mockTravelService).should(times(1)).findOneTravel(1L);
+        then(mockTravelService).should(atLeastOnce()).findOneTravel(1L);
+        then(mockTravelService).shouldHaveNoMoreInteractions();
     }
 
     @Test
     @DisplayName("여행지등록Mockito테스트")
     void 여행지등록Mockito테스트() {
         // given
-        adminTravelEntity = TravelEntity.builder()
+        travelEntity = TravelEntity.builder()
                 .travelCode(1)
-                .travelTitle("여행지 테스트").travelDescription("여행지 테스트")
+                .travelTitle("여행지 테스트").travelDescription("여행지 테스트").favoriteCount(0).viewCount(0)
                 .travelAddress("인천광역시 서구").travelZipCode("123-456").visible("Y")
                 .build();
 
-        adminTravelDTO = TravelMapper.INSTANCE.toDto(adminTravelEntity);
+        TravelDTO travelInfo = travelService.insertTravel(travelEntity);
 
         // when
-        when(mockAdminTravelService.insertTravel(adminTravelEntity)).thenReturn(adminTravelDTO);
-        TravelDTO newAdminTravel = mockAdminTravelService.insertTravel(adminTravelEntity);
+        when(mockTravelService.findOneTravel(travelEntity.getIdx())).thenReturn(travelInfo);
+        TravelDTO newAdminTravel = mockTravelService.findOneTravel(travelEntity.getIdx());
 
         // then
-        assertThat(newAdminTravel.getTravelCode()).isEqualTo(adminTravelEntity.getTravelCode());
-        assertThat(newAdminTravel.getTravelTitle()).isEqualTo(adminTravelEntity.getTravelTitle());
-        assertThat(newAdminTravel.getTravelDescription()).isEqualTo(adminTravelEntity.getTravelDescription());
-        assertThat(newAdminTravel.getTravelAddr()).isEqualTo(adminTravelEntity.getTravelAddress());
-        assertThat(newAdminTravel.getTravelZipCode()).isEqualTo(adminTravelEntity.getTravelZipCode());
+        assertThat(newAdminTravel.getTravelCode()).isEqualTo(travelEntity.getTravelCode());
+        assertThat(newAdminTravel.getTravelTitle()).isEqualTo(travelEntity.getTravelTitle());
+        assertThat(newAdminTravel.getTravelDescription()).isEqualTo(travelEntity.getTravelDescription());
+        assertThat(newAdminTravel.getTravelAddr()).isEqualTo(travelEntity.getTravelAddress());
+        assertThat(newAdminTravel.getTravelZipCode()).isEqualTo(travelEntity.getTravelZipCode());
 
         // verify
-        verify(mockAdminTravelService, times(1)).findOneTravel(newAdminTravel.getIdx());
-        verify(mockAdminTravelService, atLeastOnce()).findOneTravel(newAdminTravel.getIdx());
-        verifyNoMoreInteractions(mockAdminTravelService);
+        verify(mockTravelService, times(1)).findOneTravel(newAdminTravel.getIdx());
+        verify(mockTravelService, atLeastOnce()).findOneTravel(newAdminTravel.getIdx());
+        verifyNoMoreInteractions(mockTravelService);
 
-        InOrder inOrder = inOrder(mockAdminTravelService);
-        inOrder.verify(mockAdminTravelService).findOneTravel(newAdminTravel.getIdx());
+        InOrder inOrder = inOrder(mockTravelService);
+        inOrder.verify(mockTravelService).findOneTravel(newAdminTravel.getIdx());
     }
 
     @Test
     @DisplayName("여행지등록BDD테스트")
     void 여행지등록BDD테스트() {
         // given
-        adminTravelEntity = TravelEntity.builder()
+        travelEntity = TravelEntity.builder()
                 .travelCode(1)
-                .travelTitle("여행지 테스트").travelDescription("여행지 테스트")
+                .travelTitle("여행지 테스트").travelDescription("여행지 테스트").favoriteCount(0).viewCount(0)
                 .travelAddress("인천광역시 서구").travelZipCode("123-456").visible("Y")
                 .build();
 
-        adminTravelDTO = TravelMapper.INSTANCE.toDto(adminTravelEntity);
+        TravelDTO travelInfo = travelService.insertTravel(travelEntity);
 
         // when
-        given(mockAdminTravelService.insertTravel(adminTravelEntity)).willReturn(adminTravelDTO);
-        TravelDTO newAdminTravel = mockAdminTravelService.insertTravel(adminTravelEntity);
+        given(mockTravelService.findOneTravel(travelEntity.getIdx())).willReturn(travelInfo);
+        TravelDTO newAdminTravel = mockTravelService.findOneTravel(travelEntity.getIdx());
 
         // then
-        assertThat(newAdminTravel.getTravelCode()).isEqualTo(adminTravelEntity.getTravelCode());
-        assertThat(newAdminTravel.getTravelTitle()).isEqualTo(adminTravelEntity.getTravelTitle());
-        assertThat(newAdminTravel.getTravelDescription()).isEqualTo(adminTravelEntity.getTravelDescription());
-        assertThat(newAdminTravel.getTravelAddr()).isEqualTo(adminTravelEntity.getTravelAddress());
-        assertThat(newAdminTravel.getTravelZipCode()).isEqualTo(adminTravelEntity.getTravelZipCode());
+        assertThat(newAdminTravel.getTravelCode()).isEqualTo(travelEntity.getTravelCode());
+        assertThat(newAdminTravel.getTravelTitle()).isEqualTo(travelEntity.getTravelTitle());
+        assertThat(newAdminTravel.getTravelDescription()).isEqualTo(travelEntity.getTravelDescription());
+        assertThat(newAdminTravel.getTravelAddr()).isEqualTo(travelEntity.getTravelAddress());
+        assertThat(newAdminTravel.getTravelZipCode()).isEqualTo(travelEntity.getTravelZipCode());
 
         // verify
-        then(mockAdminTravelService).should(times(1)).findOneTravel(newAdminTravel.getIdx());
-        then(mockAdminTravelService).should(atLeastOnce()).findOneTravel(newAdminTravel.getIdx());
-        then(mockAdminTravelService).shouldHaveNoMoreInteractions();
+        then(mockTravelService).should(times(1)).findOneTravel(newAdminTravel.getIdx());
+        then(mockTravelService).should(atLeastOnce()).findOneTravel(newAdminTravel.getIdx());
+        then(mockTravelService).shouldHaveNoMoreInteractions();
     }
 
     @Test
     @DisplayName("여행지수정Mockito테스트")
     void 여행지수정Mockito테스트() {
         // given
-        adminTravelEntity = TravelEntity.builder()
+        travelEntity = TravelEntity.builder()
                 .travelCode(1)
-                .travelTitle("여행지 테스트").travelDescription("여행지 테스트")
+                .travelTitle("여행지 테스트").travelDescription("여행지 테스트").favoriteCount(0).viewCount(0)
                 .travelAddress("인천광역시 서구").travelZipCode("123-456").visible("Y")
                 .build();
 
-        TravelDTO adminTravelDTO = adminTravelService.insertTravel(adminTravelEntity);
+        TravelDTO adminTravelDTO = travelService.insertTravel(travelEntity);
 
         TravelEntity newAdminTravelEntity = TravelEntity.builder()
                 .idx(adminTravelDTO.getIdx())
                 .travelCode(1)
-                .travelTitle("여행지 수정 테스트").travelDescription("여행지 수정 테스트")
+                .travelTitle("여행지 수정 테스트").travelDescription("여행지 수정 테스트").favoriteCount(0).viewCount(0)
                 .travelAddress("서울특별시 강남구").travelZipCode("123-456")
                 .visible("Y").build();
 
-        adminTravelService.updateTravel(newAdminTravelEntity);
+        travelService.updateTravel(newAdminTravelEntity);
 
         TravelDTO newAdminTravelDTO = TravelMapper.INSTANCE.toDto(newAdminTravelEntity);
 
         // when
-        when(mockAdminTravelService.findOneTravel(newAdminTravelEntity.getIdx())).thenReturn(newAdminTravelDTO);
-        TravelDTO travelInfo = mockAdminTravelService.findOneTravel(newAdminTravelDTO.getIdx());
+        when(mockTravelService.findOneTravel(newAdminTravelEntity.getIdx())).thenReturn(newAdminTravelDTO);
+        TravelDTO travelInfo = mockTravelService.findOneTravel(newAdminTravelDTO.getIdx());
 
         // then
         assertThat(travelInfo.getIdx()).isEqualTo(newAdminTravelDTO.getIdx());
@@ -303,40 +303,40 @@ class TravelServiceTest {
         assertThat(travelInfo.getTravelTitle()).isEqualTo(newAdminTravelDTO.getTravelTitle());
 
         // verify
-        verify(mockAdminTravelService, times(1)).findOneTravel(travelInfo.getIdx());
-        verify(mockAdminTravelService, atLeastOnce()).findOneTravel(travelInfo.getIdx());
-        verifyNoMoreInteractions(mockAdminTravelService);
+        verify(mockTravelService, times(1)).findOneTravel(travelInfo.getIdx());
+        verify(mockTravelService, atLeastOnce()).findOneTravel(travelInfo.getIdx());
+        verifyNoMoreInteractions(mockTravelService);
 
-        InOrder inOrder = inOrder(mockAdminTravelService);
-        inOrder.verify(mockAdminTravelService).findOneTravel(travelInfo.getIdx());
+        InOrder inOrder = inOrder(mockTravelService);
+        inOrder.verify(mockTravelService).findOneTravel(travelInfo.getIdx());
     }
 
     @Test
     @DisplayName("여행지수정BDD테스트")
     void 여행지수정BDD테스트() {
         // given
-        adminTravelEntity = TravelEntity.builder()
+        travelEntity = TravelEntity.builder()
                 .travelCode(1)
-                .travelTitle("여행지 테스트").travelDescription("여행지 테스트")
+                .travelTitle("여행지 테스트").travelDescription("여행지 테스트").favoriteCount(0).viewCount(0)
                 .travelAddress("인천광역시 서구").travelZipCode("123-456").visible("Y")
                 .build();
 
-        TravelDTO adminTravelDTO = adminTravelService.insertTravel(adminTravelEntity);
+        TravelDTO adminTravelDTO = travelService.insertTravel(travelEntity);
 
         TravelEntity newAdminTravelEntity = TravelEntity.builder()
                 .idx(adminTravelDTO.getIdx())
                 .travelCode(1)
-                .travelTitle("여행지 수정 테스트").travelDescription("여행지 수정 테스트")
+                .travelTitle("여행지 수정 테스트").travelDescription("여행지 수정 테스트").favoriteCount(0).viewCount(0)
                 .travelAddress("서울특별시 강남구").travelZipCode("123-456")
                 .visible("Y").build();
 
-        adminTravelService.updateTravel(newAdminTravelEntity);
+        travelService.updateTravel(newAdminTravelEntity);
 
         TravelDTO newAdminTravelDTO = TravelMapper.INSTANCE.toDto(newAdminTravelEntity);
 
         // when
-        given(mockAdminTravelService.findOneTravel(newAdminTravelEntity.getIdx())).willReturn(newAdminTravelDTO);
-        TravelDTO travelInfo = mockAdminTravelService.findOneTravel(newAdminTravelDTO.getIdx());
+        given(mockTravelService.findOneTravel(newAdminTravelEntity.getIdx())).willReturn(newAdminTravelDTO);
+        TravelDTO travelInfo = mockTravelService.findOneTravel(newAdminTravelDTO.getIdx());
 
         // then
         assertThat(travelInfo.getIdx()).isEqualTo(newAdminTravelDTO.getIdx());
@@ -344,51 +344,51 @@ class TravelServiceTest {
         assertThat(travelInfo.getTravelTitle()).isEqualTo(newAdminTravelDTO.getTravelTitle());
 
         // verify
-        then(mockAdminTravelService).should(times(1)).findOneTravel(travelInfo.getIdx());
-        then(mockAdminTravelService).should(atLeastOnce()).findOneTravel(travelInfo.getIdx());
-        then(mockAdminTravelService).shouldHaveNoMoreInteractions();
+        then(mockTravelService).should(times(1)).findOneTravel(travelInfo.getIdx());
+        then(mockTravelService).should(atLeastOnce()).findOneTravel(travelInfo.getIdx());
+        then(mockTravelService).shouldHaveNoMoreInteractions();
     }
 
     @Test
     @DisplayName("여행지삭제Mockito테스트")
     void 여행지삭제Mockito테스트() {
         // given
-        em.persist(adminTravelEntity);
-        adminTravelDTO = TravelMapper.INSTANCE.toDto(adminTravelEntity);
+        em.persist(travelEntity);
+        travelDTO = TravelMapper.INSTANCE.toDto(travelEntity);
 
         // when
-        when(mockAdminTravelService.findOneTravel(adminTravelDTO.getIdx())).thenReturn(adminTravelDTO);
-        Long deleteIdx = adminTravelService.deleteTravel(adminTravelDTO.getIdx());
+        when(mockTravelService.findOneTravel(travelDTO.getIdx())).thenReturn(travelDTO);
+        Long deleteIdx = travelService.deleteTravel(travelDTO.getIdx());
 
         // then
-        assertThat(mockAdminTravelService.findOneTravel(adminTravelDTO.getIdx()).getIdx()).isEqualTo(deleteIdx);
+        assertThat(mockTravelService.findOneTravel(travelDTO.getIdx()).getIdx()).isEqualTo(deleteIdx);
 
         // verify
-        verify(mockAdminTravelService, times(1)).findOneTravel(adminTravelDTO.getIdx());
-        verify(mockAdminTravelService, atLeastOnce()).findOneTravel(adminTravelDTO.getIdx());
-        verifyNoMoreInteractions(mockAdminTravelService);
+        verify(mockTravelService, times(1)).findOneTravel(travelDTO.getIdx());
+        verify(mockTravelService, atLeastOnce()).findOneTravel(travelDTO.getIdx());
+        verifyNoMoreInteractions(mockTravelService);
 
-        InOrder inOrder = inOrder(mockAdminTravelService);
-        inOrder.verify(mockAdminTravelService).findOneTravel(adminTravelDTO.getIdx());
+        InOrder inOrder = inOrder(mockTravelService);
+        inOrder.verify(mockTravelService).findOneTravel(travelDTO.getIdx());
     }
 
     @Test
     @DisplayName("여행지삭제BDD테스트")
     void 여행지삭제BDD테스트() {
         // given
-        em.persist(adminTravelEntity);
-        adminTravelDTO = TravelMapper.INSTANCE.toDto(adminTravelEntity);
+        em.persist(travelEntity);
+        travelDTO = TravelMapper.INSTANCE.toDto(travelEntity);
 
         // when
-        given(mockAdminTravelService.findOneTravel(adminTravelDTO.getIdx())).willReturn(adminTravelDTO);
-        Long deleteIdx = adminTravelService.deleteTravel(adminTravelDTO.getIdx());
+        given(mockTravelService.findOneTravel(travelDTO.getIdx())).willReturn(travelDTO);
+        Long deleteIdx = travelService.deleteTravel(travelDTO.getIdx());
 
         // then
-        assertThat(mockAdminTravelService.findOneTravel(adminTravelDTO.getIdx()).getIdx()).isEqualTo(deleteIdx);
+        assertThat(mockTravelService.findOneTravel(travelDTO.getIdx()).getIdx()).isEqualTo(deleteIdx);
 
         // verify
-        then(mockAdminTravelService).should(times(1)).findOneTravel(adminTravelDTO.getIdx());
-        then(mockAdminTravelService).should(atLeastOnce()).findOneTravel(adminTravelDTO.getIdx());
-        then(mockAdminTravelService).shouldHaveNoMoreInteractions();
+        then(mockTravelService).should(times(1)).findOneTravel(travelDTO.getIdx());
+        then(mockTravelService).should(atLeastOnce()).findOneTravel(travelDTO.getIdx());
+        then(mockTravelService).shouldHaveNoMoreInteractions();
     }
 }
