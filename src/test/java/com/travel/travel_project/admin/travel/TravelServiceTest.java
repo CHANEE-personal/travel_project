@@ -58,6 +58,8 @@ class TravelServiceTest {
                 .travelDescription("여행지 소개")
                 .travelAddress("인천광역시 서구")
                 .travelZipCode("123-456")
+                .favoriteCount(0)
+                .viewCount(0)
                 .visible("Y")
                 .build();
 
