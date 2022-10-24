@@ -25,7 +25,7 @@ import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppC
 
 @SpringBootTest
 @AutoConfigureMockMvc
-@TestPropertySource(locations = "classpath:application-local.properties")
+@TestPropertySource(locations = "classpath:application.properties")
 @TestConstructor(autowireMode = ALL)
 @RequiredArgsConstructor
 @AutoConfigureTestDatabase(replace= NONE)
