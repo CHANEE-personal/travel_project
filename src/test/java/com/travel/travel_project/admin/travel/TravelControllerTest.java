@@ -38,7 +38,7 @@ class TravelControllerTest {
     @EventListener(ApplicationReadyEvent.class)
     public void setup() {
         this.mockMvc = webAppContextSetup(wac)
-                .addFilters(new CharacterEncodingFilter("UTF-8", true))  // 필터 추가
+                .addFilters(new CharacterEncodingFilter("UTF-8", true))
                 .alwaysExpect(status().isOk())
                 .alwaysDo(print())
                 .build();
