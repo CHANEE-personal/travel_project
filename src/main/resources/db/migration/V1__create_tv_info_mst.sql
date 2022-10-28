@@ -8,6 +8,7 @@ CREATE TABLE `tv_info_mst` (
                                 `view_count` int(11) NOT NULL DEFAULT 0,
                                 `favorite_count` int(11) NOT NULL DEFAULT 0,
                                 `visible` varchar(255) DEFAULT NULL,
+                                `popular` boolean DEFAULT FALSE,
                                 `create_time` datetime(6) DEFAULT NULL,
                                 `creator` varchar(255) DEFAULT NULL,
                                 `update_time` datetime(6) DEFAULT NULL,

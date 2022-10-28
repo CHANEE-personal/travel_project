@@ -29,6 +29,7 @@ import java.util.List;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.InstanceOfAssertFactories.INSTANT;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.*;
@@ -55,13 +56,8 @@ class TravelRepositoryTest {
     void createTravel() {
         travelEntity = TravelEntity.builder()
                 .travelCode(1)
-                .travelTitle("여행지 소개")
-                .travelDescription("여행지 소개")
-                .travelAddress("인천광역시 서구")
-                .travelZipCode("123-456")
-                .favoriteCount(0)
-                .viewCount(0)
-                .visible("Y")
+                .travelTitle("여행지 테스트").travelDescription("여행지 테스트").favoriteCount(1).viewCount(0)
+                .travelAddress("인천광역시 서구").travelZipCode("123-456").visible("Y").popular(false)
                 .build();
 
         travelDTO = TravelMapper.INSTANCE.toDto(travelEntity);
@@ -551,6 +547,67 @@ class TravelRepositoryTest {
         // 증가한 좋아요 수 조회
         Integer addFavoriteCount = mockTravelRepository.favoriteTravel(travelDTO.getIdx());
         assertThat(favoriteCount).isEqualTo(addFavoriteCount);
+
+        // verify
+        then(mockTravelRepository).should(times(1)).favoriteTravel(travelDTO.getIdx());
+        then(mockTravelRepository).should(atLeastOnce()).favoriteTravel(travelDTO.getIdx());
+        then(mockTravelRepository).shouldHaveNoMoreInteractions();
+    }
+
+    @Test
+    @DisplayName("인기여행지선정Mockito테스트")
+    void 인기여행지선정Mockito테스트() {
+        // given
+        Long idx = travelRepository.insertTravel(travelEntity).getIdx();
+
+        Boolean popular = travelRepository.togglePopular(idx).getPopular();
+
+        travelEntity = TravelEntity.builder()
+                .travelCode(1)
+                .travelTitle("여행지 테스트").travelDescription("여행지 테스트").favoriteCount(1).viewCount(0)
+                .travelAddress("인천광역시 서구").travelZipCode("123-456").visible("Y").popular(popular)
+                .build();
+
+        TravelDTO travelDTO = TravelMapper.INSTANCE.toDto(travelEntity);
+
+        // when
+        when(mockTravelRepository.findOneTravel(travelEntity.getIdx())).thenReturn(travelDTO);
+        TravelDTO travelInfo = mockTravelRepository.findOneTravel(travelEntity.getIdx());
+
+        // then
+        assertThat(travelInfo.getPopular()).isTrue();
+
+        // verify
+        verify(mockTravelRepository, times(1)).findOneTravel(travelEntity.getIdx());
+        verify(mockTravelRepository, atLeastOnce()).findOneTravel(travelEntity.getIdx());
+        verifyNoMoreInteractions(mockTravelRepository);
+
+        InOrder inOrder = inOrder(mockTravelRepository);
+        inOrder.verify(mockTravelRepository).findOneTravel(travelEntity.getIdx());
+    }
+
+    @Test
+    @DisplayName("인기여행지선정BDD테스트")
+    void 인기여행지선정BDD테스트() {
+        // given
+        Long idx = travelRepository.insertTravel(travelEntity).getIdx();
+
+        Boolean popular = travelRepository.togglePopular(idx).getPopular();
+
+        travelEntity = TravelEntity.builder()
+                .travelCode(1)
+                .travelTitle("여행지 테스트").travelDescription("여행지 테스트").favoriteCount(1).viewCount(0)
+                .travelAddress("인천광역시 서구").travelZipCode("123-456").visible("Y").popular(popular)
+                .build();
+
+        TravelDTO travelDTO = TravelMapper.INSTANCE.toDto(travelEntity);
+
+        // when
+        given(mockTravelRepository.findOneTravel(travelEntity.getIdx())).willReturn(travelDTO);
+        TravelDTO travelInfo = mockTravelRepository.findOneTravel(travelEntity.getIdx());
+
+        // then
+        assertThat(travelInfo.getPopular()).isTrue();
 
         // verify
         then(mockTravelRepository).should(times(1)).favoriteTravel(travelDTO.getIdx());

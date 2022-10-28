@@ -63,4 +63,14 @@ class TravelControllerTest {
                 .andExpect(content().contentType("application/json;charset=utf-8"))
                 .andExpect(jsonPath("$.idx").value(1L));
     }
+
+    @Test
+    @DisplayName("인기 여행지 선정 테스트")
+    void 인기여행지선정테스트() throws Exception {
+        mockMvc.perform(get("/api/travel/1/popular"))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(content().contentType("application/json;charset=utf-8"))
+                .andExpect(jsonPath("$.popular").isBoolean());
+    }
 }
