@@ -12,6 +12,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import static com.travel.travel_project.common.StringUtil.getInt;
 import static com.travel.travel_project.common.StringUtil.getString;
@@ -272,6 +273,29 @@ public class TravelRepository {
      */
     public TravelDTO replyTravel() {
         return null;
+    }
+
+    /**
+     * <pre>
+     * 1. MethodName : togglePopular
+     * 2. ClassName  : TravelRepository.java
+     * 3. Comment    : 인기 여행지 선정
+     * 4. 작성자       : CHO
+     * 5. 작성일       : 2022. 10. 26.
+     * </pre>
+     */
+    public TravelDTO togglePopular(Long idx) {
+        Boolean popular = !em.find(TravelEntity.class, idx).getPopular();
+        queryFactory
+                .update(travelEntity)
+                .where(travelEntity.idx.eq(idx))
+                .set(travelEntity.popular, popular)
+                .execute();
+
+        em.flush();
+        em.clear();
+
+        return INSTANCE.toDto(em.find(TravelEntity.class, idx));
     }
 
     /**
