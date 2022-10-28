@@ -51,4 +51,7 @@ public class TravelDTO extends NewCommonDTO {
 
     @ApiModelProperty(required = true, value = "여행지 노출 여부((ex)Y,N)")
     private String visible;
+
+    @ApiModelProperty(required = true, value = "인기 여행지 여부((ex)true, false)")
+    private Boolean popular;
 }

@@ -61,6 +61,9 @@ public class TravelEntity extends NewCommonMappedClass {
     @NotEmpty(message = "여행지 노출 여부 선택은 필수입니다.")
     private String visible;
 
+    @Column(name = "popular")
+    private Boolean popular;
+
     @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "travel_code", insertable = false, updatable = false)
     private CommonEntity newTravelCode;
