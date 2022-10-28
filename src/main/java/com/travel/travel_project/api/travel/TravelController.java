@@ -219,4 +219,26 @@ public class TravelController {
 
         return travelMap;
     }
+
+    /**
+     * <pre>
+     * 1. MethodName : togglePopular
+     * 2. ClassName  : TravelController.java
+     * 3. Comment    : 인기 여행지 선정
+     * 4. 작성자       : CHO
+     * 5. 작성일       : 2022. 10. 28.
+     * </pre>
+     */
+    @ApiOperation(value = "인기 여행지 선정", notes = "인기 여행지 선정한다.")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "인기 여행지 선정", response = Map.class),
+            @ApiResponse(code = 400, message = "잘못된 요청", response = HttpClientErrorException.BadRequest.class),
+            @ApiResponse(code = 401, message = "허용되지 않는 관리자", response = HttpClientErrorException.Unauthorized.class),
+            @ApiResponse(code = 403, message = "접근거부", response = HttpClientErrorException.class),
+            @ApiResponse(code = 500, message = "서버 에러", response = ServerError.class)
+    })
+    @PutMapping(value = "/{idx}/popular")
+    public TravelDTO togglePopular(@PathVariable Long idx) {
+        return adminTravelService.togglePopular(idx);
+    }
 }
