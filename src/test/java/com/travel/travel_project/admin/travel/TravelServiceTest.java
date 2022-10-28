@@ -393,4 +393,65 @@ class TravelServiceTest {
         then(mockTravelService).should(atLeastOnce()).findOneTravel(travelDTO.getIdx());
         then(mockTravelService).shouldHaveNoMoreInteractions();
     }
+
+    @Test
+    @DisplayName("인기여행지선정Mockito테스트")
+    void 인기여행지선정Mockito테스트() {
+        // given
+        Long idx = travelService.insertTravel(travelEntity).getIdx();
+
+        Boolean popular = travelService.togglePopular(idx).getPopular();
+
+        travelEntity = TravelEntity.builder()
+                .travelCode(1)
+                .travelTitle("여행지 테스트").travelDescription("여행지 테스트").favoriteCount(1).viewCount(0)
+                .travelAddress("인천광역시 서구").travelZipCode("123-456").visible("Y").popular(popular)
+                .build();
+
+        TravelDTO travelDTO = TravelMapper.INSTANCE.toDto(travelEntity);
+
+        // when
+        when(mockTravelService.findOneTravel(travelEntity.getIdx())).thenReturn(travelDTO);
+        TravelDTO travelInfo = mockTravelService.findOneTravel(travelEntity.getIdx());
+
+        // then
+        assertThat(travelInfo.getPopular()).isTrue();
+
+        // verify
+        verify(mockTravelService, times(1)).findOneTravel(travelEntity.getIdx());
+        verify(mockTravelService, atLeastOnce()).findOneTravel(travelEntity.getIdx());
+        verifyNoMoreInteractions(mockTravelService);
+
+        InOrder inOrder = inOrder(mockTravelService);
+        inOrder.verify(mockTravelService).findOneTravel(travelEntity.getIdx());
+    }
+
+    @Test
+    @DisplayName("인기여행지선정BDD테스트")
+    void 인기여행지선정BDD테스트() {
+        // given
+        Long idx = travelService.insertTravel(travelEntity).getIdx();
+
+        Boolean popular = travelService.togglePopular(idx).getPopular();
+
+        travelEntity = TravelEntity.builder()
+                .travelCode(1)
+                .travelTitle("여행지 테스트").travelDescription("여행지 테스트").favoriteCount(1).viewCount(0)
+                .travelAddress("인천광역시 서구").travelZipCode("123-456").visible("Y").popular(popular)
+                .build();
+
+        TravelDTO travelDTO = TravelMapper.INSTANCE.toDto(travelEntity);
+
+        // when
+        given(mockTravelService.findOneTravel(travelEntity.getIdx())).willReturn(travelDTO);
+        TravelDTO travelInfo = mockTravelService.findOneTravel(travelEntity.getIdx());
+
+        // then
+        assertThat(travelInfo.getPopular()).isTrue();
+
+        // verify
+        then(mockTravelService).should(times(1)).favoriteTravel(travelDTO.getIdx());
+        then(mockTravelService).should(atLeastOnce()).favoriteTravel(travelDTO.getIdx());
+        then(mockTravelService).shouldHaveNoMoreInteractions();
+    }
 }

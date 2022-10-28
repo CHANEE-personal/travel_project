@@ -172,4 +172,24 @@ public class TravelService {
             throw new TravelException(NOT_FOUND_TRAVEL_LIST, e);
         }
     }
+
+    /**
+     * <pre>
+     * 1. MethodName : togglePopular
+     * 2. ClassName  : TravelService.java
+     * 3. Comment    : 인기 여행지 선정
+     * 4. 작성자       : CHO
+     * 5. 작성일       : 2022. 10. 28.
+     * </pre>
+     */
+    @CachePut("travel")
+    @Modifying(clearAutomatically = true)
+    @Transactional
+    public TravelDTO togglePopular(Long idx) throws TravelException {
+        try {
+            return adminTravelRepository.togglePopular(idx);
+        } catch (Exception e) {
+            throw new TravelException(ERROR_UPDATE_TRAVEL, e);
+        }
+    }
 }
