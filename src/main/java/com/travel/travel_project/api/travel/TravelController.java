@@ -4,6 +4,8 @@ import com.travel.travel_project.common.Page;
 import com.travel.travel_project.common.SearchCommon;
 import com.travel.travel_project.domain.travel.TravelDTO;
 import com.travel.travel_project.domain.travel.TravelEntity;
+import com.travel.travel_project.domain.travel.review.TravelReviewDTO;
+import com.travel.travel_project.domain.travel.review.TravelReviewEntity;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
@@ -218,6 +220,28 @@ public class TravelController {
         travelMap.put("travelList", travelList);
 
         return travelMap;
+    }
+
+    /**
+     * <pre>
+     * 1. MethodName : replyTravel
+     * 2. ClassName  : TravelController.java
+     * 3. Comment    : 여행지 댓글 달기
+     * 4. 작성자       : CHO
+     * 5. 작성일       : 2022. 10. 30.
+     * </pre>
+     */
+    @ApiOperation(value = "여행지 댓글 달기", notes = "여행지 댓글을 등록한다.")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "여행지 댓글 등록", response = Map.class),
+            @ApiResponse(code = 400, message = "잘못된 요청", response = HttpClientErrorException.BadRequest.class),
+            @ApiResponse(code = 401, message = "허용되지 않는 관리자", response = HttpClientErrorException.Unauthorized.class),
+            @ApiResponse(code = 403, message = "접근거부", response = HttpClientErrorException.class),
+            @ApiResponse(code = 500, message = "서버 에러", response = ServerError.class)
+    })
+    @PostMapping(value = "/{idx}/reply")
+    public TravelReviewDTO replyTravel(@RequestBody TravelReviewEntity travelReviewEntity) {
+        return adminTravelService.replyTravel(travelReviewEntity);
     }
 
     /**

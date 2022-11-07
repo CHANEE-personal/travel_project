@@ -2,8 +2,12 @@ package com.travel.travel_project.api.travel;
 
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import com.travel.travel_project.api.travel.mapper.review.TravelReviewMapper;
 import com.travel.travel_project.domain.travel.TravelDTO;
 import com.travel.travel_project.domain.travel.TravelEntity;
+import com.travel.travel_project.domain.travel.review.QTravelReviewEntity;
+import com.travel.travel_project.domain.travel.review.TravelReviewDTO;
+import com.travel.travel_project.domain.travel.review.TravelReviewEntity;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
@@ -19,6 +23,7 @@ import static com.travel.travel_project.common.StringUtil.getString;
 import static com.travel.travel_project.api.travel.mapper.TravelMapper.INSTANCE;
 import static com.travel.travel_project.domain.common.QCommonEntity.commonEntity;
 import static com.travel.travel_project.domain.travel.QTravelEntity.travelEntity;
+import static com.travel.travel_project.domain.travel.review.QTravelReviewEntity.travelReviewEntity;
 import static java.time.LocalDate.now;
 import static java.time.LocalDateTime.of;
 
@@ -93,7 +98,8 @@ public class TravelRepository {
         List<TravelEntity> travelList = queryFactory
                 .selectFrom(travelEntity)
                 .orderBy(travelEntity.idx.desc())
-                .leftJoin(travelEntity.newTravelCode, commonEntity)
+                .innerJoin(travelEntity.newTravelCode, commonEntity)
+                .leftJoin(travelEntity.travelReviewEntityList, travelReviewEntity)
                 .fetchJoin()
                 .where(searchTravelCode(travelMap), searchTravelInfo(travelMap), searchTravelDate(travelMap)
                         .and(travelEntity.visible.eq("Y")))
@@ -268,11 +274,12 @@ public class TravelRepository {
      * 2. ClassName  : TravelRepository.java
      * 3. Comment    : 여행지 댓글 달기
      * 4. 작성자       : CHO
-     * 5. 작성일       : 2022. 10. 06.
+     * 5. 작성일       : 2022. 10. 30.
      * </pre>
      */
-    public TravelDTO replyTravel() {
-        return null;
+    public TravelReviewDTO replyTravel(TravelReviewEntity travelReviewEntity) {
+        em.persist(travelReviewEntity);
+        return TravelReviewMapper.INSTANCE.toDto(travelReviewEntity);
     }
 
     /**

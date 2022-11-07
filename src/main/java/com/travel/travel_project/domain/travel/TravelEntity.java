@@ -2,12 +2,17 @@ package com.travel.travel_project.domain.travel;
 
 import com.travel.travel_project.domain.common.CommonEntity;
 import com.travel.travel_project.domain.common.NewCommonMappedClass;
+import com.travel.travel_project.domain.travel.review.TravelReviewDTO;
+import com.travel.travel_project.domain.travel.review.TravelReviewEntity;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static javax.persistence.FetchType.LAZY;
 import static javax.persistence.GenerationType.IDENTITY;
@@ -67,4 +72,7 @@ public class TravelEntity extends NewCommonMappedClass {
     @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "travel_code", insertable = false, updatable = false)
     private CommonEntity newTravelCode;
+
+    @OneToMany(mappedBy = "newTravelEntity")
+    private List<TravelReviewEntity> travelReviewEntityList = new ArrayList<>();
 }

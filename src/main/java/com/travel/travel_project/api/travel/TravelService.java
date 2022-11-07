@@ -1,5 +1,7 @@
 package com.travel.travel_project.api.travel;
 
+import com.travel.travel_project.domain.travel.review.TravelReviewDTO;
+import com.travel.travel_project.domain.travel.review.TravelReviewEntity;
 import com.travel.travel_project.exception.TravelException;
 import com.travel.travel_project.domain.travel.TravelDTO;
 import com.travel.travel_project.domain.travel.TravelEntity;
@@ -170,6 +172,26 @@ public class TravelService {
             return adminTravelRepository.popularityTravel(travelMap);
         } catch (Exception e) {
             throw new TravelException(NOT_FOUND_TRAVEL_LIST, e);
+        }
+    }
+
+    /**
+     * <pre>
+     * 1. MethodName : replyTravel
+     * 2. ClassName  : TravelService.java
+     * 3. Comment    : 여행지 댓글 달기
+     * 4. 작성자       : CHO
+     * 5. 작성일       : 2022. 10. 30.
+     * </pre>
+     */
+    @CachePut("travel")
+    @Modifying(clearAutomatically = true)
+    @Transactional
+    public TravelReviewDTO replyTravel(TravelReviewEntity travelReviewEntity) throws TravelException {
+        try {
+            return adminTravelRepository.replyTravel(travelReviewEntity);
+        } catch (Exception e) {
+            throw new TravelException(ERROR_REVIEW_TRAVEL, e);
         }
     }
 

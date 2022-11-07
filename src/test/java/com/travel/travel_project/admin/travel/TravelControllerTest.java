@@ -1,5 +1,7 @@
 package com.travel.travel_project.admin.travel;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.travel.travel_project.domain.travel.review.TravelReviewEntity;
 import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -17,6 +19,8 @@ import org.springframework.web.filter.CharacterEncodingFilter;
 
 import static org.hamcrest.Matchers.greaterThan;
 import static org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase.Replace.NONE;
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
 import static org.springframework.test.context.TestConstructor.AutowireMode.ALL;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -33,6 +37,7 @@ import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppC
 class TravelControllerTest {
     private MockMvc mockMvc;
     private final WebApplicationContext wac;
+    private final ObjectMapper objectMapper;
 
     @BeforeEach
     @EventListener(ApplicationReadyEvent.class)
@@ -62,6 +67,28 @@ class TravelControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(content().contentType("application/json;charset=utf-8"))
                 .andExpect(jsonPath("$.idx").value(1L));
+    }
+
+    @Test
+    @DisplayName("여행지 댓글 등록 테스트")
+    void 여행지댓글등록테스트() throws Exception {
+        TravelReviewEntity travelReviewEntity = TravelReviewEntity.builder()
+                .travelIdx(1L)
+                .reviewTitle("리뷰등록테스트")
+                .reviewDescription("리뷰등록테스트")
+                .viewCount(0)
+                .favoriteCount(0)
+                .popular(false)
+                .visible("Y")
+                .build();
+
+        mockMvc.perform(post("/api/travel/1/reply")
+                .contentType(APPLICATION_JSON_VALUE)
+                .content(objectMapper.writeValueAsString(travelReviewEntity)))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(content().contentType("application/json;charset=utf-8"))
+                .andExpect(jsonPath("$.travelIdx").value(1L));
     }
 
     @Test

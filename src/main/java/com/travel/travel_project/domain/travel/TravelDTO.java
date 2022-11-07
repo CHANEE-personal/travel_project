@@ -1,12 +1,15 @@
 package com.travel.travel_project.domain.travel;
 
 import com.travel.travel_project.domain.common.NewCommonDTO;
+import com.travel.travel_project.domain.travel.review.TravelReviewEntity;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 
 import javax.validation.constraints.NotEmpty;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Setter
@@ -37,7 +40,7 @@ public class TravelDTO extends NewCommonDTO {
 
     @NotEmpty(message = "여행지 주소 입력은 필수입니다.")
     @ApiModelProperty(required = true, value = "여행지 상세 주소((ex)인천 광역시 서구...)")
-    private String travelAddr;
+    private String travelAddress;
 
     @NotEmpty(message = "여행지 우편 주소 입력은 필수입니다.")
     @ApiModelProperty(required = true, value = "여행지 우편 주소((ex)xxx-xxx)")
@@ -54,4 +57,7 @@ public class TravelDTO extends NewCommonDTO {
 
     @ApiModelProperty(required = true, value = "인기 여행지 여부((ex)true, false)")
     private Boolean popular;
+
+    @ApiModelProperty(value = "travelReviewList", hidden = true)
+    private List<TravelReviewEntity> reviewList = new ArrayList<>();
 }
