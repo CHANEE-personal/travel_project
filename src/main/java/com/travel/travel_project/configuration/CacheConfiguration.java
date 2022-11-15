@@ -7,8 +7,6 @@ import org.springframework.cache.support.SimpleCacheManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import java.util.concurrent.ConcurrentMap;
-
 import static java.util.List.of;
 
 @Configuration
