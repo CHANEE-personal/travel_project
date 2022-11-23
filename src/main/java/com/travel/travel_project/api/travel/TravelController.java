@@ -29,7 +29,7 @@ import static java.lang.Math.ceil;
 @RequiredArgsConstructor
 public class TravelController {
 
-    private final TravelService adminTravelService;
+    private final TravelService travelService;
     private final SearchCommon searchCommon;
 
     /**
@@ -53,11 +53,11 @@ public class TravelController {
     public Map<String, Object> findTravelsList(@RequestParam(required = false) Map<String, Object> paramMap, Page page) {
         Map<String, Object> travelMap = new HashMap<>();
 
-        int travelCount = this.adminTravelService.findTravelCount(searchCommon.searchCommon(page, paramMap));
+        int travelCount = this.travelService.findTravelCount(searchCommon.searchCommon(page, paramMap));
         List<TravelDTO> travelList = new ArrayList<>();
 
         if (travelCount > 0) {
-            travelList = this.adminTravelService.findTravelsList(searchCommon.searchCommon(page, paramMap));
+            travelList = this.travelService.findTravelsList(searchCommon.searchCommon(page, paramMap));
         }
 
         // 리스트 수
@@ -91,7 +91,7 @@ public class TravelController {
     })
     @GetMapping(value = "/{idx}")
     public TravelDTO findOneTravel(@PathVariable Long idx) {
-        return adminTravelService.findOneTravel(idx);
+        return travelService.findOneTravel(idx);
     }
 
     /**
@@ -113,7 +113,7 @@ public class TravelController {
     })
     @PostMapping
     public TravelDTO insertTravel(@Valid @RequestBody TravelEntity adminTravelEntity) {
-        return adminTravelService.insertTravel(adminTravelEntity);
+        return travelService.insertTravel(adminTravelEntity);
     }
 
     /**
@@ -135,7 +135,7 @@ public class TravelController {
     })
     @PutMapping("/{idx}")
     public TravelDTO updateTravel(@Valid @RequestBody TravelEntity adminTravelEntity) {
-        return adminTravelService.updateTravel(adminTravelEntity);
+        return travelService.updateTravel(adminTravelEntity);
     }
 
     /**
@@ -157,7 +157,7 @@ public class TravelController {
     })
     @DeleteMapping("/{idx}")
     public Long deleteTravel(@PathVariable Long idx) {
-        return adminTravelService.deleteTravel(idx);
+        return travelService.deleteTravel(idx);
     }
 
     /**
@@ -179,7 +179,7 @@ public class TravelController {
     })
     @PutMapping("/{idx}/favorite")
     public Integer favoriteTravel(@PathVariable Long idx) {
-        return adminTravelService.favoriteTravel(idx);
+        return travelService.favoriteTravel(idx);
     }
 
     /**
@@ -203,11 +203,11 @@ public class TravelController {
     public Map<String, Object> popularityTravel(@RequestParam(required = false) Map<String, Object> paramMap, Page page) {
         Map<String, Object> travelMap = new HashMap<>();
 
-        int travelCount = this.adminTravelService.findTravelCount(searchCommon.searchCommon(page, paramMap));
+        int travelCount = this.travelService.findTravelCount(searchCommon.searchCommon(page, paramMap));
         List<TravelDTO> travelList = new ArrayList<>();
 
         if (travelCount > 0) {
-            travelList = this.adminTravelService.popularityTravel(searchCommon.searchCommon(page, paramMap));
+            travelList = this.travelService.popularityTravel(searchCommon.searchCommon(page, paramMap));
         }
 
         // 리스트 수
@@ -241,7 +241,7 @@ public class TravelController {
     })
     @PostMapping(value = "/{idx}/reply")
     public TravelReviewDTO replyTravel(@RequestBody TravelReviewEntity travelReviewEntity) {
-        return adminTravelService.replyTravel(travelReviewEntity);
+        return travelService.replyTravel(travelReviewEntity);
     }
 
     /**
@@ -263,6 +263,6 @@ public class TravelController {
     })
     @PutMapping(value = "/{idx}/popular")
     public TravelDTO togglePopular(@PathVariable Long idx) {
-        return adminTravelService.togglePopular(idx);
+        return travelService.togglePopular(idx);
     }
 }
