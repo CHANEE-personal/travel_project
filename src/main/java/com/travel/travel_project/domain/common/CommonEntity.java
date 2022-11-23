@@ -6,6 +6,7 @@ import lombok.experimental.SuperBuilder;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,13 +23,16 @@ import static javax.persistence.GenerationType.IDENTITY;
 @AllArgsConstructor
 @Table(name = "tv_cmm_code")
 public class CommonEntity extends NewCommonMappedClass {
+    @Transient
+    private Integer rnum;
+
     @Id
     @GeneratedValue(strategy = IDENTITY)
     @Column(name = "idx")
     private Long idx;
 
     @Column(name = "common_code")
-    @NotEmpty(message = "공통 코드 입력은 필수입니다.")
+    @NotNull(message = "공통 코드 입력은 필수입니다.")
     private Integer commonCode;
 
     @Column(name = "common_name")

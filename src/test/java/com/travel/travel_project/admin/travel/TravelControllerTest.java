@@ -62,7 +62,7 @@ class TravelControllerTest {
     @Test
     @DisplayName("여행지 상세 조회 테스트")
     void 여행지상세조회테스트() throws Exception {
-        mockMvc.perform(get("/api/travel/1").param("page", "1").param("size", "100"))
+        mockMvc.perform(get("/api/travel/1"))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().contentType("application/json;charset=utf-8"))
