@@ -613,8 +613,8 @@ class TravelRepositoryTest {
         assertThat(travelInfo.getPopular()).isTrue();
 
         // verify
-        then(mockTravelRepository).should(times(1)).favoriteTravel(travelDTO.getIdx());
-        then(mockTravelRepository).should(atLeastOnce()).favoriteTravel(travelDTO.getIdx());
+        then(mockTravelRepository).should(times(1)).findOneTravel(travelDTO.getIdx());
+        then(mockTravelRepository).should(atLeastOnce()).findOneTravel(travelDTO.getIdx());
         then(mockTravelRepository).shouldHaveNoMoreInteractions();
     }
 

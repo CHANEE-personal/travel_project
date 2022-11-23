@@ -2,7 +2,6 @@ package com.travel.travel_project.domain.travel;
 
 import com.travel.travel_project.domain.common.CommonEntity;
 import com.travel.travel_project.domain.common.NewCommonMappedClass;
-import com.travel.travel_project.domain.travel.review.TravelReviewDTO;
 import com.travel.travel_project.domain.travel.review.TravelReviewEntity;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
