@@ -112,8 +112,8 @@ public class TravelController {
             @ApiResponse(code = 500, message = "서버 에러", response = ServerError.class)
     })
     @PostMapping
-    public TravelDTO insertTravel(@Valid @RequestBody TravelEntity adminTravelEntity) {
-        return travelService.insertTravel(adminTravelEntity);
+    public TravelDTO insertTravel(@Valid @RequestBody TravelEntity travelEntity) {
+        return travelService.insertTravel(travelEntity);
     }
 
     /**
@@ -134,8 +134,8 @@ public class TravelController {
             @ApiResponse(code = 500, message = "서버 에러", response = ServerError.class)
     })
     @PutMapping("/{idx}")
-    public TravelDTO updateTravel(@Valid @RequestBody TravelEntity adminTravelEntity) {
-        return travelService.updateTravel(adminTravelEntity);
+    public TravelDTO updateTravel(@Valid @RequestBody TravelEntity travelEntity) {
+        return travelService.updateTravel(travelEntity);
     }
 
     /**
@@ -242,6 +242,28 @@ public class TravelController {
     @PostMapping(value = "/{idx}/reply")
     public TravelReviewDTO replyTravel(@RequestBody TravelReviewEntity travelReviewEntity) {
         return travelService.replyTravel(travelReviewEntity);
+    }
+
+    /**
+     * <pre>
+     * 1. MethodName : replyTravelReview
+     * 2. ClassName  : TravelController.java
+     * 3. Comment    : 여행지 댓글 리스트 조회
+     * 4. 작성자       : CHO
+     * 5. 작성일       : 2022. 11. 23.
+     * </pre>
+     */
+    @ApiOperation(value = "여행지 댓글 리스트 조회", notes = "여행지 댓글 리스트를 조회한다.")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "여행지 댓글 리스트 조회 성공", response = Map.class),
+            @ApiResponse(code = 400, message = "잘못된 요청", response = HttpClientErrorException.BadRequest.class),
+            @ApiResponse(code = 401, message = "허용되지 않는 관리자", response = HttpClientErrorException.Unauthorized.class),
+            @ApiResponse(code = 403, message = "접근거부", response = HttpClientErrorException.class),
+            @ApiResponse(code = 500, message = "서버 에러", response = ServerError.class)
+    })
+    @GetMapping(value = "/{idx}/reply")
+    public List<TravelReviewDTO> replyTravelReview(@PathVariable Long idx) {
+        return travelService.replyTravelReview(idx);
     }
 
     /**

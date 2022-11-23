@@ -11,10 +11,12 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.event.EventListener;
+import org.springframework.http.StreamingHttpOutputMessage;
 import org.springframework.test.context.TestConstructor;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.filter.CharacterEncodingFilter;
 
@@ -22,6 +24,7 @@ import static org.hamcrest.Matchers.greaterThan;
 import static org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase.Replace.NONE;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.put;
 import static org.springframework.test.context.TestConstructor.AutowireMode.ALL;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -94,9 +97,18 @@ class TravelControllerTest {
     }
 
     @Test
+    @DisplayName("여행지 댓글 리스트 조회 테스트")
+    void 여행지댓글리스트조회테스트() throws Exception {
+        mockMvc.perform(get("/api/travel/1/reply"))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(content().contentType("application/json;charset=utf-8"));
+    }
+
+    @Test
     @DisplayName("인기 여행지 선정 테스트")
     void 인기여행지선정테스트() throws Exception {
-        mockMvc.perform(get("/api/travel/1/popular"))
+        mockMvc.perform(put("/api/travel/{idx}/popular", 1L))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().contentType("application/json;charset=utf-8"))
