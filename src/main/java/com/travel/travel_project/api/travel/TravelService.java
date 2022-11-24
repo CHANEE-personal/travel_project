@@ -197,6 +197,46 @@ public class TravelService {
 
     /**
      * <pre>
+     * 1. MethodName : updateReplyTravel
+     * 2. ClassName  : TravelService.java
+     * 3. Comment    : 여행지 댓글 수정
+     * 4. 작성자       : CHO
+     * 5. 작성일       : 2022. 11. 23.
+     * </pre>
+     */
+    @CachePut("travel")
+    @Modifying(clearAutomatically = true)
+    @Transactional
+    public TravelReviewDTO updateReplyTravel(TravelReviewEntity travelReviewEntity) throws TravelException {
+        try {
+            return travelRepository.updateReplyTravel(travelReviewEntity);
+        } catch (Exception e) {
+            throw new TravelException(ERROR_UPDATE_REVIEW_TRAVEL, e);
+        }
+    }
+
+    /**
+     * <pre>
+     * 1. MethodName : deleteReplyTravel
+     * 2. ClassName  : TravelService.java
+     * 3. Comment    : 여행지 댓글 삭제
+     * 4. 작성자       : CHO
+     * 5. 작성일       : 2022. 11. 23.
+     * </pre>
+     */
+    @CacheEvict("travel")
+    @Modifying(clearAutomatically = true)
+    @Transactional
+    public Long deleteReplyTravel(Long idx) throws TravelException {
+        try {
+            return travelRepository.deleteReplyTravel(idx);
+        } catch (Exception e) {
+            throw new TravelException(ERROR_DELETE_REVIEW_TRAVEL, e);
+        }
+    }
+
+    /**
+     * <pre>
      * 1. MethodName : replyTravelReview
      * 2. ClassName  : TravelService.java
      * 3. Comment    : 여행지 댓글 리스트 조회
