@@ -18,11 +18,16 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.filter.CharacterEncodingFilter;
 
+import javax.persistence.EntityManager;
+
+import static com.travel.travel_project.common.StringUtil.getString;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase.Replace.NONE;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.put;
 import static org.springframework.test.context.TestConstructor.AutowireMode.ALL;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -40,6 +45,7 @@ class TravelControllerTest {
     private MockMvc mockMvc;
     private final WebApplicationContext wac;
     private final ObjectMapper objectMapper;
+    private final EntityManager em;
 
     @BeforeEach
     @EventListener(ApplicationReadyEvent.class)
@@ -94,9 +100,76 @@ class TravelControllerTest {
     }
 
     @Test
+    @DisplayName("여행지 댓글 수정 테스트")
+    void 여행지댓글수정테스트() throws Exception {
+        TravelReviewEntity travelReviewEntity = TravelReviewEntity.builder()
+                .travelIdx(1L)
+                .reviewTitle("리뷰등록테스트")
+                .reviewDescription("리뷰등록테스트")
+                .viewCount(0)
+                .favoriteCount(0)
+                .popular(false)
+                .visible("Y")
+                .build();
+
+        em.persist(travelReviewEntity);
+
+        TravelReviewEntity newTravelReviewEntity = TravelReviewEntity.builder()
+                .idx(travelReviewEntity.getIdx())
+                .travelIdx(1L)
+                .reviewTitle("리뷰수정테스트")
+                .reviewDescription("리뷰수정테스트")
+                .viewCount(0)
+                .favoriteCount(0)
+                .popular(false)
+                .visible("Y")
+                .build();
+
+        mockMvc.perform(put("/api/travel/{idx}/reply", travelReviewEntity.getIdx())
+                        .contentType(APPLICATION_JSON_VALUE)
+                        .content(objectMapper.writeValueAsString(newTravelReviewEntity)))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(content().contentType("application/json;charset=utf-8"))
+                .andExpect(jsonPath("$.reviewTitle").value("리뷰수정테스트"))
+                .andExpect(jsonPath("$.reviewDescription").value("리뷰수정테스트"));
+    }
+
+    @Test
+    @DisplayName("여행지 댓글 삭제 테스트")
+    void 여행지댓글삭제테스트() throws Exception {
+        TravelReviewEntity travelReviewEntity = TravelReviewEntity.builder()
+                .travelIdx(1L)
+                .reviewTitle("리뷰등록테스트")
+                .reviewDescription("리뷰등록테스트")
+                .viewCount(0)
+                .favoriteCount(0)
+                .popular(false)
+                .visible("Y")
+                .build();
+
+        em.persist(travelReviewEntity);
+
+        mockMvc.perform(delete("/api/travel/{idx}/reply", travelReviewEntity.getIdx()))
+                        .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(content().contentType("application/json;charset=utf-8"))
+                .andExpect(content().string(getString(travelReviewEntity.getIdx())));
+    }
+
+    @Test
+    @DisplayName("여행지 댓글 리스트 조회 테스트")
+    void 여행지댓글리스트조회테스트() throws Exception {
+        mockMvc.perform(get("/api/travel/1/reply"))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(content().contentType("application/json;charset=utf-8"));
+    }
+
+    @Test
     @DisplayName("인기 여행지 선정 테스트")
     void 인기여행지선정테스트() throws Exception {
-        mockMvc.perform(get("/api/travel/1/popular"))
+        mockMvc.perform(put("/api/travel/{idx}/popular", 1L))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().contentType("application/json;charset=utf-8"))

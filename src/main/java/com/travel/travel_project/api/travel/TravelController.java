@@ -6,6 +6,7 @@ import com.travel.travel_project.domain.travel.TravelDTO;
 import com.travel.travel_project.domain.travel.TravelEntity;
 import com.travel.travel_project.domain.travel.review.TravelReviewDTO;
 import com.travel.travel_project.domain.travel.review.TravelReviewEntity;
+import com.travel.travel_project.exception.TravelException;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
@@ -21,6 +22,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static com.travel.travel_project.exception.ApiExceptionType.NOT_FOUND_TRAVEL_REVIEW;
 import static java.lang.Math.ceil;
 
 @RestController
@@ -112,8 +114,8 @@ public class TravelController {
             @ApiResponse(code = 500, message = "서버 에러", response = ServerError.class)
     })
     @PostMapping
-    public TravelDTO insertTravel(@Valid @RequestBody TravelEntity adminTravelEntity) {
-        return travelService.insertTravel(adminTravelEntity);
+    public TravelDTO insertTravel(@Valid @RequestBody TravelEntity travelEntity) {
+        return travelService.insertTravel(travelEntity);
     }
 
     /**
@@ -134,8 +136,8 @@ public class TravelController {
             @ApiResponse(code = 500, message = "서버 에러", response = ServerError.class)
     })
     @PutMapping("/{idx}")
-    public TravelDTO updateTravel(@Valid @RequestBody TravelEntity adminTravelEntity) {
-        return travelService.updateTravel(adminTravelEntity);
+    public TravelDTO updateTravel(@Valid @RequestBody TravelEntity travelEntity) {
+        return travelService.updateTravel(travelEntity);
     }
 
     /**
@@ -242,6 +244,80 @@ public class TravelController {
     @PostMapping(value = "/{idx}/reply")
     public TravelReviewDTO replyTravel(@RequestBody TravelReviewEntity travelReviewEntity) {
         return travelService.replyTravel(travelReviewEntity);
+    }
+
+    /**
+     * <pre>
+     * 1. MethodName : updateReplyTravel
+     * 2. ClassName  : TravelController.java
+     * 3. Comment    : 여행지 댓글 수정
+     * 4. 작성자       : CHO
+     * 5. 작성일       : 2022. 11. 23.
+     * </pre>
+     */
+    @ApiOperation(value = "여행지 댓글 수정", notes = "여행지 댓글을 수정한다.")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "여행지 댓글 수정", response = Map.class),
+            @ApiResponse(code = 400, message = "잘못된 요청", response = HttpClientErrorException.BadRequest.class),
+            @ApiResponse(code = 401, message = "허용되지 않는 관리자", response = HttpClientErrorException.Unauthorized.class),
+            @ApiResponse(code = 403, message = "접근거부", response = HttpClientErrorException.class),
+            @ApiResponse(code = 500, message = "서버 에러", response = ServerError.class)
+    })
+    @PutMapping("/{idx}/reply")
+    public TravelReviewDTO updateReplyTravel(@PathVariable Long idx, @RequestBody TravelReviewEntity travelReviewEntity) {
+        if (travelService.detailReplyTravelReview(idx) == null) {
+            throw new TravelException(NOT_FOUND_TRAVEL_REVIEW, new Throwable("해당 리뷰 없음"));
+        } else {
+            return travelService.updateReplyTravel(travelReviewEntity);
+        }
+    }
+
+    /**
+     * <pre>
+     * 1. MethodName : deleteReplyTravel
+     * 2. ClassName  : TravelController.java
+     * 3. Comment    : 여행지 댓글 삭제
+     * 4. 작성자       : CHO
+     * 5. 작성일       : 2022. 11. 23.
+     * </pre>
+     */
+    @ApiOperation(value = "여행지 댓글 삭제", notes = "여행지 댓글을 삭제한다.")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "여행지 댓글 삭제", response = Map.class),
+            @ApiResponse(code = 400, message = "잘못된 요청", response = HttpClientErrorException.BadRequest.class),
+            @ApiResponse(code = 401, message = "허용되지 않는 관리자", response = HttpClientErrorException.Unauthorized.class),
+            @ApiResponse(code = 403, message = "접근거부", response = HttpClientErrorException.class),
+            @ApiResponse(code = 500, message = "서버 에러", response = ServerError.class)
+    })
+    @DeleteMapping("/{idx}/reply")
+    public Long deleteReplyTravel(@PathVariable Long idx) {
+        if (travelService.detailReplyTravelReview(idx) == null) {
+            throw new TravelException(NOT_FOUND_TRAVEL_REVIEW, new Throwable("해당 리뷰 없음"));
+        } else {
+            return travelService.deleteReplyTravel(idx);
+        }
+    }
+
+    /**
+     * <pre>
+     * 1. MethodName : replyTravelReview
+     * 2. ClassName  : TravelController.java
+     * 3. Comment    : 여행지 댓글 리스트 조회
+     * 4. 작성자       : CHO
+     * 5. 작성일       : 2022. 11. 23.
+     * </pre>
+     */
+    @ApiOperation(value = "여행지 댓글 리스트 조회", notes = "여행지 댓글 리스트를 조회한다.")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "여행지 댓글 리스트 조회 성공", response = Map.class),
+            @ApiResponse(code = 400, message = "잘못된 요청", response = HttpClientErrorException.BadRequest.class),
+            @ApiResponse(code = 401, message = "허용되지 않는 관리자", response = HttpClientErrorException.Unauthorized.class),
+            @ApiResponse(code = 403, message = "접근거부", response = HttpClientErrorException.class),
+            @ApiResponse(code = 500, message = "서버 에러", response = ServerError.class)
+    })
+    @GetMapping(value = "/{idx}/reply")
+    public List<TravelReviewDTO> replyTravelReview(@PathVariable Long idx) {
+        return travelService.replyTravelReview(idx);
     }
 
     /**
