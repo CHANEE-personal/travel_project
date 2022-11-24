@@ -778,4 +778,40 @@ class TravelRepositoryTest {
         assertThat(mockTravelRepository.replyTravelReview(travelInfo.getIdx()).get(0).getReviewTitle()).isEqualTo("리뷰등록테스트");
         assertThat(mockTravelRepository.replyTravelReview(travelInfo.getIdx()).get(0).getReviewDescription()).isEqualTo("리뷰등록테스트");
     }
+
+    @Test
+    @DisplayName("여행지 댓글 상세 조회 Mockito 테스트")
+    void 여행지댓글상세조회Mockito테스트() {
+        // given
+        TravelDTO travelInfo = travelRepository.insertTravel(travelEntity);
+
+        TravelReviewEntity travelReviewEntity = TravelReviewEntity.builder()
+                .travelIdx(travelInfo.getIdx())
+                .reviewTitle("리뷰등록테스트")
+                .reviewDescription("리뷰등록테스트")
+                .viewCount(0)
+                .favoriteCount(0)
+                .popular(false)
+                .visible("Y")
+                .build();
+
+        TravelReviewDTO travelReviewDTO = travelRepository.replyTravel(travelReviewEntity);
+
+        // when
+        when(mockTravelRepository.detailReplyTravelReview(travelReviewDTO.getIdx())).thenReturn(travelReviewDTO);
+        TravelReviewDTO travelReviewInfo = mockTravelRepository.detailReplyTravelReview(travelReviewDTO.getIdx());
+
+        // then
+        assertThat(travelReviewDTO.getTravelIdx()).isEqualTo(travelInfo.getIdx());
+        assertThat(travelReviewInfo.getReviewTitle()).isEqualTo("리뷰등록테스트");
+        assertThat(travelReviewInfo.getReviewDescription()).isEqualTo("리뷰등록테스트");
+
+        // verify
+        verify(mockTravelRepository, times(1)).detailReplyTravelReview(travelReviewInfo.getIdx());
+        verify(mockTravelRepository,  atLeastOnce()).detailReplyTravelReview(travelReviewInfo.getIdx());
+        verifyNoMoreInteractions(mockTravelRepository);
+
+        InOrder inOrder = inOrder(mockTravelRepository);
+        inOrder.verify(mockTravelRepository).detailReplyTravelReview(travelReviewInfo.getIdx());
+    }
 }

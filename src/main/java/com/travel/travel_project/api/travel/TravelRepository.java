@@ -335,6 +335,25 @@ public class TravelRepository {
 
     /**
      * <pre>
+     * 1. MethodName : detailReplyTravelReview
+     * 2. ClassName  : TravelRepository.java
+     * 3. Comment    : 여행지 댓글 상세 조회
+     * 4. 작성자       : CHO
+     * 5. 작성일       : 2022. 11. 23.
+     * </pre>
+     */
+    public TravelReviewDTO detailReplyTravelReview(Long idx) {
+        TravelReviewEntity detailReplyTravelReview = queryFactory
+                .selectFrom(travelReviewEntity)
+                .where(travelReviewEntity.idx.eq(idx)
+                        .and(travelReviewEntity.visible.eq("Y")))
+                .fetchOne();
+
+        return TravelReviewMapper.INSTANCE.toDto(detailReplyTravelReview);
+    }
+
+    /**
+     * <pre>
      * 1. MethodName : togglePopular
      * 2. ClassName  : TravelRepository.java
      * 3. Comment    : 인기 여행지 선정
