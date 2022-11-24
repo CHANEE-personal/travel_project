@@ -284,7 +284,39 @@ public class TravelRepository {
 
     /**
      * <pre>
-     * 1. MethodName : replyTravelList
+     * 1. MethodName : updateReplyTravel
+     * 2. ClassName  : TravelRepository.java
+     * 3. Comment    : 여행지 댓글 수정
+     * 4. 작성자       : CHO
+     * 5. 작성일       : 2022. 11. 23.
+     * </pre>
+     */
+    public TravelReviewDTO updateReplyTravel(TravelReviewEntity travelReviewEntity) {
+        em.merge(travelReviewEntity);
+        em.flush();
+        em.clear();
+        return TravelReviewMapper.INSTANCE.toDto(travelReviewEntity);
+    }
+
+    /**
+     * <pre>
+     * 1. MethodName : deleteReplyTravel
+     * 2. ClassName  : TravelRepository.java
+     * 3. Comment    : 여행지 댓글 삭제
+     * 4. 작성자       : CHO
+     * 5. 작성일       : 2022. 11. 23.
+     * </pre>
+     */
+    public Long deleteReplyTravel(Long idx) {
+        em.remove(em.find(TravelReviewEntity.class, idx));
+        em.flush();
+        em.clear();
+        return idx;
+    }
+
+    /**
+     * <pre>
+     * 1. MethodName : replyTravelReview
      * 2. ClassName  : TravelRepository.java
      * 3. Comment    : 여행지 댓글 리스트 조회
      * 4. 작성자       : CHO

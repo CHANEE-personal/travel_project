@@ -619,8 +619,8 @@ class TravelRepositoryTest {
     }
 
     @Test
-    @DisplayName("여행지리뷰등록Mockito테스트")
-    void 여행지리뷰등록Mockito테스트() {
+    @DisplayName("여행지댓글등록Mockito테스트")
+    void 여행지댓글등록Mockito테스트() {
         // given
         TravelDTO travelInfo = travelRepository.insertTravel(travelEntity);
 
@@ -659,6 +659,89 @@ class TravelRepositoryTest {
 
         InOrder inOrder = inOrder(mockTravelRepository);
         inOrder.verify(mockTravelRepository).findOneTravel(travelInfo.getIdx());
+    }
+
+    @Test
+    @DisplayName("여행지댓글수정Mockito테스트")
+    void 여행지댓글수정Mockito테스트() {
+        // given
+        TravelDTO travelInfo = travelRepository.insertTravel(travelEntity);
+
+        // 댓글 등록
+        TravelReviewEntity travelReviewEntity = TravelReviewEntity.builder()
+                .travelIdx(travelInfo.getIdx())
+                .reviewTitle("리뷰등록테스트")
+                .reviewDescription("리뷰등록테스트")
+                .viewCount(0)
+                .favoriteCount(0)
+                .popular(false)
+                .visible("Y")
+                .build();
+
+        TravelReviewDTO reviewDTO = travelRepository.replyTravel(travelReviewEntity);
+
+        // 댓글 수정
+        travelReviewEntity = TravelReviewEntity.builder()
+                .idx(reviewDTO.getIdx())
+                .travelIdx(travelInfo.getIdx())
+                .reviewTitle("리뷰수정테스트")
+                .reviewDescription("리뷰수정테스트")
+                .viewCount(0)
+                .favoriteCount(0)
+                .popular(false)
+                .visible("Y")
+                .build();
+
+        TravelReviewDTO travelReviewDTO = travelRepository.updateReplyTravel(travelReviewEntity);
+        List<TravelReviewDTO> reviewList = new ArrayList<>();
+        reviewList.add(travelReviewDTO);
+
+        travelDTO = TravelDTO.builder()
+                .travelCode(1)
+                .travelTitle("여행지 테스트").travelDescription("여행지 테스트").favoriteCount(1).viewCount(0)
+                .travelAddress("인천광역시 서구").travelZipCode("123-456").visible("Y").popular(false)
+                .reviewList(TravelReviewMapper.INSTANCE.toEntityList(reviewList))
+                .build();
+
+        // when
+        when(mockTravelRepository.replyTravelReview(travelDTO.getIdx())).thenReturn(reviewList);
+        List<TravelReviewDTO> reviewDTOList = mockTravelRepository.replyTravelReview(travelDTO.getIdx());
+
+        // then
+        assertThat(reviewDTOList.get(0).getReviewTitle()).isEqualTo("리뷰수정테스트");
+        assertThat(reviewDTOList.get(0).getReviewDescription()).isEqualTo("리뷰수정테스트");
+
+        // verify
+        verify(mockTravelRepository, times(1)).replyTravelReview(travelDTO.getIdx());
+        verify(mockTravelRepository,  atLeastOnce()).replyTravelReview(travelDTO.getIdx());
+        verifyNoMoreInteractions(mockTravelRepository);
+
+        InOrder inOrder = inOrder(mockTravelRepository);
+        inOrder.verify(mockTravelRepository).replyTravelReview(travelDTO.getIdx());
+    }
+
+    @Test
+    @DisplayName("여행지 댓글 삭제 Mockito 테스트")
+    void 여행지댓글삭제Mockito테스트() {
+        // given
+        // 여행지 등록
+        TravelDTO travelInfo = travelRepository.insertTravel(travelEntity);
+        // 여행지 댓글 등록
+        TravelReviewEntity travelReviewEntity = TravelReviewEntity.builder()
+                .travelIdx(travelInfo.getIdx())
+                .reviewTitle("리뷰등록테스트")
+                .reviewDescription("리뷰등록테스트")
+                .viewCount(0)
+                .favoriteCount(0)
+                .popular(false)
+                .visible("Y")
+                .build();
+        TravelReviewDTO travelReviewDTO = travelRepository.replyTravel(travelReviewEntity);
+        // 여행지 댓글 삭제
+        Long deleteIdx = travelRepository.deleteReplyTravel(travelReviewDTO.getIdx());
+
+        // then
+        assertThat(travelReviewDTO.getIdx()).isEqualTo(deleteIdx);
     }
 
     @Test
