@@ -249,6 +249,24 @@ public class TravelService {
         try {
             return travelRepository.replyTravelReview(idx);
         } catch (Exception e) {
+            throw new TravelException(NOT_FOUND_TRAVEL_REVIEW_LIST, e);
+        }
+    }
+
+    /**
+     * <pre>
+     * 1. MethodName : detailReplyTravelReview
+     * 2. ClassName  : TravelService.java
+     * 3. Comment    : 여행지 댓글 상세 조회
+     * 4. 작성자       : CHO
+     * 5. 작성일       : 2022. 11. 23.
+     * </pre>
+     */
+    @Transactional
+    public TravelReviewDTO detailReplyTravelReview(Long idx) throws TravelException {
+        try {
+            return travelRepository.detailReplyTravelReview(idx);
+        } catch (Exception e) {
             throw new TravelException(NOT_FOUND_TRAVEL_REVIEW, e);
         }
     }

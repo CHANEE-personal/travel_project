@@ -35,7 +35,8 @@ public enum ApiExceptionType implements BaseExceptionType {
 
     // 여행 코드 관련 TYPE
     ERROR_TRAVEL("ERROR_TRAVEL", 500, "여행 등록 에러"),
-    NOT_FOUND_TRAVEL_REVIEW("NOT_FOUND_TRAVEL_REVIEW", 200, "여행 댓글 리스트 없음"),
+    NOT_FOUND_TRAVEL_REVIEW_LIST("NOT_FOUND_TRAVEL_REVIEW_LIST", 200, "여행 댓글 리스트 없음"),
+    NOT_FOUND_TRAVEL_REVIEW("NOT_FOUND_TRAVEL_REVIEW", 200, "여행 댓글 상세 없음"),
     ERROR_REVIEW_TRAVEL("ERROR_REVIEW_TRAVEL", 500, "여행 댓글 등록 에러"),
     ERROR_UPDATE_REVIEW_TRAVEL("ERROR_UPDATE_REVIEW_TRAVEL", 500, "여행 댓글 수정 에러"),
     ERROR_DELETE_REVIEW_TRAVEL("ERROR_DELETE_REVIEW_TRAVEL", 500, "여행 댓글 삭제 에러"),
