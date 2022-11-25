@@ -2,9 +2,13 @@ package com.travel.travel_project.api.travel;
 
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import com.travel.travel_project.api.travel.mapper.group.TravelGroupMapper;
+import com.travel.travel_project.api.travel.mapper.group.TravelGroupMapperImpl;
+import com.travel.travel_project.api.travel.mapper.group.TravelGroupUserMapper;
 import com.travel.travel_project.api.travel.mapper.review.TravelReviewMapper;
 import com.travel.travel_project.domain.travel.TravelDTO;
 import com.travel.travel_project.domain.travel.TravelEntity;
+import com.travel.travel_project.domain.travel.group.*;
 import com.travel.travel_project.domain.travel.review.QTravelReviewEntity;
 import com.travel.travel_project.domain.travel.review.TravelReviewDTO;
 import com.travel.travel_project.domain.travel.review.TravelReviewEntity;
@@ -23,6 +27,7 @@ import static com.travel.travel_project.common.StringUtil.getString;
 import static com.travel.travel_project.api.travel.mapper.TravelMapper.INSTANCE;
 import static com.travel.travel_project.domain.common.QCommonEntity.commonEntity;
 import static com.travel.travel_project.domain.travel.QTravelEntity.travelEntity;
+import static com.travel.travel_project.domain.travel.group.QTravelGroupEntity.travelGroupEntity;
 import static com.travel.travel_project.domain.travel.review.QTravelReviewEntity.travelReviewEntity;
 import static java.time.LocalDate.now;
 import static java.time.LocalDateTime.of;
@@ -400,5 +405,120 @@ public class TravelRepository {
                 .setRnum(getInt(travelMap.get("startPage"), 1) * (getInt(travelMap.get("size"), 1)) - (2 - travelList.indexOf(list))));
 
         return INSTANCE.toDtoList(travelList);
+    }
+
+    /**
+     * <pre>
+     * 1. MethodName : findTravelGroupCount
+     * 2. ClassName  : TravelRepository.java
+     * 3. Comment    : 여행지 그룹 리스트 갯수 조회
+     * 4. 작성자       : CHO
+     * 5. 작성일       : 2022. 11. 25.
+     * </pre>
+     */
+    public Integer findTravelGroupCount(Map<String, Object> groupMap) {
+        return queryFactory.selectFrom(travelGroupEntity)
+                .fetch().size();
+    }
+
+    /**
+     * <pre>
+     * 1. MethodName : findTravelGroupList
+     * 2. ClassName  : TravelRepository.java
+     * 3. Comment    : 여행지 그룹 리스트 조회
+     * 4. 작성자       : CHO
+     * 5. 작성일       : 2022. 11. 25.
+     * </pre>
+     */
+    public List<TravelGroupDTO> findTravelGroupList(Map<String, Object> groupMap) {
+        List<TravelGroupEntity> travelGroupList = queryFactory
+                .selectFrom(travelGroupEntity)
+                .orderBy(travelGroupEntity.idx.desc())
+                .offset(getInt(groupMap.get("jpaStartPage"), 0))
+                .limit(getInt(groupMap.get("size"), 0))
+                .fetch();
+
+        travelGroupList.forEach(list -> travelGroupList.get(travelGroupList.indexOf(list))
+                .setRnum(getInt(groupMap.get("startPage"), 1) * (getInt(groupMap.get("size"), 1)) - (2 - travelGroupList.indexOf(list))));
+
+        return TravelGroupMapper.INSTANCE.toDtoList(travelGroupList);
+    }
+
+    /**
+     * <pre>
+     * 1. MethodName : findOneTravelGroup
+     * 2. ClassName  : TravelRepository.java
+     * 3. Comment    : 여행지 그룹 상세 조회
+     * 4. 작성자       : CHO
+     * 5. 작성일       : 2022. 11. 25.
+     * </pre>
+     */
+    public TravelGroupDTO findOneTravelGroup(Long idx) {
+        TravelGroupEntity travelGroup = queryFactory
+                .selectFrom(travelGroupEntity)
+                .where(travelGroupEntity.idx.eq(idx))
+                .fetchOne();
+
+        return TravelGroupMapper.INSTANCE.toDto(travelGroup);
+    }
+
+    /**
+     * <pre>
+     * 1. MethodName : insertTravelGroup
+     * 2. ClassName  : TravelRepository.java
+     * 3. Comment    : 여행지 그룹 등록
+     * 4. 작성자       : CHO
+     * 5. 작성일       : 2022. 11. 25.
+     * </pre>
+     */
+    public TravelGroupDTO insertTravelGroup(TravelGroupEntity travelGroupEntity) {
+        em.persist(travelGroupEntity);
+        return TravelGroupMapper.INSTANCE.toDto(travelGroupEntity);
+    }
+
+    /**
+     * <pre>
+     * 1. MethodName : updateTravelGroup
+     * 2. ClassName  : TravelRepository.java
+     * 3. Comment    : 여행지 그룹 수정
+     * 4. 작성자       : CHO
+     * 5. 작성일       : 2022. 11. 25.
+     * </pre>
+     */
+    public TravelGroupDTO updateTravelGroup(TravelGroupEntity travelGroupEntity) {
+        em.merge(travelGroupEntity);
+        em.flush();
+        em.clear();
+        return TravelGroupMapper.INSTANCE.toDto(travelGroupEntity);
+    }
+
+    /**
+     * <pre>
+     * 1. MethodName : deleteTravelGroup
+     * 2. ClassName  : TravelRepository.java
+     * 3. Comment    : 여행지 그룹 삭제
+     * 4. 작성자       : CHO
+     * 5. 작성일       : 2022. 11. 25.
+     * </pre>
+     */
+    public Long deleteTravelGroup(Long idx) {
+        em.remove(em.find(TravelGroupEntity.class, idx));
+        em.flush();
+        em.clear();
+        return idx;
+    }
+
+    /**
+     * <pre>
+     * 1. MethodName : insertTravelGroupUser
+     * 2. ClassName  : TravelRepository.java
+     * 3. Comment    : 유저 여행지 그룹 등록
+     * 4. 작성자       : CHO
+     * 5. 작성일       : 2022. 11. 25.
+     * </pre>
+     */
+    public TravelGroupUserDTO insertTravelGroupUser(TravelGroupUserEntity travelGroupUserEntity) {
+        em.persist(travelGroupUserEntity);
+        return TravelGroupUserMapper.INSTANCE.toDto(travelGroupUserEntity);
     }
 }
