@@ -44,7 +44,12 @@ public enum ApiExceptionType implements BaseExceptionType {
     ERROR_DELETE_TRAVEL("ERROR_DELETE_TRAVEL", 500, "여행 삭제 에러"),
     ERROR_FAVORITE_TRAVEL("ERROR_FAVORITE_TRAVEL", 500, "여행 좋아요 에러"),
     NOT_FOUND_TRAVEL("NOT_FOUND_TRAVEL", 200, "여행 상세 없음"),
-    NOT_FOUND_TRAVEL_LIST("NOT_FOUND_TRAVEL_LIST", 200, "여행 소개 리스트 없음");
+    NOT_FOUND_TRAVEL_LIST("NOT_FOUND_TRAVEL_LIST", 200, "여행 소개 리스트 없음"),
+    NOT_FOUND_TRAVEL_GROUP_LIST("NOT_FOUND_TRAVEL_GROUP_LIST", 200, "여행 그룹 리스트 없음"),
+    NOT_FOUND_TRAVEL_GROUP("NOT_FOUND_TRAVEL_GROUP", 200, "여행 그룹 상세 없음"),
+    ERROR_TRAVEL_GROUP("ERROR_TRAVEL_GROUP", 500, "여행 그룹 등록 에러"),
+    ERROR_UPDATE_TRAVEL_GROUP("ERROR_UPDATE_TRAVEL_GROUP", 500, "여행 그룹 수정 에러"),
+    ERROR_DELETE_TRAVEL_GROUP("ERROR_DELETE_TRAVEL_GROUP", 500, "여행 그룹 삭제 에러");
 
     private final String errorCode;
     private final int httpStatus;

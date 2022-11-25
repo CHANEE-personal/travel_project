@@ -4,6 +4,8 @@ import com.travel.travel_project.common.Page;
 import com.travel.travel_project.common.SearchCommon;
 import com.travel.travel_project.domain.travel.TravelDTO;
 import com.travel.travel_project.domain.travel.TravelEntity;
+import com.travel.travel_project.domain.travel.group.TravelGroupDTO;
+import com.travel.travel_project.domain.travel.group.TravelGroupEntity;
 import com.travel.travel_project.domain.travel.review.TravelReviewDTO;
 import com.travel.travel_project.domain.travel.review.TravelReviewEntity;
 import com.travel.travel_project.exception.TravelException;
@@ -22,6 +24,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static com.travel.travel_project.exception.ApiExceptionType.NOT_FOUND_TRAVEL_GROUP;
 import static com.travel.travel_project.exception.ApiExceptionType.NOT_FOUND_TRAVEL_REVIEW;
 import static java.lang.Math.ceil;
 
@@ -340,5 +343,139 @@ public class TravelController {
     @PutMapping(value = "/{idx}/popular")
     public TravelDTO togglePopular(@PathVariable Long idx) {
         return travelService.togglePopular(idx);
+    }
+
+    /**
+     * <pre>
+     * 1. MethodName : findTravelGroupList
+     * 2. ClassName  : TravelController.java
+     * 3. Comment    : 여행지 그룹 리스트 조회
+     * 4. 작성자       : CHO
+     * 5. 작성일       : 2022. 11. 25.
+     * </pre>
+     */
+    @ApiOperation(value = "여행 그룹 리스트 조회", notes = "여행 그룹 리스트를 조회한다.")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "여행 그룹 리스트 조회 성공", response = Map.class),
+            @ApiResponse(code = 400, message = "잘못된 요청", response = HttpClientErrorException.BadRequest.class),
+            @ApiResponse(code = 401, message = "허용되지 않는 관리자", response = HttpClientErrorException.Unauthorized.class),
+            @ApiResponse(code = 403, message = "접근거부", response = HttpClientErrorException.class),
+            @ApiResponse(code = 500, message = "서버 에러", response = ServerError.class)
+    })
+    @GetMapping("/group/lists")
+    public Map<String, Object> findTravelGroupList(@RequestParam Map<String, Object> paramMap, Page page) {
+        Map<String, Object> groupMap = new HashMap<>();
+
+        int travelGroupCount = this.travelService.findTravelGroupCount(searchCommon.searchCommon(page, paramMap));
+        List<TravelGroupDTO> travelGroupList = new ArrayList<>();
+
+        if (travelGroupCount > 0) {
+            travelGroupList = this.travelService.findTravelGroupList(searchCommon.searchCommon(page, paramMap));
+        }
+
+        // 리스트 수
+        groupMap.put("pageSize", page.getSize());
+        // 전체 페이지 수
+        groupMap.put("perPageListCnt", ceil((double) travelGroupCount / page.getSize()));
+        // 전체 아이템 수
+        groupMap.put("travelGroupListCnt", travelGroupCount);
+
+        groupMap.put("travelGroupList", travelGroupList);
+
+        return groupMap;
+    }
+
+    /**
+     * <pre>
+     * 1. MethodName : findOneTravelGroup
+     * 2. ClassName  : TravelController.java
+     * 3. Comment    : 여행지 그룹 상세 조회
+     * 4. 작성자       : CHO
+     * 5. 작성일       : 2022. 11. 25.
+     * </pre>
+     */
+    @ApiOperation(value = "여행지 그룹 상세 조회", notes = "여행지 그룹을 상세 조회한다.")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "여행지 그룹 상세 조회 성공", response = Map.class),
+            @ApiResponse(code = 400, message = "잘못된 요청", response = HttpClientErrorException.BadRequest.class),
+            @ApiResponse(code = 401, message = "허용되지 않는 관리자", response = HttpClientErrorException.Unauthorized.class),
+            @ApiResponse(code = 403, message = "접근거부", response = HttpClientErrorException.class),
+            @ApiResponse(code = 500, message = "서버 에러", response = ServerError.class)
+    })
+    @GetMapping(value = "/{idx}/group")
+    public TravelGroupDTO findOneTravelGroup(@PathVariable Long idx) {
+        return travelService.findOneTravelGroup(idx);
+    }
+
+    /**
+     * <pre>
+     * 1. MethodName : insertTravelGroup
+     * 2. ClassName  : TravelController.java
+     * 3. Comment    : 여행지 그룹 등록
+     * 4. 작성자       : CHO
+     * 5. 작성일       : 2022. 11. 25.
+     * </pre>
+     */
+    @ApiOperation(value = "여행지 그룹 등록", notes = "여행지 그룹을 등록한다.")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "여행지 그룹 등록 성공", response = Map.class),
+            @ApiResponse(code = 400, message = "잘못된 요청", response = HttpClientErrorException.BadRequest.class),
+            @ApiResponse(code = 401, message = "허용되지 않는 관리자", response = HttpClientErrorException.Unauthorized.class),
+            @ApiResponse(code = 403, message = "접근거부", response = HttpClientErrorException.class),
+            @ApiResponse(code = 500, message = "서버 에러", response = ServerError.class)
+    })
+    @PostMapping("/group")
+    public TravelGroupDTO insertTravelGroup(@RequestBody TravelGroupEntity travelGroupEntity) {
+        return travelService.insertTravelGroup(travelGroupEntity);
+    }
+
+    /**
+     * <pre>
+     * 1. MethodName : updateTravelGroup
+     * 2. ClassName  : TravelController.java
+     * 3. Comment    : 여행지 그룹 수정
+     * 4. 작성자       : CHO
+     * 5. 작성일       : 2022. 11. 25.
+     * </pre>
+     */
+    @ApiOperation(value = "여행지 그룹 수정", notes = "여행지 그룹을 수정한다.")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "여행지 그룹 수정 성공", response = Map.class),
+            @ApiResponse(code = 400, message = "잘못된 요청", response = HttpClientErrorException.BadRequest.class),
+            @ApiResponse(code = 401, message = "허용되지 않는 관리자", response = HttpClientErrorException.Unauthorized.class),
+            @ApiResponse(code = 403, message = "접근거부", response = HttpClientErrorException.class),
+            @ApiResponse(code = 500, message = "서버 에러", response = ServerError.class)
+    })
+    @PutMapping("/{idx}/group")
+    public TravelGroupDTO updateTravelGroup(@PathVariable Long idx, @RequestBody TravelGroupEntity travelGroupEntity) {
+        if (travelService.findOneTravelGroup(idx) == null) {
+            throw new TravelException(NOT_FOUND_TRAVEL_GROUP, new Throwable("여행 그룹 상세 없음"));
+        }
+        return travelService.updateTravelGroup(travelGroupEntity);
+    }
+
+    /**
+     * <pre>
+     * 1. MethodName : deleteTravelGroup
+     * 2. ClassName  : TravelController.java
+     * 3. Comment    : 여행지 그룹 삭제
+     * 4. 작성자       : CHO
+     * 5. 작성일       : 2022. 11. 25.
+     * </pre>
+     */
+    @ApiOperation(value = "여행지 그룹 삭제", notes = "여행지 그룹을 삭제한다.")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "여행지 그룹 삭제 성공", response = Map.class),
+            @ApiResponse(code = 400, message = "잘못된 요청", response = HttpClientErrorException.BadRequest.class),
+            @ApiResponse(code = 401, message = "허용되지 않는 관리자", response = HttpClientErrorException.Unauthorized.class),
+            @ApiResponse(code = 403, message = "접근거부", response = HttpClientErrorException.class),
+            @ApiResponse(code = 500, message = "서버 에러", response = ServerError.class)
+    })
+    @DeleteMapping("/{idx}/group")
+    public Long deleteTravelGroup(@PathVariable Long idx) {
+        if (travelService.findOneTravelGroup(idx) == null) {
+            throw new TravelException(NOT_FOUND_TRAVEL_GROUP, new Throwable("여행 그룹 상세 없음"));
+        }
+        return travelService.deleteTravelGroup(idx);
     }
 }

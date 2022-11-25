@@ -1,10 +1,13 @@
 package com.travel.travel_project.admin.travel;
 
+import com.travel.travel_project.api.travel.mapper.group.TravelGroupMapper;
 import com.travel.travel_project.api.travel.mapper.review.TravelReviewMapper;
 import com.travel.travel_project.domain.travel.TravelDTO;
 import com.travel.travel_project.domain.travel.TravelEntity;
 import com.travel.travel_project.api.travel.TravelService;
 import com.travel.travel_project.api.travel.mapper.TravelMapper;
+import com.travel.travel_project.domain.travel.group.TravelGroupDTO;
+import com.travel.travel_project.domain.travel.group.TravelGroupEntity;
 import com.travel.travel_project.domain.travel.review.TravelReviewDTO;
 import com.travel.travel_project.domain.travel.review.TravelReviewEntity;
 import lombok.RequiredArgsConstructor;
@@ -653,5 +656,151 @@ class TravelServiceTest {
 
         InOrder inOrder = inOrder(mockTravelService);
         inOrder.verify(mockTravelService).detailReplyTravelReview(travelReviewInfo.getIdx());
+    }
+
+    @Test
+    @DisplayName("여행지 그룹 리스트 Mockito 조회 테스트")
+    void 여행지그룹리스트Mockito조회테스트() {
+        // given
+        Map<String, Object> groupMap = new HashMap<>();
+        groupMap.put("jpaStartPage", 1);
+        groupMap.put("size", 3);
+
+        List<TravelGroupDTO> travelGroupList = new ArrayList<>();
+        travelGroupList.add(TravelGroupDTO.builder().travelIdx(1L).groupName("서울모임")
+                .groupDescription("서울모임").visible("Y").build());
+
+        // when
+        when(mockTravelService.findTravelGroupList(groupMap)).thenReturn(travelGroupList);
+        List<TravelGroupDTO> newTravelGroupList = mockTravelService.findTravelGroupList(groupMap);
+
+        // then
+        assertThat(newTravelGroupList.get(0).getIdx()).isEqualTo(travelGroupList.get(0).getIdx());
+        assertThat(newTravelGroupList.get(0).getTravelIdx()).isEqualTo(travelGroupList.get(0).getTravelIdx());
+        assertThat(newTravelGroupList.get(0).getGroupName()).isEqualTo(travelGroupList.get(0).getGroupName());
+        assertThat(newTravelGroupList.get(0).getGroupDescription()).isEqualTo(travelGroupList.get(0).getGroupDescription());
+
+        // verify
+        verify(mockTravelService, times(1)).findTravelGroupList(groupMap);
+        verify(mockTravelService, atLeastOnce()).findTravelGroupList(groupMap);
+        verifyNoMoreInteractions(mockTravelService);
+
+        InOrder inOrder = inOrder(mockTravelService);
+        inOrder.verify(mockTravelService).findTravelGroupList(groupMap);
+    }
+
+    @Test
+    @DisplayName("여행지 그룹 상세 Mockito 테스트")
+    void 여행지그룹상세Mockito테스트() {
+        // given
+        TravelGroupDTO travelGroupDTO = TravelGroupDTO.builder()
+                .idx(1L).travelIdx(1L).groupName("서울모임").groupDescription("서울모임").visible("Y").build();
+
+        // when
+        given(mockTravelService.findOneTravelGroup(1L)).willReturn(travelGroupDTO);
+        TravelGroupDTO newTravelGroupDTO = mockTravelService.findOneTravelGroup(1L);
+
+        // then
+        assertThat(newTravelGroupDTO.getIdx()).isEqualTo(1L);
+        assertThat(newTravelGroupDTO.getTravelIdx()).isEqualTo(1L);
+        assertThat(newTravelGroupDTO.getGroupName()).isEqualTo("서울모임");
+        assertThat(newTravelGroupDTO.getGroupDescription()).isEqualTo("서울모임");
+
+        // verify
+        verify(mockTravelService, times(1)).findOneTravelGroup(1L);
+        verify(mockTravelService, atLeastOnce()).findOneTravelGroup(1L);
+        verifyNoMoreInteractions(mockTravelService);
+
+        InOrder inOrder = inOrder(mockTravelService);
+        inOrder.verify(mockTravelService).findOneTravelGroup(1L);
+    }
+
+    @Test
+    @DisplayName("여행지 그룹 등록 Mockito 테스트")
+    void 여행지그룹등록Mockito테스트() {
+        TravelGroupEntity travelGroupEntity = TravelGroupEntity.builder()
+                .travelIdx(1L).groupName("서울모임").groupDescription("서울모임").visible("Y").build();
+
+        TravelGroupDTO travelGroupDTO = travelService.insertTravelGroup(travelGroupEntity);
+
+        // when
+        when(mockTravelService.findOneTravelGroup(travelGroupDTO.getIdx())).thenReturn(travelGroupDTO);
+        TravelGroupDTO newTravelGroupDTO = mockTravelService.findOneTravelGroup(travelGroupDTO.getIdx());
+
+        // then
+        assertThat(newTravelGroupDTO.getIdx()).isEqualTo(travelGroupDTO.getIdx());
+        assertThat(newTravelGroupDTO.getTravelIdx()).isEqualTo(travelGroupDTO.getTravelIdx());
+        assertThat(newTravelGroupDTO.getGroupName()).isEqualTo(travelGroupDTO.getGroupName());
+        assertThat(newTravelGroupDTO.getGroupDescription()).isEqualTo(travelGroupDTO.getGroupDescription());
+
+        // verify
+        verify(mockTravelService, times(1)).findOneTravelGroup(newTravelGroupDTO.getIdx());
+        verify(mockTravelService, atLeastOnce()).findOneTravelGroup(newTravelGroupDTO.getIdx());
+        verifyNoMoreInteractions(mockTravelService);
+
+        InOrder inOrder = inOrder(mockTravelService);
+        inOrder.verify(mockTravelService).findOneTravelGroup(newTravelGroupDTO.getIdx());
+    }
+
+    @Test
+    @DisplayName("여행지 그룹 수정 Mockito 테스트")
+    void 여행지그룹수정Mockito테스트() {
+        // given
+        TravelGroupEntity travelGroupEntity = TravelGroupEntity.builder()
+                .travelIdx(1L).groupName("서울모임").groupDescription("서울모임").visible("Y").build();
+
+        TravelGroupDTO travelGroupDTO = travelService.insertTravelGroup(travelGroupEntity);
+
+        TravelGroupEntity newTravelGroupEntity = TravelGroupEntity.builder()
+                .idx(travelGroupDTO.getIdx())
+                .travelIdx(1L).groupName("인천모임").groupDescription("인천모임")
+                .visible("Y").build();
+
+        travelService.updateTravelGroup(newTravelGroupEntity);
+
+        TravelGroupDTO newTravelGroupDTO = TravelGroupMapper.INSTANCE.toDto(newTravelGroupEntity);
+
+        // when
+        when(mockTravelService.findOneTravelGroup(newTravelGroupEntity.getIdx())).thenReturn(newTravelGroupDTO);
+        TravelGroupDTO travelGroupInfo = mockTravelService.findOneTravelGroup(newTravelGroupDTO.getIdx());
+
+        // then
+        assertThat(travelGroupInfo.getIdx()).isEqualTo(newTravelGroupDTO.getIdx());
+        assertThat(travelGroupInfo.getGroupName()).isEqualTo(newTravelGroupDTO.getGroupName());
+        assertThat(travelGroupInfo.getGroupDescription()).isEqualTo(newTravelGroupDTO.getGroupDescription());
+
+        // verify
+        verify(mockTravelService, times(1)).findOneTravelGroup(travelGroupInfo.getIdx());
+        verify(mockTravelService, atLeastOnce()).findOneTravelGroup(travelGroupInfo.getIdx());
+        verifyNoMoreInteractions(mockTravelService);
+
+        InOrder inOrder = inOrder(mockTravelService);
+        inOrder.verify(mockTravelService).findOneTravelGroup(travelGroupInfo.getIdx());
+    }
+
+    @Test
+    @DisplayName("여행지 그룹 삭제 Mockito 테스트")
+    void 여행지그룹삭제Mockito테스트() {
+        // given
+        TravelGroupEntity travelGroupEntity = TravelGroupEntity.builder()
+                .travelIdx(1L).groupName("서울모임").groupDescription("서울모임").visible("Y").build();
+        em.persist(travelGroupEntity);
+
+        TravelGroupDTO travelGroupDTO = TravelGroupMapper.INSTANCE.toDto(travelGroupEntity);
+
+        // when
+        when(mockTravelService.findOneTravelGroup(travelGroupDTO.getIdx())).thenReturn(travelGroupDTO);
+        Long deleteIdx = travelService.deleteTravelGroup(travelGroupDTO.getIdx());
+
+        // then
+        assertThat(mockTravelService.findOneTravelGroup(travelGroupDTO.getIdx()).getIdx()).isEqualTo(deleteIdx);
+
+        // verify
+        verify(mockTravelService, times(1)).findOneTravelGroup(travelGroupDTO.getIdx());
+        verify(mockTravelService, atLeastOnce()).findOneTravelGroup(travelGroupDTO.getIdx());
+        verifyNoMoreInteractions(mockTravelService);
+
+        InOrder inOrder = inOrder(mockTravelService);
+        inOrder.verify(mockTravelService).findOneTravelGroup(travelGroupDTO.getIdx());
     }
 }

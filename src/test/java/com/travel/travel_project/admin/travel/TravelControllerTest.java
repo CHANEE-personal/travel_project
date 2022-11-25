@@ -1,6 +1,7 @@
 package com.travel.travel_project.admin.travel;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.travel.travel_project.domain.travel.group.TravelGroupEntity;
 import com.travel.travel_project.domain.travel.review.TravelReviewEntity;
 import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.BeforeEach;
@@ -174,5 +175,95 @@ class TravelControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(content().contentType("application/json;charset=utf-8"))
                 .andExpect(jsonPath("$.popular").isBoolean());
+    }
+
+    @Test
+    @DisplayName("여행지 그룹 조회 테스트")
+    void 여행지그룹조회테스트() throws Exception {
+        mockMvc.perform(get("/api/travel/lists/group").param("page", "1").param("size", "100"))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(content().contentType("application/json;charset=utf-8"))
+                .andExpect(jsonPath("$.travelGroupList.length()", greaterThan(0)));
+    }
+
+    @Test
+    @DisplayName("여행지 그룹 상세 조회 테스트")
+    void 여행지그룹상세조회테스트() throws Exception {
+        mockMvc.perform(get("/api/travel/1/group"))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(content().contentType("application/json;charset=utf-8"))
+                .andExpect(jsonPath("$.idx").value(1L));
+    }
+
+    @Test
+    @DisplayName("여행지 그룹 등록 테스트")
+    void 여행지그룹등록테스트() throws Exception {
+        TravelGroupEntity travelGroupEntity = TravelGroupEntity.builder()
+                .travelIdx(1L)
+                .groupName("서울모임")
+                .groupDescription("서울모임")
+                .visible("Y")
+                .build();
+
+        mockMvc.perform(post("/api/travel/group")
+                        .contentType(APPLICATION_JSON_VALUE)
+                        .content(objectMapper.writeValueAsString(travelGroupEntity)))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(content().contentType("application/json;charset=utf-8"))
+                .andExpect(jsonPath("$.travelIdx").value(1L))
+                .andExpect(jsonPath("$.groupName").value("서울모임"))
+                .andExpect(jsonPath("$.groupDescription").value("서울모임"));
+    }
+
+    @Test
+    @DisplayName("여행지 그룹 수정 테스트")
+    void 여행지그룹수정테스트() throws Exception {
+        TravelGroupEntity travelGroupEntity = TravelGroupEntity.builder()
+                .travelIdx(1L)
+                .groupName("서울모임")
+                .groupDescription("서울모임")
+                .visible("Y")
+                .build();
+
+        em.persist(travelGroupEntity);
+
+        TravelGroupEntity newTravelGroupEntity = TravelGroupEntity.builder()
+                .idx(travelGroupEntity.getIdx())
+                .travelIdx(1L)
+                .groupName("인천모임")
+                .groupDescription("인천모임")
+                .visible("Y")
+                .build();
+
+        mockMvc.perform(put("/api/travel/{idx}/group", travelGroupEntity.getIdx())
+                        .contentType(APPLICATION_JSON_VALUE)
+                        .content(objectMapper.writeValueAsString(newTravelGroupEntity)))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(content().contentType("application/json;charset=utf-8"))
+                .andExpect(jsonPath("$.groupName").value("인천모임"))
+                .andExpect(jsonPath("$.groupDescription").value("인천모임"));
+    }
+
+    @Test
+    @DisplayName("여행지 그룹 삭제 테스트")
+    void 여행지그룹삭제테스트() throws Exception {
+        TravelGroupEntity travelGroupEntity = TravelGroupEntity.builder()
+                .travelIdx(1L)
+                .groupName("서울모임")
+                .groupDescription("서울모임")
+                .visible("Y")
+                .build();
+
+        em.persist(travelGroupEntity);
+
+        mockMvc.perform(delete("/api/travel/{idx}/group", travelGroupEntity.getIdx()))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(content().contentType("application/json;charset=utf-8"))
+                .andExpect(content().string(getString(travelGroupEntity.getIdx())));
     }
 }

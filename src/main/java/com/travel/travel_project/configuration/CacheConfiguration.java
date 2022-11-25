@@ -27,6 +27,7 @@ public class CacheConfiguration {
         cacheManager.setCaches(of(
                 new ConcurrentMapCache("user"),
                 new ConcurrentMapCache("travel"),
+                new ConcurrentMapCache("group"),
                 new ConcurrentMapCache("post"),
                 new ConcurrentMapCache("review"),
                 new ConcurrentMapCache("notice"),

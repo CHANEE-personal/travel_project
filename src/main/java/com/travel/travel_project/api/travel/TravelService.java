@@ -1,5 +1,8 @@
 package com.travel.travel_project.api.travel;
 
+import com.travel.travel_project.domain.travel.group.TravelGroupDTO;
+import com.travel.travel_project.domain.travel.group.TravelGroupEntity;
+import com.travel.travel_project.domain.travel.group.TravelGroupUserEntity;
 import com.travel.travel_project.domain.travel.review.TravelReviewDTO;
 import com.travel.travel_project.domain.travel.review.TravelReviewEntity;
 import com.travel.travel_project.exception.TravelException;
@@ -288,6 +291,120 @@ public class TravelService {
             return travelRepository.togglePopular(idx);
         } catch (Exception e) {
             throw new TravelException(ERROR_UPDATE_TRAVEL, e);
+        }
+    }
+
+    /**
+     * <pre>
+     * 1. MethodName : findTravelGroupCount
+     * 2. ClassName  : TravelService.java
+     * 3. Comment    : 여행지 그룹 리스트 갯수 조회
+     * 4. 작성자       : CHO
+     * 5. 작성일       : 2022. 11. 25.
+     * </pre>
+     */
+    @Transactional(readOnly = true)
+    public int findTravelGroupCount(Map<String, Object> groupMap) throws TravelException {
+        try {
+            return travelRepository.findTravelGroupCount(groupMap);
+        } catch (Exception e) {
+            throw new TravelException(NOT_FOUND_TRAVEL_GROUP_LIST, e);
+        }
+    }
+
+    /**
+     * <pre>
+     * 1. MethodName : findTravelGroupList
+     * 2. ClassName  : TravelService.java
+     * 3. Comment    : 여행 그룹 리스트 조회
+     * 4. 작성자       : CHO
+     * 5. 작성일       : 2022. 11. 25.
+     * </pre>
+     */
+    @Transactional(readOnly = true)
+    public List<TravelGroupDTO> findTravelGroupList(Map<String, Object> groupMap) {
+        try {
+            return travelRepository.findTravelGroupList(groupMap);
+        } catch (Exception e) {
+            throw new TravelException(NOT_FOUND_TRAVEL_GROUP_LIST, e);
+        }
+    }
+
+    /**
+     * <pre>
+     * 1. MethodName : findOneTravelGroup
+     * 2. ClassName  : TravelService.java
+     * 3. Comment    : 여행 그룹 상세 조회
+     * 4. 작성자       : CHO
+     * 5. 작성일       : 2022. 11. 25.
+     * </pre>
+     */
+    @Transactional
+    public TravelGroupDTO findOneTravelGroup(Long idx) {
+        try {
+            return travelRepository.findOneTravelGroup(idx);
+        } catch (Exception e) {
+            throw new TravelException(NOT_FOUND_TRAVEL_GROUP, e);
+        }
+    }
+
+    /**
+     * <pre>
+     * 1. MethodName : insertTravelGroup
+     * 2. ClassName  : TravelService.java
+     * 3. Comment    : 여행 그룹 등록
+     * 4. 작성자       : CHO
+     * 5. 작성일       : 2022. 11. 25.
+     * </pre>
+     */
+    @CachePut("group")
+    @Modifying(clearAutomatically = true)
+    @Transactional
+    public TravelGroupDTO insertTravelGroup(TravelGroupEntity travelGroupEntity) {
+        try {
+            return travelRepository.insertTravelGroup(travelGroupEntity);
+        } catch (Exception e) {
+            throw new TravelException(ERROR_TRAVEL_GROUP, e);
+        }
+    }
+
+    /**
+     * <pre>
+     * 1. MethodName : updateTravelGroup
+     * 2. ClassName  : TravelService.java
+     * 3. Comment    : 여행 그룹 수정
+     * 4. 작성자       : CHO
+     * 5. 작성일       : 2022. 11. 25.
+     * </pre>
+     */
+    @CachePut("group")
+    @Modifying(clearAutomatically = true)
+    @Transactional
+    public TravelGroupDTO updateTravelGroup(TravelGroupEntity travelGroupEntity) {
+        try {
+            return travelRepository.updateTravelGroup(travelGroupEntity);
+        } catch (Exception e) {
+            throw new TravelException(ERROR_UPDATE_TRAVEL_GROUP, e);
+        }
+    }
+
+    /**
+     * <pre>
+     * 1. MethodName : deleteTravelGroup
+     * 2. ClassName  : TravelService.java
+     * 3. Comment    : 여행 그룹 삭제
+     * 4. 작성자       : CHO
+     * 5. 작성일       : 2022. 11. 25.
+     * </pre>
+     */
+    @CacheEvict("group")
+    @Modifying(clearAutomatically = true)
+    @Transactional
+    public Long deleteTravelGroup(Long idx) {
+        try {
+            return travelRepository.deleteTravelGroup(idx);
+        } catch (Exception e) {
+            throw new TravelException(ERROR_DELETE_TRAVEL_GROUP, e);
         }
     }
 }

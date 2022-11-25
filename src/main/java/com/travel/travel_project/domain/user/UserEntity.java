@@ -2,12 +2,16 @@ package com.travel.travel_project.domain.user;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.travel.travel_project.domain.common.NewCommonMappedClass;
+import com.travel.travel_project.domain.travel.group.TravelGroupUserEntity;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 
 import javax.persistence.*;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotEmpty;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static javax.persistence.EnumType.STRING;
 import static javax.persistence.GenerationType.IDENTITY;
@@ -59,4 +63,7 @@ public class UserEntity extends NewCommonMappedClass {
 
     @Enumerated(value = STRING)
     private Role role;
+
+    @OneToMany(mappedBy = "userEntity", cascade = CascadeType.REMOVE)
+    private List<TravelGroupUserEntity> userList = new ArrayList<>();
 }
