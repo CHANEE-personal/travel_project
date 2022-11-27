@@ -6,6 +6,8 @@ import com.travel.travel_project.domain.travel.TravelDTO;
 import com.travel.travel_project.domain.travel.TravelEntity;
 import com.travel.travel_project.domain.travel.group.TravelGroupDTO;
 import com.travel.travel_project.domain.travel.group.TravelGroupEntity;
+import com.travel.travel_project.domain.travel.group.TravelGroupUserDTO;
+import com.travel.travel_project.domain.travel.group.TravelGroupUserEntity;
 import com.travel.travel_project.domain.travel.review.TravelReviewDTO;
 import com.travel.travel_project.domain.travel.review.TravelReviewEntity;
 import com.travel.travel_project.exception.TravelException;
@@ -477,5 +479,49 @@ public class TravelController {
             throw new TravelException(NOT_FOUND_TRAVEL_GROUP, new Throwable("여행 그룹 상세 없음"));
         }
         return travelService.deleteTravelGroup(idx);
+    }
+
+    /**
+     * <pre>
+     * 1. MethodName : insertTravelGroupUser
+     * 2. ClassName  : TravelController.java
+     * 3. Comment    : 유저 여행 그룹 등록
+     * 4. 작성자       : CHO
+     * 5. 작성일       : 2022. 11. 27.
+     * </pre>
+     */
+    @ApiOperation(value = "유저 여행 그룹 등록", notes = "유저 여행 그룹을 등록한다.")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "유저 여행 그룹 등록 성공", response = Map.class),
+            @ApiResponse(code = 400, message = "잘못된 요청", response = HttpClientErrorException.BadRequest.class),
+            @ApiResponse(code = 401, message = "허용되지 않는 관리자", response = HttpClientErrorException.Unauthorized.class),
+            @ApiResponse(code = 403, message = "접근거부", response = HttpClientErrorException.class),
+            @ApiResponse(code = 500, message = "서버 에러", response = ServerError.class)
+    })
+    @PostMapping("/group_user")
+    public TravelGroupUserDTO insertTravelGroupUser(@RequestBody TravelGroupUserEntity travelGroupUserEntity) {
+        return travelService.insertTravelGroupUser(travelGroupUserEntity);
+    }
+
+    /**
+     * <pre>
+     * 1. MethodName : deleteTravelGroupUser
+     * 2. ClassName  : TravelController.java
+     * 3. Comment    : 유저 여행 그룹 삭제
+     * 4. 작성자       : CHO
+     * 5. 작성일       : 2022. 11. 27.
+     * </pre>
+     */
+    @ApiOperation(value = "유저 여행 그룹 삭제", notes = "유저 여행 그룹을 삭제한다.")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "유저 여행 그룹 삭제 성공", response = Map.class),
+            @ApiResponse(code = 400, message = "잘못된 요청", response = HttpClientErrorException.BadRequest.class),
+            @ApiResponse(code = 401, message = "허용되지 않는 관리자", response = HttpClientErrorException.Unauthorized.class),
+            @ApiResponse(code = 403, message = "접근거부", response = HttpClientErrorException.class),
+            @ApiResponse(code = 500, message = "서버 에러", response = ServerError.class)
+    })
+    @DeleteMapping("/{idx}/group_user")
+    public Long deleteTravelGroupUser(@PathVariable Long idx) {
+        return travelService.deleteTravelGroupUser(idx);
     }
 }

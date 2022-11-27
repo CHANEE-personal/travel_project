@@ -2,6 +2,7 @@ package com.travel.travel_project.admin.travel;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.travel.travel_project.domain.travel.group.TravelGroupEntity;
+import com.travel.travel_project.domain.travel.group.TravelGroupUserEntity;
 import com.travel.travel_project.domain.travel.review.TravelReviewEntity;
 import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.BeforeEach;
@@ -265,5 +266,39 @@ class TravelControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(content().contentType("application/json;charset=utf-8"))
                 .andExpect(content().string(getString(travelGroupEntity.getIdx())));
+    }
+
+    @Test
+    @DisplayName("유저 여행 그룹 등록 테스트")
+    void 유저여행그룹등록테스트() throws Exception {
+        TravelGroupUserEntity travelGroupUserEntity = TravelGroupUserEntity.builder()
+                .userIdx(1L)
+                .groupIdx(1L)
+                .build();
+
+        mockMvc.perform(post("/api/travel/group_user")
+                        .contentType(APPLICATION_JSON_VALUE)
+                        .content(objectMapper.writeValueAsString(travelGroupUserEntity)))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(content().contentType("application/json;charset=utf-8"))
+                .andExpect(jsonPath("$.userIdx").value(1L))
+                .andExpect(jsonPath("$.groupIdx").value(1L));
+    }
+
+    @Test
+    @DisplayName("유저 여행 그룹 삭제 테스트")
+    void 유저여행그룹삭제테스트() throws Exception {
+        TravelGroupUserEntity travelGroupUserEntity = TravelGroupUserEntity.builder()
+                .userIdx(1L)
+                .groupIdx(1L)
+                .build();
+
+        em.persist(travelGroupUserEntity);
+        mockMvc.perform(delete("/api/travel/{idx}/group_user", travelGroupUserEntity.getIdx()))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(content().contentType("application/json;charset=utf-8"))
+                .andExpect(content().string(getString(travelGroupUserEntity.getIdx())));
     }
 }

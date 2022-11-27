@@ -8,6 +8,8 @@ import com.travel.travel_project.api.travel.TravelRepository;
 import com.travel.travel_project.api.travel.mapper.TravelMapper;
 import com.travel.travel_project.domain.travel.group.TravelGroupDTO;
 import com.travel.travel_project.domain.travel.group.TravelGroupEntity;
+import com.travel.travel_project.domain.travel.group.TravelGroupUserDTO;
+import com.travel.travel_project.domain.travel.group.TravelGroupUserEntity;
 import com.travel.travel_project.domain.travel.review.TravelReviewDTO;
 import com.travel.travel_project.domain.travel.review.TravelReviewEntity;
 import lombok.RequiredArgsConstructor;
@@ -962,5 +964,46 @@ class TravelRepositoryTest {
 
         InOrder inOrder = inOrder(mockTravelRepository);
         inOrder.verify(mockTravelRepository).findOneTravelGroup(travelGroupDTO.getIdx());
+    }
+
+    @Test
+    @DisplayName("유저 여행 그룹 등록 Mockito 테스트")
+    void 유저여행그룹등록Mockito테스트() {
+        // given
+        TravelGroupEntity travelGroupEntity = TravelGroupEntity.builder()
+                .travelIdx(1L).groupName("서울모임").groupDescription("서울모임").visible("Y").build();
+        em.persist(travelGroupEntity);
+
+        TravelGroupDTO travelGroupDTO = TravelGroupMapper.INSTANCE.toDto(travelGroupEntity);
+
+        TravelGroupUserEntity travelGroupUserEntity = TravelGroupUserEntity.builder()
+                .userIdx(1L).groupIdx(travelGroupDTO.getIdx()).build();
+
+        TravelGroupUserDTO travelGroupUserInfo = travelRepository.insertTravelGroupUser(travelGroupUserEntity);
+
+        // then
+        assertThat(travelGroupUserInfo.getGroupIdx()).isEqualTo(travelGroupDTO.getIdx());
+        assertThat(travelGroupUserInfo.getUserIdx()).isEqualTo(1L);
+    }
+
+    @Test
+    @DisplayName("유저 여행 그룹 삭제 Mockito 테스트")
+    void 유저여행그룹삭제Mockito테스트() {
+        // given
+        TravelGroupEntity travelGroupEntity = TravelGroupEntity.builder()
+                .travelIdx(1L).groupName("서울모임").groupDescription("서울모임").visible("Y").build();
+        em.persist(travelGroupEntity);
+
+        TravelGroupDTO travelGroupDTO = TravelGroupMapper.INSTANCE.toDto(travelGroupEntity);
+
+        TravelGroupUserEntity travelGroupUserEntity = TravelGroupUserEntity.builder()
+                .userIdx(1L).groupIdx(travelGroupDTO.getIdx()).build();
+
+        TravelGroupUserDTO travelGroupUserInfo = travelRepository.insertTravelGroupUser(travelGroupUserEntity);
+
+        Long deleteIdx = travelRepository.deleteTravelGroupUser(travelGroupUserInfo.getIdx());
+
+        // then
+        assertThat(deleteIdx).isEqualTo(travelGroupUserInfo.getIdx());
     }
 }

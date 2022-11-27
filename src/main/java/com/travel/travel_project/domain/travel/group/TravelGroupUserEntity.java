@@ -26,19 +26,19 @@ public class TravelGroupUserEntity {
     @Column(name = "idx")
     private Long idx;
 
-    @Column(name = "user_idx", insertable = false, updatable = false)
+    @Column(name = "user_idx")
     @NotNull(message = "유저 idx 입력은 필수입니다.")
     private Long userIdx;
 
-    @Column(name = "group_idx", insertable = false, updatable = false)
+    @Column(name = "group_idx")
     @NotNull(message = "그룹 idx 입력은 필수입니다.")
     private Long groupIdx;
 
     @ManyToOne
-    @JoinColumn(name = "user_idx")
+    @JoinColumn(name = "idx", insertable = false, updatable = false)
     private UserEntity userEntity;
 
     @ManyToOne
-    @JoinColumn(name = "group_idx")
+    @JoinColumn(name = "idx", insertable = false, updatable = false)
     private TravelGroupEntity travelGroupEntity;
 }

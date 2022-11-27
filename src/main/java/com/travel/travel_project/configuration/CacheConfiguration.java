@@ -28,6 +28,7 @@ public class CacheConfiguration {
                 new ConcurrentMapCache("user"),
                 new ConcurrentMapCache("travel"),
                 new ConcurrentMapCache("group"),
+                new ConcurrentMapCache("group_user"),
                 new ConcurrentMapCache("post"),
                 new ConcurrentMapCache("review"),
                 new ConcurrentMapCache("notice"),
