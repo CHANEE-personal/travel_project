@@ -12,6 +12,7 @@ import com.travel.travel_project.domain.travel.group.*;
 import com.travel.travel_project.domain.travel.review.QTravelReviewEntity;
 import com.travel.travel_project.domain.travel.review.TravelReviewDTO;
 import com.travel.travel_project.domain.travel.review.TravelReviewEntity;
+import com.travel.travel_project.exception.TravelException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
@@ -28,7 +29,9 @@ import static com.travel.travel_project.api.travel.mapper.TravelMapper.INSTANCE;
 import static com.travel.travel_project.domain.common.QCommonEntity.commonEntity;
 import static com.travel.travel_project.domain.travel.QTravelEntity.travelEntity;
 import static com.travel.travel_project.domain.travel.group.QTravelGroupEntity.travelGroupEntity;
+import static com.travel.travel_project.domain.travel.group.QTravelGroupUserEntity.travelGroupUserEntity;
 import static com.travel.travel_project.domain.travel.review.QTravelReviewEntity.travelReviewEntity;
+import static com.travel.travel_project.exception.ApiExceptionType.NOT_FOUND_TRAVEL_GROUP;
 import static java.time.LocalDate.now;
 import static java.time.LocalDateTime.of;
 
@@ -514,11 +517,27 @@ public class TravelRepository {
      * 2. ClassName  : TravelRepository.java
      * 3. Comment    : 유저 여행지 그룹 등록
      * 4. 작성자       : CHO
-     * 5. 작성일       : 2022. 11. 25.
+     * 5. 작성일       : 2022. 11. 27.
      * </pre>
      */
     public TravelGroupUserDTO insertTravelGroupUser(TravelGroupUserEntity travelGroupUserEntity) {
         em.persist(travelGroupUserEntity);
         return TravelGroupUserMapper.INSTANCE.toDto(travelGroupUserEntity);
+    }
+
+    /**
+     * <pre>
+     * 1. MethodName : deleteTravelGroupUser
+     * 2. ClassName  : TravelRepository.java
+     * 3. Comment    : 유저 여행지 그룹 삭제
+     * 4. 작성자       : CHO
+     * 5. 작성일       : 2022. 11. 27.
+     * </pre>
+     */
+    public Long deleteTravelGroupUser(Long idx) {
+        em.remove(em.find(TravelGroupUserEntity.class, idx));
+        em.flush();
+        em.clear();
+        return idx;
     }
 }
