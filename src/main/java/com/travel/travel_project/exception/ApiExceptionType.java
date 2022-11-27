@@ -49,7 +49,9 @@ public enum ApiExceptionType implements BaseExceptionType {
     NOT_FOUND_TRAVEL_GROUP("NOT_FOUND_TRAVEL_GROUP", 200, "여행 그룹 상세 없음"),
     ERROR_TRAVEL_GROUP("ERROR_TRAVEL_GROUP", 500, "여행 그룹 등록 에러"),
     ERROR_UPDATE_TRAVEL_GROUP("ERROR_UPDATE_TRAVEL_GROUP", 500, "여행 그룹 수정 에러"),
-    ERROR_DELETE_TRAVEL_GROUP("ERROR_DELETE_TRAVEL_GROUP", 500, "여행 그룹 삭제 에러");
+    ERROR_DELETE_TRAVEL_GROUP("ERROR_DELETE_TRAVEL_GROUP", 500, "여행 그룹 삭제 에러"),
+    ERROR_TRAVEL_GROUP_UESR("ERROR_TRAVEL_GROUP_USER", 500, "유저 여행 그룹 등록 에러"),
+    ERROR_DELETE_TRAVEL_GROUP_USER("ERROR_DELETE_TRAVEL_GROUP_USER", 500, "유저 여행 그룹 삭제 에러");
 
     private final String errorCode;
     private final int httpStatus;

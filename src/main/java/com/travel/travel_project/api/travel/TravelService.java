@@ -2,6 +2,7 @@ package com.travel.travel_project.api.travel;
 
 import com.travel.travel_project.domain.travel.group.TravelGroupDTO;
 import com.travel.travel_project.domain.travel.group.TravelGroupEntity;
+import com.travel.travel_project.domain.travel.group.TravelGroupUserDTO;
 import com.travel.travel_project.domain.travel.group.TravelGroupUserEntity;
 import com.travel.travel_project.domain.travel.review.TravelReviewDTO;
 import com.travel.travel_project.domain.travel.review.TravelReviewEntity;
@@ -405,6 +406,46 @@ public class TravelService {
             return travelRepository.deleteTravelGroup(idx);
         } catch (Exception e) {
             throw new TravelException(ERROR_DELETE_TRAVEL_GROUP, e);
+        }
+    }
+
+    /**
+     * <pre>
+     * 1. MethodName : insertTravelGroupUser
+     * 2. ClassName  : TravelService.java
+     * 3. Comment    : 유저 여행 그룹 등록
+     * 4. 작성자       : CHO
+     * 5. 작성일       : 2022. 11. 27.
+     * </pre>
+     */
+    @CachePut("group_user")
+    @Modifying(clearAutomatically = true)
+    @Transactional
+    public TravelGroupUserDTO insertTravelGroupUser(TravelGroupUserEntity travelGroupUserEntity) {
+        try {
+            return travelRepository.insertTravelGroupUser(travelGroupUserEntity);
+        } catch (Exception e) {
+            throw new TravelException(ERROR_TRAVEL_GROUP_UESR, e);
+        }
+    }
+
+    /**
+     * <pre>
+     * 1. MethodName : deleteTravelGroupUser
+     * 2. ClassName  : TravelService.java
+     * 3. Comment    : 유저 여행 그룹 삭제
+     * 4. 작성자       : CHO
+     * 5. 작성일       : 2022. 11. 27.
+     * </pre>
+     */
+    @CacheEvict("group_user")
+    @Modifying(clearAutomatically = true)
+    @Transactional
+    public Long deleteTravelGroupUser(Long idx) {
+        try {
+            return travelRepository.deleteTravelGroupUser(idx);
+        } catch (Exception e) {
+            throw new TravelException(ERROR_DELETE_TRAVEL_GROUP_USER, e);
         }
     }
 }
