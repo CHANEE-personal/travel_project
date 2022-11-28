@@ -74,4 +74,16 @@ public class TravelEntity extends NewCommonMappedClass {
 
     @OneToMany(mappedBy = "newTravelEntity")
     private List<TravelReviewEntity> travelReviewEntityList = new ArrayList<>();
+
+    public void togglePopular(Boolean popular) {
+        this.popular = !popular;
+    }
+
+    public void updateViewCount() {
+        this.viewCount++;
+    }
+
+    public void updateFavoriteCount() {
+        this.favoriteCount++;
+    }
 }

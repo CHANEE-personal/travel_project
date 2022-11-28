@@ -3,16 +3,13 @@ package com.travel.travel_project.api.travel;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.travel.travel_project.api.travel.mapper.group.TravelGroupMapper;
-import com.travel.travel_project.api.travel.mapper.group.TravelGroupMapperImpl;
 import com.travel.travel_project.api.travel.mapper.group.TravelGroupUserMapper;
 import com.travel.travel_project.api.travel.mapper.review.TravelReviewMapper;
 import com.travel.travel_project.domain.travel.TravelDTO;
 import com.travel.travel_project.domain.travel.TravelEntity;
 import com.travel.travel_project.domain.travel.group.*;
-import com.travel.travel_project.domain.travel.review.QTravelReviewEntity;
 import com.travel.travel_project.domain.travel.review.TravelReviewDTO;
 import com.travel.travel_project.domain.travel.review.TravelReviewEntity;
-import com.travel.travel_project.exception.TravelException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
@@ -21,7 +18,6 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 import static com.travel.travel_project.common.StringUtil.getInt;
 import static com.travel.travel_project.common.StringUtil.getString;
@@ -29,9 +25,7 @@ import static com.travel.travel_project.api.travel.mapper.TravelMapper.INSTANCE;
 import static com.travel.travel_project.domain.common.QCommonEntity.commonEntity;
 import static com.travel.travel_project.domain.travel.QTravelEntity.travelEntity;
 import static com.travel.travel_project.domain.travel.group.QTravelGroupEntity.travelGroupEntity;
-import static com.travel.travel_project.domain.travel.group.QTravelGroupUserEntity.travelGroupUserEntity;
 import static com.travel.travel_project.domain.travel.review.QTravelReviewEntity.travelReviewEntity;
-import static com.travel.travel_project.exception.ApiExceptionType.NOT_FOUND_TRAVEL_GROUP;
 import static java.time.LocalDate.now;
 import static java.time.LocalDateTime.of;
 
@@ -130,18 +124,13 @@ public class TravelRepository {
      * 5. 작성일       : 2022. 10. 05.
      * </pre>
      */
-    public TravelDTO findOneTravel(Long idx) {
-        // 조회 수 증가
-        viewTravel(idx);
-
-        TravelEntity findOneTravel = queryFactory
+    public TravelEntity findOneTravel(Long idx) {
+        return queryFactory
                 .selectFrom(travelEntity)
                 .orderBy(travelEntity.idx.desc())
                 .where(travelEntity.idx.eq(idx)
                         .and(travelEntity.visible.eq("Y")))
                 .fetchOne();
-
-        return INSTANCE.toDto(findOneTravel);
     }
 
     /**
@@ -193,9 +182,9 @@ public class TravelRepository {
      * 5. 작성일       : 2022. 10. 05.
      * </pre>
      */
-    public TravelDTO insertTravel(TravelEntity travelEntity) {
+    public TravelEntity insertTravel(TravelEntity travelEntity) {
         em.persist(travelEntity);
-        return INSTANCE.toDto(travelEntity);
+        return travelEntity;
     }
 
     /**
@@ -207,11 +196,11 @@ public class TravelRepository {
      * 5. 작성일       : 2022. 10. 05.
      * </pre>
      */
-    public TravelDTO updateTravel(TravelEntity travelEntity) {
+    public TravelEntity updateTravel(TravelEntity travelEntity) {
         em.merge(travelEntity);
         em.flush();
         em.clear();
-        return INSTANCE.toDto(travelEntity);
+        return travelEntity;
     }
 
     /**
