@@ -139,4 +139,25 @@ public class NoticeService {
             throw new TravelException(ERROR_DELETE_NOTICE, e);
         }
     }
+
+    /**
+     * <pre>
+     * 1. MethodName : updateTopFixed
+     * 2. ClassName  : NoticeService.java
+     * 3. Comment    : 공지사항 고정글
+     * 4. 작성자       : CHO
+     * 5. 작성일       : 2022. 11. 28.
+     * </pre>
+     */
+    @Modifying(clearAutomatically = true)
+    @Transactional
+    public NoticeDTO toggleTopFixed(Long idx) {
+        try {
+            NoticeEntity noticeEntity = noticeRepository.findOneNotice(idx);
+            noticeEntity.toggleTopFixed(noticeEntity.getTopFixed());
+            return NoticeMapper.INSTANCE.toDto(noticeEntity);
+        } catch (Exception e) {
+            throw new TravelException(NOT_FOUND_NOTICE, e);
+        }
+    }
 }

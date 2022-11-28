@@ -50,6 +50,7 @@ class NoticeServiceTest {
         noticeEntity = NoticeEntity.builder()
                 .title("공지사항 등록 테스트")
                 .description("공지사항 등록 테스트")
+                .topFixed(false)
                 .visible("Y").viewCount(1)
                 .build();
 
@@ -202,5 +203,16 @@ class NoticeServiceTest {
 
         InOrder inOrder = inOrder(mockNoticeService);
         inOrder.verify(mockNoticeService).findOneNotice(noticeDTO.getIdx());
+    }
+
+    @Test
+    @DisplayName("공지사항 고정글 테스트")
+    void 공지사항고정글테스트() {
+        NoticeDTO oneNotice = noticeService.insertNotice(noticeEntity);
+        Boolean trueFixed = noticeService.toggleTopFixed(oneNotice.getIdx()).getTopFixed();
+        assertThat(trueFixed).isEqualTo(true);
+
+        Boolean falseFixed = noticeService.toggleTopFixed(oneNotice.getIdx()).getTopFixed();
+        assertThat(falseFixed).isEqualTo(false);
     }
 }
