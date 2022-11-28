@@ -150,4 +150,24 @@ class NoticeControllerTest {
                 .andExpect(content().contentType("application/json;charset=utf-8"))
                 .andExpect(content().string(getString(noticeEntity.getIdx())));
     }
+
+    @Test
+    @DisplayName("공지사항 고정글 설정 테스트")
+    void 공지사항고정글설정테스트() throws Exception {
+        NoticeEntity noticeEntity = NoticeEntity.builder()
+                .title("공지사항 등록 테스트")
+                .description("공지사항 등록 테스트")
+                .viewCount(1)
+                .topFixed(false)
+                .visible("Y")
+                .build();
+
+        em.persist(noticeEntity);
+
+        mockMvc.perform(put("/api/notice/{idx}/toggle-fixed", noticeEntity.getIdx()))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(content().contentType("application/json;charset=utf-8"))
+                .andExpect(jsonPath("$.topFixed").value(true));
+    }
 }
