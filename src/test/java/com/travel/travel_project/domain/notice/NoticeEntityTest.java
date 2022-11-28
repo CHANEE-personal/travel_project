@@ -5,7 +5,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 
 class NoticeEntityTest {
     private NoticeEntity noticeEntity;
@@ -23,12 +22,22 @@ class NoticeEntityTest {
 
     @Test
     @DisplayName("조회수 증가 테스트")
-    void increaseView() {
+    void updateViewCount() {
         // when
         int beforeView = noticeEntity.getViewCount();
         noticeEntity.updateViewCount();
 
         // then
         assertThat(noticeEntity.getViewCount()).isEqualTo(beforeView + 1);
+    }
+
+    @Test
+    @DisplayName("고정글 테스트")
+    void updateTopFixed() {
+        // when
+        Boolean topFixed = noticeEntity.getTopFixed();
+        noticeEntity.toggleTopFixed(topFixed);
+        // then
+        assertThat(noticeEntity.getTopFixed()).isEqualTo(true);
     }
 }

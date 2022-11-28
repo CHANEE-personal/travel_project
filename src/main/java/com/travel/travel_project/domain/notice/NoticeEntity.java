@@ -51,4 +51,9 @@ public class NoticeEntity extends NewCommonMappedClass {
     public void updateViewCount() {
         this.viewCount++;
     }
+
+    // 고정글 수정
+    public void toggleTopFixed(Boolean topFixed) {
+        this.topFixed = !topFixed;
+    }
 }
