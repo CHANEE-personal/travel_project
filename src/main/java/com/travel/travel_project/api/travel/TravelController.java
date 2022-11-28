@@ -185,7 +185,7 @@ public class TravelController {
             @ApiResponse(code = 500, message = "서버 에러", response = ServerError.class)
     })
     @PutMapping("/{idx}/favorite")
-    public Integer favoriteTravel(@PathVariable Long idx) {
+    public int favoriteTravel(@PathVariable Long idx) {
         return travelService.favoriteTravel(idx);
     }
 

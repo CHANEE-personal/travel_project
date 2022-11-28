@@ -1,5 +1,6 @@
 package com.travel.travel_project.api.travel;
 
+import com.travel.travel_project.api.travel.mapper.TravelMapper;
 import com.travel.travel_project.domain.travel.group.TravelGroupDTO;
 import com.travel.travel_project.domain.travel.group.TravelGroupEntity;
 import com.travel.travel_project.domain.travel.group.TravelGroupUserDTO;
@@ -75,7 +76,9 @@ public class TravelService {
     @Transactional(readOnly = true)
     public TravelDTO findOneTravel(Long idx) throws TravelException {
         try {
-            return travelRepository.findOneTravel(idx);
+            TravelEntity travelEntity = travelRepository.findOneTravel(idx);
+            travelEntity.updateViewCount();
+            return TravelMapper.INSTANCE.toDto(travelEntity);
         } catch (Exception e) {
             throw new TravelException(NOT_FOUND_TRAVEL, e);
         }
@@ -95,7 +98,8 @@ public class TravelService {
     @Transactional
     public TravelDTO insertTravel(TravelEntity adminTravelEntity) throws TravelException {
         try {
-            return travelRepository.insertTravel(adminTravelEntity);
+            TravelEntity insertTravelEntity = travelRepository.insertTravel(adminTravelEntity);
+            return TravelMapper.INSTANCE.toDto(insertTravelEntity);
         } catch (Exception e) {
             throw new TravelException(ERROR_TRAVEL, e);
         }
@@ -115,7 +119,8 @@ public class TravelService {
     @Transactional
     public TravelDTO updateTravel(TravelEntity adminTravelEntity) throws TravelException {
         try {
-            return travelRepository.updateTravel(adminTravelEntity);
+            TravelEntity updateTravelEntity = travelRepository.updateTravel(adminTravelEntity);
+            return TravelMapper.INSTANCE.toDto(updateTravelEntity);
         } catch (Exception e) {
             throw new TravelException(ERROR_UPDATE_TRAVEL, e);
         }
@@ -153,9 +158,11 @@ public class TravelService {
     @CachePut("travel")
     @Modifying(clearAutomatically = true)
     @Transactional
-    public Integer favoriteTravel(Long idx) throws TravelException {
+    public int favoriteTravel(Long idx) throws TravelException {
         try {
-            return travelRepository.favoriteTravel(idx);
+            TravelEntity oneTravel = travelRepository.findOneTravel(idx);
+            oneTravel.updateFavoriteCount();
+            return oneTravel.getFavoriteCount();
         } catch (Exception e) {
             throw new TravelException(ERROR_FAVORITE_TRAVEL, e);
         }
@@ -289,7 +296,9 @@ public class TravelService {
     @Transactional
     public TravelDTO togglePopular(Long idx) throws TravelException {
         try {
-            return travelRepository.togglePopular(idx);
+            TravelEntity oneTravel = travelRepository.findOneTravel(idx);
+            oneTravel.togglePopular(oneTravel.getPopular());
+            return TravelMapper.INSTANCE.toDto(oneTravel);
         } catch (Exception e) {
             throw new TravelException(ERROR_UPDATE_TRAVEL, e);
         }

@@ -2,6 +2,7 @@ package com.travel.travel_project.admin.travel;
 
 import com.travel.travel_project.api.travel.mapper.group.TravelGroupMapper;
 import com.travel.travel_project.api.travel.mapper.review.TravelReviewMapper;
+import com.travel.travel_project.domain.notice.NoticeDTO;
 import com.travel.travel_project.domain.travel.TravelDTO;
 import com.travel.travel_project.domain.travel.TravelEntity;
 import com.travel.travel_project.api.travel.TravelService;
@@ -66,8 +67,9 @@ class TravelServiceTest {
                 .travelDescription("여행지 소개")
                 .travelAddress("인천광역시 서구")
                 .travelZipCode("123-456")
-                .favoriteCount(0)
+                .favoriteCount(1)
                 .viewCount(0)
+                .popular(false)
                 .visible("Y")
                 .build();
 
@@ -162,15 +164,14 @@ class TravelServiceTest {
     @DisplayName("여행지소개상세Mockito테스트")
     void 여행지소개상세Mockito테스트() {
         // given
-        travelDTO = TravelDTO.builder()
-                .idx(1L)
-                .travelCode(1)
-                .travelTitle("여행지 테스트").travelDescription("여행지 테스트")
-                .travelAddress("인천광역시 서구").travelZipCode("123-456").visible("Y")
-                .build();
+        TravelDTO newTravel = travelService.insertTravel(travelEntity);
+
+        // 조회 수 관련 테스트
+        TravelDTO oneTravel = travelService.findOneTravel(newTravel.getIdx());
+        assertThat(newTravel.getViewCount() + 1).isEqualTo(oneTravel.getViewCount());
 
         // when
-        given(mockTravelService.findOneTravel(1L)).willReturn(travelDTO);
+        when(mockTravelService.findOneTravel(1L)).thenReturn(travelDTO);
         TravelDTO newAdminTravel = mockTravelService.findOneTravel(1L);
 
         // then
@@ -400,6 +401,22 @@ class TravelServiceTest {
         then(mockTravelService).should(times(1)).findOneTravel(travelDTO.getIdx());
         then(mockTravelService).should(atLeastOnce()).findOneTravel(travelDTO.getIdx());
         then(mockTravelService).shouldHaveNoMoreInteractions();
+    }
+
+    @Test
+    @DisplayName("여행지좋아요테스트")
+    void 여행지좋아요테스트() {
+        TravelDTO oneTravel = travelService.insertTravel(travelEntity);
+        int favoriteCount = travelService.favoriteTravel(oneTravel.getIdx());
+        assertThat(favoriteCount).isEqualTo(oneTravel.getFavoriteCount() + 1);
+    }
+
+    @Test
+    @DisplayName("인기여행지선정테스트")
+    void 인기여행지선정테스트() {
+        TravelDTO oneTravel = travelService.insertTravel(travelEntity);
+        Boolean popular = travelService.togglePopular(oneTravel.getIdx()).getPopular();
+        assertThat(popular).isTrue();
     }
 
     @Test
