@@ -5,8 +5,10 @@ import com.travel.travel_project.domain.faq.FaqDTO;
 import com.travel.travel_project.domain.faq.FaqEntity;
 import com.travel.travel_project.exception.TravelException;
 import lombok.RequiredArgsConstructor;
+import org.hibernate.annotations.Cache;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -49,6 +51,7 @@ public class FaqService {
      * 5. 작성일      : 2022. 11. 29.
      * </pre>
      */
+//    @Cacheable(value = "faq", cacheManager = "redisCacheManager")
     @Transactional(readOnly = true)
     public List<FaqDTO> findFaqList(Map<String, Object> faqMap) {
         try {
@@ -67,6 +70,7 @@ public class FaqService {
      * 5. 작성일      : 2022. 11. 29.
      * </pre>
      */
+//    @Cacheable(value = "faq", key = "#idx", condition="#idx!=null", cacheManager = "redisCacheManager")
     @Transactional(readOnly = true)
     public FaqDTO findOneFaq(Long idx) {
         try {

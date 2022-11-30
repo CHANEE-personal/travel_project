@@ -58,4 +58,9 @@ public class FaqEntity {
     public void updateViewCount() {
         this.viewCount++;
     }
+
+    @Override
+    public String toString() {
+        return super.toString();
+    }
 }

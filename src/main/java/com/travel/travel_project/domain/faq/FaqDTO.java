@@ -40,4 +40,9 @@ public class FaqDTO {
     @NotEmpty(message = "공지사항 노출 여부 선택은 필수입니다.")
     @ApiModelProperty(required = true, value = "visible")
     private String visible;
+
+    @Override
+    public String toString() {
+        return super.toString();
+    }
 }
