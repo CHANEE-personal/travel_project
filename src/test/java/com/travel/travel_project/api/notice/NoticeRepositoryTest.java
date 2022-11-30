@@ -99,7 +99,7 @@ class NoticeRepositoryTest {
     @DisplayName("공지사항 상세 조회 Mockito 테스트")
     void 공지사항상세조회Mockito테스트() {
         // when
-        given(mockNoticeRepository.findOneNotice(noticeDTO.getIdx())).willReturn(noticeEntity);
+        when(mockNoticeRepository.findOneNotice(noticeDTO.getIdx())).thenReturn(noticeEntity);
         NoticeEntity noticeInfo = mockNoticeRepository.findOneNotice(noticeDTO.getIdx());
 
         // then

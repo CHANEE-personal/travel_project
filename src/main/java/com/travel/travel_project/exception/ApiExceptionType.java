@@ -58,7 +58,14 @@ public enum ApiExceptionType implements BaseExceptionType {
     NOT_FOUND_NOTICE("NOT_FOUND_NOTICE", 200, "공지사항 상세 없음"),
     ERROR_NOTICE("ERROR_NOTICE", 500, "공지사항 등록 에러"),
     ERROR_UPDATE_NOTICE("ERROR_UPDATE_NOTICE", 500, "공지사항 수정 에러"),
-    ERROR_DELETE_NOTICE("ERROR_DELETE_NOTICE", 500, "공지사항 삭제 에러");
+    ERROR_DELETE_NOTICE("ERROR_DELETE_NOTICE", 500, "공지사항 삭제 에러"),
+
+    // FAQ 관련
+    NOT_FOUND_FAQ_LIST("NOT_FOUND_FAQ_LIST", 200, "FAQ 리스트 없음"),
+    NOT_FOUND_FAQ("NOT_FOUND_FAQ", 200, "FAQ 상세 없음"),
+    ERROR_FAQ("ERROR_FAQ", 500, "FAQ 등록 에러"),
+    ERROR_UPDATE_FAQ("ERROR_UPDATE_FAQ", 500, "FAQ 수정 에러"),
+    ERROR_DELETE_FAQ("ERROR_DELETE_FAQ", 500, "FAQ 삭제 에러");
 
 
     private final String errorCode;

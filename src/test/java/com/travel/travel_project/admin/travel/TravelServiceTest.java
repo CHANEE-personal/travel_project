@@ -2,7 +2,6 @@ package com.travel.travel_project.admin.travel;
 
 import com.travel.travel_project.api.travel.mapper.group.TravelGroupMapper;
 import com.travel.travel_project.api.travel.mapper.review.TravelReviewMapper;
-import com.travel.travel_project.domain.notice.NoticeDTO;
 import com.travel.travel_project.domain.travel.TravelDTO;
 import com.travel.travel_project.domain.travel.TravelEntity;
 import com.travel.travel_project.api.travel.TravelService;
