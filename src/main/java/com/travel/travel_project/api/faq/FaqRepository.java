@@ -2,6 +2,7 @@ package com.travel.travel_project.api.faq;
 
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import com.travel.travel_project.domain.common.QCommonEntity;
 import com.travel.travel_project.domain.faq.FaqEntity;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -12,6 +13,7 @@ import java.util.Map;
 
 import static com.travel.travel_project.common.StringUtil.getInt;
 import static com.travel.travel_project.common.StringUtil.getString;
+import static com.travel.travel_project.domain.common.QCommonEntity.commonEntity;
 import static com.travel.travel_project.domain.faq.QFaqEntity.faqEntity;
 
 @Repository
@@ -59,6 +61,8 @@ public class FaqRepository {
     public List<FaqEntity> findFaqList(Map<String, Object> faqMap) {
         List<FaqEntity> faqList = queryFactory.selectFrom(faqEntity)
                 .orderBy(faqEntity.idx.desc())
+                .innerJoin(faqEntity.newFaqCode, commonEntity)
+                .fetchJoin()
                 .where(searchFaqInfo(faqMap))
                 .fetch();
 
@@ -78,7 +82,9 @@ public class FaqRepository {
      * </pre>
      */
     public FaqEntity findOneFaq(Long idx) {
-        return queryFactory.selectFrom(faqEntity)
+        return queryFactory
+                .selectFrom(faqEntity)
+                .innerJoin(faqEntity.newFaqCode, commonEntity)
                 .where(faqEntity.idx.eq(idx))
                 .fetchOne();
     }
