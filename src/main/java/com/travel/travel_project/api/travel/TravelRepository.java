@@ -127,7 +127,7 @@ public class TravelRepository {
     public TravelEntity findOneTravel(Long idx) {
         return queryFactory
                 .selectFrom(travelEntity)
-                .orderBy(travelEntity.idx.desc())
+                .innerJoin(travelEntity.newTravelCode, commonEntity)
                 .where(travelEntity.idx.eq(idx)
                         .and(travelEntity.visible.eq("Y")))
                 .fetchOne();

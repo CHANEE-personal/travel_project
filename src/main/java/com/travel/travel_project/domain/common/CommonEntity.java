@@ -1,5 +1,6 @@
 package com.travel.travel_project.domain.common;
 
+import com.travel.travel_project.domain.faq.FaqEntity;
 import com.travel.travel_project.domain.travel.TravelEntity;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
@@ -46,4 +47,6 @@ public class CommonEntity extends NewCommonMappedClass {
     @OneToMany(mappedBy = "newTravelCode", cascade = MERGE, fetch = LAZY)
     private List<TravelEntity> adminTravelEntityList = new ArrayList<>();
 
+    @OneToMany(mappedBy = "newFaqCode", cascade = MERGE, fetch = LAZY)
+    private List<FaqEntity> faqEntityList = new ArrayList<>();
 }
