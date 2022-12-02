@@ -86,7 +86,7 @@ class TravelRepositoryTest {
         travelMap.put("size", 3);
 
         // then
-        assertThat(travelRepository.findTravelsList(travelMap)).isNotEmpty();
+        assertThat(travelRepository.findTravelList(travelMap)).isNotEmpty();
     }
 
     @Test
@@ -104,8 +104,8 @@ class TravelRepositoryTest {
                 .travelAddress("인천광역시 서구").travelZipCode("123-456").visible("Y").build());
 
         // when
-        when(mockTravelRepository.findTravelsList(travelMap)).thenReturn(travelList);
-        List<TravelDTO> newTravelList = mockTravelRepository.findTravelsList(travelMap);
+        when(mockTravelRepository.findTravelList(travelMap)).thenReturn(travelList);
+        List<TravelDTO> newTravelList = mockTravelRepository.findTravelList(travelMap);
 
         // then
         assertThat(newTravelList.get(0).getIdx()).isEqualTo(travelList.get(0).getIdx());
@@ -116,12 +116,12 @@ class TravelRepositoryTest {
         assertThat(newTravelList.get(0).getTravelZipCode()).isEqualTo(travelList.get(0).getTravelZipCode());
 
         // verify
-        verify(mockTravelRepository, times(1)).findTravelsList(travelMap);
-        verify(mockTravelRepository, atLeastOnce()).findTravelsList(travelMap);
+        verify(mockTravelRepository, times(1)).findTravelList(travelMap);
+        verify(mockTravelRepository, atLeastOnce()).findTravelList(travelMap);
         verifyNoMoreInteractions(mockTravelRepository);
 
         InOrder inOrder = inOrder(mockTravelRepository);
-        inOrder.verify(mockTravelRepository).findTravelsList(travelMap);
+        inOrder.verify(mockTravelRepository).findTravelList(travelMap);
     }
 
     @Test
@@ -138,8 +138,8 @@ class TravelRepositoryTest {
                         .travelAddress("인천광역시 서구").travelZipCode("123-456").visible("Y").build());
 
         // when
-        when(mockTravelRepository.findTravelsList(travelMap)).thenReturn(travelList);
-        List<TravelDTO> newTravelList = mockTravelRepository.findTravelsList(travelMap);
+        when(mockTravelRepository.findTravelList(travelMap)).thenReturn(travelList);
+        List<TravelDTO> newTravelList = mockTravelRepository.findTravelList(travelMap);
 
         // then
         assertThat(newTravelList.get(0).getIdx()).isEqualTo(travelList.get(0).getIdx());
@@ -150,12 +150,12 @@ class TravelRepositoryTest {
         assertThat(newTravelList.get(0).getTravelZipCode()).isEqualTo(travelList.get(0).getTravelZipCode());
 
         // verify
-        verify(mockTravelRepository, times(1)).findTravelsList(travelMap);
-        verify(mockTravelRepository, atLeastOnce()).findTravelsList(travelMap);
+        verify(mockTravelRepository, times(1)).findTravelList(travelMap);
+        verify(mockTravelRepository, atLeastOnce()).findTravelList(travelMap);
         verifyNoMoreInteractions(mockTravelRepository);
 
         InOrder inOrder = inOrder(mockTravelRepository);
-        inOrder.verify(mockTravelRepository).findTravelsList(travelMap);
+        inOrder.verify(mockTravelRepository).findTravelList(travelMap);
     }
 
     @Test
@@ -172,8 +172,8 @@ class TravelRepositoryTest {
                 .travelAddress("인천광역시 서구").travelZipCode("123-456").visible("Y").build());
 
         // when
-        given(mockTravelRepository.findTravelsList(travelMap)).willReturn(travelList);
-        List<TravelDTO> newTravelList = mockTravelRepository.findTravelsList(travelMap);
+        given(mockTravelRepository.findTravelList(travelMap)).willReturn(travelList);
+        List<TravelDTO> newTravelList = mockTravelRepository.findTravelList(travelMap);
 
         // then
         assertThat(newTravelList.get(0).getIdx()).isEqualTo(travelList.get(0).getIdx());
@@ -184,8 +184,8 @@ class TravelRepositoryTest {
         assertThat(newTravelList.get(0).getTravelZipCode()).isEqualTo(travelList.get(0).getTravelZipCode());
 
         // verify
-        then(mockTravelRepository).should(times(1)).findTravelsList(travelMap);
-        then(mockTravelRepository).should(atLeastOnce()).findTravelsList(travelMap);
+        then(mockTravelRepository).should(times(1)).findTravelList(travelMap);
+        then(mockTravelRepository).should(atLeastOnce()).findTravelList(travelMap);
         then(mockTravelRepository).shouldHaveNoMoreInteractions();
     }
 

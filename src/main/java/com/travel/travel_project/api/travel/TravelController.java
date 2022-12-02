@@ -41,7 +41,7 @@ public class TravelController {
 
     /**
      * <pre>
-     * 1. MethodName : findTravelsList
+     * 1. MethodName : findTravelList
      * 2. ClassName  : TravelController.java
      * 3. Comment    : 여행지 리스트 조회
      * 4. 작성자       : CHO
@@ -57,14 +57,14 @@ public class TravelController {
             @ApiResponse(code = 500, message = "서버 에러", response = ServerError.class)
     })
     @GetMapping(value = "/lists")
-    public Map<String, Object> findTravelsList(@RequestParam(required = false) Map<String, Object> paramMap, Page page) {
+    public Map<String, Object> findTravelList(@RequestParam(required = false) Map<String, Object> paramMap, Page page) {
         Map<String, Object> travelMap = new HashMap<>();
 
         int travelCount = this.travelService.findTravelCount(searchCommon.searchCommon(page, paramMap));
         List<TravelDTO> travelList = new ArrayList<>();
 
         if (travelCount > 0) {
-            travelList = this.travelService.findTravelsList(searchCommon.searchCommon(page, paramMap));
+            travelList = this.travelService.findTravelList(searchCommon.searchCommon(page, paramMap));
         }
 
         // 리스트 수

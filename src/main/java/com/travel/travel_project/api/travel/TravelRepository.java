@@ -89,14 +89,14 @@ public class TravelRepository {
 
     /**
      * <pre>
-     * 1. MethodName : findTravelsList
+     * 1. MethodName : findTravelList
      * 2. ClassName  : TravelRepository.java
      * 3. Comment    : 여행지 소개 리스트 조회
      * 4. 작성자       : CHO
      * 5. 작성일       : 2022. 10. 05.
      * </pre>
      */
-    public List<TravelDTO> findTravelsList(Map<String, Object> travelMap) {
+    public List<TravelDTO> findTravelList(Map<String, Object> travelMap) {
         List<TravelEntity> travelList = queryFactory
                 .selectFrom(travelEntity)
                 .orderBy(travelEntity.idx.desc())
@@ -165,7 +165,7 @@ public class TravelRepository {
     public TravelDTO findOneNextTravel(Long idx) {
         TravelEntity findOneNextTravel = queryFactory
                 .selectFrom(travelEntity)
-                .orderBy(travelEntity.idx.desc())
+                .orderBy(travelEntity.idx.asc())
                 .where(travelEntity.idx.gt(idx)
                         .and(travelEntity.visible.eq("Y")))
                 .fetchFirst();

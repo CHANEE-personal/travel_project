@@ -48,7 +48,7 @@ public class TravelService {
 
     /**
      * <pre>
-     * 1. MethodName : findTravelsList
+     * 1. MethodName : findTravelList
      * 2. ClassName  : TravelService.java
      * 3. Comment    : 여행지 소개 리스트 조회
      * 4. 작성자       : CHO
@@ -56,9 +56,9 @@ public class TravelService {
      * </pre>
      */
     @Transactional(readOnly = true)
-    public List<TravelDTO> findTravelsList(Map<String, Object> travelMap) throws TravelException {
+    public List<TravelDTO> findTravelList(Map<String, Object> travelMap) throws TravelException {
         try {
-            return travelRepository.findTravelsList(travelMap);
+            return travelRepository.findTravelList(travelMap);
         } catch (Exception e) {
             throw new TravelException(NOT_FOUND_TRAVEL_LIST, e);
         }

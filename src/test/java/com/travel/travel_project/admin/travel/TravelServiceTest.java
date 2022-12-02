@@ -91,7 +91,7 @@ class TravelServiceTest {
         travelMap.put("size", 3);
 
         // then
-        assertThat(travelService.findTravelsList(travelMap)).isNotEmpty();
+        assertThat(travelService.findTravelList(travelMap)).isNotEmpty();
     }
 
     @Test
@@ -108,8 +108,8 @@ class TravelServiceTest {
                 .travelAddress("인천광역시 서구").travelZipCode("123-456").visible("Y").build());
 
         // when
-        when(mockTravelService.findTravelsList(travelMap)).thenReturn(travelList);
-        List<TravelDTO> newTravelList = mockTravelService.findTravelsList(travelMap);
+        when(mockTravelService.findTravelList(travelMap)).thenReturn(travelList);
+        List<TravelDTO> newTravelList = mockTravelService.findTravelList(travelMap);
 
         // then
         assertThat(newTravelList.get(0).getIdx()).isEqualTo(travelList.get(0).getIdx());
@@ -120,12 +120,12 @@ class TravelServiceTest {
         assertThat(newTravelList.get(0).getTravelZipCode()).isEqualTo(travelList.get(0).getTravelZipCode());
 
         // verify
-        verify(mockTravelService, times(1)).findTravelsList(travelMap);
-        verify(mockTravelService, atLeastOnce()).findTravelsList(travelMap);
+        verify(mockTravelService, times(1)).findTravelList(travelMap);
+        verify(mockTravelService, atLeastOnce()).findTravelList(travelMap);
         verifyNoMoreInteractions(mockTravelService);
 
         InOrder inOrder = inOrder(mockTravelService);
-        inOrder.verify(mockTravelService).findTravelsList(travelMap);
+        inOrder.verify(mockTravelService).findTravelList(travelMap);
     }
 
     @Test
@@ -142,8 +142,8 @@ class TravelServiceTest {
                 .travelAddress("인천광역시 서구").travelZipCode("123-456").visible("Y").build());
 
         // when
-        given(mockTravelService.findTravelsList(travelMap)).willReturn(travelList);
-        List<TravelDTO> newTravelList = mockTravelService.findTravelsList(travelMap);
+        given(mockTravelService.findTravelList(travelMap)).willReturn(travelList);
+        List<TravelDTO> newTravelList = mockTravelService.findTravelList(travelMap);
 
         // then
         assertThat(newTravelList.get(0).getIdx()).isEqualTo(travelList.get(0).getIdx());
@@ -154,8 +154,8 @@ class TravelServiceTest {
         assertThat(newTravelList.get(0).getTravelZipCode()).isEqualTo(travelList.get(0).getTravelZipCode());
 
         // verify
-        then(mockTravelService).should(times(1)).findTravelsList(travelMap);
-        then(mockTravelService).should(atLeastOnce()).findTravelsList(travelMap);
+        then(mockTravelService).should(times(1)).findTravelList(travelMap);
+        then(mockTravelService).should(atLeastOnce()).findTravelList(travelMap);
         then(mockTravelService).shouldHaveNoMoreInteractions();
     }
 
