@@ -349,7 +349,7 @@ public class TravelService {
      * 5. 작성일       : 2022. 11. 25.
      * </pre>
      */
-    @Transactional
+    @Transactional(readOnly = true)
     public TravelGroupDTO findOneTravelGroup(Long idx) {
         try {
             return travelRepository.findOneTravelGroup(idx);
