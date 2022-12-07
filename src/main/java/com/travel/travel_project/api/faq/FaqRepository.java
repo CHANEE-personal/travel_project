@@ -85,6 +85,7 @@ public class FaqRepository {
         return queryFactory
                 .selectFrom(faqEntity)
                 .innerJoin(faqEntity.newFaqCode, commonEntity)
+                .fetchJoin()
                 .where(faqEntity.idx.eq(idx))
                 .fetchOne();
     }

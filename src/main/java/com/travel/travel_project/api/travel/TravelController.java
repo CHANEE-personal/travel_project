@@ -343,7 +343,7 @@ public class TravelController {
             @ApiResponse(code = 500, message = "서버 에러", response = ServerError.class)
     })
     @PutMapping(value = "/{idx}/popular")
-    public TravelDTO togglePopular(@PathVariable Long idx) {
+    public Boolean togglePopular(@PathVariable Long idx) {
         return travelService.togglePopular(idx);
     }
 

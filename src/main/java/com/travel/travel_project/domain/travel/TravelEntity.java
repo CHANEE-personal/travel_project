@@ -69,10 +69,10 @@ public class TravelEntity extends NewCommonMappedClass {
     private Boolean popular;
 
     @ManyToOne(fetch = LAZY)
-    @JoinColumn(name = "travel_code", insertable = false, updatable = false)
+    @JoinColumn(name = "travel_code", referencedColumnName = "common_code", insertable = false, updatable = false)
     private CommonEntity newTravelCode;
 
-    @OneToMany(mappedBy = "newTravelEntity")
+    @OneToMany(mappedBy = "newTravelEntity", fetch = LAZY)
     private List<TravelReviewEntity> travelReviewEntityList = new ArrayList<>();
 
     public void togglePopular(Boolean popular) {

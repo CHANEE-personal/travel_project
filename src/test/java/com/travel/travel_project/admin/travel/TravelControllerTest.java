@@ -175,7 +175,7 @@ class TravelControllerTest {
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().contentType("application/json;charset=utf-8"))
-                .andExpect(jsonPath("$.popular").isBoolean());
+                .andExpect(content().string(String.valueOf(false)));
     }
 
     @Test
