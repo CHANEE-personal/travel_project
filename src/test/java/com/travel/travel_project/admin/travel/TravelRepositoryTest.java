@@ -77,16 +77,25 @@ class TravelRepositoryTest {
     }
 
     @Test
-    @Disabled
     @DisplayName("여행지소개리스트조회테스트")
     void 여행지소개리스트조회테스트() {
         // given
         Map<String, Object> travelMap = new HashMap<>();
-        travelMap.put("jpaStartPage", 1);
+        travelMap.put("jpaStartPage", 0);
         travelMap.put("size", 3);
 
         // then
         assertThat(travelRepository.findTravelList(travelMap)).isNotEmpty();
+    }
+
+    @Test
+    @DisplayName("여행지상세조회테스트")
+    void 여행지_상세_조회_테스트() {
+        TravelDTO oneTravel = travelRepository.findOneTravel(1L);
+
+        assertThat(oneTravel.getIdx()).isEqualTo(1L);
+        assertThat(oneTravel.getTravelCode()).isEqualTo(1);
+        assertThat(oneTravel.getTravelTitle()).isEqualTo("서울 여행지");
     }
 
     @Test
@@ -200,9 +209,11 @@ class TravelRepositoryTest {
                 .travelAddress("인천광역시 서구").travelZipCode("123-456").visible("Y")
                 .build();
 
+        travelDTO = TravelMapper.INSTANCE.toDto(travelEntity);
+
         // when
-        when(mockTravelRepository.findOneTravel(1L)).thenReturn(travelEntity);
-        TravelEntity newTravelInfo = mockTravelRepository.findOneTravel(1L);
+        when(mockTravelRepository.findOneTravel(1L)).thenReturn(travelDTO);
+        TravelDTO newTravelInfo = mockTravelRepository.findOneTravel(1L);
 
         // then
         assertThat(newTravelInfo.getIdx()).isEqualTo(travelEntity.getIdx());
@@ -232,9 +243,11 @@ class TravelRepositoryTest {
                 .travelAddress("인천광역시 서구").travelZipCode("123-456").visible("Y")
                 .build();
 
+        travelDTO = TravelMapper.INSTANCE.toDto(travelEntity);
+
         // when
-        when(mockTravelRepository.findOneTravel(1L)).thenReturn(travelEntity);
-        TravelEntity newTravelInfo = mockTravelRepository.findOneTravel(1L);
+        when(mockTravelRepository.findOneTravel(1L)).thenReturn(travelDTO);
+        TravelDTO newTravelInfo = mockTravelRepository.findOneTravel(1L);
 
         // then
         assertThat(newTravelInfo.getIdx()).isEqualTo(travelEntity.getIdx());
@@ -329,11 +342,11 @@ class TravelRepositoryTest {
                 .travelAddress("인천광역시 서구").travelZipCode("123-456").visible("Y")
                 .build();
 
-        TravelEntity travelInfo = travelRepository.insertTravel(travelEntity);
+        TravelDTO travelInfo = travelRepository.insertTravel(travelEntity);
 
         // when
         when(mockTravelRepository.findOneTravel(travelEntity.getIdx())).thenReturn(travelInfo);
-        TravelEntity newTravelInfo = mockTravelRepository.findOneTravel(travelEntity.getIdx());
+        TravelDTO newTravelInfo = mockTravelRepository.findOneTravel(travelEntity.getIdx());
 
         // then
         assertThat(newTravelInfo.getTravelCode()).isEqualTo(travelEntity.getTravelCode());
@@ -361,11 +374,11 @@ class TravelRepositoryTest {
                 .travelAddress("인천광역시 서구").travelZipCode("123-456").visible("Y")
                 .build();
 
-        TravelEntity travelInfo = travelRepository.insertTravel(travelEntity);
+        TravelDTO travelInfo = travelRepository.insertTravel(travelEntity);
 
         // when
         given(mockTravelRepository.findOneTravel(travelEntity.getIdx())).willReturn(travelInfo);
-        TravelEntity newTravelInfo = mockTravelRepository.findOneTravel(travelEntity.getIdx());
+        TravelDTO newTravelInfo = mockTravelRepository.findOneTravel(travelEntity.getIdx());
 
         // then
         assertThat(newTravelInfo.getTravelCode()).isEqualTo(travelEntity.getTravelCode());
@@ -390,7 +403,7 @@ class TravelRepositoryTest {
                 .travelAddress("인천광역시 서구").travelZipCode("123-456").visible("Y")
                 .build();
 
-        TravelEntity newTravelInfo = travelRepository.insertTravel(travelEntity);
+        TravelDTO newTravelInfo = travelRepository.insertTravel(travelEntity);
 
         TravelEntity newTravelEntity = TravelEntity.builder()
                 .idx(newTravelInfo.getIdx())
@@ -399,11 +412,11 @@ class TravelRepositoryTest {
                 .travelAddress("서울특별시 강남구").travelZipCode("123-456")
                 .visible("Y").build();
 
-        TravelEntity updateTravelEntity = travelRepository.updateTravel(newTravelEntity);
+        TravelDTO updateTravelEntity = travelRepository.updateTravel(newTravelEntity);
 
         // when
         when(mockTravelRepository.findOneTravel(newTravelEntity.getIdx())).thenReturn(updateTravelEntity);
-        TravelEntity travelInfo = mockTravelRepository.findOneTravel(updateTravelEntity.getIdx());
+        TravelDTO travelInfo = mockTravelRepository.findOneTravel(updateTravelEntity.getIdx());
 
         // then
         assertThat(travelInfo.getIdx()).isEqualTo(updateTravelEntity.getIdx());
@@ -429,7 +442,7 @@ class TravelRepositoryTest {
                 .travelAddress("인천광역시 서구").travelZipCode("123-456").visible("Y")
                 .build();
 
-        TravelEntity newTravelDTO = travelRepository.insertTravel(travelEntity);
+        TravelDTO newTravelDTO = travelRepository.insertTravel(travelEntity);
 
         TravelEntity newAdminTravelEntity = TravelEntity.builder()
                 .idx(newTravelDTO.getIdx())
@@ -438,11 +451,11 @@ class TravelRepositoryTest {
                 .travelAddress("서울특별시 강남구").travelZipCode("123-456")
                 .visible("Y").build();
 
-        travelRepository.updateTravel(newAdminTravelEntity);
+        TravelDTO updateTravelDTO = travelRepository.updateTravel(newAdminTravelEntity);
 
         // when
-        given(mockTravelRepository.findOneTravel(newAdminTravelEntity.getIdx())).willReturn(newAdminTravelEntity);
-        TravelEntity travelInfo = mockTravelRepository.findOneTravel(newAdminTravelEntity.getIdx());
+        given(mockTravelRepository.findOneTravel(newAdminTravelEntity.getIdx())).willReturn(updateTravelDTO);
+        TravelDTO travelInfo = mockTravelRepository.findOneTravel(newAdminTravelEntity.getIdx());
 
         // then
         assertThat(travelInfo.getIdx()).isEqualTo(newAdminTravelEntity.getIdx());
@@ -463,7 +476,7 @@ class TravelRepositoryTest {
         travelDTO = TravelMapper.INSTANCE.toDto(travelEntity);
 
         // when
-        when(mockTravelRepository.findOneTravel(travelEntity.getIdx())).thenReturn(travelEntity);
+        when(mockTravelRepository.findOneTravel(travelEntity.getIdx())).thenReturn(travelDTO);
         Long deleteIdx = travelRepository.deleteTravel(travelEntity.getIdx());
 
         // then
@@ -486,7 +499,7 @@ class TravelRepositoryTest {
         travelDTO = TravelMapper.INSTANCE.toDto(travelEntity);
 
         // when
-        given(mockTravelRepository.findOneTravel(travelEntity.getIdx())).willReturn(travelEntity);
+        given(mockTravelRepository.findOneTravel(travelEntity.getIdx())).willReturn(travelDTO);
         Long deleteIdx = travelRepository.deleteTravel(travelEntity.getIdx());
 
         // then
@@ -508,7 +521,7 @@ class TravelRepositoryTest {
                 .travelAddress("인천광역시 서구").travelZipCode("123-456").visible("Y")
                 .build();
 
-        TravelEntity travelDTO = travelRepository.insertTravel(travelEntity);
+        TravelDTO travelDTO = travelRepository.insertTravel(travelEntity);
         
         // when
         // 좋아요 수 증가
@@ -539,7 +552,7 @@ class TravelRepositoryTest {
                 .travelAddress("인천광역시 서구").travelZipCode("123-456").visible("Y")
                 .build();
 
-        TravelEntity travelDTO = travelRepository.insertTravel(travelEntity);
+        TravelDTO travelDTO = travelRepository.insertTravel(travelEntity);
 
         // when
         // 좋아요 수 증가
@@ -563,7 +576,7 @@ class TravelRepositoryTest {
         // given
         Long idx = travelRepository.insertTravel(travelEntity).getIdx();
 
-        Boolean popular = travelRepository.togglePopular(idx).getPopular();
+        Boolean popular = travelRepository.togglePopular(idx);
 
         travelEntity = TravelEntity.builder()
                 .travelCode(1)
@@ -571,9 +584,11 @@ class TravelRepositoryTest {
                 .travelAddress("인천광역시 서구").travelZipCode("123-456").visible("Y").popular(popular)
                 .build();
 
+        travelDTO = TravelMapper.INSTANCE.toDto(travelEntity);
+
         // when
-        when(mockTravelRepository.findOneTravel(travelEntity.getIdx())).thenReturn(travelEntity);
-        TravelEntity travelInfo = mockTravelRepository.findOneTravel(travelEntity.getIdx());
+        when(mockTravelRepository.findOneTravel(travelEntity.getIdx())).thenReturn(travelDTO);
+        TravelDTO travelInfo = mockTravelRepository.findOneTravel(travelEntity.getIdx());
 
         // then
         assertThat(travelInfo.getPopular()).isTrue();
@@ -593,7 +608,7 @@ class TravelRepositoryTest {
         // given
         Long idx = travelRepository.insertTravel(travelEntity).getIdx();
 
-        Boolean popular = travelRepository.togglePopular(idx).getPopular();
+        Boolean popular = travelRepository.togglePopular(idx);
 
         travelEntity = TravelEntity.builder()
                 .travelCode(1)
@@ -601,9 +616,11 @@ class TravelRepositoryTest {
                 .travelAddress("인천광역시 서구").travelZipCode("123-456").visible("Y").popular(popular)
                 .build();
 
+        travelDTO = TravelMapper.INSTANCE.toDto(travelEntity);
+
         // when
-        given(mockTravelRepository.findOneTravel(travelEntity.getIdx())).willReturn(travelEntity);
-        TravelEntity travelInfo = mockTravelRepository.findOneTravel(travelEntity.getIdx());
+        given(mockTravelRepository.findOneTravel(travelEntity.getIdx())).willReturn(travelDTO);
+        TravelDTO travelInfo = mockTravelRepository.findOneTravel(travelEntity.getIdx());
 
         // then
         assertThat(travelInfo.getPopular()).isTrue();
@@ -618,7 +635,7 @@ class TravelRepositoryTest {
     @DisplayName("여행지댓글등록Mockito테스트")
     void 여행지댓글등록Mockito테스트() {
         // given
-        TravelEntity travelInfo = travelRepository.insertTravel(travelEntity);
+        TravelDTO travelInfo = travelRepository.insertTravel(travelEntity);
 
         TravelReviewEntity travelReviewEntity = TravelReviewEntity.builder()
                 .travelIdx(travelInfo.getIdx())
@@ -642,11 +659,11 @@ class TravelRepositoryTest {
                 .build();
 
         // when
-        when(mockTravelRepository.findOneTravel(travelInfo.getIdx())).thenReturn(travelEntity);
-        TravelEntity newTravelInfo = mockTravelRepository.findOneTravel(travelInfo.getIdx());
+        when(mockTravelRepository.findOneTravel(travelInfo.getIdx())).thenReturn(travelDTO);
+        TravelDTO newTravelInfo = mockTravelRepository.findOneTravel(travelInfo.getIdx());
 
         // then
-        assertThat(newTravelInfo.getTravelReviewEntityList().get(0).getReviewTitle()).isEqualTo(reviewList.get(0).getReviewTitle());
+        assertThat(newTravelInfo.getReviewList().get(0).getReviewTitle()).isEqualTo(reviewList.get(0).getReviewTitle());
 
         // verify
         verify(mockTravelRepository, times(1)).findOneTravel(travelInfo.getIdx());
@@ -661,7 +678,7 @@ class TravelRepositoryTest {
     @DisplayName("여행지댓글수정Mockito테스트")
     void 여행지댓글수정Mockito테스트() {
         // given
-        TravelEntity travelInfo = travelRepository.insertTravel(travelEntity);
+        TravelDTO travelInfo = travelRepository.insertTravel(travelEntity);
 
         // 댓글 등록
         TravelReviewEntity travelReviewEntity = TravelReviewEntity.builder()
@@ -721,7 +738,7 @@ class TravelRepositoryTest {
     void 여행지댓글삭제Mockito테스트() {
         // given
         // 여행지 등록
-        TravelEntity travelInfo = travelRepository.insertTravel(travelEntity);
+        TravelDTO travelInfo = travelRepository.insertTravel(travelEntity);
         // 여행지 댓글 등록
         TravelReviewEntity travelReviewEntity = TravelReviewEntity.builder()
                 .travelIdx(travelInfo.getIdx())
@@ -744,7 +761,7 @@ class TravelRepositoryTest {
     @DisplayName("여행지 댓글 리스트 조회 Mockito 테스트")
     void 여행지댓글리스트조회Mockito테스트() {
         // given
-        TravelEntity travelInfo = travelRepository.insertTravel(travelEntity);
+        TravelDTO travelInfo = travelRepository.insertTravel(travelEntity);
 
         TravelReviewEntity travelReviewEntity = TravelReviewEntity.builder()
                 .travelIdx(travelInfo.getIdx())
@@ -779,7 +796,7 @@ class TravelRepositoryTest {
     @DisplayName("여행지 댓글 상세 조회 Mockito 테스트")
     void 여행지댓글상세조회Mockito테스트() {
         // given
-        TravelEntity travelInfo = travelRepository.insertTravel(travelEntity);
+        TravelDTO travelInfo = travelRepository.insertTravel(travelEntity);
 
         TravelReviewEntity travelReviewEntity = TravelReviewEntity.builder()
                 .travelIdx(travelInfo.getIdx())

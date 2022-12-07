@@ -414,7 +414,7 @@ class TravelServiceTest {
     @DisplayName("인기여행지선정테스트")
     void 인기여행지선정테스트() {
         TravelDTO oneTravel = travelService.insertTravel(travelEntity);
-        Boolean popular = travelService.togglePopular(oneTravel.getIdx()).getPopular();
+        Boolean popular = travelService.togglePopular(oneTravel.getIdx());
         assertThat(popular).isTrue();
     }
 
@@ -424,7 +424,7 @@ class TravelServiceTest {
         // given
         Long idx = travelService.insertTravel(travelEntity).getIdx();
 
-        Boolean popular = travelService.togglePopular(idx).getPopular();
+        Boolean popular = travelService.togglePopular(idx);
 
         travelEntity = TravelEntity.builder()
                 .travelCode(1)
@@ -456,7 +456,7 @@ class TravelServiceTest {
         // given
         Long idx = travelService.insertTravel(travelEntity).getIdx();
 
-        Boolean popular = travelService.togglePopular(idx).getPopular();
+        Boolean popular = travelService.togglePopular(idx);
 
         travelEntity = TravelEntity.builder()
                 .travelCode(1)
@@ -467,15 +467,15 @@ class TravelServiceTest {
         TravelDTO travelDTO = TravelMapper.INSTANCE.toDto(travelEntity);
 
         // when
-        given(mockTravelService.findOneTravel(travelEntity.getIdx())).willReturn(travelDTO);
-        TravelDTO travelInfo = mockTravelService.findOneTravel(travelEntity.getIdx());
+        given(mockTravelService.findOneTravel(idx)).willReturn(travelDTO);
+        TravelDTO travelInfo = mockTravelService.findOneTravel(idx);
 
         // then
         assertThat(travelInfo.getPopular()).isTrue();
 
         // verify
-        then(mockTravelService).should(times(1)).favoriteTravel(travelDTO.getIdx());
-        then(mockTravelService).should(atLeastOnce()).favoriteTravel(travelDTO.getIdx());
+        then(mockTravelService).should(times(1)).findOneTravel(idx);
+        then(mockTravelService).should(atLeastOnce()).findOneTravel(idx);
         then(mockTravelService).shouldHaveNoMoreInteractions();
     }
 

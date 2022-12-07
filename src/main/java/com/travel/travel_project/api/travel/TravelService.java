@@ -76,9 +76,7 @@ public class TravelService {
     @Transactional(readOnly = true)
     public TravelDTO findOneTravel(Long idx) throws TravelException {
         try {
-            TravelEntity travelEntity = travelRepository.findOneTravel(idx);
-            travelEntity.updateViewCount();
-            return TravelMapper.INSTANCE.toDto(travelEntity);
+            return travelRepository.findOneTravel(idx);
         } catch (Exception e) {
             throw new TravelException(NOT_FOUND_TRAVEL, e);
         }
@@ -96,10 +94,9 @@ public class TravelService {
     @CachePut("travel")
     @Modifying(clearAutomatically = true)
     @Transactional
-    public TravelDTO insertTravel(TravelEntity adminTravelEntity) throws TravelException {
+    public TravelDTO insertTravel(TravelEntity travelEntity) throws TravelException {
         try {
-            TravelEntity insertTravelEntity = travelRepository.insertTravel(adminTravelEntity);
-            return TravelMapper.INSTANCE.toDto(insertTravelEntity);
+            return travelRepository.insertTravel(travelEntity);
         } catch (Exception e) {
             throw new TravelException(ERROR_TRAVEL, e);
         }
@@ -117,10 +114,9 @@ public class TravelService {
     @CachePut("travel")
     @Modifying(clearAutomatically = true)
     @Transactional
-    public TravelDTO updateTravel(TravelEntity adminTravelEntity) throws TravelException {
+    public TravelDTO updateTravel(TravelEntity travelEntity) throws TravelException {
         try {
-            TravelEntity updateTravelEntity = travelRepository.updateTravel(adminTravelEntity);
-            return TravelMapper.INSTANCE.toDto(updateTravelEntity);
+            return travelRepository.updateTravel(travelEntity);
         } catch (Exception e) {
             throw new TravelException(ERROR_UPDATE_TRAVEL, e);
         }
@@ -160,9 +156,7 @@ public class TravelService {
     @Transactional
     public int favoriteTravel(Long idx) throws TravelException {
         try {
-            TravelEntity oneTravel = travelRepository.findOneTravel(idx);
-            oneTravel.updateFavoriteCount();
-            return oneTravel.getFavoriteCount();
+            return travelRepository.favoriteTravel(idx);
         } catch (Exception e) {
             throw new TravelException(ERROR_FAVORITE_TRAVEL, e);
         }
@@ -294,11 +288,9 @@ public class TravelService {
     @CachePut("travel")
     @Modifying(clearAutomatically = true)
     @Transactional
-    public TravelDTO togglePopular(Long idx) throws TravelException {
+    public Boolean togglePopular(Long idx) throws TravelException {
         try {
-            TravelEntity oneTravel = travelRepository.findOneTravel(idx);
-            oneTravel.togglePopular(oneTravel.getPopular());
-            return TravelMapper.INSTANCE.toDto(oneTravel);
+            return travelRepository.togglePopular(idx);
         } catch (Exception e) {
             throw new TravelException(ERROR_UPDATE_TRAVEL, e);
         }

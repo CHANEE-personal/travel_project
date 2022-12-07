@@ -61,8 +61,8 @@ public class TravelMapperImpl implements TravelMapper {
         if (entityList == null) return null;
 
         List<TravelDTO> list = new ArrayList<>(entityList.size());
-        for (TravelEntity adminTravelEntity : entityList) {
-            list.add(toDto(adminTravelEntity));
+        for (TravelEntity travelEntity : entityList) {
+            list.add(toDto(travelEntity));
         }
 
         return list;
@@ -73,8 +73,8 @@ public class TravelMapperImpl implements TravelMapper {
         if (dtoList == null) return null;
 
         List<TravelEntity> list = new ArrayList<>(dtoList.size());
-        for (TravelDTO adminTravelDTO : dtoList) {
-            list.add(toEntity(adminTravelDTO));
+        for (TravelDTO travelDTO : dtoList) {
+            list.add(toEntity(travelDTO));
         }
 
         return list;

@@ -18,6 +18,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import static com.travel.travel_project.common.StringUtil.getInt;
 import static com.travel.travel_project.common.StringUtil.getString;
@@ -49,11 +50,11 @@ public class TravelRepository {
     private BooleanExpression searchTravelInfo(Map<String, Object> travelMap) {
         String searchKeyword = getString(travelMap.get("searchKeyword"), "");
 
-        if (searchKeyword == null) {
-            return null;
-        } else {
+        if (!Objects.equals(searchKeyword, "")) {
             return travelEntity.travelTitle.contains(searchKeyword)
                     .or(travelEntity.travelDescription.contains(searchKeyword));
+        } else {
+            return null;
         }
     }
 
@@ -101,6 +102,7 @@ public class TravelRepository {
                 .selectFrom(travelEntity)
                 .orderBy(travelEntity.idx.desc())
                 .innerJoin(travelEntity.newTravelCode, commonEntity)
+                .fetchJoin()
                 .leftJoin(travelEntity.travelReviewEntityList, travelReviewEntity)
                 .fetchJoin()
                 .where(searchTravelCode(travelMap), searchTravelInfo(travelMap), searchTravelDate(travelMap)
@@ -124,13 +126,19 @@ public class TravelRepository {
      * 5. 작성일       : 2022. 10. 05.
      * </pre>
      */
-    public TravelEntity findOneTravel(Long idx) {
-        return queryFactory
+    public TravelDTO findOneTravel(Long idx) {
+        // 조회 수 증가
+        viewTravel(idx);
+
+        TravelEntity findOneTravel = queryFactory
                 .selectFrom(travelEntity)
                 .innerJoin(travelEntity.newTravelCode, commonEntity)
+                .fetchJoin()
                 .where(travelEntity.idx.eq(idx)
                         .and(travelEntity.visible.eq("Y")))
                 .fetchOne();
+
+        return INSTANCE.toDto(findOneTravel);
     }
 
     /**
@@ -182,9 +190,9 @@ public class TravelRepository {
      * 5. 작성일       : 2022. 10. 05.
      * </pre>
      */
-    public TravelEntity insertTravel(TravelEntity travelEntity) {
+    public TravelDTO insertTravel(TravelEntity travelEntity) {
         em.persist(travelEntity);
-        return travelEntity;
+        return INSTANCE.toDto(travelEntity);
     }
 
     /**
@@ -196,11 +204,11 @@ public class TravelRepository {
      * 5. 작성일       : 2022. 10. 05.
      * </pre>
      */
-    public TravelEntity updateTravel(TravelEntity travelEntity) {
+    public TravelDTO updateTravel(TravelEntity travelEntity) {
         em.merge(travelEntity);
         em.flush();
         em.clear();
-        return travelEntity;
+        return INSTANCE.toDto(travelEntity);
     }
 
     /**
@@ -358,8 +366,10 @@ public class TravelRepository {
      * 5. 작성일       : 2022. 10. 26.
      * </pre>
      */
-    public TravelDTO togglePopular(Long idx) {
-        Boolean popular = !em.find(TravelEntity.class, idx).getPopular();
+    public Boolean togglePopular(Long idx) {
+        TravelEntity oneTravel = em.find(TravelEntity.class, idx);
+        Boolean popular = !oneTravel.getPopular();
+
         queryFactory
                 .update(travelEntity)
                 .where(travelEntity.idx.eq(idx))
@@ -369,7 +379,7 @@ public class TravelRepository {
         em.flush();
         em.clear();
 
-        return INSTANCE.toDto(em.find(TravelEntity.class, idx));
+        return popular;
     }
 
     /**
