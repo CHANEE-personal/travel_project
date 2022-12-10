@@ -2,12 +2,18 @@ package com.travel.travel_project.domain.user;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.travel.travel_project.domain.common.NewCommonDTO;
+import com.vladmihalcea.hibernate.type.json.JsonStringType;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
+import org.hibernate.annotations.Type;
+import org.hibernate.annotations.TypeDef;
+import org.springframework.lang.Nullable;
 
 import javax.validation.constraints.NotEmpty;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Setter
@@ -16,6 +22,7 @@ import javax.validation.constraints.NotEmpty;
 @NoArgsConstructor
 @AllArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
+@TypeDef(name = "json", typeClass = JsonStringType.class)
 @ApiModel
 public class UserDTO extends NewCommonDTO {
     @ApiModelProperty(required = true, value = "rnum", hidden = true, example = "1")
@@ -52,4 +59,9 @@ public class UserDTO extends NewCommonDTO {
 
     @ApiModelProperty(value = "role", hidden = true)
     private Role role;
+
+    @Type(type = "json")
+    @Nullable
+    @ApiModelProperty(value = "user favorite travel idx", hidden = true)
+    private List<String> favoriteTravelIdx = new ArrayList<>();
 }
