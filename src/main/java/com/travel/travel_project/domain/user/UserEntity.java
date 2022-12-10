@@ -3,8 +3,12 @@ package com.travel.travel_project.domain.user;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.travel.travel_project.domain.common.NewCommonMappedClass;
 import com.travel.travel_project.domain.travel.group.TravelGroupUserEntity;
+import com.vladmihalcea.hibernate.type.json.JsonStringType;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
+import org.hibernate.annotations.Type;
+import org.hibernate.annotations.TypeDef;
+import springfox.documentation.spring.web.json.Json;
 
 import javax.persistence.*;
 import javax.validation.constraints.Email;
@@ -24,6 +28,7 @@ import static javax.persistence.GenerationType.IDENTITY;
 @NoArgsConstructor
 @AllArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
+@TypeDef(name = "json", typeClass = JsonStringType.class)
 @Table(name = "travel_user")
 public class UserEntity extends NewCommonMappedClass {
     @Transient
@@ -63,6 +68,10 @@ public class UserEntity extends NewCommonMappedClass {
 
     @Enumerated(value = STRING)
     private Role role;
+
+    @Type(type = "json")
+    @Column(columnDefinition = "json", name = "favorite_travel_ids")
+    private List<String> favoriteTravelIdx = new ArrayList<>();
 
     @OneToMany(mappedBy = "userEntity", cascade = CascadeType.REMOVE)
     private List<TravelGroupUserEntity> userList = new ArrayList<>();

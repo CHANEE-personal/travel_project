@@ -10,6 +10,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -172,6 +173,25 @@ public class UserService {
             return userRepository.deleteUser(idx);
         } catch (Exception e) {
             throw new TravelException(ERROR_DELETE_USER, e);
+        }
+    }
+
+    /**
+     * <pre>
+     * 1. MethodName : addFavoriteTravel
+     * 2. ClassName  : UserService.java
+     * 3. Comment    : 좋아하는 여행지 추가
+     * 4. 작성자       : CHO
+     * 5. 작성일       : 2022. 12. 07.
+     * </pre>
+     */
+    @Modifying(clearAutomatically = true)
+    @Transactional
+    public UserDTO addFavoriteTravel(Long idx, Long favoriteIdx) throws TravelException {
+        try {
+            return userRepository.addFavoriteTravel(idx, favoriteIdx);
+        } catch (Exception e) {
+            throw new TravelException(ERROR_FAVORITE_TRAVEL, e);
         }
     }
 }

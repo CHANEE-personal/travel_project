@@ -1,8 +1,11 @@
 package com.travel.travel_project.api.user;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import com.travel.travel_project.api.user.mapper.UserMapper;
+import com.travel.travel_project.common.StringUtil;
 import com.travel.travel_project.domain.user.UserDTO;
 import com.travel.travel_project.domain.user.UserEntity;
+import com.travel.travel_project.exception.TravelException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -18,6 +21,7 @@ import java.util.Map;
 import static com.travel.travel_project.api.user.mapper.UserMapper.INSTANCE;
 import static com.travel.travel_project.common.StringUtils.nullStrToStr;
 import static com.travel.travel_project.domain.user.QUserEntity.userEntity;
+import static com.travel.travel_project.exception.ApiExceptionType.ERROR_FAVORITE_TRAVEL;
 import static org.springframework.security.core.context.SecurityContextHolder.getContext;
 
 @Repository
@@ -196,5 +200,29 @@ public class UserRepository {
         em.flush();
         em.clear();
         return idx;
+    }
+
+    /**
+     * <pre>
+     * 1. MethodName : addFavoriteTravel
+     * 2. ClassName  : UserRepository.java
+     * 3. Comment    : 좋아하는 여행지 추가
+     * 4. 작성자       : CHO
+     * 5. 작성일       : 2022. 12. 07.
+     * </pre>
+     */
+    public UserDTO addFavoriteTravel(Long idx, Long favoriteIdx) {
+        UserEntity oneUser = em.find(UserEntity.class, idx);
+        List<String> favoriteTravelIdx = oneUser.getFavoriteTravelIdx();
+
+        if (!favoriteTravelIdx.contains(StringUtil.getString(favoriteIdx, ""))) {
+            favoriteTravelIdx.add(StringUtil.getString(favoriteIdx,""));
+        }
+
+        em.merge(oneUser);
+        em.flush();
+        em.clear();
+
+        return INSTANCE.toDto(oneUser);
     }
 }

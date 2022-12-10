@@ -5,6 +5,7 @@ import com.travel.travel_project.domain.user.AuthenticationRequest;
 import com.travel.travel_project.domain.user.UserEntity;
 import com.travel.travel_project.jwt.JwtUtil;
 import lombok.RequiredArgsConstructor;
+import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
@@ -13,6 +14,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.event.EventListener;
 import org.springframework.restdocs.RestDocumentationContextProvider;
@@ -25,6 +27,8 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.TestConstructor;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.filter.CharacterEncodingFilter;
 
@@ -37,6 +41,7 @@ import java.util.List;
 
 import static com.travel.travel_project.common.StringUtil.getString;
 import static com.travel.travel_project.domain.user.Role.ROLE_ADMIN;
+import static com.travel.travel_project.domain.user.Role.ROLE_TRAVEL_USER;
 import static org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase.Replace.NONE;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
@@ -82,22 +87,22 @@ class UserControllerTest {
 
     @DisplayName("테스트 유저 생성")
     void createUser() {
-        passwordEncoder = createDelegatingPasswordEncoder();
-
-        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken("admin04", "pass1234", getAuthorities());
-        String token = jwtUtil.doGenerateToken(authenticationToken.getName(), 1000L * 10);
-
-        userEntity = UserEntity.builder()
-                .userId("admin04")
-                .password("pass1234")
-                .name("test")
-                .email("test@test.com")
-                .role(ROLE_ADMIN)
-                .userToken(token)
-                .visible("Y")
-                .build();
-
-        em.persist(userEntity);
+//        passwordEncoder = createDelegatingPasswordEncoder();
+//
+//        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken("admin04", "pass1234", getAuthorities());
+//        String token = jwtUtil.doGenerateToken(authenticationToken.getName(), 1000L * 10);
+//
+//        userEntity = UserEntity.builder()
+//                .userId("admin04")
+//                .password("pass1234")
+//                .name("test")
+//                .email("test@test.com")
+//                .role(ROLE_ADMIN)
+//                .userToken(token)
+//                .visible("Y")
+//                .build();
+//
+//        em.persist(userEntity);
     }
 
     @BeforeEach
@@ -105,7 +110,7 @@ class UserControllerTest {
     public void setup(RestDocumentationContextProvider restDocumentationContextProvider) {
         this.mockMvc = webAppContextSetup(wac)
                 .addFilter(new CharacterEncodingFilter("UTF-8", true))
-                .apply(springSecurity())
+//                .apply(springSecurity())
                 .apply(documentationConfiguration(restDocumentationContextProvider))
                 .alwaysExpect(status().isOk())
                 .alwaysDo(print())
@@ -307,5 +312,29 @@ class UserControllerTest {
                 .andExpect(content().contentType("application/json;charset=utf-8"))
                 .andExpect(jsonPath("$.jwt").isNotEmpty())
                 .andExpect(jsonPath("$.token").isNotEmpty());
+    }
+
+    @Test
+    @DisplayName("유저가 좋아하는 여행지 추가 테스트")
+    void 유저가좋아하는여행지추가테스트() throws Exception {
+        List<String> favoriteIdxList = new ArrayList<>();
+        favoriteIdxList.add("1");
+        favoriteIdxList.add("2");
+
+        mockMvc.perform(put("/api/user/1/favorite-travel")
+                        .param("favoriteIdx", "2"))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(content().contentType("application/json;charset=utf-8"))
+                .andExpect(jsonPath("$.favoriteTravelIdx").value(favoriteIdxList));
+
+        favoriteIdxList.add("3");
+
+        mockMvc.perform(put("/api/user/1/favorite-travel")
+                .param("favoriteIdx", "3"))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(content().contentType("application/json;charset=utf-8"))
+                .andExpect(jsonPath("$.favoriteTravelIdx").value(favoriteIdxList));
     }
 }

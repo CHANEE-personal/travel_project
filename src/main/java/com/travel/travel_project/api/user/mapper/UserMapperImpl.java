@@ -20,6 +20,7 @@ public class UserMapperImpl implements UserMapper {
                 .visible(entity.getVisible())
                 .userToken(entity.getUserToken())
                 .userRefreshToken(entity.getUserRefreshToken())
+                .favoriteTravelIdx(entity.getFavoriteTravelIdx())
                 .role(entity.getRole())
                 .creator(entity.getCreator())
                 .createTime(entity.getCreateTime())

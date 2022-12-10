@@ -230,4 +230,26 @@ public class UserController {
     public Long deleteUser(@PathVariable Long idx) {
         return userService.deleteUser(idx);
     }
+
+    /**
+     * <pre>
+     * 1. MethodName : addFavoriteTravel
+     * 2. ClassName  : UserController.java
+     * 3. Comment    : 좋아하는 여행지 추가
+     * 4. 작성자       : CHO
+     * 5. 작성일       : 2022. 12. 07.
+     * </pre>
+     */
+    @ApiOperation(value = "유저가 좋아하는 여행지 추가", notes = "유저가 좋아하는 여행지를 추가한다.")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "유저가 좋아하는 여행지 추가 성공", response = Map.class),
+            @ApiResponse(code = 400, message = "잘못된 요청", response = HttpClientErrorException.BadRequest.class),
+            @ApiResponse(code = 401, message = "허용되지 않는 관리자", response = HttpClientErrorException.Unauthorized.class),
+            @ApiResponse(code = 403, message = "접근거부", response = HttpClientErrorException.class),
+            @ApiResponse(code = 500, message = "서버 에러", response = ServerError.class)
+    })
+    @PutMapping("/{idx}/favorite-travel")
+    public UserDTO addFavoriteTravel(@PathVariable Long idx, Long favoriteIdx) {
+        return userService.addFavoriteTravel(idx, favoriteIdx);
+    }
 }

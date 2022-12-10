@@ -2,7 +2,11 @@ package com.travel.travel_project.api.user;
 
 import com.travel.travel_project.domain.user.UserDTO;
 import com.travel.travel_project.domain.user.UserEntity;
+import com.vladmihalcea.hibernate.type.json.JsonStringType;
 import lombok.RequiredArgsConstructor;
+import org.hibernate.annotations.TypeDef;
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
@@ -28,6 +32,7 @@ import java.util.Map;
 
 import static com.travel.travel_project.api.user.mapper.UserMapper.INSTANCE;
 import static com.travel.travel_project.domain.user.Role.ROLE_ADMIN;
+import static com.travel.travel_project.domain.user.Role.ROLE_TRAVEL_USER;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
@@ -43,6 +48,7 @@ import static org.springframework.test.context.TestConstructor.AutowireMode.ALL;
 @AutoConfigureTestDatabase(replace = NONE)
 @ExtendWith(MockitoExtension.class)
 @DisplayName("유저 Repository Test")
+@TypeDef(name = "json", typeClass = JsonStringType.class)
 class UserRepositoryTest {
     @Mock
     private UserRepository mockUserRepository;
@@ -324,5 +330,38 @@ class UserRepositoryTest {
         then(mockUserRepository).should(times(1)).findOneUser(userDTO.getIdx());
         then(mockUserRepository).should(atLeastOnce()).findOneUser(userDTO.getIdx());
         then(mockUserRepository).shouldHaveNoMoreInteractions();
+    }
+
+    @Test
+    @DisplayName("유저 좋아하는 여행지 추가")
+    void 유저좋아하는여행지추가() throws JSONException {
+        List<String> list = new ArrayList<>();
+        list.add("1");
+
+        userEntity = UserEntity.builder()
+                .userId("cksgml159")
+                .password("test159")
+                .email("cksgml159@naver.com")
+                .name("test")
+                .role(ROLE_TRAVEL_USER)
+                .favoriteTravelIdx(list)
+                .visible("Y")
+                .build();
+
+        UserDTO oneUser = userRepository.insertUser(userEntity);
+
+        JSONArray jsonArray = new JSONArray();
+        jsonArray.put(oneUser.getFavoriteTravelIdx());
+        Object insertObject = jsonArray.get(0);
+
+        assertThat(oneUser.getFavoriteTravelIdx()).isEqualTo(insertObject);
+
+        UserDTO updateUser = userRepository.addFavoriteTravel(oneUser.getIdx(), 2L);
+
+        jsonArray.remove(0);
+        jsonArray.put(updateUser.getFavoriteTravelIdx());
+        Object updateObject = jsonArray.get(0);
+
+        assertThat(updateUser.getFavoriteTravelIdx()).isEqualTo(updateObject);
     }
 }
