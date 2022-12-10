@@ -74,12 +74,12 @@ class NoticeRepositoryTest {
         noticeMap.put("jpaStartPage", 1);
         noticeMap.put("size", 3);
 
-        List<NoticeEntity> noticeList = new ArrayList<>();
-        noticeList.add(noticeEntity);
+        List<NoticeDTO> noticeList = new ArrayList<>();
+        noticeList.add(noticeDTO);
 
         // when
         when(mockNoticeRepository.findNoticeList(noticeMap)).thenReturn(noticeList);
-        List<NoticeEntity> newNoticeList = mockNoticeRepository.findNoticeList(noticeMap);
+        List<NoticeDTO> newNoticeList = mockNoticeRepository.findNoticeList(noticeMap);
 
         // then
         assertThat(newNoticeList.get(0).getIdx()).isEqualTo(noticeList.get(0).getIdx());
@@ -99,8 +99,8 @@ class NoticeRepositoryTest {
     @DisplayName("공지사항 상세 조회 Mockito 테스트")
     void 공지사항상세조회Mockito테스트() {
         // when
-        when(mockNoticeRepository.findOneNotice(noticeDTO.getIdx())).thenReturn(noticeEntity);
-        NoticeEntity noticeInfo = mockNoticeRepository.findOneNotice(noticeDTO.getIdx());
+        when(mockNoticeRepository.findOneNotice(noticeDTO.getIdx())).thenReturn(noticeDTO);
+        NoticeDTO noticeInfo = mockNoticeRepository.findOneNotice(noticeDTO.getIdx());
 
         // then
         assertThat(noticeInfo.getIdx()).isEqualTo(noticeDTO.getIdx());
@@ -119,11 +119,11 @@ class NoticeRepositoryTest {
     @Test
     @DisplayName("공지사항 등록 Mockito 테스트")
     void 공지사항등록Mockito테스트() {
-        NoticeDTO noticeInfo = NoticeMapper.INSTANCE.toDto(noticeRepository.insertNotice(noticeEntity));
+        NoticeDTO noticeInfo = noticeRepository.insertNotice(noticeEntity);
 
         // when
-        given(mockNoticeRepository.findOneNotice(noticeInfo.getIdx())).willReturn(noticeEntity);
-        NoticeEntity newNoticeDTO = mockNoticeRepository.findOneNotice(noticeInfo.getIdx());
+        given(mockNoticeRepository.findOneNotice(noticeInfo.getIdx())).willReturn(noticeInfo);
+        NoticeDTO newNoticeDTO = mockNoticeRepository.findOneNotice(noticeInfo.getIdx());
 
         // then
         assertThat(newNoticeDTO.getIdx()).isEqualTo(noticeEntity.getIdx());
@@ -150,7 +150,7 @@ class NoticeRepositoryTest {
                 .visible("Y")
                 .build();
 
-        NoticeEntity newNoticeEntity = noticeRepository.insertNotice(noticeEntity);
+        NoticeDTO newNoticeEntity = noticeRepository.insertNotice(noticeEntity);
 
         NoticeEntity updateNoticeEntity = NoticeEntity.builder()
                 .idx(newNoticeEntity.getIdx())
@@ -160,11 +160,11 @@ class NoticeRepositoryTest {
                 .visible("Y")
                 .build();
 
-        NoticeEntity updateNotice = noticeRepository.updateNotice(updateNoticeEntity);
+        NoticeDTO updateNotice = noticeRepository.updateNotice(updateNoticeEntity);
 
         // when
         when(mockNoticeRepository.findOneNotice(updateNotice.getIdx())).thenReturn(updateNotice);
-        NoticeEntity noticeInfo = mockNoticeRepository.findOneNotice(updateNotice.getIdx());
+        NoticeDTO noticeInfo = mockNoticeRepository.findOneNotice(updateNotice.getIdx());
 
         // then
         assertThat(noticeInfo.getIdx()).isEqualTo(updateNotice.getIdx());
@@ -188,7 +188,7 @@ class NoticeRepositoryTest {
         noticeDTO = NoticeMapper.INSTANCE.toDto(noticeEntity);
 
         // when
-        when(mockNoticeRepository.findOneNotice(noticeDTO.getIdx())).thenReturn(noticeEntity);
+        when(mockNoticeRepository.findOneNotice(noticeDTO.getIdx())).thenReturn(noticeDTO);
         Long deleteIdx = noticeRepository.deleteNotice(noticeDTO.getIdx());
 
         // then

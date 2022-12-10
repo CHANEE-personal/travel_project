@@ -305,7 +305,7 @@ public class TravelService {
      * 5. 작성일       : 2022. 11. 25.
      * </pre>
      */
-    @Transactional(readOnly = true)
+    @Transactional
     public int findTravelGroupCount(Map<String, Object> groupMap) throws TravelException {
         try {
             return travelRepository.findTravelGroupCount(groupMap);

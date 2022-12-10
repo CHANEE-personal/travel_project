@@ -2,7 +2,6 @@ package com.travel.travel_project.api.faq;
 
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import com.travel.travel_project.domain.common.QCommonEntity;
 import com.travel.travel_project.domain.faq.FaqEntity;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;

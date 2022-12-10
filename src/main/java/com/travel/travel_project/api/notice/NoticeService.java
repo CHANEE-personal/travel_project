@@ -51,8 +51,7 @@ public class NoticeService {
     @Transactional(readOnly = true)
     public List<NoticeDTO> findNoticeList(Map<String, Object> noticeMap) {
         try {
-            List<NoticeEntity> noticeList = noticeRepository.findNoticeList(noticeMap);
-            return NoticeMapper.INSTANCE.toDtoList(noticeList);
+            return noticeRepository.findNoticeList(noticeMap);
         } catch (Exception e) {
             throw new TravelException(NOT_FOUND_NOTICE_LIST, e);
         }
@@ -70,9 +69,7 @@ public class NoticeService {
     @Transactional(readOnly = true)
     public NoticeDTO findOneNotice(Long idx) {
         try {
-            NoticeEntity noticeEntity = noticeRepository.findOneNotice(idx);
-            noticeEntity.updateViewCount();
-            return NoticeMapper.INSTANCE.toDto(noticeEntity);
+            return noticeRepository.findOneNotice(idx);
         } catch (Exception e) {
             throw new TravelException(NOT_FOUND_NOTICE, e);
         }
@@ -92,8 +89,7 @@ public class NoticeService {
     @Transactional
     public NoticeDTO insertNotice(NoticeEntity noticeEntity) {
         try {
-            NoticeEntity noticeInfo = noticeRepository.insertNotice(noticeEntity);
-            return NoticeMapper.INSTANCE.toDto(noticeInfo);
+            return noticeRepository.insertNotice(noticeEntity);
         } catch (Exception e) {
             throw new TravelException(ERROR_NOTICE, e);
         }
@@ -113,8 +109,7 @@ public class NoticeService {
     @Transactional
     public NoticeDTO updateNotice(NoticeEntity noticeEntity) {
         try {
-            NoticeEntity noticeInfo = noticeRepository.updateNotice(noticeEntity);
-            return NoticeMapper.INSTANCE.toDto(noticeInfo);
+            return noticeRepository.updateNotice(noticeEntity);
         } catch (Exception e) {
             throw new TravelException(ERROR_UPDATE_NOTICE, e);
         }
@@ -151,11 +146,9 @@ public class NoticeService {
      */
     @Modifying(clearAutomatically = true)
     @Transactional
-    public NoticeDTO toggleTopFixed(Long idx) {
+    public Boolean toggleTopFixed(Long idx) {
         try {
-            NoticeEntity noticeEntity = noticeRepository.findOneNotice(idx);
-            noticeEntity.toggleTopFixed(noticeEntity.getTopFixed());
-            return NoticeMapper.INSTANCE.toDto(noticeEntity);
+            return noticeRepository.toggleTopFixed(idx);
         } catch (Exception e) {
             throw new TravelException(NOT_FOUND_NOTICE, e);
         }

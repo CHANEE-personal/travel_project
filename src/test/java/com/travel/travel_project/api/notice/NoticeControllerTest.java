@@ -168,6 +168,6 @@ class NoticeControllerTest {
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().contentType("application/json;charset=utf-8"))
-                .andExpect(jsonPath("$.topFixed").value(true));
+                .andExpect(content().string(String.valueOf(true)));
     }
 }

@@ -103,8 +103,6 @@ public class TravelRepository {
                 .orderBy(travelEntity.idx.desc())
                 .innerJoin(travelEntity.newTravelCode, commonEntity)
                 .fetchJoin()
-                .leftJoin(travelEntity.travelReviewEntityList, travelReviewEntity)
-                .fetchJoin()
                 .where(searchTravelCode(travelMap), searchTravelInfo(travelMap), searchTravelDate(travelMap)
                         .and(travelEntity.visible.eq("Y")))
                 .offset(getInt(travelMap.get("jpaStartPage"), 0))
@@ -133,6 +131,8 @@ public class TravelRepository {
         TravelEntity findOneTravel = queryFactory
                 .selectFrom(travelEntity)
                 .innerJoin(travelEntity.newTravelCode, commonEntity)
+                .fetchJoin()
+                .leftJoin(travelEntity.travelReviewEntityList, travelReviewEntity)
                 .fetchJoin()
                 .where(travelEntity.idx.eq(idx)
                         .and(travelEntity.visible.eq("Y")))
@@ -259,7 +259,7 @@ public class TravelRepository {
      * 5. 작성일       : 2022. 10. 06.
      * </pre>
      */
-    public Integer viewTravel(Long idx) {
+    public void viewTravel(Long idx) {
         queryFactory
                 .update(travelEntity)
                 //add , minus , multiple 다 가능하다.
@@ -269,8 +269,6 @@ public class TravelRepository {
 
         em.flush();
         em.clear();
-
-        return em.find(TravelEntity.class, idx).getViewCount();
     }
 
     /**

@@ -209,10 +209,10 @@ class NoticeServiceTest {
     @DisplayName("공지사항 고정글 테스트")
     void 공지사항고정글테스트() {
         NoticeDTO oneNotice = noticeService.insertNotice(noticeEntity);
-        Boolean trueFixed = noticeService.toggleTopFixed(oneNotice.getIdx()).getTopFixed();
+        Boolean trueFixed = noticeService.toggleTopFixed(oneNotice.getIdx());
         assertThat(trueFixed).isEqualTo(true);
 
-        Boolean falseFixed = noticeService.toggleTopFixed(oneNotice.getIdx()).getTopFixed();
+        Boolean falseFixed = noticeService.toggleTopFixed(oneNotice.getIdx());
         assertThat(falseFixed).isEqualTo(false);
     }
 }

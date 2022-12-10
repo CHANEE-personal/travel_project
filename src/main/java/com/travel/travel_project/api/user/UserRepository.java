@@ -1,11 +1,9 @@
 package com.travel.travel_project.api.user;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import com.travel.travel_project.api.user.mapper.UserMapper;
 import com.travel.travel_project.common.StringUtil;
 import com.travel.travel_project.domain.user.UserDTO;
 import com.travel.travel_project.domain.user.UserEntity;
-import com.travel.travel_project.exception.TravelException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -21,7 +19,6 @@ import java.util.Map;
 import static com.travel.travel_project.api.user.mapper.UserMapper.INSTANCE;
 import static com.travel.travel_project.common.StringUtils.nullStrToStr;
 import static com.travel.travel_project.domain.user.QUserEntity.userEntity;
-import static com.travel.travel_project.exception.ApiExceptionType.ERROR_FAVORITE_TRAVEL;
 import static org.springframework.security.core.context.SecurityContextHolder.getContext;
 
 @Repository

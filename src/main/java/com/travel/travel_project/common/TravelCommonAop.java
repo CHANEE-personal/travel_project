@@ -79,14 +79,14 @@ public class TravelCommonAop {
     @Around("execution(* com.travel.travel_project.api..*.*(..))")
     public Object execute(ProceedingJoinPoint joinPoint) throws Throwable {
         long start = System.currentTimeMillis();
-        log.info("START: {}", joinPoint.toString());
+        System.out.println("START: " + joinPoint.toString());
 
         try {
             return joinPoint.proceed();
         } finally {
             long finish = System.currentTimeMillis();
             long timeMs = finish - start;
-            log.info("END: {}", joinPoint.toString() + " " + timeMs+"ms");
+            System.out.println("END: " + joinPoint.toString() + " " + timeMs+"ms");
         }
     }
 }

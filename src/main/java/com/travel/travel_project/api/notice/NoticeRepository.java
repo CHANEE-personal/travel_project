@@ -2,6 +2,7 @@ package com.travel.travel_project.api.notice;
 
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import com.travel.travel_project.domain.notice.NoticeDTO;
 import com.travel.travel_project.domain.notice.NoticeEntity;
 
 import lombok.RequiredArgsConstructor;
@@ -11,6 +12,7 @@ import javax.persistence.EntityManager;
 import java.util.List;
 import java.util.Map;
 
+import static com.travel.travel_project.api.notice.mapper.NoticeMapper.INSTANCE;
 import static com.travel.travel_project.common.StringUtil.getInt;
 import static com.travel.travel_project.common.StringUtil.getString;
 import static com.travel.travel_project.domain.notice.QNoticeEntity.*;
@@ -57,7 +59,7 @@ public class NoticeRepository {
      * 5. 작성일      : 2022. 11. 28.
      * </pre>
      */
-    public List<NoticeEntity> findNoticeList(Map<String, Object> noticeMap) {
+    public List<NoticeDTO> findNoticeList(Map<String, Object> noticeMap) {
         List<NoticeEntity> noticeList = queryFactory
                 .selectFrom(noticeEntity)
                 .orderBy(noticeEntity.idx.desc())
@@ -69,7 +71,7 @@ public class NoticeRepository {
         noticeList.forEach(list -> noticeList.get(noticeList.indexOf(list))
                 .setRnum(getInt(noticeMap.get("startPage"), 1) * (getInt(noticeMap.get("size"), 1)) - (2 - noticeList.indexOf(list))));
 
-        return noticeList;
+        return INSTANCE.toDtoList(noticeList);
     }
 
     /**
@@ -81,13 +83,16 @@ public class NoticeRepository {
      * 5. 작성일      : 2022. 11. 28.
      * </pre>
      */
-    public NoticeEntity findOneNotice(Long idx) {
+    public NoticeDTO findOneNotice(Long idx) {
+        // 공지사항 조회 수 증가
+        viewNotice(idx);
+
         NoticeEntity findOneNotice = queryFactory
                 .selectFrom(noticeEntity)
                 .where(noticeEntity.idx.eq(idx))
                 .fetchOne();
 
-        return findOneNotice;
+        return INSTANCE.toDto(findOneNotice);
     }
 
     /**
@@ -99,9 +104,9 @@ public class NoticeRepository {
      * 5. 작성일      : 2022. 11. 28.
      * </pre>
      */
-    public NoticeEntity insertNotice(NoticeEntity noticeEntity) {
+    public NoticeDTO insertNotice(NoticeEntity noticeEntity) {
         em.persist(noticeEntity);
-        return noticeEntity;
+        return INSTANCE.toDto(noticeEntity);
     }
 
     /**
@@ -113,11 +118,11 @@ public class NoticeRepository {
      * 5. 작성일      : 2022. 11. 28.
      * </pre>
      */
-    public NoticeEntity updateNotice(NoticeEntity existNoticeEntity) {
+    public NoticeDTO updateNotice(NoticeEntity existNoticeEntity) {
         em.merge(existNoticeEntity);
         em.flush();
         em.clear();
-        return existNoticeEntity;
+        return INSTANCE.toDto(existNoticeEntity);
     }
 
     /**
@@ -134,5 +139,51 @@ public class NoticeRepository {
         em.flush();
         em.clear();
         return idx;
+    }
+
+    /**
+     * <pre>
+     * 1. MethodName : viewNotice
+     * 2. ClassName  : NoticeRepository.java
+     * 3. Comment    : 공지사항 조회 수 증가
+     * 4. 작성자      : CHO
+     * 5. 작성일      : 2022. 11. 28.
+     * </pre>
+     */
+    public void viewNotice(Long idx) {
+        queryFactory
+                .update(noticeEntity)
+                //add , minus , multiple 다 가능하다.
+                .set(noticeEntity.viewCount, noticeEntity.viewCount.add(1))
+                .where(noticeEntity.idx.eq(idx))
+                .execute();
+
+        em.flush();
+        em.clear();
+    }
+
+    /**
+     * <pre>
+     * 1. MethodName : toggleTopFixed
+     * 2. ClassName  : NoticeRepository.java
+     * 3. Comment    : 공지사항 상단글 설정
+     * 4. 작성자      : CHO
+     * 5. 작성일      : 2022. 11. 28.
+     * </pre>
+     */
+    public Boolean toggleTopFixed(Long idx) {
+        NoticeEntity oneNotice = em.find(NoticeEntity.class, idx);
+        Boolean fixed = !oneNotice.getTopFixed();
+
+        queryFactory
+                .update(noticeEntity)
+                .where(noticeEntity.idx.eq(idx))
+                .set(noticeEntity.topFixed, fixed)
+                .execute();
+
+        em.flush();
+        em.clear();
+
+        return fixed;
     }
 }

@@ -181,7 +181,7 @@ public class NoticeController {
             @ApiResponse(code = 500, message = "서버 에러", response = ServerError.class)
     })
     @PutMapping("/{idx}/toggle-fixed")
-    public NoticeDTO toggleFixed(@PathVariable Long idx) {
+    public Boolean toggleFixed(@PathVariable Long idx) {
         return noticeService.toggleTopFixed(idx);
     }
 }
