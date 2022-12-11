@@ -38,7 +38,7 @@ public class PostEntity extends NewCommonMappedClass {
     private String postDescription;
 
     @Column(name = "post_parent_idx")
-    private Long postIdx;
+    private Long postParentIdx;
 
     @Column(name = "post_top_idx")
     private Long postTopIdx;
