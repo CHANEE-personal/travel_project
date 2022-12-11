@@ -2,6 +2,7 @@ package com.travel.travel_project.domain.file;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.travel.travel_project.domain.common.EntityType;
+import com.travel.travel_project.domain.post.PostEntity;
 import com.travel.travel_project.domain.travel.TravelEntity;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.*;
@@ -74,4 +75,8 @@ public class CommonImageEntity {
     @ManyToOne(fetch = LAZY, cascade = CascadeType.REMOVE)
     @JoinColumn(name = "type_idx", referencedColumnName = "idx", insertable = false, updatable = false)
     private TravelEntity travelImageEntity;
+
+    @ManyToOne(fetch = LAZY, cascade = CascadeType.REMOVE)
+    @JoinColumn(name = "type_idx", referencedColumnName = "idx", insertable = false, updatable = false)
+    private PostEntity postImageEntity;
 }
