@@ -2,6 +2,7 @@ package com.travel.travel_project.domain.travel;
 
 import com.travel.travel_project.domain.common.CommonEntity;
 import com.travel.travel_project.domain.common.NewCommonMappedClass;
+import com.travel.travel_project.domain.file.CommonImageEntity;
 import com.travel.travel_project.domain.travel.review.TravelReviewEntity;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
@@ -74,6 +75,9 @@ public class TravelEntity extends NewCommonMappedClass {
 
     @OneToMany(mappedBy = "newTravelEntity", fetch = LAZY)
     private List<TravelReviewEntity> travelReviewEntityList = new ArrayList<>();
+
+    @OneToMany(mappedBy = "travelImageEntity", fetch = LAZY)
+    private List<CommonImageEntity> commonImageEntityList = new ArrayList<>();
 
     public void togglePopular(Boolean popular) {
         this.popular = !popular;

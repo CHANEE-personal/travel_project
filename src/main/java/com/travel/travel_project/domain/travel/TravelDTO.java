@@ -1,6 +1,7 @@
 package com.travel.travel_project.domain.travel;
 
 import com.travel.travel_project.domain.common.NewCommonDTO;
+import com.travel.travel_project.domain.file.CommonImageEntity;
 import com.travel.travel_project.domain.travel.review.TravelReviewEntity;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -60,4 +61,7 @@ public class TravelDTO extends NewCommonDTO {
 
     @ApiModelProperty(value = "travelReviewList", hidden = true)
     private List<TravelReviewEntity> reviewList = new ArrayList<>();
+
+    @ApiModelProperty(value = "travelImageList", hidden = true)
+    private List<CommonImageEntity> imageList = new ArrayList<>();
 }
