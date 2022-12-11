@@ -247,7 +247,7 @@ public class TravelController {
             @ApiResponse(code = 500, message = "서버 에러", response = ServerError.class)
     })
     @PostMapping(value = "/{idx}/reply")
-    public TravelReviewDTO replyTravel(@RequestBody TravelReviewEntity travelReviewEntity) {
+    public TravelReviewDTO replyTravel(@Valid @RequestBody TravelReviewEntity travelReviewEntity) {
         return travelService.replyTravel(travelReviewEntity);
     }
 
@@ -269,7 +269,7 @@ public class TravelController {
             @ApiResponse(code = 500, message = "서버 에러", response = ServerError.class)
     })
     @PutMapping("/{idx}/reply")
-    public TravelReviewDTO updateReplyTravel(@PathVariable Long idx, @RequestBody TravelReviewEntity travelReviewEntity) {
+    public TravelReviewDTO updateReplyTravel(@PathVariable Long idx, @Valid @RequestBody TravelReviewEntity travelReviewEntity) {
         if (travelService.detailReplyTravelReview(idx) == null) {
             throw new TravelException(NOT_FOUND_TRAVEL_REVIEW, new Throwable("해당 리뷰 없음"));
         } else {
@@ -427,7 +427,7 @@ public class TravelController {
             @ApiResponse(code = 500, message = "서버 에러", response = ServerError.class)
     })
     @PostMapping("/group")
-    public TravelGroupDTO insertTravelGroup(@RequestBody TravelGroupEntity travelGroupEntity) {
+    public TravelGroupDTO insertTravelGroup(@Valid @RequestBody TravelGroupEntity travelGroupEntity) {
         return travelService.insertTravelGroup(travelGroupEntity);
     }
 
@@ -449,7 +449,7 @@ public class TravelController {
             @ApiResponse(code = 500, message = "서버 에러", response = ServerError.class)
     })
     @PutMapping("/{idx}/group")
-    public TravelGroupDTO updateTravelGroup(@PathVariable Long idx, @RequestBody TravelGroupEntity travelGroupEntity) {
+    public TravelGroupDTO updateTravelGroup(@PathVariable Long idx, @Valid @RequestBody TravelGroupEntity travelGroupEntity) {
         if (travelService.findOneTravelGroup(idx) == null) {
             throw new TravelException(NOT_FOUND_TRAVEL_GROUP, new Throwable("여행 그룹 상세 없음"));
         }
@@ -499,7 +499,7 @@ public class TravelController {
             @ApiResponse(code = 500, message = "서버 에러", response = ServerError.class)
     })
     @PostMapping("/group_user")
-    public TravelGroupUserDTO insertTravelGroupUser(@RequestBody TravelGroupUserEntity travelGroupUserEntity) {
+    public TravelGroupUserDTO insertTravelGroupUser(@Valid @RequestBody TravelGroupUserEntity travelGroupUserEntity) {
         return travelService.insertTravelGroupUser(travelGroupUserEntity);
     }
 
