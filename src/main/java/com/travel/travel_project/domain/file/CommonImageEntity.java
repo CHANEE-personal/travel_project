@@ -73,5 +73,5 @@ public class CommonImageEntity {
 
     @ManyToOne(fetch = LAZY, cascade = CascadeType.REMOVE)
     @JoinColumn(name = "type_idx", referencedColumnName = "idx", insertable = false, updatable = false)
-    private TravelEntity newTravelEntity;
+    private TravelEntity travelImageEntity;
 }
