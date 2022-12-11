@@ -24,6 +24,7 @@ import static com.travel.travel_project.common.StringUtil.getInt;
 import static com.travel.travel_project.common.StringUtil.getString;
 import static com.travel.travel_project.api.travel.mapper.TravelMapper.INSTANCE;
 import static com.travel.travel_project.domain.common.QCommonEntity.commonEntity;
+import static com.travel.travel_project.domain.file.QCommonImageEntity.commonImageEntity;
 import static com.travel.travel_project.domain.travel.QTravelEntity.travelEntity;
 import static com.travel.travel_project.domain.travel.group.QTravelGroupEntity.travelGroupEntity;
 import static com.travel.travel_project.domain.travel.review.QTravelReviewEntity.travelReviewEntity;
@@ -133,6 +134,7 @@ public class TravelRepository {
                 .innerJoin(travelEntity.newTravelCode, commonEntity)
                 .fetchJoin()
                 .leftJoin(travelEntity.travelReviewEntityList, travelReviewEntity)
+                .leftJoin(travelEntity.commonImageEntityList, commonImageEntity)
                 .fetchJoin()
                 .where(travelEntity.idx.eq(idx)
                         .and(travelEntity.visible.eq("Y")))

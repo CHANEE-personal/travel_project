@@ -1,6 +1,8 @@
 package com.travel.travel_project.api.travel;
 
-import com.travel.travel_project.api.travel.mapper.TravelMapper;
+import com.travel.travel_project.common.SaveFile;
+import com.travel.travel_project.domain.file.CommonImageDTO;
+import com.travel.travel_project.domain.file.CommonImageEntity;
 import com.travel.travel_project.domain.travel.group.TravelGroupDTO;
 import com.travel.travel_project.domain.travel.group.TravelGroupEntity;
 import com.travel.travel_project.domain.travel.group.TravelGroupUserDTO;
@@ -16,6 +18,7 @@ import org.springframework.cache.annotation.CachePut;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Map;
@@ -27,6 +30,7 @@ import static com.travel.travel_project.exception.ApiExceptionType.*;
 public class TravelService {
 
     private final TravelRepository travelRepository;
+    private final SaveFile saveFile;
 
     /**
      * <pre>
@@ -99,6 +103,25 @@ public class TravelService {
             return travelRepository.insertTravel(travelEntity);
         } catch (Exception e) {
             throw new TravelException(ERROR_TRAVEL, e);
+        }
+    }
+
+    /**
+     * <pre>
+     * 1. MethodName : insertTravelImage
+     * 2. ClassName  : TravelService.java
+     * 3. Comment    : 여행지 이미지 등록
+     * 4. 작성자      : CHO
+     * 5. 작성일      : 2022. 12. 11.
+     * </pre>
+     */
+    @Modifying(clearAutomatically = true)
+    @Transactional
+    public List<CommonImageDTO> insertTravelImage(List<MultipartFile> files, CommonImageEntity commonImageEntity) {
+        try {
+            return saveFile.saveFile(files, commonImageEntity);
+        } catch (Exception e) {
+            throw new TravelException(ERROR_IMAGE, e);
         }
     }
 

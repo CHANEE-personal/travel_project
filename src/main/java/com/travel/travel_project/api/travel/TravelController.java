@@ -1,7 +1,11 @@
 package com.travel.travel_project.api.travel;
 
 import com.travel.travel_project.common.Page;
+import com.travel.travel_project.common.SaveFile;
 import com.travel.travel_project.common.SearchCommon;
+import com.travel.travel_project.domain.common.EntityType;
+import com.travel.travel_project.domain.file.CommonImageDTO;
+import com.travel.travel_project.domain.file.CommonImageEntity;
 import com.travel.travel_project.domain.travel.TravelDTO;
 import com.travel.travel_project.domain.travel.TravelEntity;
 import com.travel.travel_project.domain.travel.group.TravelGroupDTO;
@@ -18,6 +22,7 @@ import io.swagger.annotations.ApiResponses;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
 import java.rmi.ServerError;
@@ -29,6 +34,7 @@ import java.util.Map;
 import static com.travel.travel_project.exception.ApiExceptionType.NOT_FOUND_TRAVEL_GROUP;
 import static com.travel.travel_project.exception.ApiExceptionType.NOT_FOUND_TRAVEL_REVIEW;
 import static java.lang.Math.ceil;
+import static org.springframework.http.MediaType.MULTIPART_FORM_DATA_VALUE;
 
 @RestController
 @RequestMapping("/api/travel")
@@ -121,6 +127,28 @@ public class TravelController {
     @PostMapping
     public TravelDTO insertTravel(@Valid @RequestBody TravelEntity travelEntity) {
         return travelService.insertTravel(travelEntity);
+    }
+
+    /**
+     * <pre>
+     * 1. MethodName : insertTravelImage
+     * 2. ClassName  : TravelController.java
+     * 3. Comment    : 여행지 이미지 저장
+     * 4. 작성자      : CHO
+     * 5. 작성일      : 2022. 05. 07.
+     * </pre>
+     */
+    @ApiOperation(value = "여행지 이미지 저장", notes = "여행지 이미지를 저장한다.")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "여행지 이미지 등록성공", response = Map.class),
+            @ApiResponse(code = 400, message = "잘못된 요청", response = HttpClientErrorException.BadRequest.class),
+            @ApiResponse(code = 401, message = "허용되지 않는 관리자", response = HttpClientErrorException.Unauthorized.class),
+            @ApiResponse(code = 403, message = "접근거부", response = HttpClientErrorException.class),
+            @ApiResponse(code = 500, message = "서버 에러", response = ServerError.class)
+    })
+    @PostMapping(value = "/{idx}/images", consumes = MULTIPART_FORM_DATA_VALUE)
+    public List<CommonImageDTO> insertTravelImage(@PathVariable Long idx, @RequestParam(value = "images") List<MultipartFile> fileName) {
+        return travelService.insertTravelImage(fileName, CommonImageEntity.builder().typeIdx(idx).entityType(EntityType.TRAVEL).build());
     }
 
     /**

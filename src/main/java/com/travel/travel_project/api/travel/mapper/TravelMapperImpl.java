@@ -26,6 +26,7 @@ public class TravelMapperImpl implements TravelMapper {
                 .visible(entity.getVisible())
                 .popular(entity.getPopular())
                 .reviewList(entity.getTravelReviewEntityList())
+                .imageList(entity.getCommonImageEntityList())
                 .creator(entity.getCreator())
                 .createTime(entity.getCreateTime())
                 .updater(entity.getUpdater())
