@@ -1,11 +1,15 @@
 package com.travel.travel_project.domain.post;
 
 import com.travel.travel_project.domain.common.NewCommonMappedClass;
+import com.travel.travel_project.domain.file.CommonImageEntity;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static javax.persistence.FetchType.LAZY;
 import static javax.persistence.GenerationType.IDENTITY;
@@ -56,8 +60,6 @@ public class PostEntity extends NewCommonMappedClass {
     @Column(name = "popular")
     private Boolean popular;
 
-    @ManyToOne(fetch = LAZY)
-    @JoinColumn(name = "post_parent_idx", referencedColumnName = "idx", insertable = false, updatable = false)
-    private PostEntity postImageEntity;
-
+    @OneToMany(mappedBy = "postImageEntity", fetch = LAZY)
+    private List<CommonImageEntity> postImageList = new ArrayList<>();
 }
