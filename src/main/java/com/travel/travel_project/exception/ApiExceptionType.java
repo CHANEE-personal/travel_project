@@ -60,6 +60,13 @@ public enum ApiExceptionType implements BaseExceptionType {
     ERROR_UPDATE_NOTICE("ERROR_UPDATE_NOTICE", 500, "공지사항 수정 에러"),
     ERROR_DELETE_NOTICE("ERROR_DELETE_NOTICE", 500, "공지사항 삭제 에러"),
 
+    // 게시글 관련
+    NOT_FOUND_POST_LIST("NOT_FOUND_POST_LIST", 200, "게시글 리스트 없음"),
+    NOT_FOUND_POST("NOT_FOUND_POST", 200, "게시글 상세 없음"),
+    ERROR_POST("ERROR_POST", 500, "게시글 등록 에러"),
+    ERROR_UPDATE_POST("ERROR_UPDATE_POST", 500, "게시글 수정 에러"),
+    ERROR_DELETE_POST("ERROR_DELETE_POST", 500, "게시글 삭제 에러"),
+
     // FAQ 관련
     NOT_FOUND_FAQ_LIST("NOT_FOUND_FAQ_LIST", 200, "FAQ 리스트 없음"),
     NOT_FOUND_FAQ("NOT_FOUND_FAQ", 200, "FAQ 상세 없음"),
