@@ -1,11 +1,8 @@
 package com.travel.travel_project.api.post;
 
 import com.travel.travel_project.api.post.mapper.PostMapper;
-import com.travel.travel_project.api.travel.mapper.TravelMapper;
 import com.travel.travel_project.domain.post.PostDTO;
 import com.travel.travel_project.domain.post.PostEntity;
-import com.travel.travel_project.domain.travel.TravelDTO;
-import com.travel.travel_project.domain.travel.TravelEntity;
 import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -30,7 +27,6 @@ import java.util.List;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 import static org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase.Replace.NONE;
 import static org.springframework.test.context.TestConstructor.AutowireMode.ALL;
