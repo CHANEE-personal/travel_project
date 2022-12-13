@@ -1,7 +1,6 @@
 package com.travel.travel_project.api.travel;
 
 import com.travel.travel_project.common.Page;
-import com.travel.travel_project.common.SaveFile;
 import com.travel.travel_project.common.SearchCommon;
 import com.travel.travel_project.domain.common.EntityType;
 import com.travel.travel_project.domain.file.CommonImageDTO;
@@ -14,6 +13,8 @@ import com.travel.travel_project.domain.travel.group.TravelGroupUserDTO;
 import com.travel.travel_project.domain.travel.group.TravelGroupUserEntity;
 import com.travel.travel_project.domain.travel.review.TravelReviewDTO;
 import com.travel.travel_project.domain.travel.review.TravelReviewEntity;
+import com.travel.travel_project.domain.travel.schedule.TravelScheduleDTO;
+import com.travel.travel_project.domain.travel.schedule.TravelScheduleEntity;
 import com.travel.travel_project.exception.TravelException;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -551,5 +552,71 @@ public class TravelController {
     @DeleteMapping("/{idx}/group_user")
     public Long deleteTravelGroupUser(@PathVariable Long idx) {
         return travelService.deleteTravelGroupUser(idx);
+    }
+
+    /**
+     * <pre>
+     * 1. MethodName : insertTravelSchedule
+     * 2. ClassName  : TravelController.java
+     * 3. Comment    : 유저 여행 스케줄 등록
+     * 4. 작성자      : CHO
+     * 5. 작성일      : 2022. 12. 13.
+     * </pre>
+     */
+    @ApiOperation(value = "유저 여행 스케줄 등록", notes = "유저 여행 스케줄을 등록한다.")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "유저 여행 스케줄 등록 성공", response = Map.class),
+            @ApiResponse(code = 400, message = "잘못된 요청", response = HttpClientErrorException.BadRequest.class),
+            @ApiResponse(code = 401, message = "허용되지 않는 관리자", response = HttpClientErrorException.Unauthorized.class),
+            @ApiResponse(code = 403, message = "접근거부", response = HttpClientErrorException.class),
+            @ApiResponse(code = 500, message = "서버 에러", response = ServerError.class)
+    })
+    @PostMapping("/schedule")
+    public TravelScheduleDTO insertTravelSchedule(@RequestBody TravelScheduleEntity travelScheduleEntity) {
+        return travelService.insertTravelSchedule(travelScheduleEntity);
+    }
+
+    /**
+     * <pre>
+     * 1. MethodName : updateTravelSchedule
+     * 2. ClassName  : TravelController.java
+     * 3. Comment    : 유저 여행 스케줄 수정
+     * 4. 작성자      : CHO
+     * 5. 작성일      : 2022. 12. 13.
+     * </pre>
+     */
+    @ApiOperation(value = "유저 여행 스케줄 수정", notes = "유저 여행 스케줄을 수정한다.")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "유저 여행 스케줄 수정 성공", response = Map.class),
+            @ApiResponse(code = 400, message = "잘못된 요청", response = HttpClientErrorException.BadRequest.class),
+            @ApiResponse(code = 401, message = "허용되지 않는 관리자", response = HttpClientErrorException.Unauthorized.class),
+            @ApiResponse(code = 403, message = "접근거부", response = HttpClientErrorException.class),
+            @ApiResponse(code = 500, message = "서버 에러", response = ServerError.class)
+    })
+    @PutMapping("/{idx}/schedule")
+    public TravelScheduleDTO updateTravelSchedule(@RequestBody TravelScheduleEntity travelScheduleEntity) {
+        return travelService.updateTravelSchedule(travelScheduleEntity);
+    }
+
+    /**
+     * <pre>
+     * 1. MethodName : deleteTravelSchedule
+     * 2. ClassName  : TravelController.java
+     * 3. Comment    : 유저 여행 스케줄 삭제
+     * 4. 작성자      : CHO
+     * 5. 작성일      : 2022. 12. 13.
+     * </pre>
+     */
+    @ApiOperation(value = "유저 여행 스케줄 삭제", notes = "유저 여행 스케줄을 삭제한다.")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "유저 여행 스케줄 삭제 성공", response = Map.class),
+            @ApiResponse(code = 400, message = "잘못된 요청", response = HttpClientErrorException.BadRequest.class),
+            @ApiResponse(code = 401, message = "허용되지 않는 관리자", response = HttpClientErrorException.Unauthorized.class),
+            @ApiResponse(code = 403, message = "접근거부", response = HttpClientErrorException.class),
+            @ApiResponse(code = 500, message = "서버 에러", response = ServerError.class)
+    })
+    @DeleteMapping("/{idx}/schedule")
+    public Long deleteTravelSchedule(@PathVariable Long idx) {
+        return travelService.deleteTravelSchedule(idx);
     }
 }

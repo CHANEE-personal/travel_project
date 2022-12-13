@@ -9,6 +9,8 @@ import com.travel.travel_project.domain.travel.group.TravelGroupUserDTO;
 import com.travel.travel_project.domain.travel.group.TravelGroupUserEntity;
 import com.travel.travel_project.domain.travel.review.TravelReviewDTO;
 import com.travel.travel_project.domain.travel.review.TravelReviewEntity;
+import com.travel.travel_project.domain.travel.schedule.TravelScheduleDTO;
+import com.travel.travel_project.domain.travel.schedule.TravelScheduleEntity;
 import com.travel.travel_project.exception.TravelException;
 import com.travel.travel_project.domain.travel.TravelDTO;
 import com.travel.travel_project.domain.travel.TravelEntity;
@@ -470,6 +472,63 @@ public class TravelService {
             return travelRepository.deleteTravelGroupUser(idx);
         } catch (Exception e) {
             throw new TravelException(ERROR_DELETE_TRAVEL_GROUP_USER, e);
+        }
+    }
+
+    /**
+     * <pre>
+     * 1. MethodName : insertTravelSchedule
+     * 2. ClassName  : TravelService.java
+     * 3. Comment    : 유저 여행 스케줄 등록
+     * 4. 작성자      : CHO
+     * 5. 작성일      : 2022. 12. 13.
+     * </pre>
+     */
+    @Modifying(clearAutomatically = true)
+    @Transactional
+    public TravelScheduleDTO insertTravelSchedule(TravelScheduleEntity travelScheduleEntity) {
+        try {
+            return travelRepository.insertTravelSchedule(travelScheduleEntity);
+        } catch (Exception e) {
+            throw new TravelException(ERROR_TRAVEL_SCHEDULE, e);
+        }
+    }
+
+    /**
+     * <pre>
+     * 1. MethodName : updateTravelSchedule
+     * 2. ClassName  : TravelService.java
+     * 3. Comment    : 유저 여행 스케줄 수정
+     * 4. 작성자      : CHO
+     * 5. 작성일      : 2022. 12. 13.
+     * </pre>
+     */
+    @Modifying(clearAutomatically = true)
+    @Transactional
+    public TravelScheduleDTO updateTravelSchedule(TravelScheduleEntity travelScheduleEntity) {
+        try {
+            return travelRepository.updateTravelSchedule(travelScheduleEntity);
+        } catch (Exception e) {
+            throw new TravelException(ERROR_UPDATE_TRAVEL_SCHEDULE, e);
+        }
+    }
+
+    /**
+     * <pre>
+     * 1. MethodName : deleteTravelSchedule
+     * 2. ClassName  : TravelService.java
+     * 3. Comment    : 유저 여행 스케줄 삭제
+     * 4. 작성자      : CHO
+     * 5. 작성일      : 2022. 12. 13.
+     * </pre>
+     */
+    @Modifying(clearAutomatically = true)
+    @Transactional
+    public Long deleteTravelSchedule(Long idx) {
+        try {
+            return travelRepository.deleteTravelSchedule(idx);
+        } catch (Exception e) {
+            throw new TravelException(ERROR_DELETE_TRAVEL_SCHEDULE, e);
         }
     }
 }

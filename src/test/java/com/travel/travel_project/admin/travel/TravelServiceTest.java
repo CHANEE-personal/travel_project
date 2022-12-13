@@ -12,6 +12,8 @@ import com.travel.travel_project.domain.travel.group.TravelGroupUserDTO;
 import com.travel.travel_project.domain.travel.group.TravelGroupUserEntity;
 import com.travel.travel_project.domain.travel.review.TravelReviewDTO;
 import com.travel.travel_project.domain.travel.review.TravelReviewEntity;
+import com.travel.travel_project.domain.travel.schedule.TravelScheduleDTO;
+import com.travel.travel_project.domain.travel.schedule.TravelScheduleEntity;
 import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
@@ -30,6 +32,7 @@ import org.springframework.test.context.TestPropertySource;
 import javax.persistence.EntityManager;
 import javax.transaction.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -861,5 +864,64 @@ class TravelServiceTest {
 
         // then
         assertThat(deleteIdx).isEqualTo(travelGroupUserInfo.getIdx());
+    }
+
+    @Test
+    @DisplayName("유저 여행 스케줄 등록 테스트")
+    void 유저여행스케줄등록테스트() {
+        TravelScheduleEntity travelScheduleEntity = TravelScheduleEntity.builder()
+                .travelIdx(1L)
+                .userIdx(1L)
+                .scheduleDescription("스케줄 테스트")
+                .scheduleTime(LocalDateTime.now())
+                .build();
+
+        TravelScheduleDTO travelScheduleDTO = travelService.insertTravelSchedule(travelScheduleEntity);
+
+        assertThat(travelScheduleDTO.getTravelIdx()).isEqualTo(1L);
+        assertThat(travelScheduleDTO.getUserIdx()).isEqualTo(1L);
+        assertThat(travelScheduleDTO.getScheduleDescription()).isEqualTo("스케줄 테스트");
+    }
+
+    @Test
+    @DisplayName("유저 여행 스케줄 수정 테스트")
+    void 유저여행스케줄수정테스트() {
+        TravelScheduleEntity travelScheduleEntity = TravelScheduleEntity.builder()
+                .travelIdx(1L)
+                .userIdx(1L)
+                .scheduleDescription("스케줄 테스트")
+                .scheduleTime(LocalDateTime.now())
+                .build();
+
+        TravelScheduleDTO travelScheduleDTO = travelService.insertTravelSchedule(travelScheduleEntity);
+
+        TravelScheduleEntity updateTravelScheduleEntity = TravelScheduleEntity.builder()
+                .idx(travelScheduleDTO.getIdx())
+                .travelIdx(travelScheduleDTO.getTravelIdx())
+                .userIdx(travelScheduleDTO.getUserIdx())
+                .scheduleDescription("스케줄 수정 테스트")
+                .scheduleTime(LocalDateTime.now())
+                .build();
+
+        TravelScheduleDTO updateScheduleDTO = travelService.updateTravelSchedule(updateTravelScheduleEntity);
+
+        assertThat(updateScheduleDTO.getScheduleDescription()).isEqualTo("스케줄 수정 테스트");
+    }
+
+    @Test
+    @DisplayName("유저 여행 스케줄 삭제 테스트")
+    void 유저여행스케줄삭제테스트() {
+        TravelScheduleEntity travelScheduleEntity = TravelScheduleEntity.builder()
+                .travelIdx(1L)
+                .userIdx(1L)
+                .scheduleDescription("스케줄 테스트")
+                .scheduleTime(LocalDateTime.now())
+                .build();
+
+        TravelScheduleDTO travelScheduleDTO = travelService.insertTravelSchedule(travelScheduleEntity);
+
+        Long deleteIdx = travelService.deleteTravelSchedule(travelScheduleDTO.getIdx());
+
+        assertThat(deleteIdx).isEqualTo(travelScheduleDTO.getIdx());
     }
 }
