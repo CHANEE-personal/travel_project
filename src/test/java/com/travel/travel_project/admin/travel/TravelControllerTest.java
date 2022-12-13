@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.travel.travel_project.domain.travel.group.TravelGroupEntity;
 import com.travel.travel_project.domain.travel.group.TravelGroupUserEntity;
 import com.travel.travel_project.domain.travel.review.TravelReviewEntity;
+import com.travel.travel_project.domain.travel.schedule.TravelScheduleEntity;
 import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -14,7 +15,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.event.EventListener;
 import org.springframework.mock.web.MockMultipartFile;
-import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.TestConstructor;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
@@ -26,6 +26,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.persistence.EntityManager;
 
 import java.io.FileInputStream;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static com.travel.travel_project.common.StringUtil.getString;
@@ -323,5 +324,74 @@ class TravelControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(content().contentType("application/json;charset=utf-8"))
                 .andExpect(content().string(getString(travelGroupUserEntity.getIdx())));
+    }
+
+    @Test
+    @DisplayName("유저 여행 스케줄 등록 테스트")
+    void 유저여행스케줄등록테스트() throws Exception {
+        TravelScheduleEntity travelScheduleEntity = TravelScheduleEntity.builder()
+                .travelIdx(1L)
+                .userIdx(1L)
+                .scheduleDescription("스케줄 테스트")
+                .scheduleTime(LocalDateTime.now())
+                .build();
+
+        mockMvc.perform(post("/api/travel/schedule")
+                        .contentType(APPLICATION_JSON_VALUE)
+                        .content(objectMapper.writeValueAsString(travelScheduleEntity)))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(content().contentType("application/json;charset=utf-8"))
+                .andExpect(jsonPath("$.userIdx").value(1L))
+                .andExpect(jsonPath("$.travelIdx").value(1L))
+                .andExpect(jsonPath("$.scheduleDescription").value("스케줄 테스트"));
+    }
+
+    @Test
+    @DisplayName("유저 여행 스케줄 수정 테스트")
+    void 유저여행스케줄수정테스트() throws Exception {
+        TravelScheduleEntity travelScheduleEntity = TravelScheduleEntity.builder()
+                .travelIdx(1L)
+                .userIdx(1L)
+                .scheduleDescription("스케줄 테스트")
+                .scheduleTime(LocalDateTime.now())
+                .build();
+
+        em.persist(travelScheduleEntity);
+
+        TravelScheduleEntity updateTravelScheduleEntity = TravelScheduleEntity.builder()
+                .idx(travelScheduleEntity.getIdx())
+                .travelIdx(1L)
+                .userIdx(1L)
+                .scheduleDescription("스케줄 수정 테스트")
+                .scheduleTime(LocalDateTime.now())
+                .build();
+
+        mockMvc.perform(put("/api/travel/{idx}/schedule", travelScheduleEntity.getIdx())
+                        .contentType(APPLICATION_JSON_VALUE)
+                        .content(objectMapper.writeValueAsString(updateTravelScheduleEntity)))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(content().contentType("application/json;charset=utf-8"))
+                .andExpect(jsonPath("$.scheduleDescription").value("스케줄 수정 테스트"));
+    }
+
+    @Test
+    @DisplayName("유저 여행 스케줄 삭제 테스트")
+    void 유저여행스케줄삭제테스트() throws Exception {
+        TravelScheduleEntity travelScheduleEntity = TravelScheduleEntity.builder()
+                .travelIdx(1L)
+                .userIdx(1L)
+                .scheduleDescription("스케줄 테스트")
+                .scheduleTime(LocalDateTime.now())
+                .build();
+
+        em.persist(travelScheduleEntity);
+
+        mockMvc.perform(delete("/api/travel/{idx}/schedule", travelScheduleEntity.getIdx()))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(content().contentType("application/json;charset=utf-8"))
+                .andExpect(content().string(getString(travelScheduleEntity.getIdx())));
     }
 }
