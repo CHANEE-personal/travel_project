@@ -5,11 +5,14 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.travel.travel_project.api.travel.mapper.group.TravelGroupMapper;
 import com.travel.travel_project.api.travel.mapper.group.TravelGroupUserMapper;
 import com.travel.travel_project.api.travel.mapper.review.TravelReviewMapper;
+import com.travel.travel_project.api.travel.mapper.schedule.TravelScheduleMapper;
 import com.travel.travel_project.domain.travel.TravelDTO;
 import com.travel.travel_project.domain.travel.TravelEntity;
 import com.travel.travel_project.domain.travel.group.*;
 import com.travel.travel_project.domain.travel.review.TravelReviewDTO;
 import com.travel.travel_project.domain.travel.review.TravelReviewEntity;
+import com.travel.travel_project.domain.travel.schedule.TravelScheduleDTO;
+import com.travel.travel_project.domain.travel.schedule.TravelScheduleEntity;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
@@ -67,8 +70,8 @@ public class TravelRepository {
             searchStartTime = (LocalDateTime) travelMap.get("searchStartTime");
             searchEndTime = (LocalDateTime) travelMap.get("searchEndTime");
         } else {
-            searchStartTime = now().minusDays(now().getDayOfMonth()-1).atStartOfDay();
-            searchEndTime = of(now().minusDays(now().getDayOfMonth()).plusMonths(1), LocalTime.of(23,59,59));
+            searchStartTime = now().minusDays(now().getDayOfMonth() - 1).atStartOfDay();
+            searchEndTime = of(now().minusDays(now().getDayOfMonth()).plusMonths(1), LocalTime.of(23, 59, 59));
         }
 
         return travelEntity.createTime.between(searchStartTime, searchEndTime);
@@ -79,8 +82,8 @@ public class TravelRepository {
      * 1. MethodName : findTravelCount
      * 2. ClassName  : TravelRepository.java
      * 3. Comment    : 여행지 소개 리스트 갯수 조회
-     * 4. 작성자       : CHO
-     * 5. 작성일       : 2022. 10. 05.
+     * 4. 작성자      : CHO
+     * 5. 작성일      : 2022. 10. 05.
      * </pre>
      */
     public Integer findTravelCount(Map<String, Object> travelMap) {
@@ -94,8 +97,8 @@ public class TravelRepository {
      * 1. MethodName : findTravelList
      * 2. ClassName  : TravelRepository.java
      * 3. Comment    : 여행지 소개 리스트 조회
-     * 4. 작성자       : CHO
-     * 5. 작성일       : 2022. 10. 05.
+     * 4. 작성자      : CHO
+     * 5. 작성일      : 2022. 10. 05.
      * </pre>
      */
     public List<TravelDTO> findTravelList(Map<String, Object> travelMap) {
@@ -121,8 +124,8 @@ public class TravelRepository {
      * 1. MethodName : findOneTravel
      * 2. ClassName  : TravelRepository.java
      * 3. Comment    : 여행지 소개 상세 조회
-     * 4. 작성자       : CHO
-     * 5. 작성일       : 2022. 10. 05.
+     * 4. 작성자      : CHO
+     * 5. 작성일      : 2022. 10. 05.
      * </pre>
      */
     public TravelDTO findOneTravel(Long idx) {
@@ -148,8 +151,8 @@ public class TravelRepository {
      * 1. MethodName : findOnePrevTravel
      * 2. ClassName  : TravelRepository.java
      * 3. Comment    : 이전 여행지 소개 상세 조회
-     * 4. 작성자       : CHO
-     * 5. 작성일       : 2022. 10. 05.
+     * 4. 작성자      : CHO
+     * 5. 작성일      : 2022. 10. 05.
      * </pre>
      */
     public TravelDTO findOnePrevTravel(Long idx) {
@@ -168,8 +171,8 @@ public class TravelRepository {
      * 1. MethodName : findOneNextTravel
      * 2. ClassName  : TravelRepository.java
      * 3. Comment    : 다음 여행지 소개 상세 조회
-     * 4. 작성자       : CHO
-     * 5. 작성일       : 2022. 10. 05.
+     * 4. 작성자      : CHO
+     * 5. 작성일      : 2022. 10. 05.
      * </pre>
      */
     public TravelDTO findOneNextTravel(Long idx) {
@@ -188,8 +191,8 @@ public class TravelRepository {
      * 1. MethodName : insertTravel
      * 2. ClassName  : TravelRepository.java
      * 3. Comment    : 관리자 > 여행지 등록
-     * 4. 작성자       : CHO
-     * 5. 작성일       : 2022. 10. 05.
+     * 4. 작성자      : CHO
+     * 5. 작성일      : 2022. 10. 05.
      * </pre>
      */
     public TravelDTO insertTravel(TravelEntity travelEntity) {
@@ -218,8 +221,8 @@ public class TravelRepository {
      * 1. MethodName : deleteTravel
      * 2. ClassName  : TravelRepository.java
      * 3. Comment    : 관리자 > 여행지 삭제
-     * 4. 작성자       : CHO
-     * 5. 작성일       : 2022. 10. 05.
+     * 4. 작성자      : CHO
+     * 5. 작성일      : 2022. 10. 05.
      * </pre>
      */
     public Long deleteTravel(Long idx) {
@@ -234,8 +237,8 @@ public class TravelRepository {
      * 1. MethodName : favoriteTravel
      * 2. ClassName  : TravelRepository.java
      * 3. Comment    : 여행지 좋아요
-     * 4. 작성자       : CHO
-     * 5. 작성일       : 2022. 10. 06.
+     * 4. 작성자      : CHO
+     * 5. 작성일      : 2022. 10. 06.
      * </pre>
      */
     public Integer favoriteTravel(Long idx) {
@@ -257,8 +260,8 @@ public class TravelRepository {
      * 1. MethodName : viewTravel
      * 2. ClassName  : TravelRepository.java
      * 3. Comment    : 여행지 조회 수 증가
-     * 4. 작성자       : CHO
-     * 5. 작성일       : 2022. 10. 06.
+     * 4. 작성자      : CHO
+     * 5. 작성일      : 2022. 10. 06.
      * </pre>
      */
     public void viewTravel(Long idx) {
@@ -278,8 +281,8 @@ public class TravelRepository {
      * 1. MethodName : replyTravel
      * 2. ClassName  : TravelRepository.java
      * 3. Comment    : 여행지 댓글 달기
-     * 4. 작성자       : CHO
-     * 5. 작성일       : 2022. 10. 30.
+     * 4. 작성자      : CHO
+     * 5. 작성일      : 2022. 10. 30.
      * </pre>
      */
     public TravelReviewDTO replyTravel(TravelReviewEntity travelReviewEntity) {
@@ -292,8 +295,8 @@ public class TravelRepository {
      * 1. MethodName : updateReplyTravel
      * 2. ClassName  : TravelRepository.java
      * 3. Comment    : 여행지 댓글 수정
-     * 4. 작성자       : CHO
-     * 5. 작성일       : 2022. 11. 23.
+     * 4. 작성자      : CHO
+     * 5. 작성일      : 2022. 11. 23.
      * </pre>
      */
     public TravelReviewDTO updateReplyTravel(TravelReviewEntity travelReviewEntity) {
@@ -308,8 +311,8 @@ public class TravelRepository {
      * 1. MethodName : deleteReplyTravel
      * 2. ClassName  : TravelRepository.java
      * 3. Comment    : 여행지 댓글 삭제
-     * 4. 작성자       : CHO
-     * 5. 작성일       : 2022. 11. 23.
+     * 4. 작성자      : CHO
+     * 5. 작성일      : 2022. 11. 23.
      * </pre>
      */
     public Long deleteReplyTravel(Long idx) {
@@ -324,8 +327,8 @@ public class TravelRepository {
      * 1. MethodName : replyTravelReview
      * 2. ClassName  : TravelRepository.java
      * 3. Comment    : 여행지 댓글 리스트 조회
-     * 4. 작성자       : CHO
-     * 5. 작성일       : 2022. 11. 23.
+     * 4. 작성자      : CHO
+     * 5. 작성일      : 2022. 11. 23.
      * </pre>
      */
     public List<TravelReviewDTO> replyTravelReview(Long idx) {
@@ -343,8 +346,8 @@ public class TravelRepository {
      * 1. MethodName : detailReplyTravelReview
      * 2. ClassName  : TravelRepository.java
      * 3. Comment    : 여행지 댓글 상세 조회
-     * 4. 작성자       : CHO
-     * 5. 작성일       : 2022. 11. 23.
+     * 4. 작성자      : CHO
+     * 5. 작성일      : 2022. 11. 23.
      * </pre>
      */
     public TravelReviewDTO detailReplyTravelReview(Long idx) {
@@ -362,8 +365,8 @@ public class TravelRepository {
      * 1. MethodName : togglePopular
      * 2. ClassName  : TravelRepository.java
      * 3. Comment    : 인기 여행지 선정
-     * 4. 작성자       : CHO
-     * 5. 작성일       : 2022. 10. 26.
+     * 4. 작성자      : CHO
+     * 5. 작성일      : 2022. 10. 26.
      * </pre>
      */
     public Boolean togglePopular(Long idx) {
@@ -387,8 +390,8 @@ public class TravelRepository {
      * 1. MethodName : popularityTravel
      * 2. ClassName  : TravelRepository.java
      * 3. Comment    : 인기 여행지 리스트 조회
-     * 4. 작성자       : CHO
-     * 5. 작성일       : 2022. 10. 14.
+     * 4. 작성자      : CHO
+     * 5. 작성일      : 2022. 10. 14.
      * </pre>
      */
     public List<TravelDTO> popularityTravel(Map<String, Object> travelMap) {
@@ -414,8 +417,8 @@ public class TravelRepository {
      * 1. MethodName : findTravelGroupCount
      * 2. ClassName  : TravelRepository.java
      * 3. Comment    : 여행지 그룹 리스트 갯수 조회
-     * 4. 작성자       : CHO
-     * 5. 작성일       : 2022. 11. 25.
+     * 4. 작성자      : CHO
+     * 5. 작성일      : 2022. 11. 25.
      * </pre>
      */
     public Integer findTravelGroupCount(Map<String, Object> groupMap) {
@@ -428,8 +431,8 @@ public class TravelRepository {
      * 1. MethodName : findTravelGroupList
      * 2. ClassName  : TravelRepository.java
      * 3. Comment    : 여행지 그룹 리스트 조회
-     * 4. 작성자       : CHO
-     * 5. 작성일       : 2022. 11. 25.
+     * 4. 작성자      : CHO
+     * 5. 작성일      : 2022. 11. 25.
      * </pre>
      */
     public List<TravelGroupDTO> findTravelGroupList(Map<String, Object> groupMap) {
@@ -451,8 +454,8 @@ public class TravelRepository {
      * 1. MethodName : findOneTravelGroup
      * 2. ClassName  : TravelRepository.java
      * 3. Comment    : 여행지 그룹 상세 조회
-     * 4. 작성자       : CHO
-     * 5. 작성일       : 2022. 11. 25.
+     * 4. 작성자      : CHO
+     * 5. 작성일      : 2022. 11. 25.
      * </pre>
      */
     public TravelGroupDTO findOneTravelGroup(Long idx) {
@@ -469,8 +472,8 @@ public class TravelRepository {
      * 1. MethodName : insertTravelGroup
      * 2. ClassName  : TravelRepository.java
      * 3. Comment    : 여행지 그룹 등록
-     * 4. 작성자       : CHO
-     * 5. 작성일       : 2022. 11. 25.
+     * 4. 작성자      : CHO
+     * 5. 작성일      : 2022. 11. 25.
      * </pre>
      */
     public TravelGroupDTO insertTravelGroup(TravelGroupEntity travelGroupEntity) {
@@ -483,8 +486,8 @@ public class TravelRepository {
      * 1. MethodName : updateTravelGroup
      * 2. ClassName  : TravelRepository.java
      * 3. Comment    : 여행지 그룹 수정
-     * 4. 작성자       : CHO
-     * 5. 작성일       : 2022. 11. 25.
+     * 4. 작성자      : CHO
+     * 5. 작성일      : 2022. 11. 25.
      * </pre>
      */
     public TravelGroupDTO updateTravelGroup(TravelGroupEntity travelGroupEntity) {
@@ -499,8 +502,8 @@ public class TravelRepository {
      * 1. MethodName : deleteTravelGroup
      * 2. ClassName  : TravelRepository.java
      * 3. Comment    : 여행지 그룹 삭제
-     * 4. 작성자       : CHO
-     * 5. 작성일       : 2022. 11. 25.
+     * 4. 작성자      : CHO
+     * 5. 작성일      : 2022. 11. 25.
      * </pre>
      */
     public Long deleteTravelGroup(Long idx) {
@@ -515,8 +518,8 @@ public class TravelRepository {
      * 1. MethodName : insertTravelGroupUser
      * 2. ClassName  : TravelRepository.java
      * 3. Comment    : 유저 여행지 그룹 등록
-     * 4. 작성자       : CHO
-     * 5. 작성일       : 2022. 11. 27.
+     * 4. 작성자      : CHO
+     * 5. 작성일      : 2022. 11. 27.
      * </pre>
      */
     public TravelGroupUserDTO insertTravelGroupUser(TravelGroupUserEntity travelGroupUserEntity) {
@@ -529,12 +532,58 @@ public class TravelRepository {
      * 1. MethodName : deleteTravelGroupUser
      * 2. ClassName  : TravelRepository.java
      * 3. Comment    : 유저 여행지 그룹 삭제
-     * 4. 작성자       : CHO
-     * 5. 작성일       : 2022. 11. 27.
+     * 4. 작성자      : CHO
+     * 5. 작성일      : 2022. 11. 27.
      * </pre>
      */
     public Long deleteTravelGroupUser(Long idx) {
         em.remove(em.find(TravelGroupUserEntity.class, idx));
+        em.flush();
+        em.clear();
+        return idx;
+    }
+
+    /**
+     * <pre>
+     * 1. MethodName : insertTravelSchedule
+     * 2. ClassName  : TravelRepository.java
+     * 3. Comment    : 여행지 스케줄 등록
+     * 4. 작성자      : CHO
+     * 5. 작성일      : 2022. 12. 13.
+     * </pre>
+     */
+    public TravelScheduleDTO insertTravelSchedule(TravelScheduleEntity travelScheduleEntity) {
+        em.persist(travelScheduleEntity);
+        return TravelScheduleMapper.INSTANCE.toDto(travelScheduleEntity);
+    }
+
+    /**
+     * <pre>
+     * 1. MethodName : updateTravelSchedule
+     * 2. ClassName  : TravelRepository.java
+     * 3. Comment    : 여행지 스케줄 수정
+     * 4. 작성자      : CHO
+     * 5. 작성일      : 2022. 12. 13.
+     * </pre>
+     */
+    public TravelScheduleDTO updateTravelSchedule(TravelScheduleEntity travelScheduleEntity) {
+        em.merge(travelScheduleEntity);
+        em.flush();
+        em.clear();
+        return TravelScheduleMapper.INSTANCE.toDto(travelScheduleEntity);
+    }
+
+    /**
+     * <pre>
+     * 1. MethodName : deleteTravelSchedule
+     * 2. ClassName  : TravelRepository.java
+     * 3. Comment    : 여행지 스케줄 삭제
+     * 4. 작성자      : CHO
+     * 5. 작성일      : 2022. 12. 13.
+     * </pre>
+     */
+    public Long deleteTravelSchedule(Long idx) {
+        em.remove(em.find(TravelScheduleEntity.class, idx));
         em.flush();
         em.clear();
         return idx;
