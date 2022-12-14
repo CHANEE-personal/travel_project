@@ -3,7 +3,6 @@ package com.travel.travel_project.api.user;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.travel.travel_project.api.travel.mapper.schedule.TravelScheduleMapper;
 import com.travel.travel_project.common.StringUtil;
-import com.travel.travel_project.domain.travel.schedule.QTravelScheduleEntity;
 import com.travel.travel_project.domain.travel.schedule.TravelScheduleDTO;
 import com.travel.travel_project.domain.travel.schedule.TravelScheduleEntity;
 import com.travel.travel_project.domain.user.UserDTO;
