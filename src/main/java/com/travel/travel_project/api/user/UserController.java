@@ -2,6 +2,7 @@ package com.travel.travel_project.api.user;
 
 import com.travel.travel_project.common.Page;
 import com.travel.travel_project.common.SearchCommon;
+import com.travel.travel_project.domain.travel.schedule.TravelScheduleDTO;
 import com.travel.travel_project.domain.user.AuthenticationRequest;
 import com.travel.travel_project.domain.user.UserDTO;
 import com.travel.travel_project.domain.user.UserEntity;
@@ -251,5 +252,49 @@ public class UserController {
     @PutMapping("/{idx}/favorite-travel")
     public UserDTO addFavoriteTravel(@PathVariable Long idx, Long favoriteIdx) {
         return userService.addFavoriteTravel(idx, favoriteIdx);
+    }
+
+    /**
+     * <pre>
+     * 1. MethodName : findUserSchedule
+     * 2. ClassName  : UserController.java
+     * 3. Comment    : 유저가 작성한 여행 스케줄 리스트 조회
+     * 4. 작성자      : CHO
+     * 5. 작성일      : 2022. 12. 14.
+     * </pre>
+     */
+    @ApiOperation(value = "유저가 작성한 여행 스케줄 리스트 조회", notes = "유저가 작성한 여행 스케줄 리스트를 조회한다.")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "유저가 작성한 여행 스케줄 리스트 조회", response = Map.class),
+            @ApiResponse(code = 400, message = "잘못된 요청", response = HttpClientErrorException.BadRequest.class),
+            @ApiResponse(code = 401, message = "허용되지 않는 관리자", response = HttpClientErrorException.Unauthorized.class),
+            @ApiResponse(code = 403, message = "접근거부", response = HttpClientErrorException.class),
+            @ApiResponse(code = 500, message = "서버 에러", response = ServerError.class)
+    })
+    @GetMapping("/{idx}/schedule")
+    public List<TravelScheduleDTO> findUserSchedule(@PathVariable Long idx) {
+        return userService.findUserSchedule(idx);
+    }
+
+    /**
+     * <pre>
+     * 1. MethodName : findOneUserSchedule
+     * 2. ClassName  : UserController.java
+     * 3. Comment    : 유저가 작성한 여행 스케줄 상세 조회
+     * 4. 작성자      : CHO
+     * 5. 작성일      : 2022. 12. 14.
+     * </pre>
+     */
+    @ApiOperation(value = "유저가 작성한 여행 스케줄 상세 조회", notes = "유저가 작성한 여행 스케줄을 상세 조회한다.")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "유저가 작성한 여행 스케줄 상세 조회", response = Map.class),
+            @ApiResponse(code = 400, message = "잘못된 요청", response = HttpClientErrorException.BadRequest.class),
+            @ApiResponse(code = 401, message = "허용되지 않는 관리자", response = HttpClientErrorException.Unauthorized.class),
+            @ApiResponse(code = 403, message = "접근거부", response = HttpClientErrorException.class),
+            @ApiResponse(code = 500, message = "서버 에러", response = ServerError.class)
+    })
+    @GetMapping("/{idx}/schedule/{scheduleIdx}")
+    public TravelScheduleDTO findOneUserSchedule(@PathVariable Long idx, @PathVariable Long scheduleIdx) {
+        return userService.findOneUserSchedule(idx, scheduleIdx);
     }
 }
