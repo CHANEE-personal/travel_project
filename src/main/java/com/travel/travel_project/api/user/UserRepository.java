@@ -1,7 +1,11 @@
 package com.travel.travel_project.api.user;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import com.travel.travel_project.api.travel.mapper.schedule.TravelScheduleMapper;
 import com.travel.travel_project.common.StringUtil;
+import com.travel.travel_project.domain.travel.schedule.QTravelScheduleEntity;
+import com.travel.travel_project.domain.travel.schedule.TravelScheduleDTO;
+import com.travel.travel_project.domain.travel.schedule.TravelScheduleEntity;
 import com.travel.travel_project.domain.user.UserDTO;
 import com.travel.travel_project.domain.user.UserEntity;
 import lombok.RequiredArgsConstructor;
@@ -18,6 +22,7 @@ import java.util.Map;
 
 import static com.travel.travel_project.api.user.mapper.UserMapper.INSTANCE;
 import static com.travel.travel_project.common.StringUtils.nullStrToStr;
+import static com.travel.travel_project.domain.travel.schedule.QTravelScheduleEntity.*;
 import static com.travel.travel_project.domain.user.QUserEntity.userEntity;
 import static org.springframework.security.core.context.SecurityContextHolder.getContext;
 
@@ -221,5 +226,41 @@ public class UserRepository {
         em.clear();
 
         return INSTANCE.toDto(oneUser);
+    }
+
+    /**
+     * <pre>
+     * 1. MethodName : findUserSchedule
+     * 2. ClassName  : UserRepository.java
+     * 3. Comment    : 유저가 작성한 스케줄 리스트 조회
+     * 4. 작성자      : CHO
+     * 5. 작성일      : 2022. 12. 14.
+     * </pre>
+     */
+    public List<TravelScheduleDTO> findUserSchedule(Long userIdx) {
+        List<TravelScheduleEntity> userSchedule = queryFactory
+                .selectFrom(travelScheduleEntity)
+                .where(travelScheduleEntity.userIdx.eq(userIdx))
+                .fetch();
+
+        return TravelScheduleMapper.INSTANCE.toDtoList(userSchedule);
+    }
+
+    /**
+     * <pre>
+     * 1. MethodName : findOneUserSchedule
+     * 2. ClassName  : UserRepository.java
+     * 3. Comment    : 유저가 작성한 스케줄 상세 조회
+     * 4. 작성자      : CHO
+     * 5. 작성일      : 2022. 12. 14.
+     * </pre>
+     */
+    public TravelScheduleDTO findOneUserSchedule(Long userIdx, Long scheduleIdx) {
+        TravelScheduleEntity oneSchedule = queryFactory
+                .selectFrom(travelScheduleEntity)
+                .where(travelScheduleEntity.userIdx.eq(userIdx).and(travelScheduleEntity.idx.eq(scheduleIdx)))
+                .fetchOne();
+
+        return TravelScheduleMapper.INSTANCE.toDto(oneSchedule);
     }
 }
