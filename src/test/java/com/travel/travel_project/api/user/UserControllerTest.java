@@ -1,6 +1,7 @@
 package com.travel.travel_project.api.user;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.travel.travel_project.domain.travel.schedule.TravelScheduleDTO;
 import com.travel.travel_project.domain.user.AuthenticationRequest;
 import com.travel.travel_project.domain.user.UserEntity;
 import com.travel.travel_project.jwt.JwtUtil;
@@ -328,5 +329,24 @@ class UserControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(content().contentType("application/json;charset=utf-8"))
                 .andExpect(jsonPath("$.favoriteTravelIdx").value(favoriteIdxList));
+    }
+
+    @Test
+    @DisplayName("유저가 작성한 스케줄 리스트 조회 테스트")
+    void 유저가작성한스케줄리스트조회테스트() throws Exception {
+        mockMvc.perform(get("/api/user/1/schedule"))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(content().contentType("application/json;charset=utf-8"));
+    }
+
+    @Test
+    @DisplayName("유저가 작성한 스케줄 상세 조회 테스트")
+    void 유저가작성한스케줄상세조회테스트() throws Exception {
+        mockMvc.perform(get("/api/user/1/schedule/1"))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(content().contentType("application/json;charset=utf-8"))
+                .andExpect(jsonPath("$.userIdx").value(1L));
     }
 }

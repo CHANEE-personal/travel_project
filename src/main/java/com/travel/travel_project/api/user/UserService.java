@@ -1,5 +1,6 @@
 package com.travel.travel_project.api.user;
 
+import com.travel.travel_project.domain.travel.schedule.TravelScheduleDTO;
 import com.travel.travel_project.domain.user.UserDTO;
 import com.travel.travel_project.domain.user.UserEntity;
 import com.travel.travel_project.exception.TravelException;
@@ -181,8 +182,8 @@ public class UserService {
      * 1. MethodName : addFavoriteTravel
      * 2. ClassName  : UserService.java
      * 3. Comment    : 좋아하는 여행지 추가
-     * 4. 작성자       : CHO
-     * 5. 작성일       : 2022. 12. 07.
+     * 4. 작성자      : CHO
+     * 5. 작성일      : 2022. 12. 07.
      * </pre>
      */
     @Modifying(clearAutomatically = true)
@@ -192,6 +193,42 @@ public class UserService {
             return userRepository.addFavoriteTravel(idx, favoriteIdx);
         } catch (Exception e) {
             throw new TravelException(ERROR_FAVORITE_TRAVEL, e);
+        }
+    }
+
+    /**
+     * <pre>
+     * 1. MethodName : findUserSchedule
+     * 2. ClassName  : UserService.java
+     * 3. Comment    : 유저가 작성한 스케줄 리스트 조회
+     * 4. 작성자      : CHO
+     * 5. 작성일      : 2022. 12. 14.
+     * </pre>
+     */
+    @Transactional(readOnly = true)
+    public List<TravelScheduleDTO> findUserSchedule(Long userIdx) throws TravelException {
+        try {
+            return userRepository.findUserSchedule(userIdx);
+        } catch (Exception e) {
+            throw new TravelException(NOT_FOUND_SCHEDULE_LIST, e);
+        }
+    }
+
+    /**
+     * <pre>
+     * 1. MethodName : findOneUserSchedule
+     * 2. ClassName  : UserService.java
+     * 3. Comment    : 유저가 작성한 스케줄 상세 조회
+     * 4. 작성자      : CHO
+     * 5. 작성일      : 2022. 12. 14.
+     * </pre>
+     */
+    @Transactional(readOnly = true)
+    public TravelScheduleDTO findOneUserSchedule(Long userIdx, Long scheduleIdx) throws TravelException{
+        try {
+            return userRepository.findOneUserSchedule(userIdx, scheduleIdx);
+        } catch (Exception e) {
+            throw new TravelException(NOT_FOUND_SCHEDULE, e);
         }
     }
 }

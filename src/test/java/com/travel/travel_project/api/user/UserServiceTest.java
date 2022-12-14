@@ -1,5 +1,8 @@
 package com.travel.travel_project.api.user;
 
+import com.travel.travel_project.api.travel.mapper.schedule.TravelScheduleMapper;
+import com.travel.travel_project.domain.travel.schedule.TravelScheduleDTO;
+import com.travel.travel_project.domain.travel.schedule.TravelScheduleEntity;
 import com.travel.travel_project.domain.user.UserDTO;
 import com.travel.travel_project.domain.user.UserEntity;
 import lombok.RequiredArgsConstructor;
@@ -22,6 +25,7 @@ import org.springframework.test.context.TestPropertySource;
 import javax.persistence.EntityManager;
 import javax.transaction.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -360,5 +364,65 @@ class UserServiceTest {
         Object updateObject = jsonArray.get(0);
 
         assertThat(updateUser.getFavoriteTravelIdx()).isEqualTo(updateObject);
+    }
+
+    @Test
+    @DisplayName("유저가 작성한 스케줄 리스트 조회")
+    void 유저가작성한스케줄리스트조회() {
+        // given
+        TravelScheduleDTO travelScheduleEntity = TravelScheduleDTO.builder()
+                .userIdx(1L)
+                .travelIdx(1L)
+                .scheduleDescription("스케줄 테스트")
+                .scheduleTime(LocalDateTime.now())
+                .build();
+
+        List<TravelScheduleDTO> userSchedule = new ArrayList<>();
+        userSchedule.add(travelScheduleEntity);
+
+        // when
+        when(mockUserService.findUserSchedule(1L)).thenReturn(userSchedule);
+        List<TravelScheduleDTO> scheduleList = mockUserService.findUserSchedule(1L);
+
+        // then
+        assertThat(scheduleList.get(0).getScheduleDescription()).isEqualTo("스케줄 테스트");
+
+        // verify
+        verify(mockUserService, times(1)).findUserSchedule(1L);
+        verify(mockUserService, atLeastOnce()).findUserSchedule(1L);
+        verifyNoMoreInteractions(mockUserService);
+
+        InOrder inOrder = inOrder(mockUserService);
+        inOrder.verify(mockUserService).findUserSchedule(1L);
+    }
+
+    @Test
+    @DisplayName("유저가 작성한 스케줄 상세 조회")
+    void 유저가작성한스케줄상세조회() {
+        // given
+        TravelScheduleEntity travelScheduleEntity = TravelScheduleEntity.builder()
+                .userIdx(1L)
+                .travelIdx(1L)
+                .scheduleDescription("스케줄 테스트")
+                .scheduleTime(LocalDateTime.now())
+                .build();
+
+        em.persist(travelScheduleEntity);
+        TravelScheduleDTO travelScheduleDTO = TravelScheduleMapper.INSTANCE.toDto(travelScheduleEntity);
+
+        // when
+        when(mockUserService.findOneUserSchedule(travelScheduleDTO.getUserIdx(), travelScheduleDTO.getIdx())).thenReturn(travelScheduleDTO);
+        TravelScheduleDTO oneUserSchedule = mockUserService.findOneUserSchedule(travelScheduleDTO.getUserIdx(), travelScheduleDTO.getIdx());
+
+        // then
+        assertThat(oneUserSchedule.getScheduleDescription()).isEqualTo("스케줄 테스트");
+
+        // verify
+        verify(mockUserService, times(1)).findOneUserSchedule(travelScheduleDTO.getUserIdx(), travelScheduleDTO.getIdx());
+        verify(mockUserService, atLeastOnce()).findOneUserSchedule(travelScheduleDTO.getUserIdx(), travelScheduleDTO.getIdx());
+        verifyNoMoreInteractions(mockUserService);
+
+        InOrder inOrder = inOrder(mockUserService);
+        inOrder.verify(mockUserService).findOneUserSchedule(travelScheduleDTO.getUserIdx(), travelScheduleDTO.getIdx());
     }
 }
