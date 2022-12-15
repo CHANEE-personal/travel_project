@@ -2,10 +2,6 @@ package com.travel.travel_project.api.travel;
 
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import com.travel.travel_project.api.travel.mapper.group.TravelGroupMapper;
-import com.travel.travel_project.api.travel.mapper.group.TravelGroupUserMapper;
-import com.travel.travel_project.api.travel.mapper.review.TravelReviewMapper;
-import com.travel.travel_project.api.travel.mapper.schedule.TravelScheduleMapper;
 import com.travel.travel_project.domain.travel.TravelDTO;
 import com.travel.travel_project.domain.travel.TravelEntity;
 import com.travel.travel_project.domain.travel.group.*;
@@ -283,7 +279,7 @@ public class TravelRepository {
      */
     public TravelReviewDTO replyTravel(TravelReviewEntity travelReviewEntity) {
         em.persist(travelReviewEntity);
-        return TravelReviewMapper.INSTANCE.toDto(travelReviewEntity);
+        return TravelReviewEntity.toDto(travelReviewEntity);
     }
 
     /**
@@ -299,7 +295,7 @@ public class TravelRepository {
         em.merge(travelReviewEntity);
         em.flush();
         em.clear();
-        return TravelReviewMapper.INSTANCE.toDto(travelReviewEntity);
+        return TravelReviewEntity.toDto(travelReviewEntity);
     }
 
     /**
@@ -334,7 +330,7 @@ public class TravelRepository {
                         .and(travelReviewEntity.visible.eq("Y")))
                 .fetch();
 
-        return TravelReviewMapper.INSTANCE.toDtoList(replyTravelReview);
+        return replyTravelReview.stream().map(TravelReviewEntity::toDto).collect(Collectors.toList());
     }
 
     /**
@@ -353,7 +349,8 @@ public class TravelRepository {
                         .and(travelReviewEntity.visible.eq("Y")))
                 .fetchOne();
 
-        return TravelReviewMapper.INSTANCE.toDto(detailReplyTravelReview);
+        assert detailReplyTravelReview != null;
+        return TravelReviewEntity.toDto(detailReplyTravelReview);
     }
 
     /**
@@ -442,7 +439,7 @@ public class TravelRepository {
         travelGroupList.forEach(list -> travelGroupList.get(travelGroupList.indexOf(list))
                 .setRnum(getInt(groupMap.get("startPage"), 1) * (getInt(groupMap.get("size"), 1)) - (2 - travelGroupList.indexOf(list))));
 
-        return TravelGroupMapper.INSTANCE.toDtoList(travelGroupList);
+        return travelGroupList.stream().map(TravelGroupEntity::toDto).collect(Collectors.toList());
     }
 
     /**
@@ -460,7 +457,8 @@ public class TravelRepository {
                 .where(travelGroupEntity.idx.eq(idx))
                 .fetchOne();
 
-        return TravelGroupMapper.INSTANCE.toDto(travelGroup);
+        assert travelGroup != null;
+        return TravelGroupEntity.toDto(travelGroup);
     }
 
     /**
@@ -474,7 +472,7 @@ public class TravelRepository {
      */
     public TravelGroupDTO insertTravelGroup(TravelGroupEntity travelGroupEntity) {
         em.persist(travelGroupEntity);
-        return TravelGroupMapper.INSTANCE.toDto(travelGroupEntity);
+        return TravelGroupEntity.toDto(travelGroupEntity);
     }
 
     /**
@@ -490,7 +488,7 @@ public class TravelRepository {
         em.merge(travelGroupEntity);
         em.flush();
         em.clear();
-        return TravelGroupMapper.INSTANCE.toDto(travelGroupEntity);
+        return TravelGroupEntity.toDto(travelGroupEntity);
     }
 
     /**
@@ -520,7 +518,7 @@ public class TravelRepository {
      */
     public TravelGroupUserDTO insertTravelGroupUser(TravelGroupUserEntity travelGroupUserEntity) {
         em.persist(travelGroupUserEntity);
-        return TravelGroupUserMapper.INSTANCE.toDto(travelGroupUserEntity);
+        return TravelGroupUserEntity.toDto(travelGroupUserEntity);
     }
 
     /**
@@ -550,7 +548,7 @@ public class TravelRepository {
      */
     public TravelScheduleDTO insertTravelSchedule(TravelScheduleEntity travelScheduleEntity) {
         em.persist(travelScheduleEntity);
-        return TravelScheduleMapper.INSTANCE.toDto(travelScheduleEntity);
+        return TravelScheduleEntity.toDto(travelScheduleEntity);
     }
 
     /**
@@ -566,7 +564,7 @@ public class TravelRepository {
         em.merge(travelScheduleEntity);
         em.flush();
         em.clear();
-        return TravelScheduleMapper.INSTANCE.toDto(travelScheduleEntity);
+        return TravelScheduleEntity.toDto(travelScheduleEntity);
     }
 
     /**

@@ -1,6 +1,5 @@
 package com.travel.travel_project.api.user;
 
-import com.travel.travel_project.api.travel.mapper.schedule.TravelScheduleMapper;
 import com.travel.travel_project.domain.travel.schedule.TravelScheduleDTO;
 import com.travel.travel_project.domain.travel.schedule.TravelScheduleEntity;
 import com.travel.travel_project.domain.user.UserDTO;
@@ -411,7 +410,7 @@ class UserRepositoryTest {
                 .build();
 
         em.persist(travelScheduleEntity);
-        TravelScheduleDTO travelScheduleDTO = TravelScheduleMapper.INSTANCE.toDto(travelScheduleEntity);
+        TravelScheduleDTO travelScheduleDTO = TravelScheduleEntity.toDto(travelScheduleEntity);
 
         // when
         when(mockUserRepository.findOneUserSchedule(travelScheduleDTO.getUserIdx(), travelScheduleDTO.getIdx())).thenReturn(travelScheduleDTO);

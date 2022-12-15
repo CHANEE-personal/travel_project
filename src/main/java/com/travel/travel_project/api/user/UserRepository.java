@@ -1,8 +1,8 @@
 package com.travel.travel_project.api.user;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import com.travel.travel_project.api.travel.mapper.schedule.TravelScheduleMapper;
 import com.travel.travel_project.common.StringUtil;
+import com.travel.travel_project.domain.travel.TravelEntity;
 import com.travel.travel_project.domain.travel.schedule.TravelScheduleDTO;
 import com.travel.travel_project.domain.travel.schedule.TravelScheduleEntity;
 import com.travel.travel_project.domain.user.UserDTO;
@@ -18,6 +18,7 @@ import javax.persistence.EntityManager;
 
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import static com.travel.travel_project.api.user.mapper.UserMapper.INSTANCE;
 import static com.travel.travel_project.common.StringUtils.nullStrToStr;
@@ -242,7 +243,7 @@ public class UserRepository {
                 .where(travelScheduleEntity.userIdx.eq(userIdx))
                 .fetch();
 
-        return TravelScheduleMapper.INSTANCE.toDtoList(userSchedule);
+        return userSchedule.stream().map(TravelScheduleEntity::toDto).collect(Collectors.toList());
     }
 
     /**
@@ -260,6 +261,6 @@ public class UserRepository {
                 .where(travelScheduleEntity.userIdx.eq(userIdx).and(travelScheduleEntity.idx.eq(scheduleIdx)))
                 .fetchOne();
 
-        return TravelScheduleMapper.INSTANCE.toDto(oneSchedule);
+        return TravelScheduleEntity.toDto(oneSchedule);
     }
 }

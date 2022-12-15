@@ -7,6 +7,9 @@ import lombok.experimental.SuperBuilder;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import static javax.persistence.GenerationType.IDENTITY;
 
 @Entity
@@ -41,4 +44,19 @@ public class TravelGroupUserEntity {
     @ManyToOne
     @JoinColumn(name = "idx", insertable = false, updatable = false)
     private TravelGroupEntity travelGroupEntity;
+
+    public static TravelGroupUserDTO toDto(TravelGroupUserEntity entity) {
+        if (entity == null) return null;
+        return TravelGroupUserDTO.builder()
+                .idx(entity.getIdx())
+                .userIdx(entity.getUserIdx())
+                .groupIdx(entity.getGroupIdx())
+                .build();
+    }
+
+    public List<TravelGroupUserDTO> toDtoList(List<TravelGroupUserEntity> entityList) {
+        List<TravelGroupUserDTO> list = new ArrayList<>(entityList.size());
+        entityList.forEach(travelGroupUserEntity -> list.add(toDto(travelGroupUserEntity)));
+        return list;
+    }
 }
