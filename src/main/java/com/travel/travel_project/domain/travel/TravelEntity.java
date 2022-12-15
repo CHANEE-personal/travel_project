@@ -28,7 +28,7 @@ import static javax.persistence.GenerationType.IDENTITY;
 public class TravelEntity extends NewCommonMappedClass {
 
     @Transient
-    private Integer rnum;
+    private Integer rowNum;
 
     @Id
     @GeneratedValue(strategy = IDENTITY)
@@ -89,5 +89,31 @@ public class TravelEntity extends NewCommonMappedClass {
 
     public void updateFavoriteCount() {
         this.favoriteCount++;
+    }
+
+    public static TravelDTO toDto(TravelEntity entity) {
+        return TravelDTO.builder()
+                .idx(entity.getIdx())
+                .rowNum(entity.getRowNum())
+                .travelCode(entity.getTravelCode())
+                .travelTitle(entity.getTravelTitle())
+                .travelDescription(entity.getTravelDescription())
+                .travelAddress(entity.getTravelAddress())
+                .travelZipCode(entity.getTravelZipCode())
+                .favoriteCount(entity.getFavoriteCount())
+                .viewCount(entity.getViewCount())
+                .visible(entity.getVisible())
+                .popular(entity.getPopular())
+                .creator(entity.getCreator())
+                .createTime(entity.getCreateTime())
+                .updater(entity.getUpdater())
+                .updateTime(entity.getUpdateTime())
+                .build();
+    }
+
+    public List<TravelDTO> toDtoList(List<TravelEntity> entityList) {
+        List<TravelDTO> list = new ArrayList<>(entityList.size());
+        entityList.forEach(travelEntity -> list.add(toDto(travelEntity)));
+        return list;
     }
 }

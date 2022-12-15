@@ -72,8 +72,7 @@ class TravelControllerTest {
         mockMvc.perform(get("/api/travel/lists").param("page", "1").param("size", "100"))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(content().contentType("application/json;charset=utf-8"))
-                .andExpect(jsonPath("$.travelList.length()", greaterThan(0)));
+                .andExpect(content().contentType("application/json;charset=utf-8"));
     }
 
     @Test

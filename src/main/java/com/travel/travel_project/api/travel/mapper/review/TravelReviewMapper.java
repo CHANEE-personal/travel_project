@@ -1,7 +1,6 @@
 package com.travel.travel_project.api.travel.mapper.review;
 
 
-import com.travel.travel_project.api.travel.mapper.TravelMapper;
 import com.travel.travel_project.common.StructMapper;
 import com.travel.travel_project.domain.travel.review.TravelReviewDTO;
 import com.travel.travel_project.domain.travel.review.TravelReviewEntity;

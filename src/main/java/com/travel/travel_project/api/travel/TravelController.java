@@ -64,26 +64,8 @@ public class TravelController {
             @ApiResponse(code = 500, message = "서버 에러", response = ServerError.class)
     })
     @GetMapping(value = "/lists")
-    public Map<String, Object> findTravelList(@RequestParam(required = false) Map<String, Object> paramMap, Page page) {
-        Map<String, Object> travelMap = new HashMap<>();
-
-        int travelCount = this.travelService.findTravelCount(searchCommon.searchCommon(page, paramMap));
-        List<TravelDTO> travelList = new ArrayList<>();
-
-        if (travelCount > 0) {
-            travelList = this.travelService.findTravelList(searchCommon.searchCommon(page, paramMap));
-        }
-
-        // 리스트 수
-        travelMap.put("pageSize", page.getSize());
-        // 전체 페이지 수
-        travelMap.put("perPageListCnt", ceil((double) travelCount / page.getSize()));
-        // 전체 아이템 수
-        travelMap.put("travelListCnt", travelCount);
-
-        travelMap.put("travelList", travelList);
-
-        return travelMap;
+    public List<TravelDTO> findTravelList(@RequestParam(required = false) Map<String, Object> paramMap, Page page) {
+        return this.travelService.findTravelList(searchCommon.searchCommon(page, paramMap));
     }
 
     /**

@@ -5,7 +5,6 @@ import com.travel.travel_project.api.travel.mapper.review.TravelReviewMapper;
 import com.travel.travel_project.domain.travel.TravelDTO;
 import com.travel.travel_project.domain.travel.TravelEntity;
 import com.travel.travel_project.api.travel.TravelService;
-import com.travel.travel_project.api.travel.mapper.TravelMapper;
 import com.travel.travel_project.domain.travel.group.TravelGroupDTO;
 import com.travel.travel_project.domain.travel.group.TravelGroupEntity;
 import com.travel.travel_project.domain.travel.group.TravelGroupUserDTO;
@@ -75,7 +74,7 @@ class TravelServiceTest {
                 .visible("Y")
                 .build();
 
-        travelDTO = TravelMapper.INSTANCE.toDto(travelEntity);
+        travelDTO = TravelEntity.toDto(travelEntity);
     }
 
     @BeforeEach
@@ -304,7 +303,7 @@ class TravelServiceTest {
 
         travelService.updateTravel(newAdminTravelEntity);
 
-        TravelDTO newAdminTravelDTO = TravelMapper.INSTANCE.toDto(newAdminTravelEntity);
+        TravelDTO newAdminTravelDTO = TravelEntity.toDto(newAdminTravelEntity);
 
         // when
         when(mockTravelService.findOneTravel(newAdminTravelEntity.getIdx())).thenReturn(newAdminTravelDTO);
@@ -345,7 +344,7 @@ class TravelServiceTest {
 
         travelService.updateTravel(newAdminTravelEntity);
 
-        TravelDTO newAdminTravelDTO = TravelMapper.INSTANCE.toDto(newAdminTravelEntity);
+        TravelDTO newAdminTravelDTO = TravelEntity.toDto(newAdminTravelEntity);
 
         // when
         given(mockTravelService.findOneTravel(newAdminTravelEntity.getIdx())).willReturn(newAdminTravelDTO);
@@ -367,7 +366,7 @@ class TravelServiceTest {
     void 여행지삭제Mockito테스트() {
         // given
         em.persist(travelEntity);
-        travelDTO = TravelMapper.INSTANCE.toDto(travelEntity);
+        travelDTO = TravelEntity.toDto(travelEntity);
 
         // when
         when(mockTravelService.findOneTravel(travelDTO.getIdx())).thenReturn(travelDTO);
@@ -390,7 +389,7 @@ class TravelServiceTest {
     void 여행지삭제BDD테스트() {
         // given
         em.persist(travelEntity);
-        travelDTO = TravelMapper.INSTANCE.toDto(travelEntity);
+        travelDTO = TravelEntity.toDto(travelEntity);
 
         // when
         given(mockTravelService.findOneTravel(travelDTO.getIdx())).willReturn(travelDTO);
@@ -435,7 +434,7 @@ class TravelServiceTest {
                 .travelAddress("인천광역시 서구").travelZipCode("123-456").visible("Y").popular(popular)
                 .build();
 
-        TravelDTO travelDTO = TravelMapper.INSTANCE.toDto(travelEntity);
+        TravelDTO travelDTO = TravelEntity.toDto(travelEntity);
 
         // when
         when(mockTravelService.findOneTravel(travelEntity.getIdx())).thenReturn(travelDTO);
@@ -467,7 +466,7 @@ class TravelServiceTest {
                 .travelAddress("인천광역시 서구").travelZipCode("123-456").visible("Y").popular(popular)
                 .build();
 
-        TravelDTO travelDTO = TravelMapper.INSTANCE.toDto(travelEntity);
+        TravelDTO travelDTO = TravelEntity.toDto(travelEntity);
 
         // when
         given(mockTravelService.findOneTravel(idx)).willReturn(travelDTO);

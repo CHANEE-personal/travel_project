@@ -2,11 +2,9 @@ package com.travel.travel_project.admin.travel;
 
 import com.travel.travel_project.api.travel.mapper.group.TravelGroupMapper;
 import com.travel.travel_project.api.travel.mapper.review.TravelReviewMapper;
-import com.travel.travel_project.api.travel.mapper.schedule.TravelScheduleMapper;
 import com.travel.travel_project.domain.travel.TravelDTO;
 import com.travel.travel_project.domain.travel.TravelEntity;
 import com.travel.travel_project.api.travel.TravelRepository;
-import com.travel.travel_project.api.travel.mapper.TravelMapper;
 import com.travel.travel_project.domain.travel.group.TravelGroupDTO;
 import com.travel.travel_project.domain.travel.group.TravelGroupEntity;
 import com.travel.travel_project.domain.travel.group.TravelGroupUserDTO;
@@ -70,7 +68,7 @@ class TravelRepositoryTest {
                 .travelAddress("인천광역시 서구").travelZipCode("123-456").visible("Y").popular(false)
                 .build();
 
-        travelDTO = TravelMapper.INSTANCE.toDto(travelEntity);
+        travelDTO = TravelEntity.toDto(travelEntity);
     }
 
     @BeforeEach
@@ -212,7 +210,7 @@ class TravelRepositoryTest {
                 .travelAddress("인천광역시 서구").travelZipCode("123-456").visible("Y")
                 .build();
 
-        travelDTO = TravelMapper.INSTANCE.toDto(travelEntity);
+        travelDTO = TravelEntity.toDto(travelEntity);
 
         // when
         when(mockTravelRepository.findOneTravel(1L)).thenReturn(travelDTO);
@@ -246,7 +244,7 @@ class TravelRepositoryTest {
                 .travelAddress("인천광역시 서구").travelZipCode("123-456").visible("Y")
                 .build();
 
-        travelDTO = TravelMapper.INSTANCE.toDto(travelEntity);
+        travelDTO = TravelEntity.toDto(travelEntity);
 
         // when
         when(mockTravelRepository.findOneTravel(1L)).thenReturn(travelDTO);
@@ -476,7 +474,7 @@ class TravelRepositoryTest {
     void 여행지삭제Mockito테스트() {
         // given
         em.persist(travelEntity);
-        travelDTO = TravelMapper.INSTANCE.toDto(travelEntity);
+        travelDTO = TravelEntity.toDto(travelEntity);
 
         // when
         when(mockTravelRepository.findOneTravel(travelEntity.getIdx())).thenReturn(travelDTO);
@@ -499,7 +497,7 @@ class TravelRepositoryTest {
     void 여행지삭제BDD테스트() {
         // given
         em.persist(travelEntity);
-        travelDTO = TravelMapper.INSTANCE.toDto(travelEntity);
+        travelDTO = TravelEntity.toDto(travelEntity);
 
         // when
         given(mockTravelRepository.findOneTravel(travelEntity.getIdx())).willReturn(travelDTO);
@@ -587,7 +585,7 @@ class TravelRepositoryTest {
                 .travelAddress("인천광역시 서구").travelZipCode("123-456").visible("Y").popular(popular)
                 .build();
 
-        travelDTO = TravelMapper.INSTANCE.toDto(travelEntity);
+        travelDTO = TravelEntity.toDto(travelEntity);
 
         // when
         when(mockTravelRepository.findOneTravel(travelEntity.getIdx())).thenReturn(travelDTO);
@@ -619,7 +617,7 @@ class TravelRepositoryTest {
                 .travelAddress("인천광역시 서구").travelZipCode("123-456").visible("Y").popular(popular)
                 .build();
 
-        travelDTO = TravelMapper.INSTANCE.toDto(travelEntity);
+        travelDTO = TravelEntity.toDto(travelEntity);
 
         // when
         given(mockTravelRepository.findOneTravel(travelEntity.getIdx())).willReturn(travelDTO);
