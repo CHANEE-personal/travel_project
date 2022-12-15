@@ -84,7 +84,7 @@ class UserServiceTest {
         userMap.put("size", 3);
 
         // then
-        assertThat(userService.findUsersList(userMap)).isNotEmpty();
+        assertThat(userService.findUserList(userMap)).isNotEmpty();
     }
 
     @Test
@@ -101,8 +101,8 @@ class UserServiceTest {
                 .email("test01@test.com").visible("Y").build());
 
         // when
-        when(mockUserService.findUsersList(userMap)).thenReturn(userList);
-        List<UserDTO> newUserList = mockUserService.findUsersList(userMap);
+        when(mockUserService.findUserList(userMap)).thenReturn(userList);
+        List<UserDTO> newUserList = mockUserService.findUserList(userMap);
 
         // then
         assertThat(newUserList.get(0).getIdx()).isEqualTo(userList.get(0).getIdx());
@@ -112,12 +112,12 @@ class UserServiceTest {
         assertThat(newUserList.get(0).getEmail()).isEqualTo(userList.get(0).getEmail());
 
         // verify
-        verify(mockUserService, times(1)).findUsersList(userMap);
-        verify(mockUserService, atLeastOnce()).findUsersList(userMap);
+        verify(mockUserService, times(1)).findUserList(userMap);
+        verify(mockUserService, atLeastOnce()).findUserList(userMap);
         verifyNoMoreInteractions(mockUserService);
 
         InOrder inOrder = inOrder(mockUserService);
-        inOrder.verify(mockUserService).findUsersList(userMap);
+        inOrder.verify(mockUserService).findUserList(userMap);
     }
 
     @Test
@@ -134,8 +134,8 @@ class UserServiceTest {
                 .email("test01@test.com").visible("Y").build());
 
         // when
-        given(mockUserService.findUsersList(userMap)).willReturn(userList);
-        List<UserDTO> newUserList = mockUserService.findUsersList(userMap);
+        given(mockUserService.findUserList(userMap)).willReturn(userList);
+        List<UserDTO> newUserList = mockUserService.findUserList(userMap);
 
         // then
         assertThat(newUserList.get(0).getIdx()).isEqualTo(userList.get(0).getIdx());
@@ -145,8 +145,8 @@ class UserServiceTest {
         assertThat(newUserList.get(0).getEmail()).isEqualTo(userList.get(0).getEmail());
 
         // verify
-        then(mockUserService).should(times(1)).findUsersList(userMap);
-        then(mockUserService).should(atLeastOnce()).findUsersList(userMap);
+        then(mockUserService).should(times(1)).findUserList(userMap);
+        then(mockUserService).should(atLeastOnce()).findUserList(userMap);
         then(mockUserService).shouldHaveNoMoreInteractions();
     }
 

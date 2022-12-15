@@ -87,7 +87,7 @@ class UserRepositoryTest {
         userMap.put("size", 3);
 
         // then
-        assertThat(userRepository.findUsersList(userMap)).isNotEmpty();
+        assertThat(userRepository.findUserList(userMap)).isNotEmpty();
     }
 
     @Test
@@ -104,8 +104,8 @@ class UserRepositoryTest {
                         .email("test01@test.com").visible("Y").build());
 
         // when
-        when(mockUserRepository.findUsersList(userMap)).thenReturn(userList);
-        List<UserDTO> newUserList = mockUserRepository.findUsersList(userMap);
+        when(mockUserRepository.findUserList(userMap)).thenReturn(userList);
+        List<UserDTO> newUserList = mockUserRepository.findUserList(userMap);
 
         // then
         assertThat(newUserList.get(0).getIdx()).isEqualTo(userList.get(0).getIdx());
@@ -115,12 +115,12 @@ class UserRepositoryTest {
         assertThat(newUserList.get(0).getEmail()).isEqualTo(userList.get(0).getEmail());
 
         // verify
-        verify(mockUserRepository, times(1)).findUsersList(userMap);
-        verify(mockUserRepository, atLeastOnce()).findUsersList(userMap);
+        verify(mockUserRepository, times(1)).findUserList(userMap);
+        verify(mockUserRepository, atLeastOnce()).findUserList(userMap);
         verifyNoMoreInteractions(mockUserRepository);
 
         InOrder inOrder = inOrder(mockUserRepository);
-        inOrder.verify(mockUserRepository).findUsersList(userMap);
+        inOrder.verify(mockUserRepository).findUserList(userMap);
     }
 
     @Test
@@ -137,8 +137,8 @@ class UserRepositoryTest {
                 .email("test01@test.com").visible("Y").build());
 
         // when
-        given(mockUserRepository.findUsersList(userMap)).willReturn(userList);
-        List<UserDTO> newUserList = mockUserRepository.findUsersList(userMap);
+        given(mockUserRepository.findUserList(userMap)).willReturn(userList);
+        List<UserDTO> newUserList = mockUserRepository.findUserList(userMap);
 
         // then
         assertThat(newUserList.get(0).getIdx()).isEqualTo(userList.get(0).getIdx());
@@ -148,8 +148,8 @@ class UserRepositoryTest {
         assertThat(newUserList.get(0).getEmail()).isEqualTo(userList.get(0).getEmail());
 
         // verify
-        then(mockUserRepository).should(times(1)).findUsersList(userMap);
-        then(mockUserRepository).should(atLeastOnce()).findUsersList(userMap);
+        then(mockUserRepository).should(times(1)).findUserList(userMap);
+        then(mockUserRepository).should(atLeastOnce()).findUserList(userMap);
         then(mockUserRepository).shouldHaveNoMoreInteractions();
     }
 

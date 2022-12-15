@@ -14,12 +14,8 @@ import org.springframework.web.client.HttpClientErrorException;
 
 import javax.validation.Valid;
 import java.rmi.ServerError;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import static java.lang.Math.ceil;
 
 @RestController
 @RequestMapping("/api/common")
@@ -48,25 +44,8 @@ public class CommonController {
             @ApiResponse(code = 500, message = "서버 에러", response = ServerError.class)
     })
     @GetMapping("/lists")
-    public Map<String, Object> findCommonList(@RequestParam(required = false) Map<String, Object> paramMap, Page page) {
-        Map<String, Object> resultMap = new HashMap<>();
-
-        int commonCodeCount = commonService.findCommonCount(searchCommon.searchCommon(page, paramMap));
-        List< CommonDTO> commonList = new ArrayList<>();
-
-        if (commonCodeCount > 0) {
-            commonList = commonService.findCommonList(searchCommon.searchCommon(page, paramMap));
-        }
-
-        // 리스트 수
-        resultMap.put("pageSize", page.getSize());
-        // 전체 페이지 수
-        resultMap.put("perPageListCnt", ceil((double) commonCodeCount / page.getSize()));
-        // 전체 아이템 수
-        resultMap.put("commonListCnt", commonCodeCount);
-
-        resultMap.put("commonList", commonList);
-        return resultMap;
+    public List<CommonDTO> findCommonList(@RequestParam(required = false) Map<String, Object> paramMap, Page page) {
+        return commonService.findCommonList(searchCommon.searchCommon(page, paramMap));
     }
 
     /**

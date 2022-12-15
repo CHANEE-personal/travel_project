@@ -86,6 +86,7 @@ public class CommonRepository {
                 .where(commonEntity.idx.eq(idx))
                 .fetchOne();
 
+        assert findOneCommon != null;
         return CommonEntity.toDto(findOneCommon);
     }
 

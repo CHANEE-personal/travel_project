@@ -5,7 +5,6 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.travel.travel_project.domain.notice.NoticeDTO;
 import com.travel.travel_project.domain.notice.NoticeEntity;
 
-import com.travel.travel_project.domain.post.PostEntity;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 

@@ -90,6 +90,7 @@ public class FaqRepository {
                 .where(faqEntity.idx.eq(idx))
                 .fetchOne();
 
+        assert oneFaq != null;
         return FaqEntity.toDto(oneFaq);
     }
 
