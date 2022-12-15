@@ -24,7 +24,7 @@ import static javax.persistence.GenerationType.IDENTITY;
 @Table(name = "travel_post")
 public class PostEntity extends NewCommonMappedClass {
     @Transient
-    private Integer rnum;
+    private Integer rowNum;
 
     @Id
     @GeneratedValue(strategy = IDENTITY)
@@ -62,4 +62,44 @@ public class PostEntity extends NewCommonMappedClass {
 
     @OneToMany(mappedBy = "postImageEntity", fetch = LAZY)
     private List<CommonImageEntity> postImageList = new ArrayList<>();
+
+    public static PostDTO toDto(PostEntity entity) {
+        return PostDTO.builder()
+                .rowNum(entity.getRowNum())
+                .idx(entity.getIdx())
+                .postTitle(entity.getPostTitle())
+                .postDescription(entity.getPostDescription())
+                .postParentIdx(entity.getPostParentIdx())
+                .postTopIdx(entity.getPostTopIdx())
+                .visible(entity.getVisible())
+                .viewCount(entity.getViewCount())
+                .favoriteCount(entity.getFavoriteCount())
+                .build();
+    }
+
+    public static PostEntity toEntity(PostDTO dto) {
+        return PostEntity.builder()
+                .rowNum(dto.getRowNum())
+                .idx(dto.getIdx())
+                .postTitle(dto.getPostTitle())
+                .postDescription(dto.getPostDescription())
+                .postParentIdx(dto.getPostParentIdx())
+                .postTopIdx(dto.getPostTopIdx())
+                .visible(dto.getVisible())
+                .viewCount(dto.getViewCount())
+                .favoriteCount(dto.getFavoriteCount())
+                .build();
+    }
+
+    public List<PostDTO> toDtoList(List<PostEntity> entityList) {
+        List<PostDTO> list = new ArrayList<>(entityList.size());
+        entityList.forEach(postEntity -> list.add(toDto(postEntity)));
+        return list;
+    }
+
+    public List<PostEntity> toEntityList(List<PostDTO> dtoList) {
+        List<PostEntity> list = new ArrayList<>(dtoList.size());
+        dtoList.forEach(postDTO -> list.add(toEntity(postDTO)));
+        return list;
+    }
 }

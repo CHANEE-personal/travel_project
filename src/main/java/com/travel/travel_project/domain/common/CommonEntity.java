@@ -1,5 +1,6 @@
 package com.travel.travel_project.domain.common;
 
+import com.travel.travel_project.domain.faq.FaqDTO;
 import com.travel.travel_project.domain.faq.FaqEntity;
 import com.travel.travel_project.domain.travel.TravelEntity;
 import lombok.*;
@@ -26,7 +27,7 @@ import static javax.persistence.GenerationType.IDENTITY;
 @Table(name = "tv_cmm_code")
 public class CommonEntity extends NewCommonMappedClass implements Serializable {
     @Transient
-    private Integer rnum;
+    private Integer rowNum;
 
     @Id
     @GeneratedValue(strategy = IDENTITY)
@@ -50,4 +51,42 @@ public class CommonEntity extends NewCommonMappedClass implements Serializable {
 
     @OneToMany(mappedBy = "newFaqCode", cascade = MERGE, fetch = LAZY)
     private List<FaqEntity> faqEntityList = new ArrayList<>();
+
+    public static CommonDTO toDto(CommonEntity entity) {
+        return CommonDTO.builder()
+                .rowNum(entity.getRowNum())
+                .idx(entity.getIdx())
+                .commonCode(entity.getCommonCode())
+                .commonName(entity.getCommonName())
+                .visible(entity.getVisible())
+                .build();
+    }
+
+    public static CommonEntity toEntity(CommonDTO dto) {
+        return CommonEntity.builder()
+                .rowNum(dto.getRowNum())
+                .idx(dto.getIdx())
+                .commonCode(dto.getCommonCode())
+                .commonName(dto.getCommonName())
+                .visible(dto.getVisible())
+                .build();
+    }
+
+    public List<CommonDTO> toDtoList(List<CommonEntity> entityList) {
+        List<CommonDTO> list = new ArrayList<>(entityList.size());
+        for (CommonEntity commonEntity : entityList) {
+            list.add(toDto(commonEntity));
+        }
+
+        return list;
+    }
+
+    public List<CommonEntity> toEntityList(List<CommonDTO> dtoList) {
+        List<CommonEntity> list = new ArrayList<>(dtoList.size());
+        for (CommonDTO commonDTO : dtoList) {
+            list.add(toEntity(commonDTO));
+        }
+
+        return list;
+    }
 }

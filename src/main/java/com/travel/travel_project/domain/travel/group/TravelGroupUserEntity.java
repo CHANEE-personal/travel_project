@@ -22,7 +22,7 @@ import static javax.persistence.GenerationType.IDENTITY;
 @Table(name = "tv_group_user")
 public class TravelGroupUserEntity {
     @Transient
-    private Integer rnum;
+    private Integer rowNum;
 
     @Id
     @GeneratedValue(strategy = IDENTITY)
@@ -46,7 +46,6 @@ public class TravelGroupUserEntity {
     private TravelGroupEntity travelGroupEntity;
 
     public static TravelGroupUserDTO toDto(TravelGroupUserEntity entity) {
-        if (entity == null) return null;
         return TravelGroupUserDTO.builder()
                 .idx(entity.getIdx())
                 .userIdx(entity.getUserIdx())

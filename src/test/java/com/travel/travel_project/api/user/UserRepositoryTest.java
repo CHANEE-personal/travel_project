@@ -33,7 +33,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static com.travel.travel_project.api.user.mapper.UserMapper.INSTANCE;
 import static com.travel.travel_project.domain.user.Role.ROLE_ADMIN;
 import static com.travel.travel_project.domain.user.Role.ROLE_TRAVEL_USER;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -69,7 +68,7 @@ class UserRepositoryTest {
                 .visible("Y")
                 .build();
 
-        userDTO = INSTANCE.toDto(userEntity);
+        userDTO = UserEntity.toDto(userEntity);
     }
 
     @BeforeEach
@@ -160,10 +159,10 @@ class UserRepositoryTest {
         // given
         UserEntity userEntity = UserEntity.builder()
                 .idx(1L).userId("test01")
-                .name("조찬희").password("test01")
+                .name("조찬희").password("test01").role(ROLE_ADMIN)
                 .email("test01@test.com").visible("Y").build();
         userRepository.insertUser(userEntity);
-        userDTO = INSTANCE.toDto(userEntity);
+        userDTO = UserEntity.toDto(userEntity);
 
         // when
         when(mockUserRepository.findOneUser(userEntity.getIdx())).thenReturn(userDTO);
@@ -189,10 +188,10 @@ class UserRepositoryTest {
         // given
         UserEntity userEntity = UserEntity.builder()
                 .idx(1L).userId("test01")
-                .name("조찬희").password("test01")
+                .name("조찬희").password("test01").role(ROLE_ADMIN)
                 .email("test01@test.com").visible("Y").build();
         userRepository.insertUser(userEntity);
-        userDTO = INSTANCE.toDto(userEntity);
+        userDTO = UserEntity.toDto(userEntity);
 
         // when
         given(mockUserRepository.findOneUser(userEntity.getIdx())).willReturn(userDTO);
@@ -218,6 +217,7 @@ class UserRepositoryTest {
                 .password("test")
                 .name("test")
                 .email("test@test.com")
+                .role(ROLE_ADMIN)
                 .visible("Y")
                 .build();
 
@@ -229,11 +229,12 @@ class UserRepositoryTest {
                 .password("test1")
                 .name("test1")
                 .email("test1@test.com")
+                .role(ROLE_ADMIN)
                 .visible("Y")
                 .build();
 
         userRepository.updateUser(newUserEntity);
-        UserDTO newUserDTO = INSTANCE.toDto(newUserEntity);
+        UserDTO newUserDTO = UserEntity.toDto(newUserEntity);
 
         // when
         when(mockUserRepository.findOneUser(newUserEntity.getIdx())).thenReturn(newUserDTO);
@@ -261,6 +262,7 @@ class UserRepositoryTest {
                 .password("test")
                 .name("test")
                 .email("test@test.com")
+                .role(ROLE_ADMIN)
                 .visible("Y")
                 .build();
 
@@ -276,7 +278,7 @@ class UserRepositoryTest {
                 .build();
 
         userRepository.updateUser(newUserEntity);
-        UserDTO newUserDTO = INSTANCE.toDto(newUserEntity);
+        UserDTO newUserDTO = UserEntity.toDto(newUserEntity);
 
         // when
         given(mockUserRepository.findOneUser(newUserEntity.getIdx())).willReturn(newUserDTO);

@@ -2,11 +2,16 @@ package com.travel.travel_project.domain.notice;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.travel.travel_project.domain.common.NewCommonMappedClass;
+import com.travel.travel_project.domain.faq.FaqDTO;
+import com.travel.travel_project.domain.faq.FaqEntity;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static javax.persistence.GenerationType.IDENTITY;
 
@@ -21,7 +26,7 @@ import static javax.persistence.GenerationType.IDENTITY;
 @Table(name = "travel_notice")
 public class NoticeEntity extends NewCommonMappedClass {
     @Transient
-    private Integer rnum;
+    private Integer rowNum;
 
     @Id
     @GeneratedValue(strategy = IDENTITY)
@@ -55,5 +60,48 @@ public class NoticeEntity extends NewCommonMappedClass {
     // 고정글 수정
     public void toggleTopFixed(Boolean topFixed) {
         this.topFixed = !topFixed;
+    }
+
+    public static NoticeDTO toDto(NoticeEntity entity) {
+        return NoticeDTO.builder()
+                .rowNum(entity.getRowNum())
+                .idx(entity.getIdx())
+                .title(entity.getTitle())
+                .description(entity.getDescription())
+                .topFixed(entity.getTopFixed())
+                .visible(entity.getVisible())
+                .viewCount(entity.getViewCount())
+                .build();
+
+    }
+
+    public NoticeEntity toEntity(NoticeDTO dto) {
+        return NoticeEntity.builder()
+                .rowNum(dto.getRowNum())
+                .idx(dto.getIdx())
+                .title(dto.getTitle())
+                .description(dto.getDescription())
+                .topFixed(dto.getTopFixed())
+                .viewCount(dto.getViewCount())
+                .visible(dto.getVisible())
+                .build();
+    }
+
+    public List<NoticeDTO> toDtoList(List<NoticeEntity> entityList) {
+        List<NoticeDTO> list = new ArrayList<>(entityList.size());
+        for (NoticeEntity noticeEntity : entityList) {
+            list.add(toDto(noticeEntity));
+        }
+
+        return list;
+    }
+
+    public List<NoticeEntity> toEntityList(List<NoticeDTO> dtoList) {
+        List<NoticeEntity> list = new ArrayList<>(dtoList.size());
+        for (NoticeDTO noticeDTO : dtoList) {
+            list.add(toEntity(noticeDTO));
+        }
+
+        return list;
     }
 }

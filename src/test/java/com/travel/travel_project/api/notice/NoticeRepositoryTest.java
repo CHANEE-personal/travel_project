@@ -1,6 +1,5 @@
 package com.travel.travel_project.api.notice;
 
-import com.travel.travel_project.api.notice.mapper.NoticeMapper;
 import com.travel.travel_project.domain.notice.NoticeDTO;
 import com.travel.travel_project.domain.notice.NoticeEntity;
 
@@ -57,7 +56,7 @@ class NoticeRepositoryTest {
                 .visible("Y").viewCount(1)
                 .build();
 
-        noticeDTO = NoticeMapper.INSTANCE.toDto(noticeEntity);
+        noticeDTO = NoticeEntity.toDto(noticeEntity);
     }
 
     @BeforeEach
@@ -185,7 +184,7 @@ class NoticeRepositoryTest {
     void 공지사항삭제Mockito테스트() {
         // given
         em.persist(noticeEntity);
-        noticeDTO = NoticeMapper.INSTANCE.toDto(noticeEntity);
+        noticeDTO = NoticeEntity.toDto(noticeEntity);
 
         // when
         when(mockNoticeRepository.findOneNotice(noticeDTO.getIdx())).thenReturn(noticeDTO);

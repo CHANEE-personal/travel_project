@@ -23,7 +23,7 @@ import static javax.persistence.GenerationType.IDENTITY;
 @Table(name = "tv_group_mst")
 public class TravelGroupEntity extends NewCommonMappedClass {
     @Transient
-    private Integer rnum;
+    private Integer rowNum;
 
     @Id
     @GeneratedValue(strategy = IDENTITY)
@@ -52,7 +52,7 @@ public class TravelGroupEntity extends NewCommonMappedClass {
 
     public static TravelGroupDTO toDto(TravelGroupEntity entity) {
         return TravelGroupDTO.builder()
-                .rnum(entity.getRnum())
+                .rowNum(entity.getRowNum())
                 .idx(entity.getIdx())
                 .travelIdx(entity.getTravelIdx())
                 .groupName(entity.getGroupName())

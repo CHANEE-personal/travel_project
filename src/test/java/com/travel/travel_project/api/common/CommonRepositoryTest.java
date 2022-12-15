@@ -1,6 +1,5 @@
 package com.travel.travel_project.api.common;
 
-import com.travel.travel_project.api.common.mapper.CommonMapper;
 import com.travel.travel_project.domain.common.CommonDTO;
 import com.travel.travel_project.domain.common.CommonEntity;
 import lombok.RequiredArgsConstructor;
@@ -27,7 +26,6 @@ import java.util.List;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.*;
 import static org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase.Replace.NONE;
@@ -58,7 +56,7 @@ class CommonRepositoryTest {
                 .visible("Y")
                 .build();
 
-        commonDTO = CommonMapper.INSTANCE.toDto(commonEntity);
+        commonDTO = CommonEntity.toDto(commonEntity);
     }
 
     @BeforeEach
@@ -160,7 +158,7 @@ class CommonRepositoryTest {
 
         commonRepository.updateCommonCode(newCommonEntity);
 
-        CommonDTO newCommonInfo = CommonMapper.INSTANCE.toDto(newCommonEntity);
+        CommonDTO newCommonInfo = CommonEntity.toDto(newCommonEntity);
 
         // when
         given(mockCommonRepository.findOneCommon(newCommonInfo.getIdx())).willReturn(newCommonInfo);
@@ -185,7 +183,7 @@ class CommonRepositoryTest {
     void 공통코드삭제Mockito테스트() {
         // given
         em.persist(commonEntity);
-        commonDTO = CommonMapper.INSTANCE.toDto(commonEntity);
+        commonDTO = CommonEntity.toDto(commonEntity);
 
         // when
         given(mockCommonRepository.findOneCommon(commonDTO.getIdx())).willReturn(commonDTO);

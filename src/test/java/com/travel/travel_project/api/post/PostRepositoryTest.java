@@ -1,6 +1,5 @@
 package com.travel.travel_project.api.post;
 
-import com.travel.travel_project.api.post.mapper.PostMapper;
 import com.travel.travel_project.domain.post.PostDTO;
 import com.travel.travel_project.domain.post.PostEntity;
 import lombok.RequiredArgsConstructor;
@@ -64,7 +63,7 @@ class PostRepositoryTest {
                 .build();
 
         em.persist(postEntity);
-        postDTO = PostMapper.INSTANCE.toDto(postEntity);
+        postDTO = PostEntity.toDto(postEntity);
 
         postParentEntity = PostEntity.builder()
                 .postTitle("게시글 댓글 테스트")
@@ -78,7 +77,7 @@ class PostRepositoryTest {
                 .build();
 
         em.persist(postParentEntity);
-        postParentDTO = PostMapper.INSTANCE.toDto(postParentEntity);
+        postParentDTO = PostEntity.toDto(postParentEntity);
 
         postChildEntity = PostEntity.builder()
                 .postTitle("게시글 대댓글 테스트")
@@ -92,7 +91,7 @@ class PostRepositoryTest {
                 .build();
 
         em.persist(postChildEntity);
-        postChildDTO = PostMapper.INSTANCE.toDto(postChildEntity);
+        postChildDTO = PostEntity.toDto(postChildEntity);
     }
 
     @BeforeEach

@@ -5,14 +5,15 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.travel.travel_project.domain.notice.NoticeDTO;
 import com.travel.travel_project.domain.notice.NoticeEntity;
 
+import com.travel.travel_project.domain.post.PostEntity;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
-import static com.travel.travel_project.api.notice.mapper.NoticeMapper.INSTANCE;
 import static com.travel.travel_project.common.StringUtil.getInt;
 import static com.travel.travel_project.common.StringUtil.getString;
 import static com.travel.travel_project.domain.notice.QNoticeEntity.*;
@@ -69,9 +70,9 @@ public class NoticeRepository {
                 .fetch();
 
         noticeList.forEach(list -> noticeList.get(noticeList.indexOf(list))
-                .setRnum(getInt(noticeMap.get("startPage"), 1) * (getInt(noticeMap.get("size"), 1)) - (2 - noticeList.indexOf(list))));
+                .setRowNum(getInt(noticeMap.get("startPage"), 1) * (getInt(noticeMap.get("size"), 1)) - (2 - noticeList.indexOf(list))));
 
-        return INSTANCE.toDtoList(noticeList);
+        return noticeList.stream().map(NoticeEntity::toDto).collect(Collectors.toList());
     }
 
     /**
@@ -92,7 +93,8 @@ public class NoticeRepository {
                 .where(noticeEntity.idx.eq(idx))
                 .fetchOne();
 
-        return INSTANCE.toDto(findOneNotice);
+        assert findOneNotice != null;
+        return NoticeEntity.toDto(findOneNotice);
     }
 
     /**
@@ -106,7 +108,7 @@ public class NoticeRepository {
      */
     public NoticeDTO insertNotice(NoticeEntity noticeEntity) {
         em.persist(noticeEntity);
-        return INSTANCE.toDto(noticeEntity);
+        return NoticeEntity.toDto(noticeEntity);
     }
 
     /**
@@ -122,7 +124,7 @@ public class NoticeRepository {
         em.merge(existNoticeEntity);
         em.flush();
         em.clear();
-        return INSTANCE.toDto(existNoticeEntity);
+        return NoticeEntity.toDto(existNoticeEntity);
     }
 
     /**

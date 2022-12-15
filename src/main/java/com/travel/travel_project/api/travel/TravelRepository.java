@@ -437,7 +437,7 @@ public class TravelRepository {
                 .fetch();
 
         travelGroupList.forEach(list -> travelGroupList.get(travelGroupList.indexOf(list))
-                .setRnum(getInt(groupMap.get("startPage"), 1) * (getInt(groupMap.get("size"), 1)) - (2 - travelGroupList.indexOf(list))));
+                .setRowNum(getInt(groupMap.get("startPage"), 1) * (getInt(groupMap.get("size"), 1)) - (2 - travelGroupList.indexOf(list))));
 
         return travelGroupList.stream().map(TravelGroupEntity::toDto).collect(Collectors.toList());
     }

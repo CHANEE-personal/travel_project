@@ -30,7 +30,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static com.travel.travel_project.api.user.mapper.UserMapper.INSTANCE;
 import static com.travel.travel_project.domain.user.Role.ROLE_ADMIN;
 import static com.travel.travel_project.domain.user.Role.ROLE_TRAVEL_USER;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -66,7 +65,7 @@ class UserServiceTest {
                 .visible("Y")
                 .build();
 
-        userDTO = INSTANCE.toDto(userEntity);
+        userDTO = UserEntity.toDto(userEntity);
     }
 
     @BeforeEach
@@ -160,7 +159,7 @@ class UserServiceTest {
                 .name("조찬희").password("test01")
                 .email("test01@test.com").visible("Y").build();
         userService.insertUser(userEntity);
-        userDTO = INSTANCE.toDto(userEntity);
+        userDTO = UserEntity.toDto(userEntity);
 
         // when
         when(mockUserService.findOneUser(userEntity.getIdx())).thenReturn(userDTO);
@@ -189,7 +188,7 @@ class UserServiceTest {
                 .name("조찬희").password("test01")
                 .email("test01@test.com").visible("Y").build();
         userService.insertUser(userEntity);
-        userDTO = INSTANCE.toDto(userEntity);
+        userDTO = UserEntity.toDto(userEntity);
 
         // when
         given(mockUserService.findOneUser(userEntity.getIdx())).willReturn(userDTO);
@@ -230,7 +229,7 @@ class UserServiceTest {
                 .build();
 
         userService.updateUser(newUserEntity);
-        UserDTO newUserDTO = INSTANCE.toDto(newUserEntity);
+        UserDTO newUserDTO = UserEntity.toDto(newUserEntity);
 
         // when
         when(mockUserService.findOneUser(newUserEntity.getIdx())).thenReturn(newUserDTO);
@@ -273,7 +272,7 @@ class UserServiceTest {
                 .build();
 
         userService.updateUser(newUserEntity);
-        UserDTO newUserDTO = INSTANCE.toDto(newUserEntity);
+        UserDTO newUserDTO = UserEntity.toDto(newUserEntity);
 
         // when
         given(mockUserService.findOneUser(newUserEntity.getIdx())).willReturn(newUserDTO);

@@ -11,11 +11,9 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-import static com.travel.travel_project.api.user.mapper.UserMapper.INSTANCE;
 import static com.travel.travel_project.exception.ApiExceptionType.*;
 
 @Service
@@ -38,7 +36,7 @@ public class UserService {
     @Transactional
     public void insertToken(UserEntity paramUserEntity) throws TravelException {
         try {
-            UserEntity userEntity = INSTANCE.toEntity(userRepository.findOneUser(paramUserEntity.getIdx()));
+            UserEntity userEntity = UserEntity.toEntity(userRepository.findOneUser(paramUserEntity.getIdx()));
             userRepository.insertUserToken(userEntity);
         } catch (Exception e) {
             throw new TravelException(ERROR_USER, e);

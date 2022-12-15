@@ -1,7 +1,6 @@
 package com.travel.travel_project.domain.travel.schedule;
 
 import com.travel.travel_project.domain.common.NewCommonMappedClass;
-import com.travel.travel_project.domain.travel.group.TravelGroupDTO;
 import com.travel.travel_project.domain.user.UserEntity;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.*;
@@ -61,8 +60,6 @@ public class TravelScheduleEntity extends NewCommonMappedClass {
     private UserEntity userEntity;
 
     public static TravelScheduleDTO toDto(TravelScheduleEntity entity) {
-        if (entity == null) return null;
-
         return TravelScheduleDTO.builder()
                 .rowNum(entity.getRowNum())
                 .idx(entity.getIdx())

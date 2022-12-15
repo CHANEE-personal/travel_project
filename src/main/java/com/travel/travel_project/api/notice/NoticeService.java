@@ -1,6 +1,5 @@
 package com.travel.travel_project.api.notice;
 
-import com.travel.travel_project.api.notice.mapper.NoticeMapper;
 import com.travel.travel_project.domain.notice.NoticeDTO;
 import com.travel.travel_project.domain.notice.NoticeEntity;
 import com.travel.travel_project.exception.TravelException;

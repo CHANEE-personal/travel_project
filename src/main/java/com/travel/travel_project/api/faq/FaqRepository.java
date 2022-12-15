@@ -2,6 +2,7 @@ package com.travel.travel_project.api.faq;
 
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import com.travel.travel_project.domain.faq.FaqDTO;
 import com.travel.travel_project.domain.faq.FaqEntity;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -9,6 +10,7 @@ import org.springframework.stereotype.Repository;
 import javax.persistence.EntityManager;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import static com.travel.travel_project.common.StringUtil.getInt;
 import static com.travel.travel_project.common.StringUtil.getString;
@@ -57,7 +59,7 @@ public class FaqRepository {
      * 5. 작성일      : 2022. 11. 29.
      * </pre>
      */
-    public List<FaqEntity> findFaqList(Map<String, Object> faqMap) {
+    public List<FaqDTO> findFaqList(Map<String, Object> faqMap) {
         List<FaqEntity> faqList = queryFactory.selectFrom(faqEntity)
                 .orderBy(faqEntity.idx.desc())
                 .innerJoin(faqEntity.newFaqCode, commonEntity)
@@ -66,9 +68,9 @@ public class FaqRepository {
                 .fetch();
 
         faqList.forEach(list -> faqList.get(faqList.indexOf(list))
-                .setRnum(getInt(faqMap.get("startPage"), 1) * (getInt(faqMap.get("size"), 1)) - (2 - faqList.indexOf(list))));
+                .setRowNum(getInt(faqMap.get("startPage"), 1) * (getInt(faqMap.get("size"), 1)) - (2 - faqList.indexOf(list))));
 
-        return faqList;
+        return faqList.stream().map(FaqEntity::toDto).collect(Collectors.toList());
     }
 
     /**
@@ -80,13 +82,15 @@ public class FaqRepository {
      * 5. 작성일      : 2022. 11. 29.
      * </pre>
      */
-    public FaqEntity findOneFaq(Long idx) {
-        return queryFactory
+    public FaqDTO findOneFaq(Long idx) {
+        FaqEntity oneFaq = queryFactory
                 .selectFrom(faqEntity)
                 .innerJoin(faqEntity.newFaqCode, commonEntity)
                 .fetchJoin()
                 .where(faqEntity.idx.eq(idx))
                 .fetchOne();
+
+        return FaqEntity.toDto(oneFaq);
     }
 
     /**
@@ -98,9 +102,9 @@ public class FaqRepository {
      * 5. 작성일      : 2022. 11. 29.
      * </pre>
      */
-    public FaqEntity insertFaq(FaqEntity faqEntity) {
+    public FaqDTO insertFaq(FaqEntity faqEntity) {
         em.persist(faqEntity);
-        return faqEntity;
+        return FaqEntity.toDto(faqEntity);
     }
 
     /**
@@ -112,11 +116,11 @@ public class FaqRepository {
      * 5. 작성일      : 2022. 11. 29.
      * </pre>
      */
-    public FaqEntity updateFaq(FaqEntity existFaqEntity) {
+    public FaqDTO updateFaq(FaqEntity existFaqEntity) {
         em.merge(existFaqEntity);
         em.flush();
         em.clear();
-        return existFaqEntity;
+        return FaqEntity.toDto(existFaqEntity);
     }
 
     /**

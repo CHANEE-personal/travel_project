@@ -17,7 +17,7 @@ import javax.validation.constraints.NotEmpty;
 @ApiModel(value = "게시글 관련 변수")
 public class PostDTO extends NewCommonDTO {
     @ApiModelProperty(required = true, value = "rnum", hidden = true, example = "1")
-    private Integer rnum;
+    private Integer rowNum;
 
     @ApiModelProperty(required = true, value = "idx", hidden = true, example = "1")
     private Long idx;

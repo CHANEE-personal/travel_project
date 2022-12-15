@@ -1,6 +1,5 @@
 package com.travel.travel_project.api.common;
 
-import com.travel.travel_project.api.common.mapper.CommonMapper;
 import com.travel.travel_project.domain.common.CommonDTO;
 import com.travel.travel_project.domain.common.CommonEntity;
 import lombok.RequiredArgsConstructor;
@@ -52,7 +51,7 @@ class CommonServiceTest {
                 .commonName("서울")
                 .visible("Y")
                 .build();
-        commonDTO = CommonMapper.INSTANCE.toDto(commonEntity);
+        commonDTO = CommonEntity.toDto(commonEntity);
     }
 
     @BeforeEach
@@ -144,7 +143,7 @@ class CommonServiceTest {
                 .commonCode(2).commonName("인천").visible("Y").build();
         commonService.updateCommonCode(newCommonEntity);
 
-        CommonDTO newCommonInfo = CommonMapper.INSTANCE.toDto(newCommonEntity);
+        CommonDTO newCommonInfo = CommonEntity.toDto(newCommonEntity);
 
         // when
         given(mockCommonService.findOneCommon(newCommonInfo.getIdx())).willReturn(newCommonInfo);
@@ -169,7 +168,7 @@ class CommonServiceTest {
     void 공통코드삭제Mockito테스트() {
         // given
         em.persist(commonEntity);
-        commonDTO = CommonMapper.INSTANCE.toDto(commonEntity);
+        commonDTO = CommonEntity.toDto(commonEntity);
 
         // when
         given(mockCommonService.findOneCommon(commonDTO.getIdx())).willReturn(commonDTO);

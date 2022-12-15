@@ -2,7 +2,6 @@ package com.travel.travel_project.api.user;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.travel.travel_project.common.StringUtil;
-import com.travel.travel_project.domain.travel.TravelEntity;
 import com.travel.travel_project.domain.travel.schedule.TravelScheduleDTO;
 import com.travel.travel_project.domain.travel.schedule.TravelScheduleEntity;
 import com.travel.travel_project.domain.user.UserDTO;
@@ -20,7 +19,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import static com.travel.travel_project.api.user.mapper.UserMapper.INSTANCE;
 import static com.travel.travel_project.common.StringUtils.nullStrToStr;
 import static com.travel.travel_project.domain.travel.schedule.QTravelScheduleEntity.*;
 import static com.travel.travel_project.domain.user.QUserEntity.userEntity;
@@ -98,7 +96,7 @@ public class UserRepository {
                 .selectFrom(userEntity)
                 .fetch();
 
-        return INSTANCE.toDtoList(findUsersList);
+        return findUsersList.stream().map(UserEntity::toDto).collect(Collectors.toList());
     }
 
     /**
@@ -116,7 +114,7 @@ public class UserRepository {
                         .and(userEntity.visible.eq("Y")))
                 .fetchOne();
 
-        return INSTANCE.toDto(findOneUser);
+        return UserEntity.toDto(findOneUser);
     }
 
     /**
@@ -135,7 +133,7 @@ public class UserRepository {
                         .and(userEntity.visible.eq("Y")))
                 .fetchOne();
 
-        return INSTANCE.toDto(userInfo);
+        return UserEntity.toDto(userInfo);
     }
 
     /**
@@ -169,7 +167,7 @@ public class UserRepository {
      */
     public UserDTO insertUser(UserEntity userEntity) {
         em.persist(userEntity);
-        return INSTANCE.toDto(userEntity);
+        return UserEntity.toDto(userEntity);
     }
 
     /**
@@ -185,7 +183,7 @@ public class UserRepository {
         em.merge(userEntity);
         em.flush();
         em.clear();
-        return INSTANCE.toDto(userEntity);
+        return UserEntity.toDto(userEntity);
     }
 
     /**
@@ -225,7 +223,7 @@ public class UserRepository {
         em.flush();
         em.clear();
 
-        return INSTANCE.toDto(oneUser);
+        return UserEntity.toDto(oneUser);
     }
 
     /**

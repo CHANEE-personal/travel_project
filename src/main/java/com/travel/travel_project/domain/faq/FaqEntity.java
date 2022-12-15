@@ -9,6 +9,9 @@ import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import static javax.persistence.FetchType.LAZY;
 import static javax.persistence.GenerationType.IDENTITY;
 
@@ -23,7 +26,7 @@ import static javax.persistence.GenerationType.IDENTITY;
 @Table(name = "travel_faq")
 public class FaqEntity {
     @Transient
-    private Integer rnum;
+    private Integer rowNum;
 
     @Id
     @GeneratedValue(strategy = IDENTITY)
@@ -57,5 +60,41 @@ public class FaqEntity {
     // 조회 수 증가
     public void updateViewCount() {
         this.viewCount++;
+    }
+
+    public static FaqDTO toDto(FaqEntity entity) {
+        return FaqDTO.builder()
+                .rowNum(entity.getRowNum())
+                .idx(entity.getIdx())
+                .faqCode(entity.getFaqCode())
+                .title(entity.getTitle())
+                .description(entity.getDescription())
+                .viewCount(entity.getViewCount())
+                .visible(entity.getVisible())
+                .build();
+    }
+
+    public static FaqEntity toEntity(FaqDTO dto) {
+        return FaqEntity.builder()
+                .rowNum(dto.getRowNum())
+                .idx(dto.getIdx())
+                .faqCode(dto.getFaqCode())
+                .title(dto.getTitle())
+                .description(dto.getDescription())
+                .viewCount(dto.getViewCount())
+                .visible(dto.getVisible())
+                .build();
+    }
+
+    public List<FaqDTO> toDtoList(List<FaqEntity> entityList) {
+        List<FaqDTO> list = new ArrayList<>(entityList.size());
+        entityList.forEach(faqEntity -> list.add(toDto(faqEntity)));
+        return list;
+    }
+
+    public List<FaqEntity> toEntityList(List<FaqDTO> dtoList) {
+        List<FaqEntity> list = new ArrayList<>(dtoList.size());
+        dtoList.forEach(faqDTO -> list.add(toEntity(faqDTO)));
+        return list;
     }
 }
