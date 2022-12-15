@@ -1,7 +1,6 @@
 package com.travel.travel_project.common;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import com.travel.travel_project.api.common.mapper.CommonImageMapper;
 import com.travel.travel_project.domain.common.EntityType;
 import com.travel.travel_project.domain.file.CommonImageDTO;
 import com.travel.travel_project.domain.file.CommonImageEntity;
@@ -17,6 +16,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import static com.travel.travel_project.domain.common.EntityType.REVIEW;
 import static com.travel.travel_project.domain.common.EntityType.TRAVEL;
@@ -50,7 +50,7 @@ public class SaveFile {
             }
             index++;
         }
-        return CommonImageMapper.INSTANCE.toDtoList(commonImageEntityList);
+        return commonImageEntityList.stream().map(CommonImageEntity::toDto).collect(Collectors.toList());
     }
 
     /**

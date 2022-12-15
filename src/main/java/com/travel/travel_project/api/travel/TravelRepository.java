@@ -2,10 +2,6 @@ package com.travel.travel_project.api.travel;
 
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import com.travel.travel_project.api.travel.mapper.group.TravelGroupMapper;
-import com.travel.travel_project.api.travel.mapper.group.TravelGroupUserMapper;
-import com.travel.travel_project.api.travel.mapper.review.TravelReviewMapper;
-import com.travel.travel_project.api.travel.mapper.schedule.TravelScheduleMapper;
 import com.travel.travel_project.domain.travel.TravelDTO;
 import com.travel.travel_project.domain.travel.TravelEntity;
 import com.travel.travel_project.domain.travel.group.*;
@@ -22,10 +18,10 @@ import java.time.LocalTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 import static com.travel.travel_project.common.StringUtil.getInt;
 import static com.travel.travel_project.common.StringUtil.getString;
-import static com.travel.travel_project.api.travel.mapper.TravelMapper.INSTANCE;
 import static com.travel.travel_project.domain.common.QCommonEntity.commonEntity;
 import static com.travel.travel_project.domain.file.QCommonImageEntity.commonImageEntity;
 import static com.travel.travel_project.domain.travel.QTravelEntity.travelEntity;
@@ -55,26 +51,16 @@ public class TravelRepository {
         String searchKeyword = getString(travelMap.get("searchKeyword"), "");
 
         if (!Objects.equals(searchKeyword, "")) {
-            return travelEntity.travelTitle.contains(searchKeyword)
-                    .or(travelEntity.travelDescription.contains(searchKeyword));
+            return travelEntity.travelTitle.contains(searchKeyword).or(travelEntity.travelDescription.contains(searchKeyword));
         } else {
             return null;
         }
     }
 
     private BooleanExpression searchTravelDate(Map<String, Object> travelMap) {
-        LocalDateTime searchStartTime = (LocalDateTime) travelMap.get("searchStartTime");
-        LocalDateTime searchEndTime = (LocalDateTime) travelMap.get("searchEndTime");
-
-        if (searchStartTime != null && searchEndTime != null) {
-            searchStartTime = (LocalDateTime) travelMap.get("searchStartTime");
-            searchEndTime = (LocalDateTime) travelMap.get("searchEndTime");
-        } else {
-            searchStartTime = now().minusDays(now().getDayOfMonth() - 1).atStartOfDay();
-            searchEndTime = of(now().minusDays(now().getDayOfMonth()).plusMonths(1), LocalTime.of(23, 59, 59));
-        }
-
-        return travelEntity.createTime.between(searchStartTime, searchEndTime);
+        LocalDateTime startDateTime = travelMap.get("searchStartTime") != null ? (LocalDateTime) travelMap.get("searchStartTime") : now().minusDays(now().getDayOfMonth() - 1).atStartOfDay();
+        LocalDateTime endDateTime = travelMap.get("searchEndTime") != null ? (LocalDateTime) travelMap.get("searchStartTime") : of(now().minusDays(now().getDayOfMonth()).plusMonths(1), LocalTime.of(23, 59, 59));
+        return travelEntity.createTime.goe(startDateTime).and(travelEntity.createTime.loe(endDateTime));
     }
 
     /**
@@ -86,8 +72,12 @@ public class TravelRepository {
      * 5. 작성일      : 2022. 10. 05.
      * </pre>
      */
-    public Integer findTravelCount(Map<String, Object> travelMap) {
+    public int findTravelCount(Map<String, Object> travelMap) {
         return queryFactory.selectFrom(travelEntity)
+                .innerJoin(travelEntity.newTravelCode, commonEntity)
+                .fetchJoin()
+                .leftJoin(travelEntity.commonImageEntityList, commonImageEntity)
+                .fetchJoin()
                 .where(searchTravelCode(travelMap), searchTravelInfo(travelMap), searchTravelDate(travelMap))
                 .fetch().size();
     }
@@ -107,16 +97,17 @@ public class TravelRepository {
                 .orderBy(travelEntity.idx.desc())
                 .innerJoin(travelEntity.newTravelCode, commonEntity)
                 .fetchJoin()
-                .where(searchTravelCode(travelMap), searchTravelInfo(travelMap), searchTravelDate(travelMap)
-                        .and(travelEntity.visible.eq("Y")))
+                .leftJoin(travelEntity.commonImageEntityList, commonImageEntity)
+                .fetchJoin()
+                .where(searchTravelCode(travelMap), searchTravelInfo(travelMap), searchTravelDate(travelMap))
                 .offset(getInt(travelMap.get("jpaStartPage"), 0))
                 .limit(getInt(travelMap.get("size"), 0))
                 .fetch();
 
         travelList.forEach(list -> travelList.get(travelList.indexOf(list))
-                .setRnum(getInt(travelMap.get("startPage"), 1) * (getInt(travelMap.get("size"), 1)) - (2 - travelList.indexOf(list))));
+                .setRowNum(getInt(travelMap.get("startPage"), 1) * (getInt(travelMap.get("size"), 1)) - (2 - travelList.indexOf(list))));
 
-        return INSTANCE.toDtoList(travelList);
+        return travelList.stream().map(TravelEntity::toDto).collect(Collectors.toList());
     }
 
     /**
@@ -143,7 +134,8 @@ public class TravelRepository {
                         .and(travelEntity.visible.eq("Y")))
                 .fetchOne();
 
-        return INSTANCE.toDto(findOneTravel);
+        assert findOneTravel != null;
+        return TravelEntity.toDto(findOneTravel);
     }
 
     /**
@@ -163,7 +155,7 @@ public class TravelRepository {
                         .and(travelEntity.visible.eq("Y")))
                 .fetchFirst();
 
-        return INSTANCE.toDto(findOnePrevTravel);
+        return TravelEntity.toDto(findOnePrevTravel);
     }
 
     /**
@@ -183,7 +175,7 @@ public class TravelRepository {
                         .and(travelEntity.visible.eq("Y")))
                 .fetchFirst();
 
-        return INSTANCE.toDto(findOneNextTravel);
+        return TravelEntity.toDto(findOneNextTravel);
     }
 
     /**
@@ -197,7 +189,7 @@ public class TravelRepository {
      */
     public TravelDTO insertTravel(TravelEntity travelEntity) {
         em.persist(travelEntity);
-        return INSTANCE.toDto(travelEntity);
+        return TravelEntity.toDto(travelEntity);
     }
 
     /**
@@ -213,7 +205,7 @@ public class TravelRepository {
         em.merge(travelEntity);
         em.flush();
         em.clear();
-        return INSTANCE.toDto(travelEntity);
+        return TravelEntity.toDto(travelEntity);
     }
 
     /**
@@ -287,7 +279,7 @@ public class TravelRepository {
      */
     public TravelReviewDTO replyTravel(TravelReviewEntity travelReviewEntity) {
         em.persist(travelReviewEntity);
-        return TravelReviewMapper.INSTANCE.toDto(travelReviewEntity);
+        return TravelReviewEntity.toDto(travelReviewEntity);
     }
 
     /**
@@ -303,7 +295,7 @@ public class TravelRepository {
         em.merge(travelReviewEntity);
         em.flush();
         em.clear();
-        return TravelReviewMapper.INSTANCE.toDto(travelReviewEntity);
+        return TravelReviewEntity.toDto(travelReviewEntity);
     }
 
     /**
@@ -338,7 +330,7 @@ public class TravelRepository {
                         .and(travelReviewEntity.visible.eq("Y")))
                 .fetch();
 
-        return TravelReviewMapper.INSTANCE.toDtoList(replyTravelReview);
+        return replyTravelReview.stream().map(TravelReviewEntity::toDto).collect(Collectors.toList());
     }
 
     /**
@@ -357,7 +349,8 @@ public class TravelRepository {
                         .and(travelReviewEntity.visible.eq("Y")))
                 .fetchOne();
 
-        return TravelReviewMapper.INSTANCE.toDto(detailReplyTravelReview);
+        assert detailReplyTravelReview != null;
+        return TravelReviewEntity.toDto(detailReplyTravelReview);
     }
 
     /**
@@ -407,9 +400,9 @@ public class TravelRepository {
                 .fetch();
 
         travelList.forEach(list -> travelList.get(travelList.indexOf(list))
-                .setRnum(getInt(travelMap.get("startPage"), 1) * (getInt(travelMap.get("size"), 1)) - (2 - travelList.indexOf(list))));
+                .setRowNum(getInt(travelMap.get("startPage"), 1) * (getInt(travelMap.get("size"), 1)) - (2 - travelList.indexOf(list))));
 
-        return INSTANCE.toDtoList(travelList);
+        return travelList.stream().map(TravelEntity::toDto).collect(Collectors.toList());
     }
 
     /**
@@ -444,9 +437,9 @@ public class TravelRepository {
                 .fetch();
 
         travelGroupList.forEach(list -> travelGroupList.get(travelGroupList.indexOf(list))
-                .setRnum(getInt(groupMap.get("startPage"), 1) * (getInt(groupMap.get("size"), 1)) - (2 - travelGroupList.indexOf(list))));
+                .setRowNum(getInt(groupMap.get("startPage"), 1) * (getInt(groupMap.get("size"), 1)) - (2 - travelGroupList.indexOf(list))));
 
-        return TravelGroupMapper.INSTANCE.toDtoList(travelGroupList);
+        return travelGroupList.stream().map(TravelGroupEntity::toDto).collect(Collectors.toList());
     }
 
     /**
@@ -464,7 +457,8 @@ public class TravelRepository {
                 .where(travelGroupEntity.idx.eq(idx))
                 .fetchOne();
 
-        return TravelGroupMapper.INSTANCE.toDto(travelGroup);
+        assert travelGroup != null;
+        return TravelGroupEntity.toDto(travelGroup);
     }
 
     /**
@@ -478,7 +472,7 @@ public class TravelRepository {
      */
     public TravelGroupDTO insertTravelGroup(TravelGroupEntity travelGroupEntity) {
         em.persist(travelGroupEntity);
-        return TravelGroupMapper.INSTANCE.toDto(travelGroupEntity);
+        return TravelGroupEntity.toDto(travelGroupEntity);
     }
 
     /**
@@ -494,7 +488,7 @@ public class TravelRepository {
         em.merge(travelGroupEntity);
         em.flush();
         em.clear();
-        return TravelGroupMapper.INSTANCE.toDto(travelGroupEntity);
+        return TravelGroupEntity.toDto(travelGroupEntity);
     }
 
     /**
@@ -524,7 +518,7 @@ public class TravelRepository {
      */
     public TravelGroupUserDTO insertTravelGroupUser(TravelGroupUserEntity travelGroupUserEntity) {
         em.persist(travelGroupUserEntity);
-        return TravelGroupUserMapper.INSTANCE.toDto(travelGroupUserEntity);
+        return TravelGroupUserEntity.toDto(travelGroupUserEntity);
     }
 
     /**
@@ -554,7 +548,7 @@ public class TravelRepository {
      */
     public TravelScheduleDTO insertTravelSchedule(TravelScheduleEntity travelScheduleEntity) {
         em.persist(travelScheduleEntity);
-        return TravelScheduleMapper.INSTANCE.toDto(travelScheduleEntity);
+        return TravelScheduleEntity.toDto(travelScheduleEntity);
     }
 
     /**
@@ -570,7 +564,7 @@ public class TravelRepository {
         em.merge(travelScheduleEntity);
         em.flush();
         em.clear();
-        return TravelScheduleMapper.INSTANCE.toDto(travelScheduleEntity);
+        return TravelScheduleEntity.toDto(travelScheduleEntity);
     }
 
     /**

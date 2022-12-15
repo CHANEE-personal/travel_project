@@ -17,7 +17,7 @@ import javax.validation.constraints.NotEmpty;
 @ApiModel(value = "공지사항 관련 변수")
 public class NoticeDTO extends NewCommonDTO {
     @ApiModelProperty(required = true, value = "rnum", hidden = true)
-    private Integer rnum;
+    private Integer rowNum;
 
     @ApiModelProperty(required = true, value = "idx", hidden = true)
     private Long idx;

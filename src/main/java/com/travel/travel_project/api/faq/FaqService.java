@@ -1,6 +1,5 @@
 package com.travel.travel_project.api.faq;
 
-import com.travel.travel_project.api.faq.mapper.FaqMapper;
 import com.travel.travel_project.domain.faq.FaqDTO;
 import com.travel.travel_project.domain.faq.FaqEntity;
 import com.travel.travel_project.exception.TravelException;
@@ -52,7 +51,7 @@ public class FaqService {
     @Transactional(readOnly = true)
     public List<FaqDTO> findFaqList(Map<String, Object> faqMap) {
         try {
-            return FaqMapper.INSTANCE.toDtoList(faqRepository.findFaqList(faqMap));
+            return faqRepository.findFaqList(faqMap);
         } catch (Exception e) {
             throw new TravelException(NOT_FOUND_FAQ_LIST, e);
         }
@@ -70,7 +69,7 @@ public class FaqService {
     @Transactional(readOnly = true)
     public FaqDTO findOneFaq(Long idx) {
         try {
-            return FaqMapper.INSTANCE.toDto(faqRepository.findOneFaq(idx));
+            return faqRepository.findOneFaq(idx);
         } catch (Exception e) {
             throw new TravelException(NOT_FOUND_FAQ, e);
         }
@@ -90,7 +89,7 @@ public class FaqService {
     @Transactional
     public FaqDTO insertFaq(FaqEntity faqEntity) {
         try {
-            return FaqMapper.INSTANCE.toDto(faqRepository.insertFaq(faqEntity));
+            return faqRepository.insertFaq(faqEntity);
         } catch (Exception e) {
             throw new TravelException(ERROR_FAQ, e);
         }
@@ -110,7 +109,7 @@ public class FaqService {
     @Transactional
     public FaqDTO updateFaq(FaqEntity faqEntity) {
         try {
-            return FaqMapper.INSTANCE.toDto(faqRepository.updateFaq(faqEntity));
+            return faqRepository.updateFaq(faqEntity);
         } catch (Exception e) {
             throw new TravelException(ERROR_UPDATE_FAQ, e);
         }

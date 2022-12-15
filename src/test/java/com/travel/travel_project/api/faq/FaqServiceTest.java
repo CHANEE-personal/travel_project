@@ -1,6 +1,5 @@
 package com.travel.travel_project.api.faq;
 
-import com.travel.travel_project.api.faq.mapper.FaqMapper;
 import com.travel.travel_project.domain.faq.FaqDTO;
 import com.travel.travel_project.domain.faq.FaqEntity;
 import lombok.RequiredArgsConstructor;
@@ -55,7 +54,7 @@ class FaqServiceTest {
                 .visible("Y")
                 .build();
         
-        faqDTO = FaqMapper.INSTANCE.toDto(faqEntity);
+        faqDTO = FaqEntity.toDto(faqEntity);
     }
     
     @BeforeEach

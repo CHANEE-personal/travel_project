@@ -10,8 +10,8 @@ import org.springframework.stereotype.Repository;
 import javax.persistence.EntityManager;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
-import static com.travel.travel_project.api.common.mapper.CommonMapper.INSTANCE;
 import static com.travel.travel_project.common.StringUtil.getInt;
 import static com.travel.travel_project.common.StringUtil.getString;
 import static com.travel.travel_project.domain.common.QCommonEntity.commonEntity;
@@ -66,9 +66,9 @@ public class CommonRepository {
                 .fetch();
 
         commonCodeList.forEach(list -> commonCodeList.get(commonCodeList.indexOf(list))
-                .setRnum(getInt(commonMap.get("startPage"), 1) * (getInt(commonMap.get("size"), 1)) - (2 - commonCodeList.indexOf(list))));
+                .setRowNum(getInt(commonMap.get("startPage"), 1) * (getInt(commonMap.get("size"), 1)) - (2 - commonCodeList.indexOf(list))));
 
-        return INSTANCE.toDtoList(commonCodeList);
+        return commonCodeList.stream().map(CommonEntity::toDto).collect(Collectors.toList());
     }
 
     /**
@@ -86,7 +86,7 @@ public class CommonRepository {
                 .where(commonEntity.idx.eq(idx))
                 .fetchOne();
 
-        return INSTANCE.toDto(findOneCommon);
+        return CommonEntity.toDto(findOneCommon);
     }
 
     /**
@@ -100,7 +100,7 @@ public class CommonRepository {
      */
     public CommonDTO insertCommonCode(CommonEntity commonEntity) {
         em.persist(commonEntity);
-        return INSTANCE.toDto(commonEntity);
+        return CommonEntity.toDto(commonEntity);
     }
 
     /**
@@ -116,7 +116,7 @@ public class CommonRepository {
         em.merge(commonEntity);
         em.flush();
         em.clear();
-        return INSTANCE.toDto(commonEntity);
+        return CommonEntity.toDto(commonEntity);
     }
 
     /**

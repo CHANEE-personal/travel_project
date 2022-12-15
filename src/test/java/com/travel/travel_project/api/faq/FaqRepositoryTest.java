@@ -1,5 +1,6 @@
 package com.travel.travel_project.api.faq;
 
+import com.travel.travel_project.domain.faq.FaqDTO;
 import com.travel.travel_project.domain.faq.FaqEntity;
 import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.BeforeEach;
@@ -44,6 +45,7 @@ class FaqRepositoryTest {
     private final EntityManager em;
 
     private FaqEntity faqEntity;
+    private FaqDTO faqDTO;
 
     void createFaq() {
         faqEntity = FaqEntity.builder()
@@ -53,6 +55,8 @@ class FaqRepositoryTest {
                 .viewCount(1)
                 .visible("Y")
                 .build();
+
+        em.persist(faqEntity);
     }
 
     @BeforeEach
@@ -66,12 +70,12 @@ class FaqRepositoryTest {
         faqMap.put("jpaStartPage", 1);
         faqMap.put("size", 3);
 
-        List<FaqEntity> faqList = new ArrayList<>();
-        faqList.add(faqEntity);
+        List<FaqDTO> faqList = new ArrayList<>();
+        faqList.add(faqDTO);
 
         // when
         when(mockFaqRepository.findFaqList(faqMap)).thenReturn(faqList);
-        List<FaqEntity> newFaqList = mockFaqRepository.findFaqList(faqMap);
+        List<FaqDTO> newFaqList = mockFaqRepository.findFaqList(faqMap);
 
         // then
         assertThat(newFaqList.get(0).getIdx()).isEqualTo(faqList.get(0).getIdx());
@@ -92,8 +96,8 @@ class FaqRepositoryTest {
     @DisplayName("FAQ 상세 조회 Mockito 테스트")
     void FAQ상세조회Mockito테스트() {
         // when
-        when(mockFaqRepository.findOneFaq(faqEntity.getIdx())).thenReturn(faqEntity);
-        FaqEntity faqInfo = mockFaqRepository.findOneFaq(faqEntity.getIdx());
+        when(mockFaqRepository.findOneFaq(faqEntity.getIdx())).thenReturn(faqDTO);
+        FaqDTO faqInfo = mockFaqRepository.findOneFaq(faqEntity.getIdx());
 
         // then
         assertThat(faqInfo.getIdx()).isEqualTo(faqEntity.getIdx());
@@ -114,11 +118,11 @@ class FaqRepositoryTest {
     @DisplayName("FAQ등록Mockito테스트")
     void FAQ등록Mockito테스트() {
         // given
-        FaqEntity faqInfo = faqRepository.insertFaq(faqEntity);
+        FaqDTO faqInfo = faqRepository.insertFaq(faqEntity);
 
         // when
         when(mockFaqRepository.findOneFaq(faqInfo.getIdx())).thenReturn(faqInfo);
-        FaqEntity newFaqInfo = mockFaqRepository.findOneFaq(faqInfo.getIdx());
+        FaqDTO newFaqInfo = mockFaqRepository.findOneFaq(faqInfo.getIdx());
 
         // then
         assertThat(newFaqInfo.getIdx()).isEqualTo(newFaqInfo.getIdx());
@@ -139,7 +143,7 @@ class FaqRepositoryTest {
     @DisplayName("FAQ 수정 Mockito 테스트")
     void FAQ수정Mockito테스트() {
         // given
-        FaqEntity faqInfo = faqRepository.insertFaq(faqEntity);
+        FaqDTO faqInfo = faqRepository.insertFaq(faqEntity);
 
         FaqEntity updateFaqEntity = FaqEntity.builder()
                 .idx(faqInfo.getIdx())
@@ -150,11 +154,11 @@ class FaqRepositoryTest {
                 .visible("Y")
                 .build();
 
-        FaqEntity newFaqInfo = faqRepository.updateFaq(updateFaqEntity);
+        FaqDTO newFaqInfo = faqRepository.updateFaq(updateFaqEntity);
 
         // when
         when(mockFaqRepository.findOneFaq(newFaqInfo.getIdx())).thenReturn(newFaqInfo);
-        FaqEntity findFaqInfo = mockFaqRepository.findOneFaq(newFaqInfo.getIdx());
+        FaqDTO findFaqInfo = mockFaqRepository.findOneFaq(newFaqInfo.getIdx());
 
         // then
         assertThat(findFaqInfo.getTitle()).isEqualTo(updateFaqEntity.getTitle());
@@ -173,7 +177,7 @@ class FaqRepositoryTest {
     @DisplayName("FAQ 삭제 Mockito 테스트")
     void FAQ삭제Mockito테스트() {
         // given
-        FaqEntity faqInfo = faqRepository.insertFaq(faqEntity);
+        FaqDTO faqInfo = faqRepository.insertFaq(faqEntity);
 
         // when
         when(mockFaqRepository.findOneFaq(faqInfo.getIdx())).thenReturn(faqInfo);

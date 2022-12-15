@@ -2,6 +2,7 @@ package com.travel.travel_project.domain.user;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.travel.travel_project.domain.common.NewCommonMappedClass;
+import com.travel.travel_project.domain.faq.FaqDTO;
 import com.travel.travel_project.domain.travel.group.TravelGroupUserEntity;
 import com.travel.travel_project.domain.travel.schedule.TravelScheduleEntity;
 import com.vladmihalcea.hibernate.type.json.JsonStringType;
@@ -78,4 +79,53 @@ public class UserEntity extends NewCommonMappedClass {
 
     @OneToMany(mappedBy = "userEntity", cascade = CascadeType.REMOVE)
     private List<TravelScheduleEntity> userScheduleList = new ArrayList<>();
+
+    public static UserDTO toDto(UserEntity entity) {
+        return UserDTO.builder()
+                .idx(entity.getIdx())
+                .userId(entity.getUserId())
+                .password(entity.getPassword())
+                .name(entity.getName())
+                .email(entity.getEmail())
+                .visible(entity.getVisible())
+                .userToken(entity.getUserToken())
+                .userRefreshToken(entity.getUserRefreshToken())
+                .favoriteTravelIdx(entity.getFavoriteTravelIdx())
+                .role(entity.getRole())
+                .creator(entity.getCreator())
+                .createTime(entity.getCreateTime())
+                .updater(entity.getUpdater())
+                .updateTime(entity.getUpdateTime())
+                .build();
+    }
+
+    public static UserEntity toEntity(UserDTO dto) {
+        return UserEntity.builder()
+                .idx(dto.getIdx())
+                .userId(dto.getUserId())
+                .password(dto.getPassword())
+                .name(dto.getName())
+                .email(dto.getEmail())
+                .visible(dto.getVisible())
+                .userToken(dto.getUserToken())
+                .userRefreshToken(dto.getUserRefreshToken())
+                .role(dto.getRole())
+                .creator(dto.getCreator())
+                .createTime(dto.getCreateTime())
+                .updater(dto.getUpdater())
+                .updateTime(dto.getUpdateTime())
+                .build();
+    }
+
+    public List<UserDTO> toDtoList(List<UserEntity> entityList) {
+        List<UserDTO> list = new ArrayList<>(entityList.size());
+        entityList.forEach(userEntity -> list.add(toDto(userEntity)));
+        return list;
+    }
+
+    public List<UserEntity> toEntityList(List<UserDTO> dtoList) {
+        List<UserEntity> list = new ArrayList<>(dtoList.size());
+        dtoList.forEach(userDTO -> list.add(toEntity(userDTO)));
+        return list;
+    }
 }

@@ -16,7 +16,7 @@ import javax.validation.constraints.NotNull;
 @ApiModel
 public class TravelGroupUserDTO {
     @ApiModelProperty(required = true, value = "rnum", hidden = true, example = "1")
-    private Integer rnum;
+    private Integer rowNum;
 
     @ApiModelProperty(required = true, value = "idx", hidden = true, example = "1")
     private Long idx;

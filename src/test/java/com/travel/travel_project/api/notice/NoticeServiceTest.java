@@ -1,6 +1,5 @@
 package com.travel.travel_project.api.notice;
 
-import com.travel.travel_project.api.notice.mapper.NoticeMapper;
 import com.travel.travel_project.domain.notice.NoticeDTO;
 import com.travel.travel_project.domain.notice.NoticeEntity;
 import lombok.RequiredArgsConstructor;
@@ -54,7 +53,7 @@ class NoticeServiceTest {
                 .visible("Y").viewCount(1)
                 .build();
 
-        noticeDTO = NoticeMapper.INSTANCE.toDto(noticeEntity);
+        noticeDTO = NoticeEntity.toDto(noticeEntity);
     }
 
     @BeforeEach
@@ -71,11 +70,11 @@ class NoticeServiceTest {
         noticeMap.put("jpaStartPage", 1);
         noticeMap.put("size", 3);
 
-        List<NoticeEntity> noticeList = new ArrayList<>();
-        noticeList.add(noticeEntity);
+        List<NoticeDTO> noticeList = new ArrayList<>();
+        noticeList.add(noticeDTO);
 
         // when
-        when(mockNoticeService.findNoticeList(noticeMap)).thenReturn(NoticeMapper.INSTANCE.toDtoList(noticeList));
+        when(mockNoticeService.findNoticeList(noticeMap)).thenReturn(noticeList);
         List<NoticeDTO> newNoticeList = mockNoticeService.findNoticeList(noticeMap);
 
         // then
@@ -187,7 +186,7 @@ class NoticeServiceTest {
     void 공지사항삭제Mockito테스트() {
         // given
         em.persist(noticeEntity);
-        noticeDTO = NoticeMapper.INSTANCE.toDto(noticeEntity);
+        noticeDTO = NoticeEntity.toDto(noticeEntity);
 
         // when
         when(mockNoticeService.findOneNotice(noticeDTO.getIdx())).thenReturn(noticeDTO);

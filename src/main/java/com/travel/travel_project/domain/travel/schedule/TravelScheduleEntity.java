@@ -12,6 +12,8 @@ import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 import static javax.persistence.GenerationType.IDENTITY;
 
@@ -56,4 +58,21 @@ public class TravelScheduleEntity extends NewCommonMappedClass {
     @ManyToOne
     @JoinColumn(name = "user_idx", insertable = false, updatable = false)
     private UserEntity userEntity;
+
+    public static TravelScheduleDTO toDto(TravelScheduleEntity entity) {
+        return TravelScheduleDTO.builder()
+                .rowNum(entity.getRowNum())
+                .idx(entity.getIdx())
+                .userIdx(entity.getUserIdx())
+                .travelIdx(entity.getTravelIdx())
+                .scheduleDescription(entity.getScheduleDescription())
+                .scheduleTime(entity.getScheduleTime())
+                .build();
+    }
+
+    public List<TravelScheduleDTO> toDtoList(List<TravelScheduleEntity> entityList) {
+        List<TravelScheduleDTO> list = new ArrayList<>(entityList.size());
+        entityList.forEach(travelScheduleEntity -> list.add(toDto(travelScheduleEntity)));
+        return list;
+    }
 }

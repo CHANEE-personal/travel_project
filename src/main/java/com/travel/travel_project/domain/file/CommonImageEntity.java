@@ -1,6 +1,8 @@
 package com.travel.travel_project.domain.file;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.travel.travel_project.domain.common.CommonDTO;
+import com.travel.travel_project.domain.common.CommonEntity;
 import com.travel.travel_project.domain.common.EntityType;
 import com.travel.travel_project.domain.post.PostEntity;
 import com.travel.travel_project.domain.travel.TravelEntity;
@@ -10,6 +12,8 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 import static com.fasterxml.jackson.annotation.JsonFormat.Shape.STRING;
 import static javax.persistence.FetchType.LAZY;
@@ -79,4 +83,54 @@ public class CommonImageEntity {
     @ManyToOne(fetch = LAZY, cascade = CascadeType.REMOVE)
     @JoinColumn(name = "type_idx", referencedColumnName = "idx", insertable = false, updatable = false)
     private PostEntity postImageEntity;
+
+    public static CommonImageDTO toDto(CommonImageEntity entity) {
+        return CommonImageDTO.builder()
+                .idx(entity.getIdx())
+                .typeIdx(entity.getTypeIdx())
+                .entityType(entity.getEntityType())
+                .fileMask(entity.getFileMask())
+                .fileSize(entity.getFileSize())
+                .fileName(entity.getFileName())
+                .fileNum(entity.getFileNum())
+                .filePath(entity.getFilePath())
+                .imageType(entity.getImageType())
+                .visible(entity.getVisible())
+                .regDate(entity.getRegDate())
+                .build();
+    }
+
+    public static CommonImageEntity toEntity(CommonImageDTO dto) {
+        return CommonImageEntity.builder()
+                .idx(dto.getIdx())
+                .typeIdx(dto.getTypeIdx())
+                .entityType(dto.getEntityType())
+                .fileMask(dto.getFileMask())
+                .fileSize(dto.getFileSize())
+                .fileName(dto.getFileName())
+                .fileNum(dto.getFileNum())
+                .filePath(dto.getFilePath())
+                .imageType(dto.getImageType())
+                .visible(dto.getVisible())
+                .regDate(dto.getRegDate())
+                .build();
+    }
+
+    public List<CommonImageDTO> toDtoList(List<CommonImageEntity> entityList) {
+        List<CommonImageDTO> list = new ArrayList<>(entityList.size());
+        for (CommonImageEntity commonImageEntity : entityList) {
+            list.add(toDto(commonImageEntity));
+        }
+
+        return list;
+    }
+
+    public List<CommonImageEntity> toEntityList(List<CommonImageDTO> dtoList) {
+        List<CommonImageEntity> list = new ArrayList<>(dtoList.size());
+        for (CommonImageDTO commonImageDTO : dtoList) {
+            list.add(toEntity(commonImageDTO));
+        }
+
+        return list;
+    }
 }

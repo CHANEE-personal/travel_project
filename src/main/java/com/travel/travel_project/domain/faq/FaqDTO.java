@@ -17,7 +17,7 @@ import javax.validation.constraints.NotNull;
 @ApiModel(value = "FAQ 관련")
 public class FaqDTO {
     @ApiModelProperty(required = true, value = "rnum", hidden = true)
-    private Integer rnum;
+    private Integer rowNum;
 
     @ApiModelProperty(required = true, value = "idx", hidden = true)
     private Long idx;

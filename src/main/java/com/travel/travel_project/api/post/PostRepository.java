@@ -11,8 +11,8 @@ import javax.persistence.EntityManager;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
-import static com.travel.travel_project.api.post.mapper.PostMapper.INSTANCE;
 import static com.travel.travel_project.common.StringUtil.getInt;
 import static com.travel.travel_project.common.StringUtil.getString;
 import static com.travel.travel_project.domain.file.QCommonImageEntity.commonImageEntity;
@@ -72,9 +72,9 @@ public class PostRepository {
                 .fetch();
 
         postList.forEach(list -> postList.get(postList.indexOf(list))
-                .setRnum(getInt(postMap.get("startPage"), 1) * (getInt(postMap.get("size"), 1)) - (2 - postList.indexOf(list))));
+                .setRowNum(getInt(postMap.get("startPage"), 1) * (getInt(postMap.get("size"), 1)) - (2 - postList.indexOf(list))));
 
-        return INSTANCE.toDtoList(postList);
+        return postList.stream().map(PostEntity::toDto).collect(Collectors.toList());
     }
 
     /**
@@ -93,7 +93,8 @@ public class PostRepository {
                 .where(postEntity.idx.eq(idx))
                 .fetchOne();
 
-        return INSTANCE.toDto(onePost);
+        assert onePost != null;
+        return PostEntity.toDto(onePost);
     }
 
     /**
@@ -107,7 +108,7 @@ public class PostRepository {
      */
     public PostDTO insertPost(PostEntity postEntity) {
         em.persist(postEntity);
-        return INSTANCE.toDto(postEntity);
+        return PostEntity.toDto(postEntity);
     }
 
     /**
@@ -123,7 +124,7 @@ public class PostRepository {
         em.merge(postEntity);
         em.flush();
         em.clear();
-        return INSTANCE.toDto(postEntity);
+        return PostEntity.toDto(postEntity);
     }
 
     /**

@@ -23,7 +23,7 @@ import static javax.persistence.GenerationType.IDENTITY;
 @Table(name = "tv_group_mst")
 public class TravelGroupEntity extends NewCommonMappedClass {
     @Transient
-    private Integer rnum;
+    private Integer rowNum;
 
     @Id
     @GeneratedValue(strategy = IDENTITY)
@@ -49,4 +49,25 @@ public class TravelGroupEntity extends NewCommonMappedClass {
 
     @OneToMany(mappedBy = "travelGroupEntity", cascade = CascadeType.REMOVE)
     private List<TravelGroupUserEntity> travelGroupList = new ArrayList<>();
+
+    public static TravelGroupDTO toDto(TravelGroupEntity entity) {
+        return TravelGroupDTO.builder()
+                .rowNum(entity.getRowNum())
+                .idx(entity.getIdx())
+                .travelIdx(entity.getTravelIdx())
+                .groupName(entity.getGroupName())
+                .groupDescription(entity.getGroupDescription())
+                .visible(entity.getVisible())
+                .creator(entity.getCreator())
+                .createTime(entity.getCreateTime())
+                .updater(entity.getUpdater())
+                .updateTime(entity.getUpdateTime())
+                .build();
+    }
+
+    public List<TravelGroupDTO> toDtoList(List<TravelGroupEntity> entityList) {
+        List<TravelGroupDTO> list = new ArrayList<>(entityList.size());
+        entityList.forEach(travelGroupEntity -> list.add(toDto(travelGroupEntity)));
+        return list;
+    }
 }
