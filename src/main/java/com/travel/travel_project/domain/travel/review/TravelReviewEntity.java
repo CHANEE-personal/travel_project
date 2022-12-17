@@ -1,9 +1,6 @@
 package com.travel.travel_project.domain.travel.review;
 
 import com.travel.travel_project.domain.common.NewCommonMappedClass;
-import com.travel.travel_project.domain.faq.FaqDTO;
-import com.travel.travel_project.domain.faq.FaqEntity;
-import com.travel.travel_project.domain.travel.TravelDTO;
 import com.travel.travel_project.domain.travel.TravelEntity;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
@@ -12,8 +9,8 @@ import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static javax.persistence.FetchType.LAZY;
 import static javax.persistence.GenerationType.IDENTITY;
@@ -28,7 +25,7 @@ import static javax.persistence.GenerationType.IDENTITY;
 @Table(name = "travel_review")
 public class TravelReviewEntity extends NewCommonMappedClass {
     @Transient
-    private Integer rnum;
+    private Integer rowNum;
 
     @Id
     @GeneratedValue(strategy = IDENTITY)
@@ -73,9 +70,10 @@ public class TravelReviewEntity extends NewCommonMappedClass {
     private TravelEntity newTravelEntity;
 
     public static TravelReviewDTO toDto(TravelReviewEntity entity) {
+        if (entity == null) return null;
         return TravelReviewDTO.builder()
                 .idx(entity.getIdx())
-                .rnum(entity.getRnum())
+                .rowNum(entity.getRowNum())
                 .travelIdx(entity.getTravelIdx())
                 .reviewTitle(entity.getReviewTitle())
                 .reviewDescription(entity.getReviewDescription())
@@ -93,9 +91,10 @@ public class TravelReviewEntity extends NewCommonMappedClass {
     }
 
     public static TravelReviewEntity toEntity(TravelReviewDTO dto) {
+        if (dto == null) return null;
         return TravelReviewEntity.builder()
                 .idx(dto.getIdx())
-                .rnum(dto.getRnum())
+                .rowNum(dto.getRowNum())
                 .travelIdx(dto.getTravelIdx())
                 .reviewTitle(dto.getReviewTitle())
                 .reviewDescription(dto.getReviewDescription())
@@ -112,15 +111,17 @@ public class TravelReviewEntity extends NewCommonMappedClass {
                 .build();
     }
 
-    public List<TravelReviewDTO> toDtoList(List<TravelReviewEntity> entityList) {
-        List<TravelReviewDTO> list = new ArrayList<>(entityList.size());
-        entityList.forEach(travelReviewEntity -> list.add(toDto(travelReviewEntity)));
-        return list;
+    public static List<TravelReviewDTO> toDtoList(List<TravelReviewEntity> entityList) {
+        if (entityList == null) return null;
+        return entityList.stream()
+                .map(TravelReviewEntity::toDto)
+                .collect(Collectors.toList());
     }
 
-    public List<TravelReviewEntity> toEntityList(List<TravelReviewDTO> dtoList) {
-        List<TravelReviewEntity> list = new ArrayList<>(dtoList.size());
-        dtoList.forEach(travelReviewDTO -> list.add(toEntity(travelReviewDTO)));
-        return list;
+    public static List<TravelReviewEntity> toEntityList(List<TravelReviewDTO> dtoList) {
+        if (dtoList == null) return null;
+        return dtoList.stream()
+                .map(TravelReviewEntity::toEntity)
+                .collect(Collectors.toList());
     }
 }

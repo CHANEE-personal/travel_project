@@ -9,8 +9,8 @@ import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static javax.persistence.FetchType.LAZY;
 import static javax.persistence.GenerationType.IDENTITY;
@@ -63,6 +63,7 @@ public class FaqEntity {
     }
 
     public static FaqDTO toDto(FaqEntity entity) {
+        if (entity == null) return null;
         return FaqDTO.builder()
                 .rowNum(entity.getRowNum())
                 .idx(entity.getIdx())
@@ -75,6 +76,7 @@ public class FaqEntity {
     }
 
     public static FaqEntity toEntity(FaqDTO dto) {
+        if (dto == null) return null;
         return FaqEntity.builder()
                 .rowNum(dto.getRowNum())
                 .idx(dto.getIdx())
@@ -86,15 +88,17 @@ public class FaqEntity {
                 .build();
     }
 
-    public List<FaqDTO> toDtoList(List<FaqEntity> entityList) {
-        List<FaqDTO> list = new ArrayList<>(entityList.size());
-        entityList.forEach(faqEntity -> list.add(toDto(faqEntity)));
-        return list;
+    public static List<FaqDTO> toDtoList(List<FaqEntity> entityList) {
+        if (entityList == null) return null;
+        return entityList.stream()
+                .map(FaqEntity::toDto)
+                .collect(Collectors.toList());
     }
 
     public List<FaqEntity> toEntityList(List<FaqDTO> dtoList) {
-        List<FaqEntity> list = new ArrayList<>(dtoList.size());
-        dtoList.forEach(faqDTO -> list.add(toEntity(faqDTO)));
-        return list;
+        if (dtoList == null) return null;
+        return dtoList.stream()
+                .map(FaqEntity::toEntity)
+                .collect(Collectors.toList());
     }
 }

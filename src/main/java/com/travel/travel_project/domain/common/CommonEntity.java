@@ -1,6 +1,5 @@
 package com.travel.travel_project.domain.common;
 
-import com.travel.travel_project.domain.faq.FaqDTO;
 import com.travel.travel_project.domain.faq.FaqEntity;
 import com.travel.travel_project.domain.travel.TravelEntity;
 import lombok.*;
@@ -12,6 +11,7 @@ import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static javax.persistence.CascadeType.MERGE;
 import static javax.persistence.FetchType.LAZY;
@@ -53,6 +53,7 @@ public class CommonEntity extends NewCommonMappedClass implements Serializable {
     private List<FaqEntity> faqEntityList = new ArrayList<>();
 
     public static CommonDTO toDto(CommonEntity entity) {
+        if (entity == null) return null;
         return CommonDTO.builder()
                 .rowNum(entity.getRowNum())
                 .idx(entity.getIdx())
@@ -63,6 +64,7 @@ public class CommonEntity extends NewCommonMappedClass implements Serializable {
     }
 
     public static CommonEntity toEntity(CommonDTO dto) {
+        if (dto == null) return null;
         return CommonEntity.builder()
                 .rowNum(dto.getRowNum())
                 .idx(dto.getIdx())
@@ -72,21 +74,17 @@ public class CommonEntity extends NewCommonMappedClass implements Serializable {
                 .build();
     }
 
-    public List<CommonDTO> toDtoList(List<CommonEntity> entityList) {
-        List<CommonDTO> list = new ArrayList<>(entityList.size());
-        for (CommonEntity commonEntity : entityList) {
-            list.add(toDto(commonEntity));
-        }
-
-        return list;
+    public static List<CommonDTO> toDtoList(List<CommonEntity> entityList) {
+        if (entityList == null) return null;
+        return entityList.stream()
+                .map(CommonEntity::toDto)
+                .collect(Collectors.toList());
     }
 
-    public List<CommonEntity> toEntityList(List<CommonDTO> dtoList) {
-        List<CommonEntity> list = new ArrayList<>(dtoList.size());
-        for (CommonDTO commonDTO : dtoList) {
-            list.add(toEntity(commonDTO));
-        }
-
-        return list;
+    public static List<CommonEntity> toEntityList(List<CommonDTO> dtoList) {
+        if (dtoList == null) return null;
+        return dtoList.stream()
+                .map(CommonEntity::toEntity)
+                .collect(Collectors.toList());
     }
 }

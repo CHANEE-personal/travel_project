@@ -11,7 +11,6 @@ import org.springframework.stereotype.Repository;
 import javax.persistence.EntityManager;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import static com.travel.travel_project.common.StringUtil.getInt;
 import static com.travel.travel_project.common.StringUtil.getString;
@@ -71,7 +70,7 @@ public class NoticeRepository {
         noticeList.forEach(list -> noticeList.get(noticeList.indexOf(list))
                 .setRowNum(getInt(noticeMap.get("startPage"), 1) * (getInt(noticeMap.get("size"), 1)) - (2 - noticeList.indexOf(list))));
 
-        return noticeList.stream().map(NoticeEntity::toDto).collect(Collectors.toList());
+        return NoticeEntity.toDtoList(noticeList);
     }
 
     /**

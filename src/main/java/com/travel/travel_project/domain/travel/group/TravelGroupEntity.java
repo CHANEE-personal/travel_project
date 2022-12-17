@@ -10,6 +10,7 @@ import javax.validation.constraints.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static javax.persistence.GenerationType.IDENTITY;
 
@@ -51,6 +52,7 @@ public class TravelGroupEntity extends NewCommonMappedClass {
     private List<TravelGroupUserEntity> travelGroupList = new ArrayList<>();
 
     public static TravelGroupDTO toDto(TravelGroupEntity entity) {
+        if (entity == null) return null;
         return TravelGroupDTO.builder()
                 .rowNum(entity.getRowNum())
                 .idx(entity.getIdx())
@@ -65,9 +67,10 @@ public class TravelGroupEntity extends NewCommonMappedClass {
                 .build();
     }
 
-    public List<TravelGroupDTO> toDtoList(List<TravelGroupEntity> entityList) {
-        List<TravelGroupDTO> list = new ArrayList<>(entityList.size());
-        entityList.forEach(travelGroupEntity -> list.add(toDto(travelGroupEntity)));
-        return list;
+    public static List<TravelGroupDTO> toDtoList(List<TravelGroupEntity> entityList) {
+        if (entityList == null) return null;
+        return entityList.stream()
+                .map(TravelGroupEntity::toDto)
+                .collect(Collectors.toList());
     }
 }

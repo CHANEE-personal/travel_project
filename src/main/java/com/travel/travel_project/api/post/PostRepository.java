@@ -11,7 +11,6 @@ import javax.persistence.EntityManager;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 import static com.travel.travel_project.common.StringUtil.getInt;
 import static com.travel.travel_project.common.StringUtil.getString;
@@ -74,7 +73,7 @@ public class PostRepository {
         postList.forEach(list -> postList.get(postList.indexOf(list))
                 .setRowNum(getInt(postMap.get("startPage"), 1) * (getInt(postMap.get("size"), 1)) - (2 - postList.indexOf(list))));
 
-        return postList.stream().map(PostEntity::toDto).collect(Collectors.toList());
+        return PostEntity.toDtoList(postList);
     }
 
     /**

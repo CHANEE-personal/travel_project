@@ -96,7 +96,7 @@ public class UserRepository {
                 .selectFrom(userEntity)
                 .fetch();
 
-        return findUserList.stream().map(UserEntity::toDto).collect(Collectors.toList());
+        return UserEntity.toDtoList(findUserList);
     }
 
     /**
@@ -242,7 +242,7 @@ public class UserRepository {
                 .where(travelScheduleEntity.userIdx.eq(userIdx))
                 .fetch();
 
-        return userSchedule.stream().map(TravelScheduleEntity::toDto).collect(Collectors.toList());
+        return TravelScheduleEntity.toDtoList(userSchedule);
     }
 
     /**
