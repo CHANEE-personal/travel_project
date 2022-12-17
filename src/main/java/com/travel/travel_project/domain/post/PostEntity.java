@@ -10,6 +10,7 @@ import javax.validation.constraints.NotEmpty;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static javax.persistence.FetchType.LAZY;
 import static javax.persistence.GenerationType.IDENTITY;
@@ -64,6 +65,7 @@ public class PostEntity extends NewCommonMappedClass {
     private List<CommonImageEntity> postImageList = new ArrayList<>();
 
     public static PostDTO toDto(PostEntity entity) {
+        if (entity == null) return null;
         return PostDTO.builder()
                 .rowNum(entity.getRowNum())
                 .idx(entity.getIdx())
@@ -78,6 +80,7 @@ public class PostEntity extends NewCommonMappedClass {
     }
 
     public static PostEntity toEntity(PostDTO dto) {
+        if (dto == null) return null;
         return PostEntity.builder()
                 .rowNum(dto.getRowNum())
                 .idx(dto.getIdx())
@@ -91,15 +94,17 @@ public class PostEntity extends NewCommonMappedClass {
                 .build();
     }
 
-    public List<PostDTO> toDtoList(List<PostEntity> entityList) {
-        List<PostDTO> list = new ArrayList<>(entityList.size());
-        entityList.forEach(postEntity -> list.add(toDto(postEntity)));
-        return list;
+    public static List<PostDTO> toDtoList(List<PostEntity> entityList) {
+        if (entityList == null) return null;
+        return entityList.stream()
+                .map(PostEntity::toDto)
+                .collect(Collectors.toList());
     }
 
-    public List<PostEntity> toEntityList(List<PostDTO> dtoList) {
-        List<PostEntity> list = new ArrayList<>(dtoList.size());
-        dtoList.forEach(postDTO -> list.add(toEntity(postDTO)));
-        return list;
+    public static List<PostEntity> toEntityList(List<PostDTO> dtoList) {
+        if (dtoList == null) return null;
+        return dtoList.stream()
+                .map(PostEntity::toEntity)
+                .collect(Collectors.toList());
     }
 }

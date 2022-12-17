@@ -91,12 +91,12 @@ public class UserRepository {
      * 5. 작성일       : 2022. 10. 9.
      * </pre>
      */
-    public List<UserDTO> findUsersList(Map<String, Object> userMap) {
-        List<UserEntity> findUsersList = queryFactory
+    public List<UserDTO> findUserList(Map<String, Object> userMap) {
+        List<UserEntity> findUserList = queryFactory
                 .selectFrom(userEntity)
                 .fetch();
 
-        return findUsersList.stream().map(UserEntity::toDto).collect(Collectors.toList());
+        return UserEntity.toDtoList(findUserList);
     }
 
     /**
@@ -114,6 +114,7 @@ public class UserRepository {
                         .and(userEntity.visible.eq("Y")))
                 .fetchOne();
 
+        assert findOneUser != null;
         return UserEntity.toDto(findOneUser);
     }
 
@@ -241,7 +242,7 @@ public class UserRepository {
                 .where(travelScheduleEntity.userIdx.eq(userIdx))
                 .fetch();
 
-        return userSchedule.stream().map(TravelScheduleEntity::toDto).collect(Collectors.toList());
+        return TravelScheduleEntity.toDtoList(userSchedule);
     }
 
     /**
@@ -259,6 +260,7 @@ public class UserRepository {
                 .where(travelScheduleEntity.userIdx.eq(userIdx).and(travelScheduleEntity.idx.eq(scheduleIdx)))
                 .fetchOne();
 
+        assert oneSchedule != null;
         return TravelScheduleEntity.toDto(oneSchedule);
     }
 }

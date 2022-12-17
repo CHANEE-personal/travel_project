@@ -1,8 +1,6 @@
 package com.travel.travel_project.domain.file;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.travel.travel_project.domain.common.CommonDTO;
-import com.travel.travel_project.domain.common.CommonEntity;
 import com.travel.travel_project.domain.common.EntityType;
 import com.travel.travel_project.domain.post.PostEntity;
 import com.travel.travel_project.domain.travel.TravelEntity;
@@ -12,8 +10,8 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static com.fasterxml.jackson.annotation.JsonFormat.Shape.STRING;
 import static javax.persistence.FetchType.LAZY;
@@ -85,6 +83,7 @@ public class CommonImageEntity {
     private PostEntity postImageEntity;
 
     public static CommonImageDTO toDto(CommonImageEntity entity) {
+        if (entity == null) return null;
         return CommonImageDTO.builder()
                 .idx(entity.getIdx())
                 .typeIdx(entity.getTypeIdx())
@@ -101,6 +100,7 @@ public class CommonImageEntity {
     }
 
     public static CommonImageEntity toEntity(CommonImageDTO dto) {
+        if (dto == null) return null;
         return CommonImageEntity.builder()
                 .idx(dto.getIdx())
                 .typeIdx(dto.getTypeIdx())
@@ -116,21 +116,17 @@ public class CommonImageEntity {
                 .build();
     }
 
-    public List<CommonImageDTO> toDtoList(List<CommonImageEntity> entityList) {
-        List<CommonImageDTO> list = new ArrayList<>(entityList.size());
-        for (CommonImageEntity commonImageEntity : entityList) {
-            list.add(toDto(commonImageEntity));
-        }
-
-        return list;
+    public static List<CommonImageDTO> toDtoList(List<CommonImageEntity> entityList) {
+        if (entityList == null) return null;
+        return entityList.stream()
+                .map(CommonImageEntity::toDto)
+                .collect(Collectors.toList());
     }
 
-    public List<CommonImageEntity> toEntityList(List<CommonImageDTO> dtoList) {
-        List<CommonImageEntity> list = new ArrayList<>(dtoList.size());
-        for (CommonImageDTO commonImageDTO : dtoList) {
-            list.add(toEntity(commonImageDTO));
-        }
-
-        return list;
+    public static List<CommonImageEntity> toEntityList(List<CommonImageDTO> dtoList) {
+        if (dtoList == null) return null;
+        return dtoList.stream()
+                .map(CommonImageEntity::toEntity)
+                .collect(Collectors.toList());
     }
 }

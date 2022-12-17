@@ -15,13 +15,10 @@ import org.springframework.web.client.HttpClientErrorException;
 
 import javax.validation.Valid;
 import java.rmi.ServerError;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import static com.travel.travel_project.exception.ApiExceptionType.NOT_FOUND_POST;
-import static java.lang.Math.ceil;
 
 @RestController
 @RequestMapping("/api/post")
@@ -50,26 +47,8 @@ public class PostController {
             @ApiResponse(code = 500, message = "서버 에러", response = ServerError.class)
     })
     @GetMapping(value = "/lists")
-    public Map<String, Object> findPostList(@RequestParam(required = false) Map<String, Object> paramMap, Page page) {
-        Map<String, Object> postMap = new HashMap<>();
-
-        int postCount = this.postService.findPostCount(searchCommon.searchCommon(page, paramMap));
-        List<PostDTO> postList = new ArrayList<>();
-
-        if (postCount > 0) {
-            postList = this.postService.findPostList(searchCommon.searchCommon(page, paramMap));
-        }
-
-        // 리스트 수
-        postMap.put("pageSize", page.getSize());
-        // 전체 페이지 수
-        postMap.put("perPageListCnt", ceil((double) postCount / page.getSize()));
-        // 전체 아이템 수
-        postMap.put("postListCnt", postCount);
-
-        postMap.put("postList", postList);
-
-        return postMap;
+    public List<PostDTO> findPostList(@RequestParam(required = false) Map<String, Object> paramMap, Page page) {
+        return this.postService.findPostList(searchCommon.searchCommon(page, paramMap));
     }
 
     /**

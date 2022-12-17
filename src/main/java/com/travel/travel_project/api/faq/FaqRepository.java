@@ -10,7 +10,6 @@ import org.springframework.stereotype.Repository;
 import javax.persistence.EntityManager;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import static com.travel.travel_project.common.StringUtil.getInt;
 import static com.travel.travel_project.common.StringUtil.getString;
@@ -70,7 +69,7 @@ public class FaqRepository {
         faqList.forEach(list -> faqList.get(faqList.indexOf(list))
                 .setRowNum(getInt(faqMap.get("startPage"), 1) * (getInt(faqMap.get("size"), 1)) - (2 - faqList.indexOf(list))));
 
-        return faqList.stream().map(FaqEntity::toDto).collect(Collectors.toList());
+        return FaqEntity.toDtoList(faqList);
     }
 
     /**
@@ -90,6 +89,7 @@ public class FaqRepository {
                 .where(faqEntity.idx.eq(idx))
                 .fetchOne();
 
+        assert oneFaq != null;
         return FaqEntity.toDto(oneFaq);
     }
 

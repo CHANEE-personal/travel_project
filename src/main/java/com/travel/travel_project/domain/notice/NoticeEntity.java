@@ -75,7 +75,7 @@ public class NoticeEntity extends NewCommonMappedClass {
 
     }
 
-    public NoticeEntity toEntity(NoticeDTO dto) {
+    public static NoticeEntity toEntity(NoticeDTO dto) {
         return NoticeEntity.builder()
                 .rowNum(dto.getRowNum())
                 .idx(dto.getIdx())
@@ -87,7 +87,7 @@ public class NoticeEntity extends NewCommonMappedClass {
                 .build();
     }
 
-    public List<NoticeDTO> toDtoList(List<NoticeEntity> entityList) {
+    public static List<NoticeDTO> toDtoList(List<NoticeEntity> entityList) {
         List<NoticeDTO> list = new ArrayList<>(entityList.size());
         for (NoticeEntity noticeEntity : entityList) {
             list.add(toDto(noticeEntity));
@@ -96,7 +96,7 @@ public class NoticeEntity extends NewCommonMappedClass {
         return list;
     }
 
-    public List<NoticeEntity> toEntityList(List<NoticeDTO> dtoList) {
+    public static List<NoticeEntity> toEntityList(List<NoticeDTO> dtoList) {
         List<NoticeEntity> list = new ArrayList<>(dtoList.size());
         for (NoticeDTO noticeDTO : dtoList) {
             list.add(toEntity(noticeDTO));

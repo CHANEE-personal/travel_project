@@ -59,8 +59,8 @@ public class UserController {
             @ApiResponse(code = 500, message = "서버 에러", response = ServerError.class)
     })
     @GetMapping
-    public List<UserDTO> findUsersList(@RequestParam(required = false) Map<String, Object> paramMap, Page page) {
-        return userService.findUsersList(searchCommon.searchCommon(page, paramMap));
+    public List<UserDTO> findUserList(@RequestParam(required = false) Map<String, Object> paramMap, Page page) {
+        return userService.findUserList(searchCommon.searchCommon(page, paramMap));
     }
 
     /**

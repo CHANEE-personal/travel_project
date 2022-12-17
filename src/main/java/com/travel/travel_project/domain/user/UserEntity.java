@@ -17,6 +17,7 @@ import javax.validation.constraints.NotEmpty;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static javax.persistence.EnumType.STRING;
 import static javax.persistence.GenerationType.IDENTITY;
@@ -33,7 +34,7 @@ import static javax.persistence.GenerationType.IDENTITY;
 @Table(name = "travel_user")
 public class UserEntity extends NewCommonMappedClass {
     @Transient
-    private Integer rnum;
+    private Integer rowNum;
 
     @Id
     @GeneratedValue(strategy = IDENTITY)
@@ -81,6 +82,7 @@ public class UserEntity extends NewCommonMappedClass {
     private List<TravelScheduleEntity> userScheduleList = new ArrayList<>();
 
     public static UserDTO toDto(UserEntity entity) {
+        if (entity == null) return null;
         return UserDTO.builder()
                 .idx(entity.getIdx())
                 .userId(entity.getUserId())
@@ -100,6 +102,7 @@ public class UserEntity extends NewCommonMappedClass {
     }
 
     public static UserEntity toEntity(UserDTO dto) {
+        if (dto == null) return null;
         return UserEntity.builder()
                 .idx(dto.getIdx())
                 .userId(dto.getUserId())
@@ -117,15 +120,17 @@ public class UserEntity extends NewCommonMappedClass {
                 .build();
     }
 
-    public List<UserDTO> toDtoList(List<UserEntity> entityList) {
-        List<UserDTO> list = new ArrayList<>(entityList.size());
-        entityList.forEach(userEntity -> list.add(toDto(userEntity)));
-        return list;
+    public static List<UserDTO> toDtoList(List<UserEntity> entityList) {
+        if (entityList == null) return null;
+        return entityList.stream()
+                .map(UserEntity::toDto)
+                .collect(Collectors.toList());
     }
 
     public List<UserEntity> toEntityList(List<UserDTO> dtoList) {
-        List<UserEntity> list = new ArrayList<>(dtoList.size());
-        dtoList.forEach(userDTO -> list.add(toEntity(userDTO)));
-        return list;
+        if (dtoList == null) return null;
+        return dtoList.stream()
+                .map(UserEntity::toEntity)
+                .collect(Collectors.toList());
     }
 }

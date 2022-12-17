@@ -18,7 +18,6 @@ import java.time.LocalTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 import static com.travel.travel_project.common.StringUtil.getInt;
 import static com.travel.travel_project.common.StringUtil.getString;
@@ -107,7 +106,7 @@ public class TravelRepository {
         travelList.forEach(list -> travelList.get(travelList.indexOf(list))
                 .setRowNum(getInt(travelMap.get("startPage"), 1) * (getInt(travelMap.get("size"), 1)) - (2 - travelList.indexOf(list))));
 
-        return travelList.stream().map(TravelEntity::toDto).collect(Collectors.toList());
+        return TravelEntity.toDtoList(travelList);
     }
 
     /**
@@ -330,7 +329,7 @@ public class TravelRepository {
                         .and(travelReviewEntity.visible.eq("Y")))
                 .fetch();
 
-        return replyTravelReview.stream().map(TravelReviewEntity::toDto).collect(Collectors.toList());
+        return TravelReviewEntity.toDtoList(replyTravelReview);
     }
 
     /**
@@ -402,7 +401,7 @@ public class TravelRepository {
         travelList.forEach(list -> travelList.get(travelList.indexOf(list))
                 .setRowNum(getInt(travelMap.get("startPage"), 1) * (getInt(travelMap.get("size"), 1)) - (2 - travelList.indexOf(list))));
 
-        return travelList.stream().map(TravelEntity::toDto).collect(Collectors.toList());
+        return TravelEntity.toDtoList(travelList);
     }
 
     /**
@@ -439,7 +438,7 @@ public class TravelRepository {
         travelGroupList.forEach(list -> travelGroupList.get(travelGroupList.indexOf(list))
                 .setRowNum(getInt(groupMap.get("startPage"), 1) * (getInt(groupMap.get("size"), 1)) - (2 - travelGroupList.indexOf(list))));
 
-        return travelGroupList.stream().map(TravelGroupEntity::toDto).collect(Collectors.toList());
+        return TravelGroupEntity.toDtoList(travelGroupList);
     }
 
     /**

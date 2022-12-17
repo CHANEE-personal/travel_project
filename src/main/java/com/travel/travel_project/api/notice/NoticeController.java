@@ -15,13 +15,10 @@ import org.springframework.web.client.HttpClientErrorException;
 
 import javax.validation.Valid;
 import java.rmi.ServerError;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import static com.travel.travel_project.exception.ApiExceptionType.NOT_FOUND_NOTICE;
-import static java.lang.Math.ceil;
 
 @RestController
 @RequestMapping("/api/notice")
@@ -49,26 +46,8 @@ public class NoticeController {
             @ApiResponse(code = 500, message = "서버 에러", response = ServerError.class)
     })
     @GetMapping(value = "/lists")
-    public Map<String, Object> findNoticeList(@RequestParam(required = false) Map<String, Object> paramMap, Page page) {
-        Map<String, Object> noticeMap = new HashMap<>();
-
-        int noticeCount = this.noticeService.findNoticeCount(searchCommon.searchCommon(page, paramMap));
-        List<NoticeDTO> noticeList = new ArrayList<>();
-
-        if (noticeCount > 0) {
-            noticeList = this.noticeService.findNoticeList(searchCommon.searchCommon(page, paramMap));
-        }
-
-        // 리스트 수
-        noticeMap.put("pageSize", page.getSize());
-        // 전체 페이지 수
-        noticeMap.put("perPageListCnt", ceil((double) noticeCount / page.getSize()));
-        // 전체 아이템 수
-        noticeMap.put("noticeListCnt", noticeCount);
-
-        noticeMap.put("noticeList", noticeList);
-
-        return noticeMap;
+    public List<NoticeDTO> findNoticeList(@RequestParam(required = false) Map<String, Object> paramMap, Page page) {
+        return this.noticeService.findNoticeList(searchCommon.searchCommon(page, paramMap));
     }
 
     /**

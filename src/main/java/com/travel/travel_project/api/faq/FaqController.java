@@ -15,13 +15,10 @@ import org.springframework.web.client.HttpClientErrorException;
 
 import javax.validation.Valid;
 import java.rmi.ServerError;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import static com.travel.travel_project.exception.ApiExceptionType.NOT_FOUND_FAQ;
-import static java.lang.Math.ceil;
 
 @RestController
 @RequestMapping("/api/faq")
@@ -50,26 +47,8 @@ public class FaqController {
             @ApiResponse(code = 500, message = "서버 에러", response = ServerError.class)
     })
     @GetMapping(value = "/lists")
-    public Map<String, Object> findFaqList(@RequestParam(required = false) Map<String, Object> paramMap, Page page) {
-        Map<String, Object> faqMap = new HashMap<>();
-
-        int faqCount = this.faqService.findFaqCount(searchCommon.searchCommon(page, paramMap));
-        List<FaqDTO> faqList = new ArrayList<>();
-
-        if (faqCount > 0) {
-            faqList = this.faqService.findFaqList(searchCommon.searchCommon(page, paramMap));
-        }
-
-        // 리스트 수
-        faqMap.put("pageSize", page.getSize());
-        // 전체 페이지 수
-        faqMap.put("perPageListCnt", ceil((double) faqCount / page.getSize()));
-        // 전체 아이템 수
-        faqMap.put("faqListCnt", faqCount);
-
-        faqMap.put("faqList", faqList);
-
-        return faqMap;
+    public List<FaqDTO> findFaqList(@RequestParam(required = false) Map<String, Object> paramMap, Page page) {
+        return this.faqService.findFaqList(searchCommon.searchCommon(page, paramMap));
     }
 
     /**

@@ -53,9 +53,9 @@ public class UserService {
      * </pre>
      */
     @Transactional(readOnly = true)
-    public List<UserDTO> findUsersList(Map<String, Object> userMap) throws TravelException {
+    public List<UserDTO> findUserList(Map<String, Object> userMap) throws TravelException {
         try {
-            return userRepository.findUsersList(userMap);
+            return userRepository.findUserList(userMap);
         } catch (Exception e) {
             throw new TravelException(NOT_FOUND_USER_LIST, e);
         }

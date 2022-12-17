@@ -12,8 +12,8 @@ import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static javax.persistence.GenerationType.IDENTITY;
 
@@ -60,6 +60,7 @@ public class TravelScheduleEntity extends NewCommonMappedClass {
     private UserEntity userEntity;
 
     public static TravelScheduleDTO toDto(TravelScheduleEntity entity) {
+        if (entity == null) return null;
         return TravelScheduleDTO.builder()
                 .rowNum(entity.getRowNum())
                 .idx(entity.getIdx())
@@ -70,9 +71,10 @@ public class TravelScheduleEntity extends NewCommonMappedClass {
                 .build();
     }
 
-    public List<TravelScheduleDTO> toDtoList(List<TravelScheduleEntity> entityList) {
-        List<TravelScheduleDTO> list = new ArrayList<>(entityList.size());
-        entityList.forEach(travelScheduleEntity -> list.add(toDto(travelScheduleEntity)));
-        return list;
+    public static List<TravelScheduleDTO> toDtoList(List<TravelScheduleEntity> entityList) {
+        if (entityList == null) return null;
+        return entityList.stream()
+                .map(TravelScheduleEntity::toDto)
+                .collect(Collectors.toList());
     }
 }

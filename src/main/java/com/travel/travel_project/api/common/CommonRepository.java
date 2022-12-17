@@ -10,7 +10,6 @@ import org.springframework.stereotype.Repository;
 import javax.persistence.EntityManager;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import static com.travel.travel_project.common.StringUtil.getInt;
 import static com.travel.travel_project.common.StringUtil.getString;
@@ -68,7 +67,7 @@ public class CommonRepository {
         commonCodeList.forEach(list -> commonCodeList.get(commonCodeList.indexOf(list))
                 .setRowNum(getInt(commonMap.get("startPage"), 1) * (getInt(commonMap.get("size"), 1)) - (2 - commonCodeList.indexOf(list))));
 
-        return commonCodeList.stream().map(CommonEntity::toDto).collect(Collectors.toList());
+        return CommonEntity.toDtoList(commonCodeList);
     }
 
     /**
@@ -86,6 +85,7 @@ public class CommonRepository {
                 .where(commonEntity.idx.eq(idx))
                 .fetchOne();
 
+        assert findOneCommon != null;
         return CommonEntity.toDto(findOneCommon);
     }
 
