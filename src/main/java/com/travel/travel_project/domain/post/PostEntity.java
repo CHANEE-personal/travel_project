@@ -4,6 +4,8 @@ import com.travel.travel_project.domain.common.NewCommonMappedClass;
 import com.travel.travel_project.domain.file.CommonImageEntity;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
+import org.hibernate.annotations.BatchSize;
+import org.hibernate.annotations.Where;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
@@ -61,6 +63,8 @@ public class PostEntity extends NewCommonMappedClass {
     @Column(name = "popular")
     private Boolean popular;
 
+    @BatchSize(size = 100)
+    @Where(clause = "type_name = 'post'")
     @OneToMany(mappedBy = "postImageEntity", fetch = LAZY)
     private List<CommonImageEntity> postImageList = new ArrayList<>();
 
@@ -76,6 +80,7 @@ public class PostEntity extends NewCommonMappedClass {
                 .visible(entity.getVisible())
                 .viewCount(entity.getViewCount())
                 .favoriteCount(entity.getFavoriteCount())
+                .postImageList(CommonImageEntity.toDtoList(entity.getPostImageList()))
                 .build();
     }
 

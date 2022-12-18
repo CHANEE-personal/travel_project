@@ -6,6 +6,8 @@ import com.travel.travel_project.domain.file.CommonImageEntity;
 import com.travel.travel_project.domain.travel.review.TravelReviewEntity;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
+import org.hibernate.annotations.BatchSize;
+import org.hibernate.annotations.Where;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
@@ -77,6 +79,8 @@ public class TravelEntity extends NewCommonMappedClass {
     @OneToMany(mappedBy = "newTravelEntity", fetch = LAZY)
     private List<TravelReviewEntity> travelReviewEntityList = new ArrayList<>();
 
+    @BatchSize(size = 100)
+    @Where(clause = "type_name = 'travel'")
     @OneToMany(mappedBy = "travelImageEntity", fetch = LAZY)
     private List<CommonImageEntity> commonImageEntityList = new ArrayList<>();
 
@@ -110,6 +114,7 @@ public class TravelEntity extends NewCommonMappedClass {
                 .createTime(entity.getCreateTime())
                 .updater(entity.getUpdater())
                 .updateTime(entity.getUpdateTime())
+                .imageList(CommonImageEntity.toDtoList(entity.getCommonImageEntityList()))
                 .build();
     }
 

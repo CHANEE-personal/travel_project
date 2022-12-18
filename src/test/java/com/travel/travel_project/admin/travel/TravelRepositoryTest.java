@@ -90,7 +90,7 @@ class TravelRepositoryTest {
 
     @Test
     @DisplayName("여행지상세조회테스트")
-    void 여행지_상세_조회_테스트() {
+    void 여행지상세조회테스트() {
         TravelDTO oneTravel = travelRepository.findOneTravel(1L);
 
         assertThat(oneTravel.getIdx()).isEqualTo(1L);
