@@ -63,15 +63,10 @@ public class PostRepository {
         List<PostEntity> postList = queryFactory
                 .selectFrom(postEntity)
                 .orderBy(postEntity.idx.desc())
-                .leftJoin(postEntity.postImageList, commonImageEntity)
-                .fetchJoin()
                 .where(searchPost(postMap))
                 .offset(getInt(postMap.get("jpaStartPage"), 0))
                 .limit(getInt(postMap.get("size"), 0))
                 .fetch();
-
-        postList.forEach(list -> postList.get(postList.indexOf(list))
-                .setRowNum(getInt(postMap.get("startPage"), 1) * (getInt(postMap.get("size"), 1)) - (2 - postList.indexOf(list))));
 
         return PostEntity.toDtoList(postList);
     }
@@ -107,6 +102,8 @@ public class PostRepository {
      */
     public PostDTO insertPost(PostEntity postEntity) {
         em.persist(postEntity);
+        em.flush();
+        em.clear();
         return PostEntity.toDto(postEntity);
     }
 

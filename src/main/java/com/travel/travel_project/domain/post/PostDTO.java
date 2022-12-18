@@ -1,12 +1,15 @@
 package com.travel.travel_project.domain.post;
 
 import com.travel.travel_project.domain.common.NewCommonDTO;
+import com.travel.travel_project.domain.file.CommonImageDTO;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 
 import javax.validation.constraints.NotEmpty;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Setter
@@ -16,7 +19,7 @@ import javax.validation.constraints.NotEmpty;
 @AllArgsConstructor
 @ApiModel(value = "게시글 관련 변수")
 public class PostDTO extends NewCommonDTO {
-    @ApiModelProperty(required = true, value = "rnum", hidden = true, example = "1")
+    @ApiModelProperty(required = true, value = "rowNum", hidden = true, example = "1")
     private Integer rowNum;
 
     @ApiModelProperty(required = true, value = "idx", hidden = true, example = "1")
@@ -47,4 +50,7 @@ public class PostDTO extends NewCommonDTO {
 
     @ApiModelProperty(required = true, value = "인기 게시글 여부((ex)true, false)")
     private Boolean popular;
+
+    @ApiModelProperty(value = "postImageList", hidden = true)
+    private List<CommonImageDTO> postImageList = new ArrayList<>();
 }

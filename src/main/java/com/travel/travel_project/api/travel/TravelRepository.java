@@ -75,8 +75,6 @@ public class TravelRepository {
         return queryFactory.selectFrom(travelEntity)
                 .innerJoin(travelEntity.newTravelCode, commonEntity)
                 .fetchJoin()
-                .leftJoin(travelEntity.commonImageEntityList, commonImageEntity)
-                .fetchJoin()
                 .where(searchTravelCode(travelMap), searchTravelInfo(travelMap), searchTravelDate(travelMap))
                 .fetch().size();
     }
@@ -96,15 +94,10 @@ public class TravelRepository {
                 .orderBy(travelEntity.idx.desc())
                 .innerJoin(travelEntity.newTravelCode, commonEntity)
                 .fetchJoin()
-                .leftJoin(travelEntity.commonImageEntityList, commonImageEntity)
-                .fetchJoin()
                 .where(searchTravelCode(travelMap), searchTravelInfo(travelMap), searchTravelDate(travelMap))
                 .offset(getInt(travelMap.get("jpaStartPage"), 0))
                 .limit(getInt(travelMap.get("size"), 0))
                 .fetch();
-
-        travelList.forEach(list -> travelList.get(travelList.indexOf(list))
-                .setRowNum(getInt(travelMap.get("startPage"), 1) * (getInt(travelMap.get("size"), 1)) - (2 - travelList.indexOf(list))));
 
         return TravelEntity.toDtoList(travelList);
     }
@@ -390,7 +383,7 @@ public class TravelRepository {
         List<TravelEntity> travelList = queryFactory
                 .selectFrom(travelEntity)
                 .orderBy(travelEntity.favoriteCount.desc())
-                .leftJoin(travelEntity.newTravelCode, commonEntity)
+                .innerJoin(travelEntity.newTravelCode, commonEntity)
                 .fetchJoin()
                 .where(searchTravelCode(travelMap), searchTravelInfo(travelMap), searchTravelDate(travelMap)
                         .and(travelEntity.visible.eq("Y")))

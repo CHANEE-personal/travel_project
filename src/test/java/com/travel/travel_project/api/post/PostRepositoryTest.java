@@ -101,6 +101,16 @@ class PostRepositoryTest {
     }
 
     @Test
+    @DisplayName("게시글조회테스트")
+    void 게시글조회테스트() {
+        Map<String, Object> postMap = new HashMap<>();
+        postMap.put("jpaStartPage", 1);
+        postMap.put("size", 3);
+
+        postRepository.findPostList(postMap);
+    }
+
+    @Test
     @DisplayName("게시글 리스트 조회 Mockito 테스트")
     void 게시글리스트조회Mockito테스트() {
         // given
