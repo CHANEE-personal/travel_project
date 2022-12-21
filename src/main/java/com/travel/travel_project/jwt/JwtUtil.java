@@ -178,7 +178,7 @@ public class JwtUtil implements Serializable {
      * 5. 작성일       : 2021. 07. 07.
      * </pre>
      */
-    public Authentication getAuthentication(String token) throws TravelException {
+    public Authentication getAuthentication(String token) {
         try {
             UserDetails userDetails = myUserDetailsService.loadUserByUsername(userService.findOneUserByToken(token));
             return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());

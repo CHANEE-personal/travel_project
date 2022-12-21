@@ -44,7 +44,7 @@ public class TravelService {
      * </pre>
      */
     @Transactional(readOnly = true)
-    public int findTravelCount(Map<String, Object> travelMap) throws TravelException {
+    public int findTravelCount(Map<String, Object> travelMap) {
         try {
             return travelRepository.findTravelCount(travelMap);
         } catch (Exception e) {
@@ -62,7 +62,7 @@ public class TravelService {
      * </pre>
      */
     @Transactional(readOnly = true)
-    public List<TravelDTO> findTravelList(Map<String, Object> travelMap) throws TravelException {
+    public List<TravelDTO> findTravelList(Map<String, Object> travelMap) {
         try {
             return travelRepository.findTravelList(travelMap);
         } catch (Exception e) {
@@ -80,7 +80,7 @@ public class TravelService {
      * </pre>
      */
     @Transactional(readOnly = true)
-    public TravelDTO findOneTravel(Long idx) throws TravelException {
+    public TravelDTO findOneTravel(Long idx) {
         try {
             return travelRepository.findOneTravel(idx);
         } catch (Exception e) {
@@ -100,7 +100,7 @@ public class TravelService {
     @CachePut("travel")
     @Modifying(clearAutomatically = true)
     @Transactional
-    public TravelDTO insertTravel(TravelEntity travelEntity) throws TravelException {
+    public TravelDTO insertTravel(TravelEntity travelEntity) {
         try {
             return travelRepository.insertTravel(travelEntity);
         } catch (Exception e) {
@@ -139,7 +139,7 @@ public class TravelService {
     @CachePut("travel")
     @Modifying(clearAutomatically = true)
     @Transactional
-    public TravelDTO updateTravel(TravelEntity travelEntity) throws TravelException {
+    public TravelDTO updateTravel(TravelEntity travelEntity) {
         try {
             return travelRepository.updateTravel(travelEntity);
         } catch (Exception e) {
@@ -159,7 +159,7 @@ public class TravelService {
     @CacheEvict("travel")
     @Modifying(clearAutomatically = true)
     @Transactional
-    public Long deleteTravel(Long idx) throws TravelException {
+    public Long deleteTravel(Long idx) {
         try {
             return travelRepository.deleteTravel(idx);
         } catch (Exception e) {
@@ -179,7 +179,7 @@ public class TravelService {
     @CachePut("travel")
     @Modifying(clearAutomatically = true)
     @Transactional
-    public int favoriteTravel(Long idx) throws TravelException {
+    public int favoriteTravel(Long idx) {
         try {
             return travelRepository.favoriteTravel(idx);
         } catch (Exception e) {
@@ -197,7 +197,7 @@ public class TravelService {
      * </pre>
      */
     @Transactional(readOnly = true)
-    public List<TravelDTO> popularityTravel(Map<String, Object> travelMap) throws TravelException {
+    public List<TravelDTO> popularityTravel(Map<String, Object> travelMap) {
         try {
             return travelRepository.popularityTravel(travelMap);
         } catch (Exception e) {
@@ -217,7 +217,7 @@ public class TravelService {
     @CachePut("travel")
     @Modifying(clearAutomatically = true)
     @Transactional
-    public TravelReviewDTO replyTravel(TravelReviewEntity travelReviewEntity) throws TravelException {
+    public TravelReviewDTO replyTravel(TravelReviewEntity travelReviewEntity) {
         try {
             return travelRepository.replyTravel(travelReviewEntity);
         } catch (Exception e) {
@@ -237,7 +237,7 @@ public class TravelService {
     @CachePut("travel")
     @Modifying(clearAutomatically = true)
     @Transactional
-    public TravelReviewDTO updateReplyTravel(TravelReviewEntity travelReviewEntity) throws TravelException {
+    public TravelReviewDTO updateReplyTravel(TravelReviewEntity travelReviewEntity) {
         try {
             return travelRepository.updateReplyTravel(travelReviewEntity);
         } catch (Exception e) {
@@ -257,7 +257,7 @@ public class TravelService {
     @CacheEvict("travel")
     @Modifying(clearAutomatically = true)
     @Transactional
-    public Long deleteReplyTravel(Long idx) throws TravelException {
+    public Long deleteReplyTravel(Long idx) {
         try {
             return travelRepository.deleteReplyTravel(idx);
         } catch (Exception e) {
@@ -275,7 +275,7 @@ public class TravelService {
      * </pre>
      */
     @Transactional
-    public List<TravelReviewDTO> replyTravelReview(Long idx) throws TravelException {
+    public List<TravelReviewDTO> replyTravelReview(Long idx) {
         try {
             return travelRepository.replyTravelReview(idx);
         } catch (Exception e) {
@@ -293,7 +293,7 @@ public class TravelService {
      * </pre>
      */
     @Transactional
-    public TravelReviewDTO detailReplyTravelReview(Long idx) throws TravelException {
+    public TravelReviewDTO detailReplyTravelReview(Long idx) {
         try {
             return travelRepository.detailReplyTravelReview(idx);
         } catch (Exception e) {
@@ -313,7 +313,7 @@ public class TravelService {
     @CachePut("travel")
     @Modifying(clearAutomatically = true)
     @Transactional
-    public Boolean togglePopular(Long idx) throws TravelException {
+    public Boolean togglePopular(Long idx) {
         try {
             return travelRepository.togglePopular(idx);
         } catch (Exception e) {
@@ -331,7 +331,7 @@ public class TravelService {
      * </pre>
      */
     @Transactional
-    public int findTravelGroupCount(Map<String, Object> groupMap) throws TravelException {
+    public int findTravelGroupCount(Map<String, Object> groupMap) {
         try {
             return travelRepository.findTravelGroupCount(groupMap);
         } catch (Exception e) {
