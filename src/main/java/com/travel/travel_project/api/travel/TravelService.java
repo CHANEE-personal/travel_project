@@ -17,6 +17,7 @@ import com.travel.travel_project.domain.travel.TravelEntity;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -39,8 +40,8 @@ public class TravelService {
      * 1. MethodName : findTravelCount
      * 2. ClassName  : TravelService.java
      * 3. Comment    : 여행지 소개 리스트 갯수 조회
-     * 4. 작성자       : CHO
-     * 5. 작성일       : 2022. 10. 5.
+     * 4. 작성자      : CHO
+     * 5. 작성일      : 2022. 10. 5.
      * </pre>
      */
     @Transactional(readOnly = true)
@@ -57,10 +58,11 @@ public class TravelService {
      * 1. MethodName : findTravelList
      * 2. ClassName  : TravelService.java
      * 3. Comment    : 여행지 소개 리스트 조회
-     * 4. 작성자       : CHO
-     * 5. 작성일       : 2022. 10. 5.
+     * 4. 작성자      : CHO
+     * 5. 작성일      : 2022. 10. 5.
      * </pre>
      */
+    @Cacheable(value = "travel")
     @Transactional(readOnly = true)
     public List<TravelDTO> findTravelList(Map<String, Object> travelMap) {
         try {
@@ -75,11 +77,12 @@ public class TravelService {
      * 1. MethodName : findOneTravel
      * 2. ClassName  : TravelService.java
      * 3. Comment    : 여행지 소개 리스트 조회
-     * 4. 작성자       : CHO
-     * 5. 작성일       : 2022. 10. 5.
+     * 4. 작성자      : CHO
+     * 5. 작성일      : 2022. 10. 5.
      * </pre>
      */
-    @Transactional(readOnly = true)
+    @Cacheable(value = "travel", key = "#idx")
+    @Transactional
     public TravelDTO findOneTravel(Long idx) {
         try {
             return travelRepository.findOneTravel(idx);
@@ -92,9 +95,9 @@ public class TravelService {
      * <pre>
      * 1. MethodName : insertTravel
      * 2. ClassName  : TravelService.java
-     * 3. Comment    : 관리자 > 여행지 등록
-     * 4. 작성자       : CHO
-     * 5. 작성일       : 2022. 10. 5.
+     * 3. Comment    : 여행지 등록
+     * 4. 작성자      : CHO
+     * 5. 작성일      : 2022. 10. 5.
      * </pre>
      */
     @CachePut("travel")
@@ -131,9 +134,9 @@ public class TravelService {
      * <pre>
      * 1. MethodName : updateTravel
      * 2. ClassName  : TravelService.java
-     * 3. Comment    : 관리자 > 여행지 수정
-     * 4. 작성자       : CHO
-     * 5. 작성일       : 2022. 10. 5.
+     * 3. Comment    : 여행지 수정
+     * 4. 작성자      : CHO
+     * 5. 작성일      : 2022. 10. 5.
      * </pre>
      */
     @CachePut("travel")
@@ -151,9 +154,9 @@ public class TravelService {
      * <pre>
      * 1. MethodName : deleteTravel
      * 2. ClassName  : TravelService.java
-     * 3. Comment    : 관리자 > 여행지 삭제
-     * 4. 작성자       : CHO
-     * 5. 작성일       : 2022. 10. 5.
+     * 3. Comment    : 여행지 삭제
+     * 4. 작성자      : CHO
+     * 5. 작성일      : 2022. 10. 5.
      * </pre>
      */
     @CacheEvict("travel")
@@ -172,8 +175,8 @@ public class TravelService {
      * 1. MethodName : favoriteTravel
      * 2. ClassName  : TravelService.java
      * 3. Comment    : 여행지 좋아요
-     * 4. 작성자       : CHO
-     * 5. 작성일       : 2022. 10. 6.
+     * 4. 작성자      : CHO
+     * 5. 작성일      : 2022. 10. 6.
      * </pre>
      */
     @CachePut("travel")
@@ -192,8 +195,8 @@ public class TravelService {
      * 1. MethodName : popularityTravel
      * 2. ClassName  : TravelService.java
      * 3. Comment    : 인기 여행지 리스트 조회
-     * 4. 작성자       : CHO
-     * 5. 작성일       : 2022. 10. 14.
+     * 4. 작성자      : CHO
+     * 5. 작성일      : 2022. 10. 14.
      * </pre>
      */
     @Transactional(readOnly = true)
@@ -210,8 +213,8 @@ public class TravelService {
      * 1. MethodName : replyTravel
      * 2. ClassName  : TravelService.java
      * 3. Comment    : 여행지 댓글 달기
-     * 4. 작성자       : CHO
-     * 5. 작성일       : 2022. 10. 30.
+     * 4. 작성자      : CHO
+     * 5. 작성일      : 2022. 10. 30.
      * </pre>
      */
     @CachePut("travel")
@@ -230,8 +233,8 @@ public class TravelService {
      * 1. MethodName : updateReplyTravel
      * 2. ClassName  : TravelService.java
      * 3. Comment    : 여행지 댓글 수정
-     * 4. 작성자       : CHO
-     * 5. 작성일       : 2022. 11. 23.
+     * 4. 작성자      : CHO
+     * 5. 작성일      : 2022. 11. 23.
      * </pre>
      */
     @CachePut("travel")
@@ -250,8 +253,8 @@ public class TravelService {
      * 1. MethodName : deleteReplyTravel
      * 2. ClassName  : TravelService.java
      * 3. Comment    : 여행지 댓글 삭제
-     * 4. 작성자       : CHO
-     * 5. 작성일       : 2022. 11. 23.
+     * 4. 작성자      : CHO
+     * 5. 작성일      : 2022. 11. 23.
      * </pre>
      */
     @CacheEvict("travel")
@@ -270,8 +273,8 @@ public class TravelService {
      * 1. MethodName : replyTravelReview
      * 2. ClassName  : TravelService.java
      * 3. Comment    : 여행지 댓글 리스트 조회
-     * 4. 작성자       : CHO
-     * 5. 작성일       : 2022. 11. 23.
+     * 4. 작성자      : CHO
+     * 5. 작성일      : 2022. 11. 23.
      * </pre>
      */
     @Transactional
@@ -288,8 +291,8 @@ public class TravelService {
      * 1. MethodName : detailReplyTravelReview
      * 2. ClassName  : TravelService.java
      * 3. Comment    : 여행지 댓글 상세 조회
-     * 4. 작성자       : CHO
-     * 5. 작성일       : 2022. 11. 23.
+     * 4. 작성자      : CHO
+     * 5. 작성일      : 2022. 11. 23.
      * </pre>
      */
     @Transactional
@@ -306,8 +309,8 @@ public class TravelService {
      * 1. MethodName : togglePopular
      * 2. ClassName  : TravelService.java
      * 3. Comment    : 인기 여행지 선정
-     * 4. 작성자       : CHO
-     * 5. 작성일       : 2022. 10. 28.
+     * 4. 작성자      : CHO
+     * 5. 작성일      : 2022. 10. 28.
      * </pre>
      */
     @CachePut("travel")
@@ -326,8 +329,8 @@ public class TravelService {
      * 1. MethodName : findTravelGroupCount
      * 2. ClassName  : TravelService.java
      * 3. Comment    : 여행지 그룹 리스트 갯수 조회
-     * 4. 작성자       : CHO
-     * 5. 작성일       : 2022. 11. 25.
+     * 4. 작성자      : CHO
+     * 5. 작성일      : 2022. 11. 25.
      * </pre>
      */
     @Transactional
@@ -344,8 +347,8 @@ public class TravelService {
      * 1. MethodName : findTravelGroupList
      * 2. ClassName  : TravelService.java
      * 3. Comment    : 여행 그룹 리스트 조회
-     * 4. 작성자       : CHO
-     * 5. 작성일       : 2022. 11. 25.
+     * 4. 작성자      : CHO
+     * 5. 작성일      : 2022. 11. 25.
      * </pre>
      */
     @Transactional(readOnly = true)
@@ -362,8 +365,8 @@ public class TravelService {
      * 1. MethodName : findOneTravelGroup
      * 2. ClassName  : TravelService.java
      * 3. Comment    : 여행 그룹 상세 조회
-     * 4. 작성자       : CHO
-     * 5. 작성일       : 2022. 11. 25.
+     * 4. 작성자      : CHO
+     * 5. 작성일      : 2022. 11. 25.
      * </pre>
      */
     @Transactional(readOnly = true)
@@ -380,8 +383,8 @@ public class TravelService {
      * 1. MethodName : insertTravelGroup
      * 2. ClassName  : TravelService.java
      * 3. Comment    : 여행 그룹 등록
-     * 4. 작성자       : CHO
-     * 5. 작성일       : 2022. 11. 25.
+     * 4. 작성자      : CHO
+     * 5. 작성일      : 2022. 11. 25.
      * </pre>
      */
     @CachePut("group")
@@ -400,8 +403,8 @@ public class TravelService {
      * 1. MethodName : updateTravelGroup
      * 2. ClassName  : TravelService.java
      * 3. Comment    : 여행 그룹 수정
-     * 4. 작성자       : CHO
-     * 5. 작성일       : 2022. 11. 25.
+     * 4. 작성자      : CHO
+     * 5. 작성일      : 2022. 11. 25.
      * </pre>
      */
     @CachePut("group")
@@ -420,8 +423,8 @@ public class TravelService {
      * 1. MethodName : deleteTravelGroup
      * 2. ClassName  : TravelService.java
      * 3. Comment    : 여행 그룹 삭제
-     * 4. 작성자       : CHO
-     * 5. 작성일       : 2022. 11. 25.
+     * 4. 작성자      : CHO
+     * 5. 작성일      : 2022. 11. 25.
      * </pre>
      */
     @CacheEvict("group")
@@ -440,8 +443,8 @@ public class TravelService {
      * 1. MethodName : insertTravelGroupUser
      * 2. ClassName  : TravelService.java
      * 3. Comment    : 유저 여행 그룹 등록
-     * 4. 작성자       : CHO
-     * 5. 작성일       : 2022. 11. 27.
+     * 4. 작성자      : CHO
+     * 5. 작성일      : 2022. 11. 27.
      * </pre>
      */
     @CachePut("group_user")
@@ -460,8 +463,8 @@ public class TravelService {
      * 1. MethodName : deleteTravelGroupUser
      * 2. ClassName  : TravelService.java
      * 3. Comment    : 유저 여행 그룹 삭제
-     * 4. 작성자       : CHO
-     * 5. 작성일       : 2022. 11. 27.
+     * 4. 작성자      : CHO
+     * 5. 작성일      : 2022. 11. 27.
      * </pre>
      */
     @CacheEvict("group_user")
