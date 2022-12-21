@@ -9,8 +9,8 @@ import org.springframework.context.annotation.Configuration;
 
 import static java.util.List.of;
 
-@Configuration
-@EnableCaching
+//@Configuration
+//@EnableCaching
 public class CacheConfiguration {
     /**
      * <pre>
@@ -21,19 +21,19 @@ public class CacheConfiguration {
      * 5. 작성일       : 2021. 02. 09.
      * </pre>
      */
-    @Bean
-    public CacheManager cacheManager() {
-        SimpleCacheManager cacheManager = new SimpleCacheManager();
-        cacheManager.setCaches(of(
-                new ConcurrentMapCache("user"),
-                new ConcurrentMapCache("travel"),
-                new ConcurrentMapCache("group"),
-                new ConcurrentMapCache("group_user"),
-                new ConcurrentMapCache("post"),
-                new ConcurrentMapCache("review"),
-                new ConcurrentMapCache("notice"),
-                new ConcurrentMapCache("faq"),
-                new ConcurrentMapCache("common")));
-        return cacheManager;
-    }
+//    @Bean
+//    public CacheManager cacheManager() {
+//        SimpleCacheManager cacheManager = new SimpleCacheManager();
+//        cacheManager.setCaches(of(
+//                new ConcurrentMapCache("user"),
+//                new ConcurrentMapCache("travel"),
+//                new ConcurrentMapCache("group"),
+//                new ConcurrentMapCache("group_user"),
+//                new ConcurrentMapCache("post"),
+//                new ConcurrentMapCache("review"),
+//                new ConcurrentMapCache("notice"),
+//                new ConcurrentMapCache("faq"),
+//                new ConcurrentMapCache("common")));
+//        return cacheManager;
+//    }
 }

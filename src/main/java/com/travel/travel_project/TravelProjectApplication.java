@@ -3,6 +3,7 @@ package com.travel.travel_project;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
+import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.ComponentScans;
 
@@ -10,6 +11,7 @@ import org.springframework.context.annotation.ComponentScans;
         @ComponentScan(basePackages = "com.travel")
 })
 @SpringBootApplication(scanBasePackages = "com")
+@EnableCaching
 public class TravelProjectApplication extends SpringBootServletInitializer {
 
     public static final String APPLICATION_LOCATIONS = "spring.config.location="

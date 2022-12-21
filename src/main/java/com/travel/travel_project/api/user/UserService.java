@@ -23,7 +23,7 @@ public class UserService {
     private final UserRepository userRepository;
 
     @Transactional(readOnly = true)
-    public String adminLogin(UserEntity userEntity) throws TravelException {
+    public String adminLogin(UserEntity userEntity) {
         try {
             return userRepository.adminLogin(userEntity);
         } catch (Exception e) {
@@ -34,7 +34,7 @@ public class UserService {
     @CachePut("user")
     @Modifying(clearAutomatically = true)
     @Transactional
-    public void insertToken(UserEntity paramUserEntity) throws TravelException {
+    public void insertToken(UserEntity paramUserEntity) {
         try {
             UserEntity userEntity = UserEntity.toEntity(userRepository.findOneUser(paramUserEntity.getIdx()));
             userRepository.insertUserToken(userEntity);
@@ -53,7 +53,7 @@ public class UserService {
      * </pre>
      */
     @Transactional(readOnly = true)
-    public List<UserDTO> findUserList(Map<String, Object> userMap) throws TravelException {
+    public List<UserDTO> findUserList(Map<String, Object> userMap) {
         try {
             return userRepository.findUserList(userMap);
         } catch (Exception e) {
@@ -71,7 +71,7 @@ public class UserService {
      * </pre>
      */
     @Transactional(readOnly = true)
-    public UserDTO findOneUser(Long idx) throws TravelException {
+    public UserDTO findOneUser(Long idx) {
         try {
             return userRepository.findOneUser(idx);
         } catch (Exception e) {
@@ -89,7 +89,7 @@ public class UserService {
      * </pre>
      */
     @Transactional(readOnly = true)
-    public UserDTO findOneUserById(String userId) throws TravelException {
+    public UserDTO findOneUserById(String userId) {
         try {
             return userRepository.findOneUserById(userId);
         } catch (Exception e) {
@@ -107,7 +107,7 @@ public class UserService {
      * </pre>
      */
     @Transactional(readOnly = true)
-    public String findOneUserByToken(String token) throws TravelException {
+    public String findOneUserByToken(String token) {
         try {
             return userRepository.findOneUserByToken(token);
         } catch (Exception e) {
@@ -127,7 +127,7 @@ public class UserService {
     @CachePut("user")
     @Modifying(clearAutomatically = true)
     @Transactional
-    public UserDTO insertUser(UserEntity userEntity) throws TravelException {
+    public UserDTO insertUser(UserEntity userEntity) {
         try {
             return userRepository.insertUser(userEntity);
         } catch (Exception e) {
@@ -147,7 +147,7 @@ public class UserService {
     @CachePut("user")
     @Modifying(clearAutomatically = true)
     @Transactional
-    public UserDTO updateUser(UserEntity userEntity) throws TravelException {
+    public UserDTO updateUser(UserEntity userEntity) {
         try {
             return userRepository.updateUser(userEntity);
         } catch (Exception e) {
@@ -167,7 +167,7 @@ public class UserService {
     @CacheEvict("user")
     @Modifying(clearAutomatically = true)
     @Transactional
-    public Long deleteUser(Long idx) throws TravelException {
+    public Long deleteUser(Long idx) {
         try {
             return userRepository.deleteUser(idx);
         } catch (Exception e) {
@@ -186,7 +186,7 @@ public class UserService {
      */
     @Modifying(clearAutomatically = true)
     @Transactional
-    public UserDTO addFavoriteTravel(Long idx, Long favoriteIdx) throws TravelException {
+    public UserDTO addFavoriteTravel(Long idx, Long favoriteIdx) {
         try {
             return userRepository.addFavoriteTravel(idx, favoriteIdx);
         } catch (Exception e) {
@@ -204,7 +204,7 @@ public class UserService {
      * </pre>
      */
     @Transactional(readOnly = true)
-    public List<TravelScheduleDTO> findUserSchedule(Long userIdx) throws TravelException {
+    public List<TravelScheduleDTO> findUserSchedule(Long userIdx) {
         try {
             return userRepository.findUserSchedule(userIdx);
         } catch (Exception e) {
@@ -222,7 +222,7 @@ public class UserService {
      * </pre>
      */
     @Transactional(readOnly = true)
-    public TravelScheduleDTO findOneUserSchedule(Long userIdx, Long scheduleIdx) throws TravelException{
+    public TravelScheduleDTO findOneUserSchedule(Long userIdx, Long scheduleIdx) {
         try {
             return userRepository.findOneUserSchedule(userIdx, scheduleIdx);
         } catch (Exception e) {
