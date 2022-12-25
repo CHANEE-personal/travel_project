@@ -62,7 +62,7 @@ public class TravelService {
      * 5. 작성일      : 2022. 10. 5.
      * </pre>
      */
-    @Cacheable(value = "travel")
+    @Cacheable(value = "travel", key = "#travelMap")
     @Transactional(readOnly = true)
     public List<TravelDTO> findTravelList(Map<String, Object> travelMap) {
         try {
@@ -139,7 +139,7 @@ public class TravelService {
      * 5. 작성일      : 2022. 10. 5.
      * </pre>
      */
-    @CachePut("travel")
+    @CachePut(value = "travel", key = "#travelEntity.idx")
     @Modifying(clearAutomatically = true)
     @Transactional
     public TravelDTO updateTravel(TravelEntity travelEntity) {
@@ -159,7 +159,7 @@ public class TravelService {
      * 5. 작성일      : 2022. 10. 5.
      * </pre>
      */
-    @CacheEvict("travel")
+    @CacheEvict(value = "travel", key = "#idx")
     @Modifying(clearAutomatically = true)
     @Transactional
     public Long deleteTravel(Long idx) {
@@ -179,7 +179,7 @@ public class TravelService {
      * 5. 작성일      : 2022. 10. 6.
      * </pre>
      */
-    @CachePut("travel")
+    @CachePut(value = "travel", key = "#idx")
     @Modifying(clearAutomatically = true)
     @Transactional
     public int favoriteTravel(Long idx) {
@@ -199,6 +199,7 @@ public class TravelService {
      * 5. 작성일      : 2022. 10. 14.
      * </pre>
      */
+    @Cacheable(value = "travel", key = "#travelMap")
     @Transactional(readOnly = true)
     public List<TravelDTO> popularityTravel(Map<String, Object> travelMap) {
         try {
@@ -217,7 +218,7 @@ public class TravelService {
      * 5. 작성일      : 2022. 10. 30.
      * </pre>
      */
-    @CachePut("travel")
+    @CachePut(value = "reply")
     @Modifying(clearAutomatically = true)
     @Transactional
     public TravelReviewDTO replyTravel(TravelReviewEntity travelReviewEntity) {
@@ -237,7 +238,7 @@ public class TravelService {
      * 5. 작성일      : 2022. 11. 23.
      * </pre>
      */
-    @CachePut("travel")
+    @CachePut(value = "reply", key = "#travelReviewEntity.idx")
     @Modifying(clearAutomatically = true)
     @Transactional
     public TravelReviewDTO updateReplyTravel(TravelReviewEntity travelReviewEntity) {
@@ -257,7 +258,7 @@ public class TravelService {
      * 5. 작성일      : 2022. 11. 23.
      * </pre>
      */
-    @CacheEvict("travel")
+    @CacheEvict(value = "reply", key = "#idx")
     @Modifying(clearAutomatically = true)
     @Transactional
     public Long deleteReplyTravel(Long idx) {
@@ -295,6 +296,7 @@ public class TravelService {
      * 5. 작성일      : 2022. 11. 23.
      * </pre>
      */
+    @Cacheable(value = "reply", key = "#idx")
     @Transactional
     public TravelReviewDTO detailReplyTravelReview(Long idx) {
         try {
@@ -313,7 +315,7 @@ public class TravelService {
      * 5. 작성일      : 2022. 10. 28.
      * </pre>
      */
-    @CachePut("travel")
+    @CachePut(value = "travel", key = "#idx")
     @Modifying(clearAutomatically = true)
     @Transactional
     public Boolean togglePopular(Long idx) {
@@ -351,6 +353,7 @@ public class TravelService {
      * 5. 작성일      : 2022. 11. 25.
      * </pre>
      */
+    @Cacheable(value = "group", key = "#groupMap")
     @Transactional(readOnly = true)
     public List<TravelGroupDTO> findTravelGroupList(Map<String, Object> groupMap) {
         try {
@@ -369,6 +372,7 @@ public class TravelService {
      * 5. 작성일      : 2022. 11. 25.
      * </pre>
      */
+    @Cacheable("group")
     @Transactional(readOnly = true)
     public TravelGroupDTO findOneTravelGroup(Long idx) {
         try {
@@ -407,7 +411,7 @@ public class TravelService {
      * 5. 작성일      : 2022. 11. 25.
      * </pre>
      */
-    @CachePut("group")
+    @CachePut(value = "group", key = "#travelGroupEntity.idx")
     @Modifying(clearAutomatically = true)
     @Transactional
     public TravelGroupDTO updateTravelGroup(TravelGroupEntity travelGroupEntity) {
@@ -427,7 +431,7 @@ public class TravelService {
      * 5. 작성일      : 2022. 11. 25.
      * </pre>
      */
-    @CacheEvict("group")
+    @CacheEvict(value = "group", key = "#idx")
     @Modifying(clearAutomatically = true)
     @Transactional
     public Long deleteTravelGroup(Long idx) {
@@ -467,7 +471,7 @@ public class TravelService {
      * 5. 작성일      : 2022. 11. 27.
      * </pre>
      */
-    @CacheEvict("group_user")
+    @CacheEvict(value = "group_user", key = "#idx")
     @Modifying(clearAutomatically = true)
     @Transactional
     public Long deleteTravelGroupUser(Long idx) {
@@ -487,6 +491,7 @@ public class TravelService {
      * 5. 작성일      : 2022. 12. 13.
      * </pre>
      */
+    @CachePut("schedule")
     @Modifying(clearAutomatically = true)
     @Transactional
     public TravelScheduleDTO insertTravelSchedule(TravelScheduleEntity travelScheduleEntity) {
@@ -506,6 +511,7 @@ public class TravelService {
      * 5. 작성일      : 2022. 12. 13.
      * </pre>
      */
+    @CachePut(value = "schedule", key = "#travelScheduleEntity.idx")
     @Modifying(clearAutomatically = true)
     @Transactional
     public TravelScheduleDTO updateTravelSchedule(TravelScheduleEntity travelScheduleEntity) {
@@ -525,6 +531,7 @@ public class TravelService {
      * 5. 작성일      : 2022. 12. 13.
      * </pre>
      */
+    @CacheEvict(value = "schedule", key = "#idx")
     @Modifying(clearAutomatically = true)
     @Transactional
     public Long deleteTravelSchedule(Long idx) {

@@ -6,6 +6,7 @@ import com.travel.travel_project.exception.TravelException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -48,6 +49,7 @@ public class PostService {
      * 5. 작성일      : 2022. 12. 12.
      * </pre>
      */
+    @Cacheable(value = "post", key = "#postMap")
     @Transactional(readOnly = true)
     public List<PostDTO> findPostList(Map<String, Object> postMap) {
         try {
@@ -66,6 +68,7 @@ public class PostService {
      * 5. 작성일      : 2022. 12. 12.
      * </pre>
      */
+    @Cacheable(value = "post", key = "#idx")
     @Transactional(readOnly = true)
     public PostDTO findOnePost(Long idx) {
         try {
@@ -104,7 +107,7 @@ public class PostService {
      * 5. 작성일      : 2022. 12. 12.
      * </pre>
      */
-    @CachePut("post")
+    @CachePut(value = "post", key = "#postEntity.idx")
     @Modifying(clearAutomatically = true)
     @Transactional
     public PostDTO updatePost(PostEntity postEntity) {
@@ -124,7 +127,7 @@ public class PostService {
      * 5. 작성일      : 2022. 12. 12.
      * </pre>
      */
-    @CacheEvict("post")
+    @CacheEvict(value = "post", key = "#idx")
     @Modifying(clearAutomatically = true)
     @Transactional
     public Long deletePost(Long idx) {
@@ -144,6 +147,7 @@ public class PostService {
      * 5. 작성일       : 2022. 12. 12.
      * </pre>
      */
+    @CachePut(value = "post", key = "#idx")
     @Transactional
     public Boolean togglePopular(Long idx) {
         try {

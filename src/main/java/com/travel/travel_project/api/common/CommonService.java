@@ -6,6 +6,7 @@ import com.travel.travel_project.exception.TravelException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -48,6 +49,7 @@ public class CommonService {
      * 5. 작성일       : 2022. 11. 21.
      * </pre>
      */
+    @Cacheable(value = "common", key = "#commonMap")
     @Transactional(readOnly = true)
     public List<CommonDTO> findCommonList(Map<String, Object> commonMap) {
         try {
@@ -66,6 +68,7 @@ public class CommonService {
      * 5. 작성일       : 2022. 11. 21.
      * </pre>
      */
+    @Cacheable(value = "common", key = "#idx")
     @Transactional(readOnly = true)
     public CommonDTO findOneCommon(Long idx) {
         try {
@@ -104,7 +107,7 @@ public class CommonService {
      * 5. 작성일       : 2022. 11. 21.
      * </pre>
      */
-    @CachePut("common")
+    @CachePut(value = "common", key = "#existCommonEntity.idx")
     @Modifying(clearAutomatically = true)
     @Transactional
     public CommonDTO updateCommonCode(CommonEntity existCommonEntity) {
@@ -124,7 +127,7 @@ public class CommonService {
      * 5. 작성일       : 2022. 11. 21.
      * </pre>
      */
-    @CacheEvict("common")
+    @CacheEvict(value = "common", key = "#idx")
     @Modifying(clearAutomatically = true)
     @Transactional
     public Long deleteCommonCode(Long idx) {

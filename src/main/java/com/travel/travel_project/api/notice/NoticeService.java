@@ -6,6 +6,7 @@ import com.travel.travel_project.exception.TravelException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -47,6 +48,7 @@ public class NoticeService {
      * 5. 작성일      : 2022. 11. 28.
      * </pre>
      */
+    @Cacheable(value = "notice", key = "#noticeMap")
     @Transactional(readOnly = true)
     public List<NoticeDTO> findNoticeList(Map<String, Object> noticeMap) {
         try {
@@ -65,6 +67,7 @@ public class NoticeService {
      * 5. 작성일       : 2022. 11. 28.
      * </pre>
      */
+    @Cacheable(value = "notice", key = "#idx")
     @Transactional(readOnly = true)
     public NoticeDTO findOneNotice(Long idx) {
         try {
@@ -103,7 +106,7 @@ public class NoticeService {
      * 5. 작성일       : 2022. 11. 28.
      * </pre>
      */
-    @CachePut("notice")
+    @CachePut(value = "notice", key = "#noticeEntity.idx")
     @Modifying(clearAutomatically = true)
     @Transactional
     public NoticeDTO updateNotice(NoticeEntity noticeEntity) {
@@ -123,7 +126,7 @@ public class NoticeService {
      * 5. 작성일       : 2022. 11. 28.
      * </pre>
      */
-    @CacheEvict("notice")
+    @CacheEvict(value = "notice", key = "#idx")
     @Modifying(clearAutomatically = true)
     @Transactional
     public Long deleteNotice(Long idx) {
@@ -143,6 +146,7 @@ public class NoticeService {
      * 5. 작성일       : 2022. 11. 28.
      * </pre>
      */
+    @CachePut(value = "notice", key = "#idx")
     @Modifying(clearAutomatically = true)
     @Transactional
     public Boolean toggleTopFixed(Long idx) {

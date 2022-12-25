@@ -19,6 +19,7 @@ import org.springframework.test.context.TestConstructor;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.filter.CharacterEncodingFilter;
 import org.springframework.web.multipart.MultipartFile;
@@ -69,7 +70,10 @@ class TravelControllerTest {
     @Test
     @DisplayName("여행지 조회 테스트")
     void 여행지조회테스트() throws Exception {
-        mockMvc.perform(get("/api/travel/lists").param("page", "1").param("size", "100"))
+        LinkedMultiValueMap<String, String> paramMap = new LinkedMultiValueMap<>();
+        paramMap.add("jpaStartPage", "1");
+        paramMap.add("size", "3");
+        mockMvc.perform(get("/api/travel/lists").queryParams(paramMap))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().contentType("application/json;charset=utf-8"));

@@ -6,6 +6,7 @@ import com.travel.travel_project.exception.TravelException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -48,6 +49,7 @@ public class FaqService {
      * 5. 작성일      : 2022. 11. 29.
      * </pre>
      */
+    @Cacheable(value = "faq", key = "#faqMap")
     @Transactional(readOnly = true)
     public List<FaqDTO> findFaqList(Map<String, Object> faqMap) {
         try {
@@ -66,6 +68,7 @@ public class FaqService {
      * 5. 작성일      : 2022. 11. 29.
      * </pre>
      */
+    @Cacheable(value = "faq", key = "#idx")
     @Transactional(readOnly = true)
     public FaqDTO findOneFaq(Long idx) {
         try {
@@ -104,7 +107,7 @@ public class FaqService {
      * 5. 작성일      : 2022. 11. 29.
      * </pre>
      */
-    @CachePut("faq")
+    @CachePut(value = "faq", key = "#faqEntity.idx")
     @Modifying(clearAutomatically = true)
     @Transactional
     public FaqDTO updateFaq(FaqEntity faqEntity) {
@@ -124,7 +127,7 @@ public class FaqService {
      * 5. 작성일      : 2022. 11. 29.
      * </pre>
      */
-    @CacheEvict("faq")
+    @CacheEvict(value = "faq", key = "#idx")
     @Modifying(clearAutomatically = true)
     @Transactional
     public Long deleteFaq(Long idx) {
