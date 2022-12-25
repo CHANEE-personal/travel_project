@@ -7,6 +7,7 @@ import com.travel.travel_project.exception.TravelException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -45,13 +46,14 @@ public class UserService {
 
     /**
      * <pre>
-     * 1. MethodName : findUsersList
+     * 1. MethodName : findUserList
      * 2. ClassName  : UserService.java
      * 3. Comment    : 유저 리스트 조회
      * 4. 작성자       : CHO
      * 5. 작성일       : 2022. 10. 11.
      * </pre>
      */
+    @Cacheable(value = "user", key = "#userMap")
     @Transactional(readOnly = true)
     public List<UserDTO> findUserList(Map<String, Object> userMap) {
         try {
@@ -70,6 +72,7 @@ public class UserService {
      * 5. 작성일       : 2022. 10. 11.
      * </pre>
      */
+    @Cacheable(value = "user", key = "#idx")
     @Transactional(readOnly = true)
     public UserDTO findOneUser(Long idx) {
         try {
@@ -84,8 +87,8 @@ public class UserService {
      * 1. MethodName : findOneUserById
      * 2. ClassName  : UserService.java
      * 3. Comment    : 아이디를 이용한 유저 조회
-     * 4. 작성자       : CHO
-     * 5. 작성일       : 2022. 10. 6.
+     * 4. 작성자      : CHO
+     * 5. 작성일      : 2022. 10. 6.
      * </pre>
      */
     @Transactional(readOnly = true)
@@ -144,7 +147,7 @@ public class UserService {
      * 5. 작성일       : 2022. 10. 11.
      * </pre>
      */
-    @CachePut("user")
+    @CachePut(value = "user", key = "#userEntity.idx")
     @Modifying(clearAutomatically = true)
     @Transactional
     public UserDTO updateUser(UserEntity userEntity) {
@@ -164,7 +167,7 @@ public class UserService {
      * 5. 작성일       : 2022. 10. 11.
      * </pre>
      */
-    @CacheEvict("user")
+    @CacheEvict(value = "user", key = "#idx")
     @Modifying(clearAutomatically = true)
     @Transactional
     public Long deleteUser(Long idx) {
@@ -184,6 +187,7 @@ public class UserService {
      * 5. 작성일      : 2022. 12. 07.
      * </pre>
      */
+    @CachePut(value = "user", key = "#idx")
     @Modifying(clearAutomatically = true)
     @Transactional
     public UserDTO addFavoriteTravel(Long idx, Long favoriteIdx) {
@@ -203,6 +207,7 @@ public class UserService {
      * 5. 작성일      : 2022. 12. 14.
      * </pre>
      */
+    @Cacheable(value = "schedule", key = "#userIdx")
     @Transactional(readOnly = true)
     public List<TravelScheduleDTO> findUserSchedule(Long userIdx) {
         try {
@@ -221,6 +226,7 @@ public class UserService {
      * 5. 작성일      : 2022. 12. 14.
      * </pre>
      */
+    @Cacheable(value = "schedule", key = "#scheduleIdx")
     @Transactional(readOnly = true)
     public TravelScheduleDTO findOneUserSchedule(Long userIdx, Long scheduleIdx) {
         try {
