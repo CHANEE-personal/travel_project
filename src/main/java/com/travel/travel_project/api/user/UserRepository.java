@@ -6,6 +6,7 @@ import com.travel.travel_project.domain.travel.schedule.TravelScheduleDTO;
 import com.travel.travel_project.domain.travel.schedule.TravelScheduleEntity;
 import com.travel.travel_project.domain.user.UserDTO;
 import com.travel.travel_project.domain.user.UserEntity;
+import com.travel.travel_project.exception.TravelException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -15,13 +16,16 @@ import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
+import java.util.Optional;
 
 import static com.travel.travel_project.common.StringUtils.nullStrToStr;
 import static com.travel.travel_project.domain.travel.schedule.QTravelScheduleEntity.*;
 import static com.travel.travel_project.domain.user.QUserEntity.userEntity;
+import static com.travel.travel_project.exception.ApiExceptionType.NOT_FOUND_SCHEDULE;
+import static com.travel.travel_project.exception.ApiExceptionType.NOT_FOUND_USER;
 import static org.springframework.security.core.context.SecurityContextHolder.getContext;
 
 @Repository
@@ -76,7 +80,7 @@ public class UserRepository {
      * 5. 작성일       : 2022. 10. 9.
      * </pre>
      */
-    public Integer findUsersCount(Map<String, Object> userMap) {
+    public int findUsersCount(Map<String, Object> userMap) {
         return queryFactory
                 .selectFrom(userEntity)
                 .fetch().size();
@@ -96,7 +100,7 @@ public class UserRepository {
                 .selectFrom(userEntity)
                 .fetch();
 
-        return UserEntity.toDtoList(findUserList);
+        return findUserList != null ? UserEntity.toDtoList(findUserList) : Collections.emptyList();
     }
 
     /**
@@ -109,12 +113,11 @@ public class UserRepository {
      * </pre>
      */
     public UserDTO findOneUser(Long idx) {
-        UserEntity findOneUser = queryFactory.selectFrom(userEntity)
+        UserEntity findOneUser = Optional.ofNullable(queryFactory.selectFrom(userEntity)
                 .where(userEntity.idx.eq(idx)
                         .and(userEntity.visible.eq("Y")))
-                .fetchOne();
+                .fetchOne()).orElseThrow(() -> new TravelException(NOT_FOUND_USER, new Throwable()));
 
-        assert findOneUser != null;
         return UserEntity.toDto(findOneUser);
     }
 
@@ -128,11 +131,11 @@ public class UserRepository {
      * </pre>
      */
     public UserDTO findOneUserById(String userId) {
-        UserEntity userInfo = queryFactory
+        UserEntity userInfo = Optional.ofNullable(queryFactory
                 .selectFrom(userEntity)
                 .where(userEntity.userId.eq(userId)
                         .and(userEntity.visible.eq("Y")))
-                .fetchOne();
+                .fetchOne()).orElseThrow(() -> new TravelException(NOT_FOUND_USER, new Throwable()));
 
         return UserEntity.toDto(userInfo);
     }
@@ -147,13 +150,12 @@ public class UserRepository {
      * </pre>
      */
     public String findOneUserByToken(String token) {
-        UserEntity userInfo = queryFactory
+        UserEntity userInfo = Optional.ofNullable(queryFactory
                 .selectFrom(userEntity)
                 .where(userEntity.userToken.eq(token)
                         .and(userEntity.visible.eq("Y")))
-                .fetchOne();
+                .fetchOne()).orElseThrow(() -> new TravelException(NOT_FOUND_USER, new Throwable()));
 
-        assert userInfo != null;
         return userInfo.getUserId();
     }
 
@@ -242,7 +244,7 @@ public class UserRepository {
                 .where(travelScheduleEntity.userIdx.eq(userIdx))
                 .fetch();
 
-        return TravelScheduleEntity.toDtoList(userSchedule);
+        return userSchedule != null ? TravelScheduleEntity.toDtoList(userSchedule) : Collections.emptyList();
     }
 
     /**
@@ -255,12 +257,11 @@ public class UserRepository {
      * </pre>
      */
     public TravelScheduleDTO findOneUserSchedule(Long userIdx, Long scheduleIdx) {
-        TravelScheduleEntity oneSchedule = queryFactory
+        TravelScheduleEntity oneSchedule = Optional.ofNullable(queryFactory
                 .selectFrom(travelScheduleEntity)
                 .where(travelScheduleEntity.userIdx.eq(userIdx).and(travelScheduleEntity.idx.eq(scheduleIdx)))
-                .fetchOne();
+                .fetchOne()).orElseThrow(() -> new TravelException(NOT_FOUND_SCHEDULE, new Throwable()));
 
-        assert oneSchedule != null;
         return TravelScheduleEntity.toDto(oneSchedule);
     }
 }

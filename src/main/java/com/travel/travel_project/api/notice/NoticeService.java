@@ -31,7 +31,7 @@ public class NoticeService {
      * </pre>
      */
     @Transactional
-    public Integer findNoticeCount(Map<String, Object> noticeMap) {
+    public int findNoticeCount(Map<String, Object> noticeMap) {
         try {
             return noticeRepository.findNoticeCount(noticeMap);
         } catch (Exception e) {
@@ -51,11 +51,7 @@ public class NoticeService {
     @Cacheable(value = "notice", key = "#noticeMap")
     @Transactional(readOnly = true)
     public List<NoticeDTO> findNoticeList(Map<String, Object> noticeMap) {
-        try {
-            return noticeRepository.findNoticeList(noticeMap);
-        } catch (Exception e) {
-            throw new TravelException(NOT_FOUND_NOTICE_LIST, e);
-        }
+        return noticeRepository.findNoticeList(noticeMap);
     }
 
     /**
@@ -70,11 +66,7 @@ public class NoticeService {
     @Cacheable(value = "notice", key = "#idx")
     @Transactional(readOnly = true)
     public NoticeDTO findOneNotice(Long idx) {
-        try {
-            return noticeRepository.findOneNotice(idx);
-        } catch (Exception e) {
-            throw new TravelException(NOT_FOUND_NOTICE, e);
-        }
+        return noticeRepository.findOneNotice(idx);
     }
 
     /**

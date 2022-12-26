@@ -4,18 +4,18 @@ import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.travel.travel_project.domain.post.PostDTO;
 import com.travel.travel_project.domain.post.PostEntity;
+import com.travel.travel_project.exception.TravelException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 import static com.travel.travel_project.common.StringUtil.getInt;
 import static com.travel.travel_project.common.StringUtil.getString;
 import static com.travel.travel_project.domain.file.QCommonImageEntity.commonImageEntity;
 import static com.travel.travel_project.domain.post.QPostEntity.postEntity;
+import static com.travel.travel_project.exception.ApiExceptionType.NOT_FOUND_POST;
 
 @Repository
 @RequiredArgsConstructor
@@ -26,13 +26,7 @@ public class PostRepository {
 
     private BooleanExpression searchPost(Map<String, Object> postMap) {
         String searchKeyword = getString(postMap.get("searchKeyword"), "");
-
-        if (!Objects.equals(searchKeyword, "")) {
-            return postEntity.postTitle.contains(searchKeyword)
-                    .or(postEntity.postDescription.contains(searchKeyword));
-        } else {
-            return null;
-        }
+        return !Objects.equals(searchKeyword, "") ? postEntity.postTitle.contains(searchKeyword).or(postEntity.postDescription.contains(searchKeyword)) : null;
     }
 
     /**
@@ -68,7 +62,7 @@ public class PostRepository {
                 .limit(getInt(postMap.get("size"), 0))
                 .fetch();
 
-        return PostEntity.toDtoList(postList);
+        return postList != null ? PostEntity.toDtoList(postList) : Collections.emptyList();
     }
 
     /**
@@ -81,13 +75,12 @@ public class PostRepository {
      * </pre>
      */
     public PostDTO findOnePost(Long idx) {
-        PostEntity onePost = queryFactory
+        PostEntity onePost = Optional.ofNullable(queryFactory
                 .selectFrom(postEntity)
                 .leftJoin(postEntity.postImageList, commonImageEntity)
                 .where(postEntity.idx.eq(idx))
-                .fetchOne();
+                .fetchOne()).orElseThrow(() -> new TravelException(NOT_FOUND_POST, new Throwable()));
 
-        assert onePost != null;
         return PostEntity.toDto(onePost);
     }
 

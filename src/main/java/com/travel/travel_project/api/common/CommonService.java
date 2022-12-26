@@ -32,7 +32,7 @@ public class CommonService {
      * </pre>
      */
     @Transactional(readOnly = true)
-    public Integer findCommonCount(Map<String, Object> commonMap) {
+    public int findCommonCount(Map<String, Object> commonMap) {
         try {
             return commonRepository.findCommonCount(commonMap);
         } catch (Exception e) {
@@ -52,11 +52,7 @@ public class CommonService {
     @Cacheable(value = "common", key = "#commonMap")
     @Transactional(readOnly = true)
     public List<CommonDTO> findCommonList(Map<String, Object> commonMap) {
-        try {
-            return commonRepository.findCommonList(commonMap);
-        } catch (Exception e) {
-            throw new TravelException(NOT_FOUND_COMMON_LIST, e);
-        }
+        return commonRepository.findCommonList(commonMap);
     }
 
     /**
@@ -71,11 +67,7 @@ public class CommonService {
     @Cacheable(value = "common", key = "#idx")
     @Transactional(readOnly = true)
     public CommonDTO findOneCommon(Long idx) {
-        try {
-            return commonRepository.findOneCommon(idx);
-        } catch (Exception e) {
-            throw new TravelException(NOT_FOUND_COMMON, e);
-        }
+        return commonRepository.findOneCommon(idx);
     }
 
     /**
