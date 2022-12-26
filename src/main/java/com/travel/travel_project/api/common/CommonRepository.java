@@ -4,16 +4,17 @@ import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.travel.travel_project.domain.common.CommonDTO;
 import com.travel.travel_project.domain.common.CommonEntity;
+import com.travel.travel_project.exception.TravelException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static com.travel.travel_project.common.StringUtil.getInt;
 import static com.travel.travel_project.common.StringUtil.getString;
 import static com.travel.travel_project.domain.common.QCommonEntity.commonEntity;
+import static com.travel.travel_project.exception.ApiExceptionType.NOT_FOUND_COMMON;
 
 @Repository
 @RequiredArgsConstructor
@@ -24,12 +25,7 @@ public class CommonRepository {
 
     private BooleanExpression searchCommonInfo(Map<String, Object> commonMap) {
         String searchKeyword = getString(commonMap.get("searchKeyword"), "");
-
-        if (searchKeyword == null) {
-            return null;
-        } else {
-            return commonEntity.commonName.contains(searchKeyword);
-        }
+        return !Objects.equals(searchKeyword, "") ? commonEntity.commonName.contains(searchKeyword) : null;
     }
 
     /**
@@ -41,7 +37,7 @@ public class CommonRepository {
      * 5. 작성일       : 2022. 11. 21.
      * </pre>
      */
-    public Integer findCommonCount(Map<String, Object> commonMap) {
+    public int findCommonCount(Map<String, Object> commonMap) {
         return queryFactory.selectFrom(commonEntity)
                 .where(searchCommonInfo(commonMap))
                 .fetch().size();
@@ -64,10 +60,7 @@ public class CommonRepository {
                 .limit(getInt(commonMap.get("size"), 0))
                 .fetch();
 
-        commonCodeList.forEach(list -> commonCodeList.get(commonCodeList.indexOf(list))
-                .setRowNum(getInt(commonMap.get("startPage"), 1) * (getInt(commonMap.get("size"), 1)) - (2 - commonCodeList.indexOf(list))));
-
-        return CommonEntity.toDtoList(commonCodeList);
+        return commonCodeList != null ? CommonEntity.toDtoList(commonCodeList) : Collections.emptyList();
     }
 
     /**
@@ -80,12 +73,11 @@ public class CommonRepository {
      * </pre>
      */
     public CommonDTO findOneCommon(Long idx) {
-        CommonEntity findOneCommon = queryFactory
+        CommonEntity findOneCommon = Optional.ofNullable(queryFactory
                 .selectFrom(commonEntity)
                 .where(commonEntity.idx.eq(idx))
-                .fetchOne();
+                .fetchOne()).orElseThrow(() -> new TravelException(NOT_FOUND_COMMON, new Throwable()));
 
-        assert findOneCommon != null;
         return CommonEntity.toDto(findOneCommon);
     }
 

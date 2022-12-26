@@ -32,7 +32,7 @@ public class FaqService {
      * </pre>
      */
     @Transactional
-    public Integer findFaqCount(Map<String, Object> faqMap) {
+    public int findFaqCount(Map<String, Object> faqMap) {
         try {
             return faqRepository.findFaqCount(faqMap);
         } catch (Exception e) {
@@ -52,11 +52,7 @@ public class FaqService {
     @Cacheable(value = "faq", key = "#faqMap")
     @Transactional(readOnly = true)
     public List<FaqDTO> findFaqList(Map<String, Object> faqMap) {
-        try {
-            return faqRepository.findFaqList(faqMap);
-        } catch (Exception e) {
-            throw new TravelException(NOT_FOUND_FAQ_LIST, e);
-        }
+        return faqRepository.findFaqList(faqMap);
     }
 
     /**
@@ -71,11 +67,7 @@ public class FaqService {
     @Cacheable(value = "faq", key = "#idx")
     @Transactional(readOnly = true)
     public FaqDTO findOneFaq(Long idx) {
-        try {
-            return faqRepository.findOneFaq(idx);
-        } catch (Exception e) {
-            throw new TravelException(NOT_FOUND_FAQ, e);
-        }
+        return faqRepository.findOneFaq(idx);
     }
 
     /**

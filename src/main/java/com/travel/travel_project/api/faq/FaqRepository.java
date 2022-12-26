@@ -4,17 +4,18 @@ import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.travel.travel_project.domain.faq.FaqDTO;
 import com.travel.travel_project.domain.faq.FaqEntity;
+import com.travel.travel_project.exception.TravelException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static com.travel.travel_project.common.StringUtil.getInt;
 import static com.travel.travel_project.common.StringUtil.getString;
 import static com.travel.travel_project.domain.common.QCommonEntity.commonEntity;
 import static com.travel.travel_project.domain.faq.QFaqEntity.faqEntity;
+import static com.travel.travel_project.exception.ApiExceptionType.NOT_FOUND_FAQ;
 
 @Repository
 @RequiredArgsConstructor
@@ -26,12 +27,7 @@ public class FaqRepository {
     private BooleanExpression searchFaqInfo(Map<String, Object> faqMap) {
         String searchKeyword = getString(faqMap.get("searchKeyword"), "");
 
-        if (searchKeyword == null) {
-            return null;
-        } else {
-            return faqEntity.title.contains(searchKeyword)
-                    .or(faqEntity.description.contains(searchKeyword));
-        }
+        return !Objects.equals(searchKeyword, "") ? faqEntity.title.contains(searchKeyword).or(faqEntity.description.contains(searchKeyword)) : null;
     }
 
     /**
@@ -43,7 +39,7 @@ public class FaqRepository {
      * 5. 작성일      : 2022. 11. 29.
      * </pre>
      */
-    public Integer findFaqCount(Map<String, Object> faqMap) {
+    public int findFaqCount(Map<String, Object> faqMap) {
         return queryFactory.selectFrom(faqEntity)
                 .where(searchFaqInfo(faqMap))
                 .fetch().size();
@@ -66,10 +62,7 @@ public class FaqRepository {
                 .where(searchFaqInfo(faqMap))
                 .fetch();
 
-        faqList.forEach(list -> faqList.get(faqList.indexOf(list))
-                .setRowNum(getInt(faqMap.get("startPage"), 1) * (getInt(faqMap.get("size"), 1)) - (2 - faqList.indexOf(list))));
-
-        return FaqEntity.toDtoList(faqList);
+        return faqList != null ? FaqEntity.toDtoList(faqList) : Collections.emptyList();
     }
 
     /**
@@ -82,14 +75,13 @@ public class FaqRepository {
      * </pre>
      */
     public FaqDTO findOneFaq(Long idx) {
-        FaqEntity oneFaq = queryFactory
+        FaqEntity oneFaq = Optional.ofNullable(queryFactory
                 .selectFrom(faqEntity)
                 .innerJoin(faqEntity.newFaqCode, commonEntity)
                 .fetchJoin()
                 .where(faqEntity.idx.eq(idx))
-                .fetchOne();
+                .fetchOne()).orElseThrow(() -> new TravelException(NOT_FOUND_FAQ, new Throwable()));
 
-        assert oneFaq != null;
         return FaqEntity.toDto(oneFaq);
     }
 

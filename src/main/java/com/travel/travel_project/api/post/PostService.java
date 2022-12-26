@@ -32,7 +32,7 @@ public class PostService {
      * </pre>
      */
     @Transactional
-    public Integer findPostCount(Map<String, Object> postMap) {
+    public int findPostCount(Map<String, Object> postMap) {
         try {
             return postRepository.findPostCount(postMap);
         } catch (Exception e) {
@@ -52,11 +52,7 @@ public class PostService {
     @Cacheable(value = "post", key = "#postMap")
     @Transactional(readOnly = true)
     public List<PostDTO> findPostList(Map<String, Object> postMap) {
-        try {
-            return postRepository.findPostList(postMap);
-        } catch (Exception e) {
-            throw new TravelException(NOT_FOUND_POST_LIST, e);
-        }
+        return postRepository.findPostList(postMap);
     }
 
     /**
@@ -71,11 +67,7 @@ public class PostService {
     @Cacheable(value = "post", key = "#idx")
     @Transactional(readOnly = true)
     public PostDTO findOnePost(Long idx) {
-        try {
-            return postRepository.findOnePost(idx);
-        } catch (Exception e) {
-            throw new TravelException(NOT_FOUND_POST, e);
-        }
+        return postRepository.findOnePost(idx);
     }
 
     /**

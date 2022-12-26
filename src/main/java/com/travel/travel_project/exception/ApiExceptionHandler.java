@@ -11,6 +11,8 @@ import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -67,6 +69,25 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
     protected ResponseEntity<Object> handleConstraintViolation(ConstraintViolationException e, WebRequest request) {
         return handleExceptionInternal(e, messageSource.getMessage("modelCategory.Range", new String[]{}, KOREA), new HttpHeaders(), BAD_REQUEST, request);
     }
+
+//    @ExceptionHandler(value = MethodArgumentNotValidException.class)
+//    public ResponseEntity<Error> handleValidException(MethodArgumentNotValidException e) {
+//        ApiExceptionType errorCode = ApiExceptionType.NOT_NULL;
+//        BindingResult bindingResult = e.getBindingResult();
+//
+//        StringBuilder builder = new StringBuilder();
+//        for (FieldError fieldError : bindingResult.getFieldErrors()) {
+//            builder.append("[");
+//            builder.append(fieldError.getField());
+//            builder.append("](은)는 ");
+//            builder.append(fieldError.getDefaultMessage());
+//            builder.append(". ");
+//        }
+//        builder.deleteCharAt(builder.length() - 1);
+//
+//        final Error response = new Error(errorCode.getErrorCode(), errorCode.getHttpStatus(), builder.toString());
+//        return new ResponseEntity<>(response, HttpStatus.valueOf(errorCode.getHttpStatus()));
+//    }
 
     /**
      * <pre>

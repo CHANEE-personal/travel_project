@@ -11,6 +11,7 @@ import com.travel.travel_project.domain.travel.review.TravelReviewDTO;
 import com.travel.travel_project.domain.travel.review.TravelReviewEntity;
 import com.travel.travel_project.domain.travel.schedule.TravelScheduleDTO;
 import com.travel.travel_project.domain.travel.schedule.TravelScheduleEntity;
+import com.travel.travel_project.exception.TravelException;
 import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
@@ -37,6 +38,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.*;
@@ -158,6 +160,18 @@ class TravelServiceTest {
         then(mockTravelService).should(times(1)).findTravelList(travelMap);
         then(mockTravelService).should(atLeastOnce()).findTravelList(travelMap);
         then(mockTravelService).shouldHaveNoMoreInteractions();
+    }
+
+    @Test
+    @DisplayName("여행지상세조회테스트")
+    void 여행지상세조회테스트() {
+        TravelDTO existTravel = travelService.findOneTravel(1L);
+        assertThat(existTravel.getIdx()).isEqualTo(1L);
+        assertThat(existTravel.getTravelCode()).isEqualTo(1);
+        assertThat(existTravel.getTravelTitle()).isEqualTo("서울 여행지");
+
+        assertThatThrownBy(() -> travelService.findOneTravel(3L))
+                .isInstanceOf(TravelException.class).hasMessage("여행 상세 없음");
     }
 
     @Test

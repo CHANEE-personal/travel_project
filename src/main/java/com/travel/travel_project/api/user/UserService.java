@@ -56,11 +56,7 @@ public class UserService {
     @Cacheable(value = "user", key = "#userMap")
     @Transactional(readOnly = true)
     public List<UserDTO> findUserList(Map<String, Object> userMap) {
-        try {
-            return userRepository.findUserList(userMap);
-        } catch (Exception e) {
-            throw new TravelException(NOT_FOUND_USER_LIST, e);
-        }
+        return userRepository.findUserList(userMap);
     }
 
     /**
@@ -75,11 +71,7 @@ public class UserService {
     @Cacheable(value = "user", key = "#idx")
     @Transactional(readOnly = true)
     public UserDTO findOneUser(Long idx) {
-        try {
-            return userRepository.findOneUser(idx);
-        } catch (Exception e) {
-            throw new TravelException(NOT_FOUND_USER, e);
-        }
+        return userRepository.findOneUser(idx);
     }
 
     /**
@@ -93,11 +85,7 @@ public class UserService {
      */
     @Transactional(readOnly = true)
     public UserDTO findOneUserById(String userId) {
-        try {
-            return userRepository.findOneUserById(userId);
-        } catch (Exception e) {
-            throw new TravelException(NOT_FOUND_USER, e);
-        }
+        return userRepository.findOneUserById(userId);
     }
 
     /**
@@ -111,11 +99,7 @@ public class UserService {
      */
     @Transactional(readOnly = true)
     public String findOneUserByToken(String token) {
-        try {
-            return userRepository.findOneUserByToken(token);
-        } catch (Exception e) {
-            throw new TravelException(NOT_FOUND_USER, e);
-        }
+        return userRepository.findOneUserByToken(token);
     }
 
     /**
@@ -210,11 +194,7 @@ public class UserService {
     @Cacheable(value = "schedule", key = "#userIdx")
     @Transactional(readOnly = true)
     public List<TravelScheduleDTO> findUserSchedule(Long userIdx) {
-        try {
-            return userRepository.findUserSchedule(userIdx);
-        } catch (Exception e) {
-            throw new TravelException(NOT_FOUND_SCHEDULE_LIST, e);
-        }
+        return userRepository.findUserSchedule(userIdx);
     }
 
     /**
@@ -229,10 +209,6 @@ public class UserService {
     @Cacheable(value = "schedule", key = "#scheduleIdx")
     @Transactional(readOnly = true)
     public TravelScheduleDTO findOneUserSchedule(Long userIdx, Long scheduleIdx) {
-        try {
-            return userRepository.findOneUserSchedule(userIdx, scheduleIdx);
-        } catch (Exception e) {
-            throw new TravelException(NOT_FOUND_SCHEDULE, e);
-        }
+        return userRepository.findOneUserSchedule(userIdx, scheduleIdx);
     }
 }

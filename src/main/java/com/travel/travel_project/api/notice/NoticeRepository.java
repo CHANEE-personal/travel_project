@@ -5,16 +5,17 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.travel.travel_project.domain.notice.NoticeDTO;
 import com.travel.travel_project.domain.notice.NoticeEntity;
 
+import com.travel.travel_project.exception.TravelException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static com.travel.travel_project.common.StringUtil.getInt;
 import static com.travel.travel_project.common.StringUtil.getString;
 import static com.travel.travel_project.domain.notice.QNoticeEntity.*;
+import static com.travel.travel_project.exception.ApiExceptionType.NOT_FOUND_NOTICE;
 
 @Repository
 @RequiredArgsConstructor
@@ -26,12 +27,7 @@ public class NoticeRepository {
     private BooleanExpression searchNoticeInfo(Map<String, Object> noticeMap) {
         String searchKeyword = getString(noticeMap.get("searchKeyword"), "");
 
-        if (searchKeyword == null) {
-            return null;
-        } else {
-            return noticeEntity.title.contains(searchKeyword)
-                    .or(noticeEntity.description.contains(searchKeyword));
-        }
+        return !Objects.equals(searchKeyword, "") ? noticeEntity.title.contains(searchKeyword).or(noticeEntity.description.contains(searchKeyword)) : null;
     }
 
     /**
@@ -43,7 +39,7 @@ public class NoticeRepository {
      * 5. 작성일      : 2022. 11. 28.
      * </pre>
      */
-    public Integer findNoticeCount(Map<String, Object> noticeMap) {
+    public int findNoticeCount(Map<String, Object> noticeMap) {
         return queryFactory.selectFrom(noticeEntity)
                 .where(searchNoticeInfo(noticeMap))
                 .fetch().size();
@@ -67,10 +63,7 @@ public class NoticeRepository {
                 .limit(getInt(noticeMap.get("size"), 0))
                 .fetch();
 
-        noticeList.forEach(list -> noticeList.get(noticeList.indexOf(list))
-                .setRowNum(getInt(noticeMap.get("startPage"), 1) * (getInt(noticeMap.get("size"), 1)) - (2 - noticeList.indexOf(list))));
-
-        return NoticeEntity.toDtoList(noticeList);
+        return noticeList != null ? NoticeEntity.toDtoList(noticeList) : Collections.emptyList();
     }
 
     /**
@@ -86,12 +79,11 @@ public class NoticeRepository {
         // 공지사항 조회 수 증가
         viewNotice(idx);
 
-        NoticeEntity findOneNotice = queryFactory
+        NoticeEntity findOneNotice = Optional.ofNullable(queryFactory
                 .selectFrom(noticeEntity)
                 .where(noticeEntity.idx.eq(idx))
-                .fetchOne();
+                .fetchOne()).orElseThrow(() -> new TravelException(NOT_FOUND_NOTICE, new Throwable()));
 
-        assert findOneNotice != null;
         return NoticeEntity.toDto(findOneNotice);
     }
 
