@@ -9,15 +9,14 @@ import com.travel.travel_project.domain.travel.review.TravelReviewDTO;
 import com.travel.travel_project.domain.travel.review.TravelReviewEntity;
 import com.travel.travel_project.domain.travel.schedule.TravelScheduleDTO;
 import com.travel.travel_project.domain.travel.schedule.TravelScheduleEntity;
+import com.travel.travel_project.exception.TravelException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 import static com.travel.travel_project.common.StringUtil.getInt;
 import static com.travel.travel_project.common.StringUtil.getString;
@@ -26,6 +25,7 @@ import static com.travel.travel_project.domain.file.QCommonImageEntity.commonIma
 import static com.travel.travel_project.domain.travel.QTravelEntity.travelEntity;
 import static com.travel.travel_project.domain.travel.group.QTravelGroupEntity.travelGroupEntity;
 import static com.travel.travel_project.domain.travel.review.QTravelReviewEntity.travelReviewEntity;
+import static com.travel.travel_project.exception.ApiExceptionType.*;
 import static java.time.LocalDate.now;
 import static java.time.LocalDateTime.of;
 
@@ -37,23 +37,17 @@ public class TravelRepository {
     private final EntityManager em;
 
     private BooleanExpression searchTravelCode(Map<String, Object> travelMap) {
-        int searchCode = getInt(travelMap.get("searchCode"), 0);
-
-        if (searchCode == 0) {
-            return null;
-        } else {
-            return travelEntity.travelCode.eq(searchCode);
-        }
+        return getInt(travelMap.get("searchCode"), 0) != 0 ?
+                travelEntity.travelCode.eq(getInt(travelMap.get("searchCode"), 0)) :
+                null;
     }
 
     private BooleanExpression searchTravelInfo(Map<String, Object> travelMap) {
         String searchKeyword = getString(travelMap.get("searchKeyword"), "");
 
-        if (!Objects.equals(searchKeyword, "")) {
-            return travelEntity.travelTitle.contains(searchKeyword).or(travelEntity.travelDescription.contains(searchKeyword));
-        } else {
-            return null;
-        }
+        return !Objects.equals(searchKeyword, "") ?
+                travelEntity.travelTitle.contains(searchKeyword).or(travelEntity.travelDescription.contains(searchKeyword)) :
+                null;
     }
 
     private BooleanExpression searchTravelDate(Map<String, Object> travelMap) {
@@ -99,7 +93,7 @@ public class TravelRepository {
                 .limit(getInt(travelMap.get("size"), 0))
                 .fetch();
 
-        return TravelEntity.toDtoList(travelList);
+        return travelList != null ? TravelEntity.toDtoList(travelList) : Collections.emptyList();
     }
 
     /**
@@ -115,7 +109,7 @@ public class TravelRepository {
         // 조회 수 증가
         viewTravel(idx);
 
-        TravelEntity findOneTravel = queryFactory
+        TravelEntity findOneTravel = Optional.ofNullable(queryFactory
                 .selectFrom(travelEntity)
                 .innerJoin(travelEntity.newTravelCode, commonEntity)
                 .fetchJoin()
@@ -124,9 +118,8 @@ public class TravelRepository {
                 .fetchJoin()
                 .where(travelEntity.idx.eq(idx)
                         .and(travelEntity.visible.eq("Y")))
-                .fetchOne();
+                .fetchOne()).orElseThrow(() -> new TravelException(NOT_FOUND_TRAVEL, new Throwable()));
 
-        assert findOneTravel != null;
         return TravelEntity.toDto(findOneTravel);
     }
 
@@ -140,12 +133,12 @@ public class TravelRepository {
      * </pre>
      */
     public TravelDTO findOnePrevTravel(Long idx) {
-        TravelEntity findOnePrevTravel = queryFactory
+        TravelEntity findOnePrevTravel = Optional.ofNullable(queryFactory
                 .selectFrom(travelEntity)
                 .orderBy(travelEntity.idx.desc())
                 .where(travelEntity.idx.lt(idx)
                         .and(travelEntity.visible.eq("Y")))
-                .fetchFirst();
+                .fetchFirst()).orElseThrow(() -> new TravelException(NOT_FOUND_TRAVEL, new Throwable()));
 
         return TravelEntity.toDto(findOnePrevTravel);
     }
@@ -160,12 +153,12 @@ public class TravelRepository {
      * </pre>
      */
     public TravelDTO findOneNextTravel(Long idx) {
-        TravelEntity findOneNextTravel = queryFactory
+        TravelEntity findOneNextTravel = Optional.ofNullable(queryFactory
                 .selectFrom(travelEntity)
                 .orderBy(travelEntity.idx.asc())
                 .where(travelEntity.idx.gt(idx)
                         .and(travelEntity.visible.eq("Y")))
-                .fetchFirst();
+                .fetchFirst()).orElseThrow(() -> new TravelException(NOT_FOUND_TRAVEL, new Throwable()));
 
         return TravelEntity.toDto(findOneNextTravel);
     }
@@ -225,7 +218,7 @@ public class TravelRepository {
      * 5. 작성일      : 2022. 10. 06.
      * </pre>
      */
-    public Integer favoriteTravel(Long idx) {
+    public int favoriteTravel(Long idx) {
         queryFactory
                 .update(travelEntity)
                 //add , minus , multiple 다 가능하다.
@@ -322,7 +315,7 @@ public class TravelRepository {
                         .and(travelReviewEntity.visible.eq("Y")))
                 .fetch();
 
-        return TravelReviewEntity.toDtoList(replyTravelReview);
+        return replyTravelReview != null ? TravelReviewEntity.toDtoList(replyTravelReview) : Collections.emptyList();
     }
 
     /**
@@ -335,13 +328,12 @@ public class TravelRepository {
      * </pre>
      */
     public TravelReviewDTO detailReplyTravelReview(Long idx) {
-        TravelReviewEntity detailReplyTravelReview = queryFactory
+        TravelReviewEntity detailReplyTravelReview = Optional.ofNullable(queryFactory
                 .selectFrom(travelReviewEntity)
                 .where(travelReviewEntity.idx.eq(idx)
                         .and(travelReviewEntity.visible.eq("Y")))
-                .fetchOne();
+                .fetchOne()).orElseThrow(() -> new TravelException(NOT_FOUND_TRAVEL_REVIEW, new Throwable()));
 
-        assert detailReplyTravelReview != null;
         return TravelReviewEntity.toDto(detailReplyTravelReview);
     }
 
@@ -391,10 +383,7 @@ public class TravelRepository {
                 .limit(getInt(travelMap.get("size"), 0))
                 .fetch();
 
-        travelList.forEach(list -> travelList.get(travelList.indexOf(list))
-                .setRowNum(getInt(travelMap.get("startPage"), 1) * (getInt(travelMap.get("size"), 1)) - (2 - travelList.indexOf(list))));
-
-        return TravelEntity.toDtoList(travelList);
+        return travelList != null ? TravelEntity.toDtoList(travelList) : Collections.emptyList();
     }
 
     /**
@@ -428,10 +417,7 @@ public class TravelRepository {
                 .limit(getInt(groupMap.get("size"), 0))
                 .fetch();
 
-        travelGroupList.forEach(list -> travelGroupList.get(travelGroupList.indexOf(list))
-                .setRowNum(getInt(groupMap.get("startPage"), 1) * (getInt(groupMap.get("size"), 1)) - (2 - travelGroupList.indexOf(list))));
-
-        return TravelGroupEntity.toDtoList(travelGroupList);
+        return travelGroupList != null ? TravelGroupEntity.toDtoList(travelGroupList) : Collections.emptyList();
     }
 
     /**
@@ -444,12 +430,11 @@ public class TravelRepository {
      * </pre>
      */
     public TravelGroupDTO findOneTravelGroup(Long idx) {
-        TravelGroupEntity travelGroup = queryFactory
+        TravelGroupEntity travelGroup = Optional.ofNullable(queryFactory
                 .selectFrom(travelGroupEntity)
                 .where(travelGroupEntity.idx.eq(idx))
-                .fetchOne();
+                .fetchOne()).orElseThrow(() -> new TravelException(NOT_FOUND_TRAVEL_GROUP, new Throwable()));
 
-        assert travelGroup != null;
         return TravelGroupEntity.toDto(travelGroup);
     }
 

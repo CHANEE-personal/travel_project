@@ -46,11 +46,7 @@ public class TravelService {
      */
     @Transactional(readOnly = true)
     public int findTravelCount(Map<String, Object> travelMap) {
-        try {
-            return travelRepository.findTravelCount(travelMap);
-        } catch (Exception e) {
-            throw new TravelException(NOT_FOUND_TRAVEL_LIST, e);
-        }
+        return travelRepository.findTravelCount(travelMap);
     }
 
     /**
@@ -65,11 +61,7 @@ public class TravelService {
     @Cacheable(value = "travel", key = "#travelMap")
     @Transactional(readOnly = true)
     public List<TravelDTO> findTravelList(Map<String, Object> travelMap) {
-        try {
-            return travelRepository.findTravelList(travelMap);
-        } catch (Exception e) {
-            throw new TravelException(NOT_FOUND_TRAVEL_LIST, e);
-        }
+        return travelRepository.findTravelList(travelMap);
     }
 
     /**
@@ -84,11 +76,7 @@ public class TravelService {
     @Cacheable(value = "travel", key = "#idx")
     @Transactional
     public TravelDTO findOneTravel(Long idx) {
-        try {
-            return travelRepository.findOneTravel(idx);
-        } catch (Exception e) {
-            throw new TravelException(NOT_FOUND_TRAVEL, e);
-        }
+        return travelRepository.findOneTravel(idx);
     }
 
     /**
@@ -202,11 +190,7 @@ public class TravelService {
     @Cacheable(value = "travel", key = "#travelMap")
     @Transactional(readOnly = true)
     public List<TravelDTO> popularityTravel(Map<String, Object> travelMap) {
-        try {
-            return travelRepository.popularityTravel(travelMap);
-        } catch (Exception e) {
-            throw new TravelException(NOT_FOUND_TRAVEL_LIST, e);
-        }
+        return travelRepository.popularityTravel(travelMap);
     }
 
     /**
@@ -280,11 +264,7 @@ public class TravelService {
      */
     @Transactional
     public List<TravelReviewDTO> replyTravelReview(Long idx) {
-        try {
-            return travelRepository.replyTravelReview(idx);
-        } catch (Exception e) {
-            throw new TravelException(NOT_FOUND_TRAVEL_REVIEW_LIST, e);
-        }
+        return travelRepository.replyTravelReview(idx);
     }
 
     /**
@@ -299,11 +279,7 @@ public class TravelService {
     @Cacheable(value = "reply", key = "#idx")
     @Transactional
     public TravelReviewDTO detailReplyTravelReview(Long idx) {
-        try {
-            return travelRepository.detailReplyTravelReview(idx);
-        } catch (Exception e) {
-            throw new TravelException(NOT_FOUND_TRAVEL_REVIEW, e);
-        }
+        return travelRepository.detailReplyTravelReview(idx);
     }
 
     /**
@@ -356,11 +332,7 @@ public class TravelService {
     @Cacheable(value = "group", key = "#groupMap")
     @Transactional(readOnly = true)
     public List<TravelGroupDTO> findTravelGroupList(Map<String, Object> groupMap) {
-        try {
-            return travelRepository.findTravelGroupList(groupMap);
-        } catch (Exception e) {
-            throw new TravelException(NOT_FOUND_TRAVEL_GROUP_LIST, e);
-        }
+        return travelRepository.findTravelGroupList(groupMap);
     }
 
     /**
@@ -375,11 +347,7 @@ public class TravelService {
     @Cacheable("group")
     @Transactional(readOnly = true)
     public TravelGroupDTO findOneTravelGroup(Long idx) {
-        try {
-            return travelRepository.findOneTravelGroup(idx);
-        } catch (Exception e) {
-            throw new TravelException(NOT_FOUND_TRAVEL_GROUP, e);
-        }
+        return travelRepository.findOneTravelGroup(idx);
     }
 
     /**
