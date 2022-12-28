@@ -50,19 +50,18 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
         }
     }
 
-    @ExceptionHandler(value = {TravelException.class})
+    @ExceptionHandler(value = TravelException.class)
     public ResponseEntity<Error> exception(TravelException tspException) {
         return new ResponseEntity<>(Error.create(tspException.getBaseExceptionType()), OK);
     }
-
 
     /**
      * <pre>
      * 1. MethodName : handleConstraintViolation
      * 2. ClassName  : ApiExceptionHandler.java
      * 3. Comment    : Parameter Validation Check
-     * 4. 작성자       : CHO
-     * 5. 작성일       : 2022. 01. 15.
+     * 4. 작성자      : CHO
+     * 5. 작성일      : 2022. 01. 15.
      * </pre>
      */
     @ExceptionHandler(value = ConstraintViolationException.class)
@@ -70,57 +69,32 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
         return handleExceptionInternal(e, messageSource.getMessage("modelCategory.Range", new String[]{}, KOREA), new HttpHeaders(), BAD_REQUEST, request);
     }
 
-//    @ExceptionHandler(value = MethodArgumentNotValidException.class)
-//    public ResponseEntity<Error> handleValidException(MethodArgumentNotValidException e) {
-//        ApiExceptionType errorCode = ApiExceptionType.NOT_NULL;
-//        BindingResult bindingResult = e.getBindingResult();
-//
-//        StringBuilder builder = new StringBuilder();
-//        for (FieldError fieldError : bindingResult.getFieldErrors()) {
-//            builder.append("[");
-//            builder.append(fieldError.getField());
-//            builder.append("](은)는 ");
-//            builder.append(fieldError.getDefaultMessage());
-//            builder.append(". ");
-//        }
-//        builder.deleteCharAt(builder.length() - 1);
-//
-//        final Error response = new Error(errorCode.getErrorCode(), errorCode.getHttpStatus(), builder.toString());
-//        return new ResponseEntity<>(response, HttpStatus.valueOf(errorCode.getHttpStatus()));
-//    }
-
     /**
      * <pre>
      * 1. MethodName : handleMethodArgumentNotValid
      * 2. ClassName  : ApiExceptionHandler.java
      * 3. Comment    : Entity or DTO Validation Check
-     * 4. 작성자       : CHO
-     * 5. 작성일       : 2022. 01. 15.
+     * 4. 작성자      : CHO
+     * 5. 작성일      : 2022. 01. 15.
      * </pre>
      */
-    @Override
     protected ResponseEntity<Object> handleMethodArgumentNotValid(
             MethodArgumentNotValidException ex, HttpHeaders headers,
             HttpStatus status, WebRequest request) {
 
-        List<ObjectError> allErrors = ex.getBindingResult().getAllErrors();
-        for (ObjectError error : allErrors) {
-            String message = stream(requireNonNull(error.getCodes()))
-                    .map(c -> {
-                        Object[] arguments = error.getArguments();
-                        Locale locale = LocaleContextHolder.getLocale();
-                        try {
-                            return messageSource.getMessage(c, arguments, locale);
-                        } catch (NoSuchMessageException e) {
-                            return null;
-                        }
-                    }).filter(Objects::nonNull)
-                    .findFirst()
-                    // 코드를 찾지 못할 경우 기본 메시지 사용.
-                    .orElse(error.getDefaultMessage());
+        ApiExceptionType errorCode = ApiExceptionType.NOT_NULL;
+        BindingResult bindingResult = ex.getBindingResult();
 
-            log.error("error messages: {}", message);
+        StringBuilder builder = new StringBuilder();
+        for (FieldError fieldError : bindingResult.getFieldErrors()) {
+            builder.append("[");
+            builder.append(fieldError.getField());
+            builder.append("](은)는 ");
+            builder.append(fieldError.getDefaultMessage());
         }
-        return super.handleMethodArgumentNotValid(ex, headers, status, request);
+        builder.deleteCharAt(builder.length() - 1);
+
+        final Error response = new Error(errorCode.getErrorCode(), errorCode.getHttpStatus(), builder.toString());
+        return new ResponseEntity<>(response, HttpStatus.valueOf(errorCode.getHttpStatus()));
     }
 }

@@ -1,5 +1,6 @@
 package com.travel.travel_project.domain.travel;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.travel.travel_project.domain.common.CommonEntity;
 import com.travel.travel_project.domain.common.NewCommonMappedClass;
 import com.travel.travel_project.domain.file.CommonImageEntity;
@@ -72,13 +73,16 @@ public class TravelEntity extends NewCommonMappedClass {
     @Column(name = "popular")
     private Boolean popular;
 
+    @JsonIgnore
     @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "travel_code", referencedColumnName = "common_code", insertable = false, updatable = false)
     private CommonEntity newTravelCode;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "newTravelEntity", fetch = LAZY)
     private List<TravelReviewEntity> travelReviewEntityList = new ArrayList<>();
 
+    @JsonIgnore
     @BatchSize(size = 100)
     @Where(clause = "type_name = 'travel'")
     @OneToMany(mappedBy = "travelImageEntity", fetch = LAZY)
