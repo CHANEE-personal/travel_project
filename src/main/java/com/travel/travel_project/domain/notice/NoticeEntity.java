@@ -2,16 +2,14 @@ package com.travel.travel_project.domain.notice;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.travel.travel_project.domain.common.NewCommonMappedClass;
-import com.travel.travel_project.domain.faq.FaqDTO;
-import com.travel.travel_project.domain.faq.FaqEntity;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static javax.persistence.GenerationType.IDENTITY;
 
@@ -88,20 +86,16 @@ public class NoticeEntity extends NewCommonMappedClass {
     }
 
     public static List<NoticeDTO> toDtoList(List<NoticeEntity> entityList) {
-        List<NoticeDTO> list = new ArrayList<>(entityList.size());
-        for (NoticeEntity noticeEntity : entityList) {
-            list.add(toDto(noticeEntity));
-        }
-
-        return list;
+        if (entityList == null) return null;
+        return entityList.stream()
+                .map(NoticeEntity::toDto)
+                .collect(Collectors.toList());
     }
 
     public static List<NoticeEntity> toEntityList(List<NoticeDTO> dtoList) {
-        List<NoticeEntity> list = new ArrayList<>(dtoList.size());
-        for (NoticeDTO noticeDTO : dtoList) {
-            list.add(toEntity(noticeDTO));
-        }
-
-        return list;
+        if (dtoList == null) return null;
+        return dtoList.stream()
+                .map(NoticeEntity::toEntity)
+                .collect(Collectors.toList());
     }
 }

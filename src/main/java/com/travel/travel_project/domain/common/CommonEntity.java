@@ -1,5 +1,6 @@
 package com.travel.travel_project.domain.common;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.travel.travel_project.domain.faq.FaqEntity;
 import com.travel.travel_project.domain.travel.TravelEntity;
 import lombok.*;
@@ -46,9 +47,11 @@ public class CommonEntity extends NewCommonMappedClass implements Serializable {
     @NotEmpty(message = "공통 코드 사용 여부는 필수입니다.")
     private String visible;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "newTravelCode", cascade = MERGE, fetch = LAZY)
     private List<TravelEntity> adminTravelEntityList = new ArrayList<>();
 
+    @JsonIgnore
     @OneToMany(mappedBy = "newFaqCode", cascade = MERGE, fetch = LAZY)
     private List<FaqEntity> faqEntityList = new ArrayList<>();
 

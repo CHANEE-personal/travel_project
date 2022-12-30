@@ -1,5 +1,6 @@
 package com.travel.travel_project.domain.travel.schedule;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.travel.travel_project.domain.common.NewCommonMappedClass;
 import com.travel.travel_project.domain.user.UserEntity;
 import io.swagger.annotations.ApiModelProperty;
@@ -55,6 +56,7 @@ public class TravelScheduleEntity extends NewCommonMappedClass {
     @NotNull(message = "스케줄 일정 입력은 필수입니다.")
     private LocalDateTime scheduleTime;
 
+    @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "user_idx", insertable = false, updatable = false)
     private UserEntity userEntity;

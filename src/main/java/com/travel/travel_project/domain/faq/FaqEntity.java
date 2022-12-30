@@ -1,5 +1,6 @@
 package com.travel.travel_project.domain.faq;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.travel.travel_project.domain.common.CommonEntity;
 import lombok.*;
@@ -53,6 +54,7 @@ public class FaqEntity {
     @NotEmpty(message = "공지사항 노출 여부 선택은 필수입니다.")
     private String visible;
 
+    @JsonIgnore
     @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "faq_code", insertable = false, updatable = false)
     private CommonEntity newFaqCode;

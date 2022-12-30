@@ -1,5 +1,6 @@
 package com.travel.travel_project.domain.post;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.travel.travel_project.domain.common.NewCommonMappedClass;
 import com.travel.travel_project.domain.file.CommonImageEntity;
 import lombok.*;
@@ -63,6 +64,7 @@ public class PostEntity extends NewCommonMappedClass {
     @Column(name = "popular")
     private Boolean popular;
 
+    @JsonIgnore
     @BatchSize(size = 100)
     @Where(clause = "type_name = 'post'")
     @OneToMany(mappedBy = "postImageEntity", fetch = LAZY)

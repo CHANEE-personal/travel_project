@@ -1,5 +1,6 @@
 package com.travel.travel_project.domain.travel.group;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.travel.travel_project.domain.common.NewCommonMappedClass;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
@@ -48,6 +49,7 @@ public class TravelGroupEntity extends NewCommonMappedClass {
     @Column(name = "visible")
     private String visible;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "travelGroupEntity", cascade = CascadeType.REMOVE)
     private List<TravelGroupUserEntity> travelGroupList = new ArrayList<>();
 

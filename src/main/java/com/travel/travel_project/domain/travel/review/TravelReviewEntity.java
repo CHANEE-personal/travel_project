@@ -1,5 +1,6 @@
 package com.travel.travel_project.domain.travel.review;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.travel.travel_project.domain.common.NewCommonMappedClass;
 import com.travel.travel_project.domain.travel.TravelEntity;
 import lombok.*;
@@ -65,6 +66,7 @@ public class TravelReviewEntity extends NewCommonMappedClass {
     @Column(name = "popular")
     private Boolean popular;
 
+    @JsonIgnore
     @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "travel_idx", referencedColumnName = "idx", insertable = false, updatable = false)
     private TravelEntity newTravelEntity;
