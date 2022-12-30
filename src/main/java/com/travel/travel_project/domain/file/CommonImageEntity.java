@@ -1,6 +1,7 @@
 package com.travel.travel_project.domain.file;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.travel.travel_project.domain.common.EntityType;
 import com.travel.travel_project.domain.post.PostEntity;
 import com.travel.travel_project.domain.travel.TravelEntity;
@@ -74,10 +75,12 @@ public class CommonImageEntity {
     @ApiModelProperty(value = "등록일자", hidden = true)
     private LocalDateTime regDate;
 
+    @JsonIgnore
     @ManyToOne(fetch = LAZY, cascade = CascadeType.REMOVE)
     @JoinColumn(name = "type_idx", referencedColumnName = "idx", insertable = false, updatable = false)
     private TravelEntity travelImageEntity;
 
+    @JsonIgnore
     @ManyToOne(fetch = LAZY, cascade = CascadeType.REMOVE)
     @JoinColumn(name = "type_idx", referencedColumnName = "idx", insertable = false, updatable = false)
     private PostEntity postImageEntity;
