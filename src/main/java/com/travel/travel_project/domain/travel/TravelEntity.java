@@ -61,10 +61,10 @@ public class TravelEntity extends NewCommonMappedClass {
     private String travelZipCode;
 
     @Column(name = "view_count")
-    private Integer viewCount;
+    private int viewCount;
 
     @Column(name = "favorite_count")
-    private Integer favoriteCount;
+    private int favoriteCount;
 
     @Column(name = "visible")
     @NotEmpty(message = "여행지 노출 여부 선택은 필수입니다.")

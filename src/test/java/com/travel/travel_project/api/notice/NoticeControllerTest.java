@@ -53,7 +53,6 @@ class NoticeControllerTest {
     public void setup() {
         this.mockMvc = webAppContextSetup(wac)
                 .addFilters(new CharacterEncodingFilter("UTF-8", true))
-                .alwaysExpect(status().isOk())
                 .alwaysDo(print())
                 .build();
     }
@@ -93,7 +92,7 @@ class NoticeControllerTest {
                         .contentType(APPLICATION_JSON_VALUE)
                         .content(objectMapper.writeValueAsString(noticeEntity)))
                 .andDo(print())
-                .andExpect(status().isOk())
+                .andExpect(status().isCreated())
                 .andExpect(content().contentType("application/json;charset=utf-8"))
                 .andExpect(jsonPath("$.title").value("공지사항 등록 테스트"))
                 .andExpect(jsonPath("$.description").value("공지사항 등록 테스트"));
@@ -146,7 +145,7 @@ class NoticeControllerTest {
 
         mockMvc.perform(delete("/api/notice/{idx}", noticeEntity.getIdx()))
                 .andDo(print())
-                .andExpect(status().isOk())
+                .andExpect(status().isNoContent())
                 .andExpect(content().contentType("application/json;charset=utf-8"))
                 .andExpect(content().string(getString(noticeEntity.getIdx())));
     }

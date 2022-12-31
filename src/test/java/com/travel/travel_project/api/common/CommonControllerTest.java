@@ -61,7 +61,6 @@ class CommonControllerTest {
     public void setup() {
         this.mockMvc = webAppContextSetup(wac)
                 .addFilters(new CharacterEncodingFilter("UTF-8", true))
-                .alwaysExpect(status().isOk())
                 .alwaysDo(print())
                 .build();
 
@@ -95,7 +94,7 @@ class CommonControllerTest {
                         .contentType(APPLICATION_JSON_VALUE)
                         .content(objectMapper.writeValueAsString(commonEntity)))
                 .andDo(print())
-                .andExpect(status().isOk())
+                .andExpect(status().isCreated())
                 .andExpect(content().contentType("application/json;charset=utf-8"))
                 .andExpect(jsonPath("$.commonCode").value(1))
                 .andExpect(jsonPath("$.commonName").value("서울"));
@@ -130,7 +129,7 @@ class CommonControllerTest {
 
         mockMvc.perform(delete("/api/common/{idx}", commonEntity.getIdx()))
                 .andDo(print())
-                .andExpect(status().isOk())
+                .andExpect(status().isNoContent())
                 .andExpect(content().contentType("application/json;charset=utf-8"))
                 .andExpect(content().string(getString(commonEntity.getIdx())));
     }

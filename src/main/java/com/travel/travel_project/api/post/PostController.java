@@ -10,10 +10,12 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.HttpClientErrorException;
 
 import javax.validation.Valid;
+import java.net.URI;
 import java.rmi.ServerError;
 import java.util.List;
 import java.util.Map;
@@ -40,15 +42,15 @@ public class PostController {
      */
     @ApiOperation(value = "게시글 리스트 조회", notes = "게시글 리스트를 조회한다.")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "게시글 리스트 조회 성공", response = Map.class),
+            @ApiResponse(code = 200, message = "게시글 리스트 조회 성공", response = List.class),
             @ApiResponse(code = 400, message = "잘못된 요청", response = HttpClientErrorException.BadRequest.class),
             @ApiResponse(code = 401, message = "허용되지 않는 관리자", response = HttpClientErrorException.Unauthorized.class),
             @ApiResponse(code = 403, message = "접근거부", response = HttpClientErrorException.class),
             @ApiResponse(code = 500, message = "서버 에러", response = ServerError.class)
     })
     @GetMapping(value = "/lists")
-    public List<PostDTO> findPostList(@RequestParam(required = false) Map<String, Object> paramMap, Page page) {
-        return this.postService.findPostList(searchCommon.searchCommon(page, paramMap));
+    public ResponseEntity<List<PostDTO>> findPostList(@RequestParam(required = false) Map<String, Object> paramMap, Page page) {
+        return ResponseEntity.ok(postService.findPostList(searchCommon.searchCommon(page, paramMap)));
     }
 
     /**
@@ -62,15 +64,15 @@ public class PostController {
      */
     @ApiOperation(value = "게시글 상세 조회", notes = "게시글 상세 조회한다.")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "게시글 상세 조회 성공", response = Map.class),
+            @ApiResponse(code = 200, message = "게시글 상세 조회 성공", response = PostDTO.class),
             @ApiResponse(code = 400, message = "잘못된 요청", response = HttpClientErrorException.BadRequest.class),
             @ApiResponse(code = 401, message = "허용되지 않는 관리자", response = HttpClientErrorException.Unauthorized.class),
             @ApiResponse(code = 403, message = "접근거부", response = HttpClientErrorException.class),
             @ApiResponse(code = 500, message = "서버 에러", response = ServerError.class)
     })
     @GetMapping(value = "/{idx}")
-    public PostDTO findOnePost(@PathVariable Long idx) {
-        return postService.findOnePost(idx);
+    public ResponseEntity<PostDTO> findOnePost(@PathVariable Long idx) {
+        return ResponseEntity.ok(postService.findOnePost(idx));
     }
 
     /**
@@ -84,15 +86,15 @@ public class PostController {
      */
     @ApiOperation(value = "게시글 등록", notes = "게시글 등록한다.")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "게시글 등록 성공", response = Map.class),
+            @ApiResponse(code = 201, message = "게시글 등록 성공", response = PostDTO.class),
             @ApiResponse(code = 400, message = "잘못된 요청", response = HttpClientErrorException.BadRequest.class),
             @ApiResponse(code = 401, message = "허용되지 않는 관리자", response = HttpClientErrorException.Unauthorized.class),
             @ApiResponse(code = 403, message = "접근거부", response = HttpClientErrorException.class),
             @ApiResponse(code = 500, message = "서버 에러", response = ServerError.class)
     })
     @PostMapping
-    public PostDTO insertPost(@Valid @RequestBody PostEntity postEntity) {
-        return postService.insertPost(postEntity);
+    public ResponseEntity<PostDTO> insertPost(@Valid @RequestBody PostEntity postEntity) {
+        return ResponseEntity.created(URI.create("")).body(postService.insertPost(postEntity));
     }
 
     /**
@@ -106,19 +108,18 @@ public class PostController {
      */
     @ApiOperation(value = "게시글 수정", notes = "게시글 수정한다.")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "게시글 수정 성공", response = Map.class),
+            @ApiResponse(code = 200, message = "게시글 수정 성공", response = PostDTO.class),
             @ApiResponse(code = 400, message = "잘못된 요청", response = HttpClientErrorException.BadRequest.class),
             @ApiResponse(code = 401, message = "허용되지 않는 관리자", response = HttpClientErrorException.Unauthorized.class),
             @ApiResponse(code = 403, message = "접근거부", response = HttpClientErrorException.class),
             @ApiResponse(code = 500, message = "서버 에러", response = ServerError.class)
     })
     @PutMapping("/{idx}")
-    public PostDTO updatePost(@PathVariable Long idx, @Valid @RequestBody PostEntity postEntity) {
+    public ResponseEntity<PostDTO> updatePost(@PathVariable Long idx, @Valid @RequestBody PostEntity postEntity) {
         if (postService.findOnePost(idx) == null) {
-            throw new TravelException(NOT_FOUND_POST, new Throwable());
-        } else {
-            return postService.updatePost(postEntity);
+            return ResponseEntity.notFound().build();
         }
+        return ResponseEntity.ok(postService.updatePost(postEntity));
     }
 
     /**
@@ -132,15 +133,19 @@ public class PostController {
      */
     @ApiOperation(value = "게시글 삭제", notes = "게시글 삭제한다.")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "게시글 삭제 성공", response = Map.class),
+            @ApiResponse(code = 204, message = "게시글 삭제 성공", response = Long.class),
             @ApiResponse(code = 400, message = "잘못된 요청", response = HttpClientErrorException.BadRequest.class),
             @ApiResponse(code = 401, message = "허용되지 않는 관리자", response = HttpClientErrorException.Unauthorized.class),
             @ApiResponse(code = 403, message = "접근거부", response = HttpClientErrorException.class),
             @ApiResponse(code = 500, message = "서버 에러", response = ServerError.class)
     })
     @DeleteMapping("/{idx}")
-    public Long deletePost(@PathVariable Long idx) {
-        return postService.deletePost(idx);
+    public ResponseEntity<Long> deletePost(@PathVariable Long idx) {
+        if (postService.findOnePost(idx) == null) {
+            return ResponseEntity.notFound().build();
+        }
+        postService.deletePost(idx);
+        return ResponseEntity.noContent().build();
     }
 
     /**
@@ -154,14 +159,17 @@ public class PostController {
      */
     @ApiOperation(value = "게시글 고정글 설정", notes = "인기 게시글 설정한다.")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "인기 게시글 설정 성공", response = Map.class),
+            @ApiResponse(code = 200, message = "인기 게시글 설정 성공", response = Boolean.class),
             @ApiResponse(code = 400, message = "잘못된 요청", response = HttpClientErrorException.BadRequest.class),
             @ApiResponse(code = 401, message = "허용되지 않는 관리자", response = HttpClientErrorException.Unauthorized.class),
             @ApiResponse(code = 403, message = "접근거부", response = HttpClientErrorException.class),
             @ApiResponse(code = 500, message = "서버 에러", response = ServerError.class)
     })
     @PutMapping("/{idx}/toggle-popular")
-    public Boolean togglePopular(@PathVariable Long idx) {
-        return postService.togglePopular(idx);
+    public ResponseEntity<Boolean> togglePopular(@PathVariable Long idx) {
+        if (postService.findOnePost(idx) == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(postService.togglePopular(idx));
     }
 }

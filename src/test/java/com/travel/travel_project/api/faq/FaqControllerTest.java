@@ -14,6 +14,7 @@ import org.springframework.context.event.EventListener;
 import org.springframework.test.context.TestConstructor;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.filter.CharacterEncodingFilter;
@@ -35,8 +36,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup;
 
 @SpringBootTest
+@Transactional
 @AutoConfigureMockMvc
-@TestPropertySource(locations = "classpath:application-local.properties")
+@TestPropertySource(locations = "classpath:application.properties")
 @TestConstructor(autowireMode = ALL)
 @RequiredArgsConstructor
 @AutoConfigureTestDatabase(replace = NONE)
@@ -52,7 +54,6 @@ class FaqControllerTest {
     public void setup() {
         this.mockMvc = webAppContextSetup(wac)
                 .addFilters(new CharacterEncodingFilter("UTF-8", true))  // 필터 추가
-                .alwaysExpect(status().isOk())
                 .alwaysDo(print())
                 .build();
     }
@@ -98,7 +99,7 @@ class FaqControllerTest {
         // 예외
         mockMvc.perform(get("/api/faq/-1"))
                 .andDo(print())
-                .andExpect(status().isOk())
+                .andExpect(status().isNotFound())
                 .andExpect(content().contentType("application/json;charset=utf-8"))
                 .andExpect(jsonPath("$.code").value("NOT_FOUND_FAQ"))
                 .andExpect(jsonPath("$.message").value("해당 FAQ 없음"));
@@ -119,7 +120,7 @@ class FaqControllerTest {
                         .contentType(APPLICATION_JSON_VALUE)
                         .content(objectMapper.writeValueAsString(faqEntity)))
                 .andDo(print())
-                .andExpect(status().isOk())
+                .andExpect(status().isCreated())
                 .andExpect(content().contentType("application/json;charset=utf-8"))
                 .andExpect(jsonPath("$.title").value("FAQ 등록 테스트"))
                 .andExpect(jsonPath("$.description").value("FAQ 등록 테스트"));
@@ -172,7 +173,7 @@ class FaqControllerTest {
 
         mockMvc.perform(delete("/api/faq/{idx}", faqEntity.getIdx()))
                 .andDo(print())
-                .andExpect(status().isOk())
+                .andExpect(status().isNoContent())
                 .andExpect(content().contentType("application/json;charset=utf-8"))
                 .andExpect(content().string(getString(faqEntity.getIdx())));
     }

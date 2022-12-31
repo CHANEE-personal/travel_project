@@ -48,10 +48,10 @@ public class TravelDTO extends NewCommonDTO {
     private String travelZipCode;
 
     @ApiModelProperty(value = "여행지 조회수((ex)0)", example = "1")
-    private Integer viewCount;
+    private int viewCount;
 
     @ApiModelProperty(value = "여행지 좋아요 수((ex)0)", example = "1")
-    private Integer favoriteCount;
+    private int favoriteCount;
 
     @ApiModelProperty(required = true, value = "여행지 노출 여부((ex)Y,N)")
     private String visible;
