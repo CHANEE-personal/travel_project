@@ -23,6 +23,7 @@ import org.springframework.web.client.HttpClientErrorException;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
+import java.net.URI;
 import java.rmi.ServerError;
 import java.util.HashMap;
 import java.util.List;
@@ -43,24 +44,24 @@ public class UserController {
 
     /**
      * <pre>
-     * 1. MethodName : findUsersList
+     * 1. MethodName : findUserList
      * 2. ClassName  : UserController.java
      * 3. Comment    : 유저 조회
-     * 4. 작성자       : CHO
-     * 5. 작성일       : 2022. 10. 11.
+     * 4. 작성자      : CHO
+     * 5. 작성일      : 2022. 10. 11.
      * </pre>
      */
     @ApiOperation(value = "유저 조회", notes = "유저를 조회한다.")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "유저 조회 성공", response = Map.class),
+            @ApiResponse(code = 200, message = "유저 조회 성공", response = List.class),
             @ApiResponse(code = 400, message = "잘못된 요청", response = HttpClientErrorException.BadRequest.class),
             @ApiResponse(code = 401, message = "허용되지 않는 관리자", response = HttpClientErrorException.Unauthorized.class),
             @ApiResponse(code = 403, message = "접근거부", response = HttpClientErrorException.class),
             @ApiResponse(code = 500, message = "서버 에러", response = ServerError.class)
     })
     @GetMapping
-    public List<UserDTO> findUserList(@RequestParam(required = false) Map<String, Object> paramMap, Page page) {
-        return userService.findUserList(searchCommon.searchCommon(page, paramMap));
+    public ResponseEntity<List<UserDTO>> findUserList(@RequestParam(required = false) Map<String, Object> paramMap, Page page) {
+        return ResponseEntity.ok(userService.findUserList(searchCommon.searchCommon(page, paramMap)));
     }
 
     /**
@@ -68,8 +69,8 @@ public class UserController {
      * 1. MethodName : login
      * 2. ClassName  : UserController.java
      * 3. Comment    : 유저 로그인 처리
-     * 4. 작성자       : CHO
-     * 5. 작성일       : 2022. 10. 11.
+     * 4. 작성자      : CHO
+     * 5. 작성일      : 2022. 10. 11.
      * </pre>
      */
     @ApiOperation(value = "유저 로그인 처리", notes = "유저 로그인 처리한다.")
@@ -81,7 +82,7 @@ public class UserController {
             @ApiResponse(code = 500, message = "서버 에러", response = ServerError.class)
     })
     @PostMapping("/login")
-    public Map<String, Object> login(@RequestBody AuthenticationRequest authenticationRequest, HttpServletResponse response) throws Exception {
+    public ResponseEntity<Map<String, Object>> login(@RequestBody AuthenticationRequest authenticationRequest, HttpServletResponse response) throws Exception {
         Map<String, Object> userMap = new HashMap<>();
 
         UserEntity userEntity = UserEntity.builder()
@@ -106,7 +107,7 @@ public class UserController {
             userService.insertToken(userEntity);
         }
 
-        return userMap;
+        return ResponseEntity.ok().body(userMap);
     }
 
     /**
@@ -171,21 +172,21 @@ public class UserController {
      * 1. MethodName : insertUser
      * 2. ClassName  : UserController.java
      * 3. Comment    : 유저 회원가입
-     * 4. 작성자       : CHO
-     * 5. 작성일       : 2022. 10. 11.
+     * 4. 작성자      : CHO
+     * 5. 작성일      : 2022. 10. 11.
      * </pre>
      */
     @ApiOperation(value = "유저 회원가입 처리", notes = "유저 회원가입을 처리한다.")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "회원가입 성공", response = Map.class),
+            @ApiResponse(code = 201, message = "회원가입 성공", response = UserDTO.class),
             @ApiResponse(code = 400, message = "잘못된 요청", response = HttpClientErrorException.BadRequest.class),
             @ApiResponse(code = 401, message = "허용되지 않는 관리자", response = HttpClientErrorException.Unauthorized.class),
             @ApiResponse(code = 403, message = "접근거부", response = HttpClientErrorException.class),
             @ApiResponse(code = 500, message = "서버 에러", response = ServerError.class)
     })
     @PostMapping
-    public UserDTO insertUser(@Valid @RequestBody UserEntity userEntity) {
-        return userService.insertUser(userEntity);
+    public ResponseEntity<UserDTO> insertUser(@Valid @RequestBody UserEntity userEntity) {
+        return ResponseEntity.created(URI.create("")).body(userService.insertUser(userEntity));
     }
 
     /**
@@ -193,21 +194,24 @@ public class UserController {
      * 1. MethodName : updateUser
      * 2. ClassName  : UserController.java
      * 3. Comment    : 유저 정보 수정
-     * 4. 작성자       : CHO
-     * 5. 작성일       : 2022. 10. 11.
+     * 4. 작성자      : CHO
+     * 5. 작성일      : 2022. 10. 11.
      * </pre>
      */
     @ApiOperation(value = "유저 정보 수정 처리", notes = "유저 정보 수정 처리한다.")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "유저 정보 수정 성공", response = Map.class),
+            @ApiResponse(code = 200, message = "유저 정보 수정 성공", response = UserDTO.class),
             @ApiResponse(code = 400, message = "잘못된 요청", response = HttpClientErrorException.BadRequest.class),
             @ApiResponse(code = 401, message = "허용되지 않는 관리자", response = HttpClientErrorException.Unauthorized.class),
             @ApiResponse(code = 403, message = "접근거부", response = HttpClientErrorException.class),
             @ApiResponse(code = 500, message = "서버 에러", response = ServerError.class)
     })
     @PutMapping("/{idx}")
-    public UserDTO updateUser(@Valid @RequestBody UserEntity userEntity) {
-        return userService.updateUser(userEntity);
+    public ResponseEntity<UserDTO> updateUser(@PathVariable Long idx, @Valid @RequestBody UserEntity userEntity) {
+        if (userService.findOneUser(idx) == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(userService.updateUser(userEntity));
     }
 
     /**
@@ -215,21 +219,25 @@ public class UserController {
      * 1. MethodName : deleteUser
      * 2. ClassName  : UserController.java
      * 3. Comment    : 유저 탈퇴
-     * 4. 작성자       : CHO
-     * 5. 작성일       : 2022. 10. 11.
+     * 4. 작성자      : CHO
+     * 5. 작성일      : 2022. 10. 11.
      * </pre>
      */
     @ApiOperation(value = "유저 탈퇴 처리", notes = "유저 탈퇴 처리한다.")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "유저 탈퇴 성공", response = Map.class),
+            @ApiResponse(code = 204, message = "유저 탈퇴 성공", response = Long.class),
             @ApiResponse(code = 400, message = "잘못된 요청", response = HttpClientErrorException.BadRequest.class),
             @ApiResponse(code = 401, message = "허용되지 않는 관리자", response = HttpClientErrorException.Unauthorized.class),
             @ApiResponse(code = 403, message = "접근거부", response = HttpClientErrorException.class),
             @ApiResponse(code = 500, message = "서버 에러", response = ServerError.class)
     })
     @DeleteMapping("/{idx}")
-    public Long deleteUser(@PathVariable Long idx) {
-        return userService.deleteUser(idx);
+    public ResponseEntity<Long> deleteUser(@PathVariable Long idx) {
+        if (userService.findOneUser(idx) == null) {
+            return ResponseEntity.notFound().build();
+        }
+        userService.deleteUser(idx);
+        return ResponseEntity.noContent().build();
     }
 
     /**
@@ -237,21 +245,24 @@ public class UserController {
      * 1. MethodName : addFavoriteTravel
      * 2. ClassName  : UserController.java
      * 3. Comment    : 좋아하는 여행지 추가
-     * 4. 작성자       : CHO
-     * 5. 작성일       : 2022. 12. 07.
+     * 4. 작성자      : CHO
+     * 5. 작성일      : 2022. 12. 07.
      * </pre>
      */
     @ApiOperation(value = "유저가 좋아하는 여행지 추가", notes = "유저가 좋아하는 여행지를 추가한다.")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "유저가 좋아하는 여행지 추가 성공", response = Map.class),
+            @ApiResponse(code = 200, message = "유저가 좋아하는 여행지 추가 성공", response = UserDTO.class),
             @ApiResponse(code = 400, message = "잘못된 요청", response = HttpClientErrorException.BadRequest.class),
             @ApiResponse(code = 401, message = "허용되지 않는 관리자", response = HttpClientErrorException.Unauthorized.class),
             @ApiResponse(code = 403, message = "접근거부", response = HttpClientErrorException.class),
             @ApiResponse(code = 500, message = "서버 에러", response = ServerError.class)
     })
     @PutMapping("/{idx}/favorite-travel")
-    public UserDTO addFavoriteTravel(@PathVariable Long idx, Long favoriteIdx) {
-        return userService.addFavoriteTravel(idx, favoriteIdx);
+    public ResponseEntity<UserDTO> addFavoriteTravel(@PathVariable Long idx, Long favoriteIdx) {
+        if (userService.findOneUser(idx) == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(userService.addFavoriteTravel(idx, favoriteIdx));
     }
 
     /**
@@ -265,15 +276,18 @@ public class UserController {
      */
     @ApiOperation(value = "유저가 작성한 여행 스케줄 리스트 조회", notes = "유저가 작성한 여행 스케줄 리스트를 조회한다.")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "유저가 작성한 여행 스케줄 리스트 조회", response = Map.class),
+            @ApiResponse(code = 200, message = "유저가 작성한 여행 스케줄 리스트 조회", response = List.class),
             @ApiResponse(code = 400, message = "잘못된 요청", response = HttpClientErrorException.BadRequest.class),
             @ApiResponse(code = 401, message = "허용되지 않는 관리자", response = HttpClientErrorException.Unauthorized.class),
             @ApiResponse(code = 403, message = "접근거부", response = HttpClientErrorException.class),
             @ApiResponse(code = 500, message = "서버 에러", response = ServerError.class)
     })
     @GetMapping("/{idx}/schedule")
-    public List<TravelScheduleDTO> findUserSchedule(@PathVariable Long idx) {
-        return userService.findUserSchedule(idx);
+    public ResponseEntity<List<TravelScheduleDTO>> findUserSchedule(@PathVariable Long idx) {
+        if (userService.findOneUser(idx) == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(userService.findUserSchedule(idx));
     }
 
     /**
@@ -287,14 +301,17 @@ public class UserController {
      */
     @ApiOperation(value = "유저가 작성한 여행 스케줄 상세 조회", notes = "유저가 작성한 여행 스케줄을 상세 조회한다.")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "유저가 작성한 여행 스케줄 상세 조회", response = Map.class),
+            @ApiResponse(code = 200, message = "유저가 작성한 여행 스케줄 상세 조회", response = TravelScheduleDTO.class),
             @ApiResponse(code = 400, message = "잘못된 요청", response = HttpClientErrorException.BadRequest.class),
             @ApiResponse(code = 401, message = "허용되지 않는 관리자", response = HttpClientErrorException.Unauthorized.class),
             @ApiResponse(code = 403, message = "접근거부", response = HttpClientErrorException.class),
             @ApiResponse(code = 500, message = "서버 에러", response = ServerError.class)
     })
     @GetMapping("/{idx}/schedule/{scheduleIdx}")
-    public TravelScheduleDTO findOneUserSchedule(@PathVariable Long idx, @PathVariable Long scheduleIdx) {
-        return userService.findOneUserSchedule(idx, scheduleIdx);
+    public ResponseEntity<TravelScheduleDTO> findOneUserSchedule(@PathVariable Long idx, @PathVariable Long scheduleIdx) {
+        if (userService.findOneUser(idx) == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(userService.findOneUserSchedule(idx, scheduleIdx));
     }
 }

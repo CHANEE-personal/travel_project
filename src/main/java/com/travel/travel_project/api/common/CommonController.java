@@ -9,10 +9,12 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.HttpClientErrorException;
 
 import javax.validation.Valid;
+import java.net.URI;
 import java.rmi.ServerError;
 import java.util.List;
 import java.util.Map;
@@ -37,15 +39,15 @@ public class CommonController {
      */
     @ApiOperation(value = "공통 코드 리스트 조회", notes = "공통 코드 리스트를 조회한다.")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "공통 코드 리스트 조회 성공", response = Map.class),
+            @ApiResponse(code = 200, message = "공통 코드 리스트 조회 성공", response = List.class),
             @ApiResponse(code = 400, message = "잘못된 요청", response = HttpClientErrorException.BadRequest.class),
             @ApiResponse(code = 401, message = "허용되지 않는 관리자", response = HttpClientErrorException.Unauthorized.class),
             @ApiResponse(code = 403, message = "접근거부", response = HttpClientErrorException.class),
             @ApiResponse(code = 500, message = "서버 에러", response = ServerError.class)
     })
     @GetMapping("/lists")
-    public List<CommonDTO> findCommonList(@RequestParam(required = false) Map<String, Object> paramMap, Page page) {
-        return commonService.findCommonList(searchCommon.searchCommon(page, paramMap));
+    public ResponseEntity<List<CommonDTO>> findCommonList(@RequestParam(required = false) Map<String, Object> paramMap, Page page) {
+        return ResponseEntity.ok(commonService.findCommonList(searchCommon.searchCommon(page, paramMap)));
     }
 
     /**
@@ -59,15 +61,15 @@ public class CommonController {
      */
     @ApiOperation(value = "공통 코드 상세 조회", notes = "공통 코드를 상세 조회한다.")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "공통 코드 상세 조회 성공", response = Map.class),
+            @ApiResponse(code = 200, message = "공통 코드 상세 조회 성공", response = CommonDTO.class),
             @ApiResponse(code = 400, message = "잘못된 요청", response = HttpClientErrorException.BadRequest.class),
             @ApiResponse(code = 401, message = "허용되지 않는 관리자", response = HttpClientErrorException.Unauthorized.class),
             @ApiResponse(code = 403, message = "접근거부", response = HttpClientErrorException.class),
             @ApiResponse(code = 500, message = "서버 에러", response = ServerError.class)
     })
     @GetMapping("/{idx}")
-    public CommonDTO findOneCommon(@PathVariable Long idx) {
-        return commonService.findOneCommon(idx);
+    public ResponseEntity<CommonDTO> findOneCommon(@PathVariable Long idx) {
+        return ResponseEntity.ok(commonService.findOneCommon(idx));
     }
 
     /**
@@ -81,15 +83,15 @@ public class CommonController {
      */
     @ApiOperation(value = "공통 코드 등록", notes = "공통 코드를 등록한다.")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "공통 코드 등록 성공", response = Map.class),
+            @ApiResponse(code = 201, message = "공통 코드 등록 성공", response = CommonDTO.class),
             @ApiResponse(code = 400, message = "잘못된 요청", response = HttpClientErrorException.BadRequest.class),
             @ApiResponse(code = 401, message = "허용되지 않는 관리자", response = HttpClientErrorException.Unauthorized.class),
             @ApiResponse(code = 403, message = "접근거부", response = HttpClientErrorException.class),
             @ApiResponse(code = 500, message = "서버 에러", response = ServerError.class)
     })
     @PostMapping
-    public CommonDTO insertCommonCode(@Valid @RequestBody CommonEntity commonEntity) {
-        return commonService.insertCommonCode(commonEntity);
+    public ResponseEntity<CommonDTO> insertCommonCode(@Valid @RequestBody CommonEntity commonEntity) {
+        return ResponseEntity.created(URI.create("")).body(commonService.insertCommonCode(commonEntity));
     }
 
     /**
@@ -110,8 +112,11 @@ public class CommonController {
             @ApiResponse(code = 500, message = "서버 에러", response = ServerError.class)
     })
     @PutMapping("/{idx}")
-    public CommonDTO updateCommonCode(@Valid @RequestBody CommonEntity commonEntity) {
-        return commonService.updateCommonCode(commonEntity);
+    public ResponseEntity<CommonDTO> updateCommonCode(@PathVariable Long idx, @Valid @RequestBody CommonEntity commonEntity) {
+        if (commonService.findOneCommon(idx) == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(commonService.updateCommonCode(commonEntity));
     }
 
     /**
@@ -125,14 +130,18 @@ public class CommonController {
      */
     @ApiOperation(value = "공통 코드 삭제", notes = "공통 코드를 삭제한다.")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "공통 코드 삭제 성공", response = Map.class),
+            @ApiResponse(code = 204, message = "공통 코드 삭제 성공", response = Long.class),
             @ApiResponse(code = 400, message = "잘못된 요청", response = HttpClientErrorException.BadRequest.class),
             @ApiResponse(code = 401, message = "허용되지 않는 관리자", response = HttpClientErrorException.Unauthorized.class),
             @ApiResponse(code = 403, message = "접근거부", response = HttpClientErrorException.class),
             @ApiResponse(code = 500, message = "서버 에러", response = ServerError.class)
     })
     @DeleteMapping("/{idx}")
-    public Long deleteCommonCode(@PathVariable Long idx) {
-        return commonService.deleteCommonCode(idx);
+    public ResponseEntity<Long> deleteCommonCode(@PathVariable Long idx) {
+        if (commonService.findOneCommon(idx) == null) {
+            return ResponseEntity.notFound().build();
+        }
+        commonService.deleteCommonCode(idx);
+        return ResponseEntity.noContent().build();
     }
 }

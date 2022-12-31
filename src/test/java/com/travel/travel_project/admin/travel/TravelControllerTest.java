@@ -14,10 +14,12 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.event.EventListener;
+import org.springframework.http.HttpStatus;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.TestConstructor;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.ResultMatcher;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.web.context.WebApplicationContext;
@@ -62,7 +64,6 @@ class TravelControllerTest {
     public void setup() {
         this.mockMvc = webAppContextSetup(wac)
                 .addFilters(new CharacterEncodingFilter("UTF-8", true))
-                .alwaysExpect(status().isOk())
                 .alwaysDo(print())
                 .build();
     }
@@ -90,6 +91,28 @@ class TravelControllerTest {
     }
 
     @Test
+    @DisplayName("여행지 삭제 테스트")
+    void 여행지삭제테스트() throws Exception {
+        mockMvc.perform(delete("/api/travel/{idx}", 1))
+                .andDo(print())
+                .andExpect(status().isNoContent());
+
+        mockMvc.perform(delete("/api/travel/{idx}", 2))
+                .andDo(print())
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    @DisplayName("여행지 좋아요 테스트")
+    void 여행지좋아요테스트() throws Exception {
+        mockMvc.perform(put("/api/travel/1/favorite"))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(content().contentType("application/json;charset=utf-8"))
+                .andExpect(content().string(getString(2)));
+    }
+
+    @Test
     @DisplayName("여행지 이미지 등록 테스트")
     void 여행지이미지등록테스트() throws Exception {
         List<MultipartFile> imageFiles = of(
@@ -103,7 +126,7 @@ class TravelControllerTest {
                         .file("images", imageFiles.get(0).getBytes())
                         .file("images", imageFiles.get(1).getBytes()))
                 .andDo(print())
-                .andExpect(status().isOk());
+                .andExpect(status().isCreated());
     }
 
     @Test
@@ -123,7 +146,7 @@ class TravelControllerTest {
                 .contentType(APPLICATION_JSON_VALUE)
                 .content(objectMapper.writeValueAsString(travelReviewEntity)))
                 .andDo(print())
-                .andExpect(status().isOk())
+                .andExpect(status().isCreated())
                 .andExpect(content().contentType("application/json;charset=utf-8"))
                 .andExpect(jsonPath("$.travelIdx").value(1L));
     }
@@ -181,8 +204,7 @@ class TravelControllerTest {
 
         mockMvc.perform(delete("/api/travel/{idx}/reply", travelReviewEntity.getIdx()))
                         .andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(content().contentType("application/json;charset=utf-8"))
+                .andExpect(status().isNoContent())
                 .andExpect(content().string(getString(travelReviewEntity.getIdx())));
     }
 
@@ -239,7 +261,7 @@ class TravelControllerTest {
                         .contentType(APPLICATION_JSON_VALUE)
                         .content(objectMapper.writeValueAsString(travelGroupEntity)))
                 .andDo(print())
-                .andExpect(status().isOk())
+                .andExpect(status().isCreated())
                 .andExpect(content().contentType("application/json;charset=utf-8"))
                 .andExpect(jsonPath("$.travelIdx").value(1L))
                 .andExpect(jsonPath("$.groupName").value("서울모임"))
@@ -290,7 +312,7 @@ class TravelControllerTest {
 
         mockMvc.perform(delete("/api/travel/{idx}/group", travelGroupEntity.getIdx()))
                 .andDo(print())
-                .andExpect(status().isOk())
+                .andExpect(status().isNoContent())
                 .andExpect(content().contentType("application/json;charset=utf-8"))
                 .andExpect(content().string(getString(travelGroupEntity.getIdx())));
     }
@@ -307,7 +329,7 @@ class TravelControllerTest {
                         .contentType(APPLICATION_JSON_VALUE)
                         .content(objectMapper.writeValueAsString(travelGroupUserEntity)))
                 .andDo(print())
-                .andExpect(status().isOk())
+                .andExpect(status().isCreated())
                 .andExpect(content().contentType("application/json;charset=utf-8"))
                 .andExpect(jsonPath("$.userIdx").value(1L))
                 .andExpect(jsonPath("$.groupIdx").value(1L));
@@ -324,7 +346,7 @@ class TravelControllerTest {
         em.persist(travelGroupUserEntity);
         mockMvc.perform(delete("/api/travel/{idx}/group_user", travelGroupUserEntity.getIdx()))
                 .andDo(print())
-                .andExpect(status().isOk())
+                .andExpect(status().isNoContent())
                 .andExpect(content().contentType("application/json;charset=utf-8"))
                 .andExpect(content().string(getString(travelGroupUserEntity.getIdx())));
     }
@@ -343,7 +365,7 @@ class TravelControllerTest {
                         .contentType(APPLICATION_JSON_VALUE)
                         .content(objectMapper.writeValueAsString(travelScheduleEntity)))
                 .andDo(print())
-                .andExpect(status().isOk())
+                .andExpect(status().isCreated())
                 .andExpect(content().contentType("application/json;charset=utf-8"))
                 .andExpect(jsonPath("$.userIdx").value(1L))
                 .andExpect(jsonPath("$.travelIdx").value(1L))
@@ -393,7 +415,7 @@ class TravelControllerTest {
 
         mockMvc.perform(delete("/api/travel/{idx}/schedule", travelScheduleEntity.getIdx()))
                 .andDo(print())
-                .andExpect(status().isOk())
+                .andExpect(status().isNoContent())
                 .andExpect(content().contentType("application/json;charset=utf-8"))
                 .andExpect(content().string(getString(travelScheduleEntity.getIdx())));
     }

@@ -54,7 +54,6 @@ class PostControllerTest {
     public void setup() {
         this.mockMvc = webAppContextSetup(wac)
                 .addFilters(new CharacterEncodingFilter("UTF-8", true))
-                .alwaysExpect(status().isOk())
                 .alwaysDo(print())
                 .build();
     }
@@ -95,7 +94,7 @@ class PostControllerTest {
                         .contentType(APPLICATION_JSON_VALUE)
                         .content(objectMapper.writeValueAsString(postEntity)))
                 .andDo(print())
-                .andExpect(status().isOk())
+                .andExpect(status().isCreated())
                 .andExpect(content().contentType("application/json;charset=utf-8"))
                 .andExpect(jsonPath("$.postTitle").value("게시글 테스트"))
                 .andExpect(jsonPath("$.postDescription").value("게시글 테스트"));
@@ -151,7 +150,7 @@ class PostControllerTest {
 
         mockMvc.perform(delete("/api/post/{idx}", postEntity.getIdx()))
                 .andDo(print())
-                .andExpect(status().isOk())
+                .andExpect(status().isNoContent())
                 .andExpect(content().contentType("application/json;charset=utf-8"))
                 .andExpect(content().string(getString(postEntity.getIdx())));
     }
