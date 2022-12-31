@@ -1,5 +1,6 @@
 package com.travel.travel_project.api.travel;
 
+import com.travel.travel_project.api.user.UserService;
 import com.travel.travel_project.common.Page;
 import com.travel.travel_project.common.SearchCommon;
 import com.travel.travel_project.domain.common.EntityType;
@@ -43,6 +44,7 @@ import static org.springframework.http.MediaType.MULTIPART_FORM_DATA_VALUE;
 public class TravelController {
 
     private final TravelService travelService;
+    private final UserService userService;
     private final SearchCommon searchCommon;
 
     /**
@@ -50,8 +52,8 @@ public class TravelController {
      * 1. MethodName : findTravelList
      * 2. ClassName  : TravelController.java
      * 3. Comment    : 여행지 리스트 조회
-     * 4. 작성자       : CHO
-     * 5. 작성일       : 2022. 10. 5.
+     * 4. 작성자      : CHO
+     * 5. 작성일      : 2022. 10. 5.
      * </pre>
      */
     @ApiOperation(value = "여행지 리스트 조회", notes = "여행지 리스트를 조회한다.")
@@ -72,8 +74,8 @@ public class TravelController {
      * 1. MethodName : findOneTravel
      * 2. ClassName  : TravelController.java
      * 3. Comment    : 여행지 상세 조회
-     * 4. 작성자       : CHO
-     * 5. 작성일       : 2022. 10. 5.
+     * 4. 작성자      : CHO
+     * 5. 작성일      : 2022. 10. 5.
      * </pre>
      */
     @ApiOperation(value = "여행지 상세 조회", notes = "여행지를 상세 조회한다.")
@@ -94,8 +96,8 @@ public class TravelController {
      * 1. MethodName : insertTravel
      * 2. ClassName  : TravelController.java
      * 3. Comment    : 관리자 > 여행지 등록
-     * 4. 작성자       : CHO
-     * 5. 작성일       : 2022. 10. 5.
+     * 4. 작성자      : CHO
+     * 5. 작성일      : 2022. 10. 5.
      * </pre>
      */
     @ApiOperation(value = "여행지 등록", notes = "여행지를 등록한다.")
@@ -144,7 +146,7 @@ public class TravelController {
      */
     @ApiOperation(value = "여행지 수정", notes = "여행지를 수정한다.")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "여행지 수정 성공", response = Map.class),
+            @ApiResponse(code = 200, message = "여행지 수정 성공", response = TravelDTO.class),
             @ApiResponse(code = 400, message = "잘못된 요청", response = HttpClientErrorException.BadRequest.class),
             @ApiResponse(code = 401, message = "허용되지 않는 관리자", response = HttpClientErrorException.Unauthorized.class),
             @ApiResponse(code = 403, message = "접근거부", response = HttpClientErrorException.class),
@@ -163,8 +165,8 @@ public class TravelController {
      * 1. MethodName : deleteTravel
      * 2. ClassName  : TravelController.java
      * 3. Comment    : 관리자 > 여행지 삭제
-     * 4. 작성자       : CHO
-     * 5. 작성일       : 2022. 10. 5.
+     * 4. 작성자      : CHO
+     * 5. 작성일      : 2022. 10. 5.
      * </pre>
      */
     @ApiOperation(value = "여행지 삭제", notes = "여행지를 삭제한다.")
@@ -189,8 +191,8 @@ public class TravelController {
      * 1. MethodName : favoriteTravel
      * 2. ClassName  : TravelController.java
      * 3. Comment    : 여행지 좋아요
-     * 4. 작성자       : CHO
-     * 5. 작성일       : 2022. 10. 6.
+     * 4. 작성자      : CHO
+     * 5. 작성일      : 2022. 10. 6.
      * </pre>
      */
     @ApiOperation(value = "여행지 좋아요", notes = "여행지를 좋아요 처리한다.")
@@ -214,8 +216,8 @@ public class TravelController {
      * 1. MethodName : popularityTravel
      * 2. ClassName  : TravelController.java
      * 3. Comment    : 인기 여행지 리스트 조회
-     * 4. 작성자       : CHO
-     * 5. 작성일       : 2022. 10. 14.
+     * 4. 작성자      : CHO
+     * 5. 작성일      : 2022. 10. 14.
      * </pre>
      */
     @ApiOperation(value = "인기 여행지 리스트 조회", notes = "인기 여행지 리스트를 조회한다.")
@@ -254,8 +256,8 @@ public class TravelController {
      * 1. MethodName : replyTravel
      * 2. ClassName  : TravelController.java
      * 3. Comment    : 여행지 댓글 달기
-     * 4. 작성자       : CHO
-     * 5. 작성일       : 2022. 10. 30.
+     * 4. 작성자      : CHO
+     * 5. 작성일      : 2022. 10. 30.
      * </pre>
      */
     @ApiOperation(value = "여행지 댓글 달기", notes = "여행지 댓글을 등록한다.")
@@ -276,8 +278,8 @@ public class TravelController {
      * 1. MethodName : updateReplyTravel
      * 2. ClassName  : TravelController.java
      * 3. Comment    : 여행지 댓글 수정
-     * 4. 작성자       : CHO
-     * 5. 작성일       : 2022. 11. 23.
+     * 4. 작성자      : CHO
+     * 5. 작성일      : 2022. 11. 23.
      * </pre>
      */
     @ApiOperation(value = "여행지 댓글 수정", notes = "여행지 댓글을 수정한다.")
@@ -301,8 +303,8 @@ public class TravelController {
      * 1. MethodName : deleteReplyTravel
      * 2. ClassName  : TravelController.java
      * 3. Comment    : 여행지 댓글 삭제
-     * 4. 작성자       : CHO
-     * 5. 작성일       : 2022. 11. 23.
+     * 4. 작성자      : CHO
+     * 5. 작성일      : 2022. 11. 23.
      * </pre>
      */
     @ApiOperation(value = "여행지 댓글 삭제", notes = "여행지 댓글을 삭제한다.")
@@ -327,8 +329,8 @@ public class TravelController {
      * 1. MethodName : replyTravelReview
      * 2. ClassName  : TravelController.java
      * 3. Comment    : 여행지 댓글 리스트 조회
-     * 4. 작성자       : CHO
-     * 5. 작성일       : 2022. 11. 23.
+     * 4. 작성자      : CHO
+     * 5. 작성일      : 2022. 11. 23.
      * </pre>
      */
     @ApiOperation(value = "여행지 댓글 리스트 조회", notes = "여행지 댓글 리스트를 조회한다.")
@@ -349,8 +351,8 @@ public class TravelController {
      * 1. MethodName : togglePopular
      * 2. ClassName  : TravelController.java
      * 3. Comment    : 인기 여행지 선정
-     * 4. 작성자       : CHO
-     * 5. 작성일       : 2022. 10. 28.
+     * 4. 작성자      : CHO
+     * 5. 작성일      : 2022. 10. 28.
      * </pre>
      */
     @ApiOperation(value = "인기 여행지 선정", notes = "인기 여행지 선정한다.")
@@ -371,8 +373,8 @@ public class TravelController {
      * 1. MethodName : findTravelGroupList
      * 2. ClassName  : TravelController.java
      * 3. Comment    : 여행지 그룹 리스트 조회
-     * 4. 작성자       : CHO
-     * 5. 작성일       : 2022. 11. 25.
+     * 4. 작성자      : CHO
+     * 5. 작성일      : 2022. 11. 25.
      * </pre>
      */
     @ApiOperation(value = "여행 그룹 리스트 조회", notes = "여행 그룹 리스트를 조회한다.")
@@ -411,8 +413,8 @@ public class TravelController {
      * 1. MethodName : findOneTravelGroup
      * 2. ClassName  : TravelController.java
      * 3. Comment    : 여행지 그룹 상세 조회
-     * 4. 작성자       : CHO
-     * 5. 작성일       : 2022. 11. 25.
+     * 4. 작성자      : CHO
+     * 5. 작성일      : 2022. 11. 25.
      * </pre>
      */
     @ApiOperation(value = "여행지 그룹 상세 조회", notes = "여행지 그룹을 상세 조회한다.")
@@ -433,13 +435,13 @@ public class TravelController {
      * 1. MethodName : insertTravelGroup
      * 2. ClassName  : TravelController.java
      * 3. Comment    : 여행지 그룹 등록
-     * 4. 작성자       : CHO
-     * 5. 작성일       : 2022. 11. 25.
+     * 4. 작성자      : CHO
+     * 5. 작성일      : 2022. 11. 25.
      * </pre>
      */
     @ApiOperation(value = "여행지 그룹 등록", notes = "여행지 그룹을 등록한다.")
     @ApiResponses(value = {
-            @ApiResponse(code = 201, message = "여행지 그룹 등록 성공", response = Map.class),
+            @ApiResponse(code = 201, message = "여행지 그룹 등록 성공", response = TravelGroupDTO.class),
             @ApiResponse(code = 400, message = "잘못된 요청", response = HttpClientErrorException.BadRequest.class),
             @ApiResponse(code = 401, message = "허용되지 않는 관리자", response = HttpClientErrorException.Unauthorized.class),
             @ApiResponse(code = 403, message = "접근거부", response = HttpClientErrorException.class),
@@ -455,8 +457,8 @@ public class TravelController {
      * 1. MethodName : updateTravelGroup
      * 2. ClassName  : TravelController.java
      * 3. Comment    : 여행지 그룹 수정
-     * 4. 작성자       : CHO
-     * 5. 작성일       : 2022. 11. 25.
+     * 4. 작성자      : CHO
+     * 5. 작성일      : 2022. 11. 25.
      * </pre>
      */
     @ApiOperation(value = "여행지 그룹 수정", notes = "여행지 그룹을 수정한다.")
@@ -480,8 +482,8 @@ public class TravelController {
      * 1. MethodName : deleteTravelGroup
      * 2. ClassName  : TravelController.java
      * 3. Comment    : 여행지 그룹 삭제
-     * 4. 작성자       : CHO
-     * 5. 작성일       : 2022. 11. 25.
+     * 4. 작성자      : CHO
+     * 5. 작성일      : 2022. 11. 25.
      * </pre>
      */
     @ApiOperation(value = "여행지 그룹 삭제", notes = "여행지 그룹을 삭제한다.")
@@ -506,8 +508,8 @@ public class TravelController {
      * 1. MethodName : insertTravelGroupUser
      * 2. ClassName  : TravelController.java
      * 3. Comment    : 유저 여행 그룹 등록
-     * 4. 작성자       : CHO
-     * 5. 작성일       : 2022. 11. 27.
+     * 4. 작성자      : CHO
+     * 5. 작성일      : 2022. 11. 27.
      * </pre>
      */
     @ApiOperation(value = "유저 여행 그룹 등록", notes = "유저 여행 그룹을 등록한다.")
@@ -528,8 +530,8 @@ public class TravelController {
      * 1. MethodName : deleteTravelGroupUser
      * 2. ClassName  : TravelController.java
      * 3. Comment    : 유저 여행 그룹 삭제
-     * 4. 작성자       : CHO
-     * 5. 작성일       : 2022. 11. 27.
+     * 4. 작성자      : CHO
+     * 5. 작성일      : 2022. 11. 27.
      * </pre>
      */
     @ApiOperation(value = "유저 여행 그룹 삭제", notes = "유저 여행 그룹을 삭제한다.")
@@ -589,7 +591,10 @@ public class TravelController {
             @ApiResponse(code = 500, message = "서버 에러", response = ServerError.class)
     })
     @PutMapping("/{idx}/schedule")
-    public ResponseEntity<TravelScheduleDTO> updateTravelSchedule(@RequestBody TravelScheduleEntity travelScheduleEntity) {
+    public ResponseEntity<TravelScheduleDTO> updateTravelSchedule(@PathVariable Long idx, @RequestBody TravelScheduleEntity travelScheduleEntity) {
+        if (userService.findOneUser(idx) == null) {
+            return ResponseEntity.notFound().build();
+        }
         return ResponseEntity.ok(travelService.updateTravelSchedule(travelScheduleEntity));
     }
 
@@ -612,6 +617,9 @@ public class TravelController {
     })
     @DeleteMapping("/{idx}/schedule")
     public ResponseEntity<Long> deleteTravelSchedule(@PathVariable Long idx) {
+        if (userService.findOneUser(idx) == null) {
+            return ResponseEntity.notFound().build();
+        }
         travelService.deleteTravelSchedule(idx);
         return ResponseEntity.noContent().build();
     }

@@ -4,7 +4,6 @@ import com.travel.travel_project.common.Page;
 import com.travel.travel_project.common.SearchCommon;
 import com.travel.travel_project.domain.notice.NoticeDTO;
 import com.travel.travel_project.domain.notice.NoticeEntity;
-import com.travel.travel_project.exception.TravelException;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
@@ -19,8 +18,6 @@ import java.net.URI;
 import java.rmi.ServerError;
 import java.util.List;
 import java.util.Map;
-
-import static com.travel.travel_project.exception.ApiExceptionType.NOT_FOUND_NOTICE;
 
 @RestController
 @RequestMapping("/api/notice")

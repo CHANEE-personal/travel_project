@@ -19,7 +19,6 @@ import java.rmi.ServerError;
 import java.util.List;
 import java.util.Map;
 
-
 @RestController
 @RequestMapping("/api/faq")
 @Api(tags = "FAQ 관련 API")
