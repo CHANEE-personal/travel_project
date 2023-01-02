@@ -33,8 +33,8 @@ public class CommonRepository {
      * 1. MethodName : findCommonCount
      * 2. ClassName  : CommonRepository.java
      * 3. Comment    : 공통 코드 리스트 갯수 조회
-     * 4. 작성자       : CHO
-     * 5. 작성일       : 2022. 11. 21.
+     * 4. 작성자      : CHO
+     * 5. 작성일      : 2022. 11. 21.
      * </pre>
      */
     public int findCommonCount(Map<String, Object> commonMap) {
@@ -48,12 +48,13 @@ public class CommonRepository {
      * 1. MethodName : findCommonList
      * 2. ClassName  : CommonRepository.java
      * 3. Comment    : 공통 코드 리스트 조회
-     * 4. 작성자       : CHO
-     * 5. 작성일       : 2022. 11. 21.
+     * 4. 작성자      : CHO
+     * 5. 작성일      : 2022. 11. 21.
      * </pre>
      */
     public List<CommonDTO> findCommonList(Map<String, Object> commonMap) {
-        List<CommonEntity> commonCodeList = queryFactory.selectFrom(commonEntity)
+        List<CommonEntity> commonCodeList = queryFactory
+                .selectFrom(commonEntity)
                 .orderBy(commonEntity.idx.desc())
                 .where(searchCommonInfo(commonMap))
                 .offset(getInt(commonMap.get("jpaStartPage"), 0))
@@ -68,8 +69,8 @@ public class CommonRepository {
      * 1. MethodName : findOneCommon
      * 2. ClassName  : CommonRepository.java
      * 3. Comment    : 공통 코드 상세 조회
-     * 4. 작성자       : CHO
-     * 5. 작성일       : 2022. 11. 21.
+     * 4. 작성자      : CHO
+     * 5. 작성일      : 2022. 11. 21.
      * </pre>
      */
     public CommonDTO findOneCommon(Long idx) {
@@ -86,8 +87,8 @@ public class CommonRepository {
      * 1. MethodName : insertCommonCode
      * 2. ClassName  : CommonRepository.java
      * 3. Comment    : 공통 코드 등록
-     * 4. 작성자       : CHO
-     * 5. 작성일       : 2022. 11. 21.
+     * 4. 작성자      : CHO
+     * 5. 작성일      : 2022. 11. 21.
      * </pre>
      */
     public CommonDTO insertCommonCode(CommonEntity commonEntity) {
@@ -100,8 +101,8 @@ public class CommonRepository {
      * 1. MethodName : updateCommonCode
      * 2. ClassName  : CommonRepository.java
      * 3. Comment    : 공통 코드 수정
-     * 4. 작성자       : CHO
-     * 5. 작성일       : 2022. 11. 21.
+     * 4. 작성자      : CHO
+     * 5. 작성일      : 2022. 11. 21.
      * </pre>
      */
     public CommonDTO updateCommonCode(CommonEntity commonEntity) {
@@ -116,8 +117,8 @@ public class CommonRepository {
      * 1. MethodName : deleteCommonCode
      * 2. ClassName  : CommonRepository.java
      * 3. Comment    : 공통 코드 삭제
-     * 4. 작성자       : CHO
-     * 5. 작성일       : 2022. 11. 21.
+     * 4. 작성자      : CHO
+     * 5. 작성일      : 2022. 11. 21.
      * </pre>
      */
     public Long deleteCommonCode(Long idx) {

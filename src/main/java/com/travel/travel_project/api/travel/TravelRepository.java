@@ -112,12 +112,9 @@ public class TravelRepository {
         TravelEntity findOneTravel = Optional.ofNullable(queryFactory
                 .selectFrom(travelEntity)
                 .innerJoin(travelEntity.newTravelCode, commonEntity)
-                .fetchJoin()
-                .leftJoin(travelEntity.travelReviewEntityList, travelReviewEntity)
                 .leftJoin(travelEntity.commonImageEntityList, commonImageEntity)
                 .fetchJoin()
-                .where(travelEntity.idx.eq(idx)
-                        .and(travelEntity.visible.eq("Y")))
+                .where(travelEntity.idx.eq(idx).and(travelEntity.visible.eq("Y")))
                 .fetchOne()).orElseThrow(() -> new TravelException(NOT_FOUND_TRAVEL, new Throwable()));
 
         return TravelEntity.toDto(findOneTravel);
@@ -136,8 +133,7 @@ public class TravelRepository {
         TravelEntity findOnePrevTravel = Optional.ofNullable(queryFactory
                 .selectFrom(travelEntity)
                 .orderBy(travelEntity.idx.desc())
-                .where(travelEntity.idx.lt(idx)
-                        .and(travelEntity.visible.eq("Y")))
+                .where(travelEntity.idx.lt(idx).and(travelEntity.visible.eq("Y")))
                 .fetchFirst()).orElseThrow(() -> new TravelException(NOT_FOUND_TRAVEL, new Throwable()));
 
         return TravelEntity.toDto(findOnePrevTravel);
@@ -156,8 +152,7 @@ public class TravelRepository {
         TravelEntity findOneNextTravel = Optional.ofNullable(queryFactory
                 .selectFrom(travelEntity)
                 .orderBy(travelEntity.idx.asc())
-                .where(travelEntity.idx.gt(idx)
-                        .and(travelEntity.visible.eq("Y")))
+                .where(travelEntity.idx.gt(idx).and(travelEntity.visible.eq("Y")))
                 .fetchFirst()).orElseThrow(() -> new TravelException(NOT_FOUND_TRAVEL, new Throwable()));
 
         return TravelEntity.toDto(findOneNextTravel);

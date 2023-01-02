@@ -518,7 +518,7 @@ class TravelServiceTest {
                 .travelCode(1)
                 .travelTitle("여행지 테스트").travelDescription("여행지 테스트").favoriteCount(1).viewCount(0)
                 .travelAddress("인천광역시 서구").travelZipCode("123-456").visible("Y").popular(false)
-                .reviewList(reviewList.stream().map(TravelReviewEntity::toEntity).collect(Collectors.toList()))
+                .reviewList(reviewList)
                 .build();
 
         // when
@@ -576,7 +576,7 @@ class TravelServiceTest {
                 .travelCode(1)
                 .travelTitle("여행지 테스트").travelDescription("여행지 테스트").favoriteCount(1).viewCount(0)
                 .travelAddress("인천광역시 서구").travelZipCode("123-456").visible("Y").popular(false)
-                .reviewList(reviewList.stream().map(TravelReviewEntity::toEntity).collect(Collectors.toList()))
+                .reviewList(reviewList)
                 .build();
 
         // when
@@ -643,7 +643,7 @@ class TravelServiceTest {
                 .travelCode(1)
                 .travelTitle("여행지 테스트").travelDescription("여행지 테스트").favoriteCount(1).viewCount(0)
                 .travelAddress("인천광역시 서구").travelZipCode("123-456").visible("Y").popular(false)
-                .reviewList(reviewList.stream().map(TravelReviewEntity::toEntity).collect(Collectors.toList()))
+                .reviewList(reviewList)
                 .build();
 
         // when

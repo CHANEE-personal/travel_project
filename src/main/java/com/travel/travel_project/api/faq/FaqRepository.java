@@ -58,7 +58,6 @@ public class FaqRepository {
         List<FaqEntity> faqList = queryFactory.selectFrom(faqEntity)
                 .orderBy(faqEntity.idx.desc())
                 .innerJoin(faqEntity.newFaqCode, commonEntity)
-                .fetchJoin()
                 .where(searchFaqInfo(faqMap))
                 .fetch();
 
@@ -78,7 +77,6 @@ public class FaqRepository {
         FaqEntity oneFaq = Optional.ofNullable(queryFactory
                 .selectFrom(faqEntity)
                 .innerJoin(faqEntity.newFaqCode, commonEntity)
-                .fetchJoin()
                 .where(faqEntity.idx.eq(idx))
                 .fetchOne()).orElseThrow(() -> new TravelException(NOT_FOUND_FAQ, new Throwable()));
 
