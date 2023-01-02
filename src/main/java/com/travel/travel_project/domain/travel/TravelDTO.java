@@ -2,6 +2,7 @@ package com.travel.travel_project.domain.travel;
 
 import com.travel.travel_project.domain.common.NewCommonDTO;
 import com.travel.travel_project.domain.file.CommonImageDTO;
+import com.travel.travel_project.domain.travel.review.TravelReviewDTO;
 import com.travel.travel_project.domain.travel.review.TravelReviewEntity;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -60,7 +61,7 @@ public class TravelDTO extends NewCommonDTO {
     private Boolean popular;
 
     @ApiModelProperty(value = "travelReviewList", hidden = true)
-    private List<TravelReviewEntity> reviewList = new ArrayList<>();
+    private List<TravelReviewDTO> reviewList = new ArrayList<>();
 
     @ApiModelProperty(value = "travelImageList", hidden = true)
     private List<CommonImageDTO> imageList = new ArrayList<>();

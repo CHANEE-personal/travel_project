@@ -78,6 +78,7 @@ public class PostRepository {
         PostEntity onePost = Optional.ofNullable(queryFactory
                 .selectFrom(postEntity)
                 .leftJoin(postEntity.postImageList, commonImageEntity)
+                .fetchJoin()
                 .where(postEntity.idx.eq(idx))
                 .fetchOne()).orElseThrow(() -> new TravelException(NOT_FOUND_POST, new Throwable()));
 

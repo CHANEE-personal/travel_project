@@ -33,8 +33,8 @@ public class CommonController {
      * 1. MethodName : findCommonList
      * 2. ClassName  : CommonController.java
      * 3. Comment    : 공통 코드 리스트 조회
-     * 4. 작성자       : CHO
-     * 5. 작성일       : 2022. 11. 21.
+     * 4. 작성자      : CHO
+     * 5. 작성일      : 2022. 11. 21.
      * </pre>
      */
     @ApiOperation(value = "공통 코드 리스트 조회", notes = "공통 코드 리스트를 조회한다.")
@@ -43,6 +43,7 @@ public class CommonController {
             @ApiResponse(code = 400, message = "잘못된 요청", response = HttpClientErrorException.BadRequest.class),
             @ApiResponse(code = 401, message = "허용되지 않는 관리자", response = HttpClientErrorException.Unauthorized.class),
             @ApiResponse(code = 403, message = "접근거부", response = HttpClientErrorException.class),
+            @ApiResponse(code = 404, message = "존재 하지 않음", response = HttpClientErrorException.NotFound.class),
             @ApiResponse(code = 500, message = "서버 에러", response = ServerError.class)
     })
     @GetMapping("/lists")
@@ -55,8 +56,8 @@ public class CommonController {
      * 1. MethodName : findOneCommon
      * 2. ClassName  : CommonController.java
      * 3. Comment    : 공통 코드 상세 조회
-     * 4. 작성자       : CHO
-     * 5. 작성일       : 2022. 11. 21.
+     * 4. 작성자      : CHO
+     * 5. 작성일      : 2022. 11. 21.
      * </pre>
      */
     @ApiOperation(value = "공통 코드 상세 조회", notes = "공통 코드를 상세 조회한다.")
@@ -65,6 +66,7 @@ public class CommonController {
             @ApiResponse(code = 400, message = "잘못된 요청", response = HttpClientErrorException.BadRequest.class),
             @ApiResponse(code = 401, message = "허용되지 않는 관리자", response = HttpClientErrorException.Unauthorized.class),
             @ApiResponse(code = 403, message = "접근거부", response = HttpClientErrorException.class),
+            @ApiResponse(code = 404, message = "존재 하지 않음", response = HttpClientErrorException.NotFound.class),
             @ApiResponse(code = 500, message = "서버 에러", response = ServerError.class)
     })
     @GetMapping("/{idx}")
@@ -77,8 +79,8 @@ public class CommonController {
      * 1. MethodName : insertCommonCode
      * 2. ClassName  : CommonController.java
      * 3. Comment    : 공통 코드 등록
-     * 4. 작성자       : CHO
-     * 5. 작성일       : 2022. 11. 21.
+     * 4. 작성자      : CHO
+     * 5. 작성일      : 2022. 11. 21.
      * </pre>
      */
     @ApiOperation(value = "공통 코드 등록", notes = "공통 코드를 등록한다.")
@@ -87,6 +89,7 @@ public class CommonController {
             @ApiResponse(code = 400, message = "잘못된 요청", response = HttpClientErrorException.BadRequest.class),
             @ApiResponse(code = 401, message = "허용되지 않는 관리자", response = HttpClientErrorException.Unauthorized.class),
             @ApiResponse(code = 403, message = "접근거부", response = HttpClientErrorException.class),
+            @ApiResponse(code = 404, message = "존재 하지 않음", response = HttpClientErrorException.NotFound.class),
             @ApiResponse(code = 500, message = "서버 에러", response = ServerError.class)
     })
     @PostMapping
@@ -99,8 +102,8 @@ public class CommonController {
      * 1. MethodName : updateCommonCode
      * 2. ClassName  : CommonController.java
      * 3. Comment    : 공통 코드 수정
-     * 4. 작성자       : CHO
-     * 5. 작성일       : 2022. 11. 21.
+     * 4. 작성자      : CHO
+     * 5. 작성일      : 2022. 11. 21.
      * </pre>
      */
     @ApiOperation(value = "공통 코드 수정", notes = "공통 코드를 수정한다.")
@@ -109,6 +112,7 @@ public class CommonController {
             @ApiResponse(code = 400, message = "잘못된 요청", response = HttpClientErrorException.BadRequest.class),
             @ApiResponse(code = 401, message = "허용되지 않는 관리자", response = HttpClientErrorException.Unauthorized.class),
             @ApiResponse(code = 403, message = "접근거부", response = HttpClientErrorException.class),
+            @ApiResponse(code = 404, message = "존재 하지 않음", response = HttpClientErrorException.NotFound.class),
             @ApiResponse(code = 500, message = "서버 에러", response = ServerError.class)
     })
     @PutMapping("/{idx}")
@@ -124,8 +128,8 @@ public class CommonController {
      * 1. MethodName : deleteCommonCode
      * 2. ClassName  : CommonController.java
      * 3. Comment    : 공통 코드 삭제
-     * 4. 작성자       : CHO
-     * 5. 작성일       : 2022. 11. 21.
+     * 4. 작성자      : CHO
+     * 5. 작성일      : 2022. 11. 21.
      * </pre>
      */
     @ApiOperation(value = "공통 코드 삭제", notes = "공통 코드를 삭제한다.")
@@ -134,6 +138,7 @@ public class CommonController {
             @ApiResponse(code = 400, message = "잘못된 요청", response = HttpClientErrorException.BadRequest.class),
             @ApiResponse(code = 401, message = "허용되지 않는 관리자", response = HttpClientErrorException.Unauthorized.class),
             @ApiResponse(code = 403, message = "접근거부", response = HttpClientErrorException.class),
+            @ApiResponse(code = 404, message = "존재 하지 않음", response = HttpClientErrorException.NotFound.class),
             @ApiResponse(code = 500, message = "서버 에러", response = ServerError.class)
     })
     @DeleteMapping("/{idx}")

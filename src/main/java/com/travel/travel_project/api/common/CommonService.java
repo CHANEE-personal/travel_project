@@ -27,8 +27,8 @@ public class CommonService {
      * 1. MethodName : findCommonCount
      * 2. ClassName  : CommonService.java
      * 3. Comment    : 공통 코드 리스트 갯수 조회
-     * 4. 작성자       : CHO
-     * 5. 작성일       : 2022. 11. 21.
+     * 4. 작성자      : CHO
+     * 5. 작성일      : 2022. 11. 21.
      * </pre>
      */
     @Transactional(readOnly = true)
@@ -45,8 +45,8 @@ public class CommonService {
      * 1. MethodName : findCommonList
      * 2. ClassName  : CommonService.java
      * 3. Comment    : 공통 코드 리스트 조회
-     * 4. 작성자       : CHO
-     * 5. 작성일       : 2022. 11. 21.
+     * 4. 작성자      : CHO
+     * 5. 작성일      : 2022. 11. 21.
      * </pre>
      */
     @Cacheable(value = "common", key = "#commonMap")
@@ -60,8 +60,8 @@ public class CommonService {
      * 1. MethodName : findOneCommon
      * 2. ClassName  : CommonService.java
      * 3. Comment    : 공통 코드 상세 조회
-     * 4. 작성자       : CHO
-     * 5. 작성일       : 2022. 11. 21.
+     * 4. 작성자      : CHO
+     * 5. 작성일      : 2022. 11. 21.
      * </pre>
      */
     @Cacheable(value = "common", key = "#idx")
@@ -75,8 +75,8 @@ public class CommonService {
      * 1. MethodName : insertCommonCode
      * 2. ClassName  : CommonService.java
      * 3. Comment    : 공통 코드 등록
-     * 4. 작성자       : CHO
-     * 5. 작성일       : 2022. 11. 21.
+     * 4. 작성자      : CHO
+     * 5. 작성일      : 2022. 11. 21.
      * </pre>
      */
     @CachePut("common")
@@ -95,8 +95,8 @@ public class CommonService {
      * 1. MethodName : updateCommonCode
      * 2. ClassName  : CommonService.java
      * 3. Comment    : 공통 코드 수정
-     * 4. 작성자       : CHO
-     * 5. 작성일       : 2022. 11. 21.
+     * 4. 작성자      : CHO
+     * 5. 작성일      : 2022. 11. 21.
      * </pre>
      */
     @CachePut(value = "common", key = "#existCommonEntity.idx")
@@ -115,8 +115,8 @@ public class CommonService {
      * 1. MethodName : deleteCommonCode
      * 2. ClassName  : CommonService.java
      * 3. Comment    : 공통 코드 삭제
-     * 4. 작성자       : CHO
-     * 5. 작성일       : 2022. 11. 21.
+     * 4. 작성자      : CHO
+     * 5. 작성일      : 2022. 11. 21.
      * </pre>
      */
     @CacheEvict(value = "common", key = "#idx")

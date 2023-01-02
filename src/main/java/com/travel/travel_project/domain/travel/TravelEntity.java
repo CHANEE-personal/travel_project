@@ -79,11 +79,12 @@ public class TravelEntity extends NewCommonMappedClass {
     private CommonEntity newTravelCode;
 
     @JsonIgnore
+    @BatchSize(size = 20)
     @OneToMany(mappedBy = "newTravelEntity", fetch = LAZY)
     private List<TravelReviewEntity> travelReviewEntityList = new ArrayList<>();
 
     @JsonIgnore
-    @BatchSize(size = 100)
+    @BatchSize(size = 20)
     @Where(clause = "type_name = 'travel'")
     @OneToMany(mappedBy = "travelImageEntity", fetch = LAZY)
     private List<CommonImageEntity> commonImageEntityList = new ArrayList<>();
@@ -119,6 +120,7 @@ public class TravelEntity extends NewCommonMappedClass {
                 .updater(entity.getUpdater())
                 .updateTime(entity.getUpdateTime())
                 .imageList(CommonImageEntity.toDtoList(entity.getCommonImageEntityList()))
+                .reviewList(TravelReviewEntity.toDtoList(entity.getTravelReviewEntityList()))
                 .build();
     }
 
