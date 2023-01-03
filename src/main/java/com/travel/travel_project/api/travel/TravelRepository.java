@@ -11,6 +11,7 @@ import com.travel.travel_project.domain.travel.schedule.TravelScheduleDTO;
 import com.travel.travel_project.domain.travel.schedule.TravelScheduleEntity;
 import com.travel.travel_project.exception.TravelException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
@@ -87,7 +88,6 @@ public class TravelRepository {
                 .selectFrom(travelEntity)
                 .orderBy(travelEntity.idx.desc())
                 .innerJoin(travelEntity.newTravelCode, commonEntity)
-                .fetchJoin()
                 .where(searchTravelCode(travelMap), searchTravelInfo(travelMap), searchTravelDate(travelMap))
                 .offset(getInt(travelMap.get("jpaStartPage"), 0))
                 .limit(getInt(travelMap.get("size"), 0))
@@ -112,6 +112,7 @@ public class TravelRepository {
         TravelEntity findOneTravel = Optional.ofNullable(queryFactory
                 .selectFrom(travelEntity)
                 .innerJoin(travelEntity.newTravelCode, commonEntity)
+                .fetchJoin()
                 .leftJoin(travelEntity.commonImageEntityList, commonImageEntity)
                 .fetchJoin()
                 .where(travelEntity.idx.eq(idx).and(travelEntity.visible.eq("Y")))
@@ -183,8 +184,6 @@ public class TravelRepository {
      */
     public TravelDTO updateTravel(TravelEntity travelEntity) {
         em.merge(travelEntity);
-        em.flush();
-        em.clear();
         return TravelEntity.toDto(travelEntity);
     }
 
@@ -199,8 +198,6 @@ public class TravelRepository {
      */
     public Long deleteTravel(Long idx) {
         em.remove(em.find(TravelEntity.class, idx));
-        em.flush();
-        em.clear();
         return idx;
     }
 
@@ -273,8 +270,6 @@ public class TravelRepository {
      */
     public TravelReviewDTO updateReplyTravel(TravelReviewEntity travelReviewEntity) {
         em.merge(travelReviewEntity);
-        em.flush();
-        em.clear();
         return TravelReviewEntity.toDto(travelReviewEntity);
     }
 
@@ -289,8 +284,6 @@ public class TravelRepository {
      */
     public Long deleteReplyTravel(Long idx) {
         em.remove(em.find(TravelReviewEntity.class, idx));
-        em.flush();
-        em.clear();
         return idx;
     }
 
@@ -458,8 +451,6 @@ public class TravelRepository {
      */
     public TravelGroupDTO updateTravelGroup(TravelGroupEntity travelGroupEntity) {
         em.merge(travelGroupEntity);
-        em.flush();
-        em.clear();
         return TravelGroupEntity.toDto(travelGroupEntity);
     }
 
@@ -474,8 +465,6 @@ public class TravelRepository {
      */
     public Long deleteTravelGroup(Long idx) {
         em.remove(em.find(TravelGroupEntity.class, idx));
-        em.flush();
-        em.clear();
         return idx;
     }
 
@@ -504,8 +493,6 @@ public class TravelRepository {
      */
     public Long deleteTravelGroupUser(Long idx) {
         em.remove(em.find(TravelGroupUserEntity.class, idx));
-        em.flush();
-        em.clear();
         return idx;
     }
 
@@ -534,8 +521,6 @@ public class TravelRepository {
      */
     public TravelScheduleDTO updateTravelSchedule(TravelScheduleEntity travelScheduleEntity) {
         em.merge(travelScheduleEntity);
-        em.flush();
-        em.clear();
         return TravelScheduleEntity.toDto(travelScheduleEntity);
     }
 
@@ -550,8 +535,6 @@ public class TravelRepository {
      */
     public Long deleteTravelSchedule(Long idx) {
         em.remove(em.find(TravelScheduleEntity.class, idx));
-        em.flush();
-        em.clear();
         return idx;
     }
 }

@@ -7,7 +7,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -79,7 +78,6 @@ public class NoticeService {
      * </pre>
      */
     @CachePut("notice")
-    @Modifying(clearAutomatically = true)
     @Transactional
     public NoticeDTO insertNotice(NoticeEntity noticeEntity) {
         try {
@@ -99,7 +97,6 @@ public class NoticeService {
      * </pre>
      */
     @CachePut(value = "notice", key = "#noticeEntity.idx")
-    @Modifying(clearAutomatically = true)
     @Transactional
     public NoticeDTO updateNotice(NoticeEntity noticeEntity) {
         try {
@@ -119,7 +116,6 @@ public class NoticeService {
      * </pre>
      */
     @CacheEvict(value = "notice", key = "#idx")
-    @Modifying(clearAutomatically = true)
     @Transactional
     public Long deleteNotice(Long idx) {
         try {
@@ -139,7 +135,6 @@ public class NoticeService {
      * </pre>
      */
     @CachePut(value = "notice", key = "#idx")
-    @Modifying(clearAutomatically = true)
     @Transactional
     public Boolean toggleTopFixed(Long idx) {
         try {

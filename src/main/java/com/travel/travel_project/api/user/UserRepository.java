@@ -65,9 +65,6 @@ public class UserRepository {
      */
     public Long insertUserToken(UserEntity userEntity) {
         em.merge(userEntity);
-        em.flush();
-        em.clear();
-
         return userEntity.getIdx();
     }
 
@@ -184,8 +181,6 @@ public class UserRepository {
      */
     public UserDTO updateUser(UserEntity userEntity) {
         em.merge(userEntity);
-        em.flush();
-        em.clear();
         return UserEntity.toDto(userEntity);
     }
 
@@ -200,8 +195,6 @@ public class UserRepository {
      */
     public Long deleteUser(Long idx) {
         em.remove(em.find(UserEntity.class, idx));
-        em.flush();
-        em.clear();
         return idx;
     }
 
@@ -223,9 +216,6 @@ public class UserRepository {
         }
 
         em.merge(oneUser);
-        em.flush();
-        em.clear();
-
         return UserEntity.toDto(oneUser);
     }
 

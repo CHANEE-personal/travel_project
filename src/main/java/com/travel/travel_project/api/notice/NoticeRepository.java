@@ -112,8 +112,6 @@ public class NoticeRepository {
      */
     public NoticeDTO updateNotice(NoticeEntity existNoticeEntity) {
         em.merge(existNoticeEntity);
-        em.flush();
-        em.clear();
         return NoticeEntity.toDto(existNoticeEntity);
     }
 
@@ -128,8 +126,6 @@ public class NoticeRepository {
      */
     public Long deleteNotice(Long idx) {
         em.remove(em.find(NoticeEntity.class, idx));
-        em.flush();
-        em.clear();
         return idx;
     }
 

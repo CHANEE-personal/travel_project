@@ -107,8 +107,6 @@ public class CommonRepository {
      */
     public CommonDTO updateCommonCode(CommonEntity commonEntity) {
         em.merge(commonEntity);
-        em.flush();
-        em.clear();
         return CommonEntity.toDto(commonEntity);
     }
 
@@ -123,8 +121,6 @@ public class CommonRepository {
      */
     public Long deleteCommonCode(Long idx) {
         em.remove(em.find(CommonEntity.class, idx));
-        em.flush();
-        em.clear();
         return idx;
     }
 }

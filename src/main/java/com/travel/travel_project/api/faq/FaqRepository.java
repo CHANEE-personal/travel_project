@@ -108,8 +108,6 @@ public class FaqRepository {
      */
     public FaqDTO updateFaq(FaqEntity existFaqEntity) {
         em.merge(existFaqEntity);
-        em.flush();
-        em.clear();
         return FaqEntity.toDto(existFaqEntity);
     }
 
@@ -124,8 +122,6 @@ public class FaqRepository {
      */
     public Long deleteFaq(Long idx) {
         em.remove(em.find(FaqEntity.class, idx));
-        em.flush();
-        em.clear();
         return idx;
     }
 }

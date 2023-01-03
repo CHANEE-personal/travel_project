@@ -96,8 +96,6 @@ public class PostRepository {
      */
     public PostDTO insertPost(PostEntity postEntity) {
         em.persist(postEntity);
-        em.flush();
-        em.clear();
         return PostEntity.toDto(postEntity);
     }
 
@@ -112,8 +110,6 @@ public class PostRepository {
      */
     public PostDTO updatePost(PostEntity postEntity) {
         em.merge(postEntity);
-        em.flush();
-        em.clear();
         return PostEntity.toDto(postEntity);
     }
 
@@ -128,8 +124,6 @@ public class PostRepository {
      */
     public Long deletePost(Long idx) {
         em.remove(em.find(PostEntity.class, idx));
-        em.flush();
-        em.clear();
         return idx;
     }
 
