@@ -296,6 +296,41 @@ class TravelServiceTest {
     }
 
     @Test
+    @DisplayName("여행지수정테스트")
+    void 여행지수정테스트() {
+        // given
+        travelEntity = TravelEntity.builder()
+                .travelCode(1)
+                .travelTitle("여행지 테스트").travelDescription("여행지 테스트").favoriteCount(0).viewCount(0)
+                .travelAddress("인천광역시 서구").travelZipCode("123-456").visible("Y")
+                .build();
+
+        TravelEntity travelEntity1 = TravelEntity.builder()
+                .travelCode(1)
+                .travelTitle("여행지 테스트1").travelDescription("여행지 테스트1").favoriteCount(0).viewCount(0)
+                .travelAddress("인천광역시 계양구").travelZipCode("123-456").visible("Y")
+                .build();
+
+        TravelDTO adminTravelDTO = travelService.insertTravel(travelEntity);
+        travelService.insertTravel(travelEntity1);
+
+        TravelEntity newAdminTravelEntity = TravelEntity.builder()
+                .idx(adminTravelDTO.getIdx())
+                .travelCode(1)
+                .travelTitle("여행지 수정 테스트").travelDescription("여행지 수정 테스트").favoriteCount(0).viewCount(0)
+                .travelAddress("서울특별시 강남구").travelZipCode("123-456")
+                .visible("Y").build();
+
+        travelService.updateTravel(newAdminTravelEntity);
+
+        TravelDTO oneTravel = travelService.findOneTravel(newAdminTravelEntity.getIdx());
+        TravelDTO secondTravel = travelService.findOneTravel(travelEntity1.getIdx());
+
+        assertThat(oneTravel.getTravelAddress()).isEqualTo("서울특별시 강남구");
+        assertThat(secondTravel.getTravelAddress()).isEqualTo("인천광역시 계양구");
+    }
+
+    @Test
     @DisplayName("여행지수정Mockito테스트")
     void 여행지수정Mockito테스트() {
         // given

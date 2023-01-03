@@ -8,7 +8,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -33,7 +32,6 @@ public class UserService {
     }
 
     @CachePut("user")
-    @Modifying(clearAutomatically = true)
     @Transactional
     public void insertToken(UserEntity paramUserEntity) {
         try {
@@ -112,7 +110,6 @@ public class UserService {
      * </pre>
      */
     @CachePut("user")
-    @Modifying(clearAutomatically = true)
     @Transactional
     public UserDTO insertUser(UserEntity userEntity) {
         try {
@@ -132,7 +129,6 @@ public class UserService {
      * </pre>
      */
     @CachePut(value = "user", key = "#userEntity.idx")
-    @Modifying(clearAutomatically = true)
     @Transactional
     public UserDTO updateUser(UserEntity userEntity) {
         try {
@@ -152,7 +148,6 @@ public class UserService {
      * </pre>
      */
     @CacheEvict(value = "user", key = "#idx")
-    @Modifying(clearAutomatically = true)
     @Transactional
     public Long deleteUser(Long idx) {
         try {
@@ -172,7 +167,6 @@ public class UserService {
      * </pre>
      */
     @CachePut(value = "user", key = "#idx")
-    @Modifying(clearAutomatically = true)
     @Transactional
     public UserDTO addFavoriteTravel(Long idx, Long favoriteIdx) {
         try {

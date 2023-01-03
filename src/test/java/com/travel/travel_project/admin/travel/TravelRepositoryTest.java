@@ -348,6 +348,7 @@ class TravelRepositoryTest {
                 .build();
 
         TravelDTO travelInfo = travelRepository.insertTravel(travelEntity);
+        travelRepository.findOneTravel(travelEntity.getIdx());
 
         // when
         when(mockTravelRepository.findOneTravel(travelEntity.getIdx())).thenReturn(travelInfo);
@@ -484,6 +485,9 @@ class TravelRepositoryTest {
         when(mockTravelRepository.findOneTravel(travelEntity.getIdx())).thenReturn(travelDTO);
         Long deleteIdx = travelRepository.deleteTravel(travelEntity.getIdx());
 
+        System.out.println("===deleteIdx===");
+        System.out.println(deleteIdx);
+
         // then
         assertThat(mockTravelRepository.findOneTravel(travelEntity.getIdx()).getIdx()).isEqualTo(deleteIdx);
 
@@ -531,6 +535,8 @@ class TravelRepositoryTest {
         // when
         // 좋아요 수 증가
         Integer favoriteCount = travelRepository.favoriteTravel(travelDTO.getIdx());
+        System.out.println("===favoriteCount===");
+        System.out.println(favoriteCount);
         when(mockTravelRepository.favoriteTravel(travelDTO.getIdx())).thenReturn(favoriteCount);
 
         // then

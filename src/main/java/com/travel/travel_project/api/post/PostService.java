@@ -7,7 +7,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -80,7 +79,6 @@ public class PostService {
      * </pre>
      */
     @CachePut("post")
-    @Modifying(clearAutomatically = true)
     @Transactional
     public PostDTO insertPost(PostEntity postEntity) {
         try {
@@ -100,7 +98,6 @@ public class PostService {
      * </pre>
      */
     @CachePut(value = "post", key = "#postEntity.idx")
-    @Modifying(clearAutomatically = true)
     @Transactional
     public PostDTO updatePost(PostEntity postEntity) {
         try {
@@ -120,7 +117,6 @@ public class PostService {
      * </pre>
      */
     @CacheEvict(value = "post", key = "#idx")
-    @Modifying(clearAutomatically = true)
     @Transactional
     public Long deletePost(Long idx) {
         try {

@@ -7,7 +7,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -80,7 +79,6 @@ public class FaqService {
      * </pre>
      */
     @CachePut("faq")
-    @Modifying(clearAutomatically = true)
     @Transactional
     public FaqDTO insertFaq(FaqEntity faqEntity) {
         try {
@@ -100,7 +98,6 @@ public class FaqService {
      * </pre>
      */
     @CachePut(value = "faq", key = "#faqEntity.idx")
-    @Modifying(clearAutomatically = true)
     @Transactional
     public FaqDTO updateFaq(FaqEntity faqEntity) {
         try {
@@ -120,7 +117,6 @@ public class FaqService {
      * </pre>
      */
     @CacheEvict(value = "faq", key = "#idx")
-    @Modifying(clearAutomatically = true)
     @Transactional
     public Long deleteFaq(Long idx) {
         try {

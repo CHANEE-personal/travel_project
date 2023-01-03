@@ -7,7 +7,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -80,7 +79,6 @@ public class CommonService {
      * </pre>
      */
     @CachePut("common")
-    @Modifying(clearAutomatically = true)
     @Transactional
     public CommonDTO insertCommonCode(CommonEntity existCommonEntity) {
         try {
@@ -100,7 +98,6 @@ public class CommonService {
      * </pre>
      */
     @CachePut(value = "common", key = "#existCommonEntity.idx")
-    @Modifying(clearAutomatically = true)
     @Transactional
     public CommonDTO updateCommonCode(CommonEntity existCommonEntity) {
         try {
@@ -120,7 +117,6 @@ public class CommonService {
      * </pre>
      */
     @CacheEvict(value = "common", key = "#idx")
-    @Modifying(clearAutomatically = true)
     @Transactional
     public Long deleteCommonCode(Long idx) {
         try {

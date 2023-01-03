@@ -89,7 +89,6 @@ public class TravelService {
      * </pre>
      */
     @CachePut("travel")
-    @Modifying(clearAutomatically = true)
     @Transactional
     public TravelDTO insertTravel(TravelEntity travelEntity) {
         try {
@@ -128,7 +127,6 @@ public class TravelService {
      * </pre>
      */
     @CachePut(value = "travel", key = "#travelEntity.idx")
-    @Modifying(clearAutomatically = true)
     @Transactional
     public TravelDTO updateTravel(TravelEntity travelEntity) {
         try {
@@ -148,7 +146,6 @@ public class TravelService {
      * </pre>
      */
     @CacheEvict(value = "travel", key = "#idx")
-    @Modifying(clearAutomatically = true)
     @Transactional
     public Long deleteTravel(Long idx) {
         try {
@@ -168,7 +165,6 @@ public class TravelService {
      * </pre>
      */
     @CachePut(value = "travel", key = "#idx")
-    @Modifying(clearAutomatically = true)
     @Transactional
     public int favoriteTravel(Long idx) {
         try {
@@ -203,7 +199,6 @@ public class TravelService {
      * </pre>
      */
     @CachePut(value = "reply")
-    @Modifying(clearAutomatically = true)
     @Transactional
     public TravelReviewDTO replyTravel(TravelReviewEntity travelReviewEntity) {
         try {
@@ -223,7 +218,6 @@ public class TravelService {
      * </pre>
      */
     @CachePut(value = "reply", key = "#travelReviewEntity.idx")
-    @Modifying(clearAutomatically = true)
     @Transactional
     public TravelReviewDTO updateReplyTravel(TravelReviewEntity travelReviewEntity) {
         try {
@@ -243,7 +237,6 @@ public class TravelService {
      * </pre>
      */
     @CacheEvict(value = "reply", key = "#idx")
-    @Modifying(clearAutomatically = true)
     @Transactional
     public Long deleteReplyTravel(Long idx) {
         try {
@@ -292,7 +285,6 @@ public class TravelService {
      * </pre>
      */
     @CachePut(value = "travel", key = "#idx")
-    @Modifying(clearAutomatically = true)
     @Transactional
     public Boolean togglePopular(Long idx) {
         try {
@@ -360,7 +352,6 @@ public class TravelService {
      * </pre>
      */
     @CachePut("group")
-    @Modifying(clearAutomatically = true)
     @Transactional
     public TravelGroupDTO insertTravelGroup(TravelGroupEntity travelGroupEntity) {
         try {
@@ -380,7 +371,6 @@ public class TravelService {
      * </pre>
      */
     @CachePut(value = "group", key = "#travelGroupEntity.idx")
-    @Modifying(clearAutomatically = true)
     @Transactional
     public TravelGroupDTO updateTravelGroup(TravelGroupEntity travelGroupEntity) {
         try {
@@ -400,7 +390,6 @@ public class TravelService {
      * </pre>
      */
     @CacheEvict(value = "group", key = "#idx")
-    @Modifying(clearAutomatically = true)
     @Transactional
     public Long deleteTravelGroup(Long idx) {
         try {
@@ -420,7 +409,6 @@ public class TravelService {
      * </pre>
      */
     @CachePut("group_user")
-    @Modifying(clearAutomatically = true)
     @Transactional
     public TravelGroupUserDTO insertTravelGroupUser(TravelGroupUserEntity travelGroupUserEntity) {
         try {
@@ -440,7 +428,6 @@ public class TravelService {
      * </pre>
      */
     @CacheEvict(value = "group_user", key = "#idx")
-    @Modifying(clearAutomatically = true)
     @Transactional
     public Long deleteTravelGroupUser(Long idx) {
         try {
@@ -460,7 +447,6 @@ public class TravelService {
      * </pre>
      */
     @CachePut("schedule")
-    @Modifying(clearAutomatically = true)
     @Transactional
     public TravelScheduleDTO insertTravelSchedule(TravelScheduleEntity travelScheduleEntity) {
         try {
@@ -480,7 +466,6 @@ public class TravelService {
      * </pre>
      */
     @CachePut(value = "schedule", key = "#travelScheduleEntity.idx")
-    @Modifying(clearAutomatically = true)
     @Transactional
     public TravelScheduleDTO updateTravelSchedule(TravelScheduleEntity travelScheduleEntity) {
         try {
@@ -500,7 +485,6 @@ public class TravelService {
      * </pre>
      */
     @CacheEvict(value = "schedule", key = "#idx")
-    @Modifying(clearAutomatically = true)
     @Transactional
     public Long deleteTravelSchedule(Long idx) {
         try {
