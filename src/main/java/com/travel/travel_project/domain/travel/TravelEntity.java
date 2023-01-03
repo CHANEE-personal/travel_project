@@ -124,10 +124,38 @@ public class TravelEntity extends NewCommonMappedClass {
                 .build();
     }
 
+    public static TravelDTO toPartDto(TravelEntity entity) {
+        if (entity == null) return null;
+        return TravelDTO.builder()
+                .idx(entity.getIdx())
+                .rowNum(entity.getRowNum())
+                .travelCode(entity.getTravelCode())
+                .travelTitle(entity.getTravelTitle())
+                .travelDescription(entity.getTravelDescription())
+                .travelAddress(entity.getTravelAddress())
+                .travelZipCode(entity.getTravelZipCode())
+                .favoriteCount(entity.getFavoriteCount())
+                .viewCount(entity.getViewCount())
+                .visible(entity.getVisible())
+                .popular(entity.getPopular())
+                .creator(entity.getCreator())
+                .createTime(entity.getCreateTime())
+                .updater(entity.getUpdater())
+                .updateTime(entity.getUpdateTime())
+                .build();
+    }
+
     public static List<TravelDTO> toDtoList(List<TravelEntity> entityList) {
         if (entityList == null) return null;
         return entityList.stream()
                 .map(TravelEntity::toDto)
+                .collect(Collectors.toList());
+    }
+
+    public static List<TravelDTO> toPartDtoList(List<TravelEntity> entityList) {
+        if (entityList == null) return null;
+        return entityList.stream()
+                .map(TravelEntity::toPartDto)
                 .collect(Collectors.toList());
     }
 }
