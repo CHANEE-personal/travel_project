@@ -93,7 +93,7 @@ public class TravelRepository {
                 .limit(getInt(travelMap.get("size"), 0))
                 .fetch();
 
-        return travelList != null ? TravelEntity.toDtoList(travelList) : Collections.emptyList();
+        return travelList != null ? TravelEntity.toPartDtoList(travelList) : Collections.emptyList();
     }
 
     /**
@@ -177,8 +177,8 @@ public class TravelRepository {
      * 1. MethodName : updateTravel
      * 2. ClassName  : TravelRepository.java
      * 3. Comment    : 관리자 > 여행지 수정
-     * 4. 작성자       : CHO
-     * 5. 작성일       : 2022. 10. 05.
+     * 4. 작성자      : CHO
+     * 5. 작성일      : 2022. 10. 05.
      * </pre>
      */
     public TravelDTO updateTravel(TravelEntity travelEntity) {

@@ -86,6 +86,21 @@ public class PostEntity extends NewCommonMappedClass {
                 .build();
     }
 
+    public static PostDTO toPartDto(PostEntity entity) {
+        if (entity == null) return null;
+        return PostDTO.builder()
+                .rowNum(entity.getRowNum())
+                .idx(entity.getIdx())
+                .postTitle(entity.getPostTitle())
+                .postDescription(entity.getPostDescription())
+                .postParentIdx(entity.getPostParentIdx())
+                .postTopIdx(entity.getPostTopIdx())
+                .visible(entity.getVisible())
+                .viewCount(entity.getViewCount())
+                .favoriteCount(entity.getFavoriteCount())
+                .build();
+    }
+
     public static PostEntity toEntity(PostDTO dto) {
         if (dto == null) return null;
         return PostEntity.builder()
@@ -105,6 +120,13 @@ public class PostEntity extends NewCommonMappedClass {
         if (entityList == null) return null;
         return entityList.stream()
                 .map(PostEntity::toDto)
+                .collect(Collectors.toList());
+    }
+
+    public static List<PostDTO> toPartDtoList(List<PostEntity> entityList) {
+        if (entityList == null) return null;
+        return entityList.stream()
+                .map(PostEntity::toPartDto)
                 .collect(Collectors.toList());
     }
 

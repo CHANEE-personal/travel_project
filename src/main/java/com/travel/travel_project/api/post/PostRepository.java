@@ -62,7 +62,7 @@ public class PostRepository {
                 .limit(getInt(postMap.get("size"), 0))
                 .fetch();
 
-        return postList != null ? PostEntity.toDtoList(postList) : Collections.emptyList();
+        return postList != null ? PostEntity.toPartDtoList(postList) : Collections.emptyList();
     }
 
     /**
