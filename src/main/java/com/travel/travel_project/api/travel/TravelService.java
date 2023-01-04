@@ -7,6 +7,8 @@ import com.travel.travel_project.domain.travel.group.TravelGroupDTO;
 import com.travel.travel_project.domain.travel.group.TravelGroupEntity;
 import com.travel.travel_project.domain.travel.group.TravelGroupUserDTO;
 import com.travel.travel_project.domain.travel.group.TravelGroupUserEntity;
+import com.travel.travel_project.domain.travel.recommend.TravelRecommendDTO;
+import com.travel.travel_project.domain.travel.recommend.TravelRecommendEntity;
 import com.travel.travel_project.domain.travel.review.TravelReviewDTO;
 import com.travel.travel_project.domain.travel.review.TravelReviewEntity;
 import com.travel.travel_project.domain.travel.schedule.TravelScheduleDTO;
@@ -491,6 +493,93 @@ public class TravelService {
             return travelRepository.deleteTravelSchedule(idx);
         } catch (Exception e) {
             throw new TravelException(ERROR_DELETE_TRAVEL_SCHEDULE, e);
+        }
+    }
+
+    /**
+     * <pre>
+     * 1. MethodName : findTravelRecommendList
+     * 2. ClassName  : TravelService.java
+     * 3. Comment    : 여행지 추천 검색어 리스트 조회
+     * 4. 작성자      : CHO
+     * 5. 작성일      : 2023. 01. 04.
+     * </pre>
+     */
+    @Cacheable(value = "recommend")
+    @Transactional(readOnly = true)
+    public List<TravelRecommendDTO> findTravelRecommendList(Map<String, Object> recommendMap) {
+        return travelRepository.findTravelRecommendList(recommendMap);
+    }
+
+    /**
+     * <pre>
+     * 1. MethodName : findOneTravelRecommend
+     * 2. ClassName  : TravelService.java
+     * 3. Comment    : 여행지 추천 검색어 상세 조회
+     * 4. 작성자      : CHO
+     * 5. 작성일      : 2023. 01. 04.
+     * </pre>
+     */
+    @Cacheable(value = "recommend",key = "#idx")
+    @Transactional(readOnly = true)
+    public TravelRecommendDTO findOneTravelRecommend(Long idx) {
+        return travelRepository.findOneTravelRecommend(idx);
+    }
+
+    /**
+     * <pre>
+     * 1. MethodName : insertTravelRecommend
+     * 2. ClassName  : TravelService.java
+     * 3. Comment    : 여행지 추천 검색어 등록
+     * 4. 작성자      : CHO
+     * 5. 작성일      : 2023. 01. 04.
+     * </pre>
+     */
+    @CachePut(value = "recommend")
+    @Transactional
+    public TravelRecommendDTO insertTravelRecommend(TravelRecommendEntity travelRecommendEntity) {
+        try {
+            return travelRepository.changeTravelRecommend(travelRecommendEntity);
+        } catch (Exception e) {
+            throw new TravelException(ERROR_TRAVEL_RECOMMEND, e);
+        }
+    }
+
+    /**
+     * <pre>
+     * 1. MethodName : updateTravelRecommend
+     * 2. ClassName  : TravelService.java
+     * 3. Comment    : 여행지 추천 검색어 수정
+     * 4. 작성자      : CHO
+     * 5. 작성일      : 2023. 01. 04.
+     * </pre>
+     */
+    @CachePut(value = "recommend", key = "#travelRecommendEntity.idx")
+    @Transactional
+    public TravelRecommendDTO updateTravelRecommend(TravelRecommendEntity travelRecommendEntity) {
+        try {
+            return travelRepository.changeTravelRecommend(travelRecommendEntity);
+        } catch (Exception e) {
+            throw new TravelException(ERROR_UPDATE_TRAVEL_RECOMMEND, e);
+        }
+    }
+
+    /**
+     * <pre>
+     * 1. MethodName : deleteTravelRecommend
+     * 2. ClassName  : TravelService.java
+     * 3. Comment    : 여행지 추천 검색어 삭제
+     * 4. 작성자      : CHO
+     * 5. 작성일      : 2023. 01. 04.
+     * </pre>
+     */
+    @CacheEvict(value = "recommend", key = "#idx")
+    @Transactional
+    public Long deleteTravelRecommend(Long idx) {
+        try {
+            return travelRepository.deleteTravelRecommend(idx);
+        } catch (Exception e) {
+            throw new TravelException(ERROR_DELETE_TRAVEL_RECOMMEND, e);
         }
     }
 }

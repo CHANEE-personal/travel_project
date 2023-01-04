@@ -570,10 +570,10 @@ public class TravelRepository {
      * </pre>
      */
     public TravelRecommendDTO findOneTravelRecommend(Long idx) {
-        TravelRecommendEntity findOneTravelRecommend = queryFactory
+        TravelRecommendEntity findOneTravelRecommend = Optional.ofNullable(queryFactory
                 .selectFrom(QTravelRecommendEntity.travelRecommendEntity)
                 .where(QTravelRecommendEntity.travelRecommendEntity.idx.eq(idx))
-                .fetchOne();
+                .fetchOne()).orElseThrow(() -> new TravelException(NOT_FOUND_TRAVEL_RECOMMEND, new Throwable()));
 
         return TravelRecommendEntity.toDto(findOneTravelRecommend);
     }
