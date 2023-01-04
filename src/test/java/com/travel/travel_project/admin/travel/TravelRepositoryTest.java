@@ -7,12 +7,18 @@ import com.travel.travel_project.domain.travel.group.TravelGroupDTO;
 import com.travel.travel_project.domain.travel.group.TravelGroupEntity;
 import com.travel.travel_project.domain.travel.group.TravelGroupUserDTO;
 import com.travel.travel_project.domain.travel.group.TravelGroupUserEntity;
+import com.travel.travel_project.domain.travel.recommend.TravelRecommendDTO;
+import com.travel.travel_project.domain.travel.recommend.TravelRecommendEntity;
 import com.travel.travel_project.domain.travel.review.TravelReviewDTO;
 import com.travel.travel_project.domain.travel.review.TravelReviewEntity;
 import com.travel.travel_project.domain.travel.schedule.TravelScheduleDTO;
 import com.travel.travel_project.domain.travel.schedule.TravelScheduleEntity;
+import com.travel.travel_project.domain.user.UserDTO;
+import com.travel.travel_project.domain.user.UserEntity;
 import com.travel.travel_project.exception.TravelException;
 import lombok.RequiredArgsConstructor;
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -37,6 +43,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import static com.travel.travel_project.domain.user.Role.ROLE_TRAVEL_USER;
 import static com.travel.travel_project.exception.ApiExceptionType.NOT_FOUND_TRAVEL;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -1083,5 +1090,111 @@ class TravelRepositoryTest {
         Long deleteIdx = travelRepository.deleteTravelSchedule(travelScheduleDTO.getIdx());
 
         assertThat(deleteIdx).isEqualTo(travelScheduleDTO.getIdx());
+    }
+
+    @Test
+    @DisplayName("여행지 추천 검색어 리스트 조회 테스트")
+    void 여행지추천검색어리스트조회테스트() {
+        Map<String, Object> travelRecommendMap = new HashMap<>();
+        travelRecommendMap.put("jpaStartPage", 0);
+        travelRecommendMap.put("size", 3);
+        List<String> list = new ArrayList<>();
+        list.add("서울");
+        list.add("인천");
+
+        TravelRecommendEntity recommendEntity = TravelRecommendEntity.builder()
+                .recommendName(list)
+                .build();
+
+        travelRepository.changeTravelRecommend(recommendEntity);
+
+        assertThat(travelRepository.findTravelRecommendList(travelRecommendMap)).isNotEmpty();
+    }
+
+    @Test
+    @DisplayName("여행지 추천 검색어 상세 조회 테스트")
+    void 여행지추천검색어상세조회테스트() {
+        List<String> list = new ArrayList<>();
+        list.add("서울");
+        list.add("인천");
+
+        TravelRecommendEntity recommendEntity = TravelRecommendEntity.builder()
+                .recommendName(list)
+                .build();
+
+        TravelRecommendDTO travelRecommendDTO = travelRepository.changeTravelRecommend(recommendEntity);
+
+        TravelRecommendDTO oneTravelRecommend = travelRepository.findOneTravelRecommend(travelRecommendDTO.getIdx());
+        assertThat(oneTravelRecommend.getRecommendName()).isEqualTo(list);
+    }
+
+    @Test
+    @DisplayName("여행지 추천 검색어 등록 테스트")
+    void 여행지추천검색어등록테스트() throws JSONException {
+        List<String> list = new ArrayList<>();
+        list.add("서울");
+        list.add("인천");
+
+        TravelRecommendEntity recommendEntity = TravelRecommendEntity.builder()
+                .recommendName(list)
+                .build();
+
+        TravelRecommendDTO travelRecommendDTO = travelRepository.changeTravelRecommend(recommendEntity);
+
+        JSONArray jsonArray = new JSONArray();
+        jsonArray.put(travelRecommendDTO.getRecommendName());
+        Object insertObject = jsonArray.get(0);
+
+        assertThat(travelRecommendDTO.getRecommendName()).isEqualTo(insertObject);
+    }
+
+    @Test
+    @DisplayName("여행지 추천 검색어 수정 테스트")
+    void 여행지추천검색어수정테스트() throws JSONException {
+        List<String> list = new ArrayList<>();
+        list.add("서울");
+        list.add("인천");
+
+        TravelRecommendEntity recommendEntity = TravelRecommendEntity.builder()
+                .recommendName(list)
+                .build();
+
+        TravelRecommendDTO travelRecommendDTO = travelRepository.changeTravelRecommend(recommendEntity);
+
+        list.add("대구");
+        recommendEntity = TravelRecommendEntity.builder()
+                        .idx(travelRecommendDTO.getIdx())
+                        .recommendName(list)
+                        .build();
+        em.flush();
+        em.clear();
+
+        TravelRecommendDTO updateRecommendDTO = travelRepository.changeTravelRecommend(recommendEntity);
+
+        JSONArray jsonArray = new JSONArray();
+        jsonArray.put(updateRecommendDTO.getRecommendName());
+        Object insertObject = jsonArray.get(0);
+
+        assertThat(updateRecommendDTO.getRecommendName()).isEqualTo(insertObject);
+    }
+
+    @Test
+    @DisplayName("여행지 추천 검색어 삭제 테스트")
+    void 여행지추천검색어삭제테스트() {
+        List<String> list = new ArrayList<>();
+        list.add("서울");
+        list.add("인천");
+
+        TravelRecommendEntity recommendEntity = TravelRecommendEntity.builder()
+                .recommendName(list)
+                .build();
+
+        TravelRecommendDTO travelRecommendDTO = travelRepository.changeTravelRecommend(recommendEntity);
+
+        Long deleteIdx = travelRepository.deleteTravelRecommend(travelRecommendDTO.getIdx());
+        em.flush();
+        em.clear();
+
+        assertThat(deleteIdx).isEqualTo(travelRecommendDTO.getIdx());
     }
 }

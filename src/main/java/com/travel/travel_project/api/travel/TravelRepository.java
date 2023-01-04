@@ -5,13 +5,15 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.travel.travel_project.domain.travel.TravelDTO;
 import com.travel.travel_project.domain.travel.TravelEntity;
 import com.travel.travel_project.domain.travel.group.*;
+import com.travel.travel_project.domain.travel.recommend.QTravelRecommendEntity;
+import com.travel.travel_project.domain.travel.recommend.TravelRecommendDTO;
+import com.travel.travel_project.domain.travel.recommend.TravelRecommendEntity;
 import com.travel.travel_project.domain.travel.review.TravelReviewDTO;
 import com.travel.travel_project.domain.travel.review.TravelReviewEntity;
 import com.travel.travel_project.domain.travel.schedule.TravelScheduleDTO;
 import com.travel.travel_project.domain.travel.schedule.TravelScheduleEntity;
 import com.travel.travel_project.exception.TravelException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
@@ -535,6 +537,76 @@ public class TravelRepository {
      */
     public Long deleteTravelSchedule(Long idx) {
         em.remove(em.find(TravelScheduleEntity.class, idx));
+        return idx;
+    }
+
+    /**
+     * <pre>
+     * 1. MethodName : findTravelRecommendList
+     * 2. ClassName  : TravelRepository.java
+     * 3. Comment    : 여행지 추천 검색어 리스트 조회
+     * 4. 작성자      : CHO
+     * 5. 작성일      : 2023. 01. 04.
+     * </pre>
+     */
+    public List<TravelRecommendDTO> findTravelRecommendList(Map<String, Object> recommendMap) {
+        List<TravelRecommendEntity> recommendList = queryFactory
+                .selectFrom(QTravelRecommendEntity.travelRecommendEntity)
+                .orderBy(QTravelRecommendEntity.travelRecommendEntity.idx.desc())
+                .offset(getInt(recommendMap.get("jpaStartPage"), 0))
+                .limit(getInt(recommendMap.get("size"), 0))
+                .fetch();
+
+        return recommendList != null ? TravelRecommendEntity.toDtoList(recommendList) : Collections.emptyList();
+    }
+
+    /**
+     * <pre>
+     * 1. MethodName : findOneTravelRecommend
+     * 2. ClassName  : TravelRepository.java
+     * 3. Comment    : 여행지 추천 검색어 상세 조회
+     * 4. 작성자      : CHO
+     * 5. 작성일      : 2023. 01. 04.
+     * </pre>
+     */
+    public TravelRecommendDTO findOneTravelRecommend(Long idx) {
+        TravelRecommendEntity findOneTravelRecommend = queryFactory
+                .selectFrom(QTravelRecommendEntity.travelRecommendEntity)
+                .where(QTravelRecommendEntity.travelRecommendEntity.idx.eq(idx))
+                .fetchOne();
+
+        return TravelRecommendEntity.toDto(findOneTravelRecommend);
+    }
+
+    /**
+     * <pre>
+     * 1. MethodName : insertTravelRecommend
+     * 2. ClassName  : TravelRepository.java
+     * 3. Comment    : 여행지 추천 검색어 등록 or 수정
+     * 4. 작성자      : CHO
+     * 5. 작성일      : 2023. 01. 04.
+     * </pre>
+     */
+    public TravelRecommendDTO changeTravelRecommend(TravelRecommendEntity travelRecommendEntity) {
+        if (travelRecommendEntity.getIdx() == null) {
+            em.persist(travelRecommendEntity);
+        } else {
+            em.merge(travelRecommendEntity);
+        }
+        return TravelRecommendEntity.toDto(travelRecommendEntity);
+    }
+
+    /**
+     * <pre>
+     * 1. MethodName : deleteTravelRecommend
+     * 2. ClassName  : TravelRepository.java
+     * 3. Comment    : 여행지 추천 검색어 삭제
+     * 4. 작성자      : CHO
+     * 5. 작성일      : 2023. 01. 04.
+     * </pre>
+     */
+    public Long deleteTravelRecommend(Long idx) {
+        em.remove(em.find(TravelRecommendEntity.class, idx));
         return idx;
     }
 }
