@@ -203,8 +203,8 @@ public class UserRepository {
      * 1. MethodName : addFavoriteTravel
      * 2. ClassName  : UserRepository.java
      * 3. Comment    : 좋아하는 여행지 추가
-     * 4. 작성자       : CHO
-     * 5. 작성일       : 2022. 12. 07.
+     * 4. 작성자      : CHO
+     * 5. 작성일      : 2022. 12. 07.
      * </pre>
      */
     public UserDTO addFavoriteTravel(Long idx, Long favoriteIdx) {

@@ -3,6 +3,7 @@ package com.travel.travel_project.admin.travel;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.travel.travel_project.domain.travel.group.TravelGroupEntity;
 import com.travel.travel_project.domain.travel.group.TravelGroupUserEntity;
+import com.travel.travel_project.domain.travel.recommend.TravelRecommendEntity;
 import com.travel.travel_project.domain.travel.review.TravelReviewEntity;
 import com.travel.travel_project.domain.travel.schedule.TravelScheduleEntity;
 import lombok.RequiredArgsConstructor;
@@ -14,12 +15,10 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.event.EventListener;
-import org.springframework.http.HttpStatus;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.TestConstructor;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.ResultMatcher;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.web.context.WebApplicationContext;
@@ -30,6 +29,7 @@ import javax.persistence.EntityManager;
 
 import java.io.FileInputStream;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 import static com.travel.travel_project.common.StringUtil.getString;
@@ -418,5 +418,111 @@ class TravelControllerTest {
                 .andExpect(status().isNoContent())
                 .andExpect(content().contentType("application/json;charset=utf-8"))
                 .andExpect(content().string(getString(travelScheduleEntity.getIdx())));
+    }
+
+    @Test
+    @DisplayName("여행지 추천 검색어 조회 테스트")
+    void 여행지추천검색어조회테스트() throws Exception {
+        List<String> recommendList = new ArrayList<>();
+        recommendList.add("서울");
+        recommendList.add("인천");
+
+        TravelRecommendEntity travelRecommendEntity = TravelRecommendEntity.builder()
+                .recommendName(recommendList)
+                .build();
+
+        em.persist(travelRecommendEntity);
+
+        mockMvc.perform(get("/api/travel/recommend").param("page", "1").param("size", "100"))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(content().contentType("application/json;charset=utf-8"))
+                .andExpect(jsonPath("$.travelRecommendList.length()", greaterThan(0)));
+    }
+
+    @Test
+    @DisplayName("여행지 추천 검색어 상세 조회 테스트")
+    void 여행지추천검색어상세조회테스트() throws Exception {
+        List<String> recommendList = new ArrayList<>();
+        recommendList.add("서울");
+        recommendList.add("인천");
+
+        TravelRecommendEntity travelRecommendEntity = TravelRecommendEntity.builder()
+                .recommendName(recommendList)
+                .build();
+
+        em.persist(travelRecommendEntity);
+
+        mockMvc.perform(get("/api/travel/{idx}/recommend", travelRecommendEntity.getIdx()))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(content().contentType("application/json;charset=utf-8"))
+                .andExpect(jsonPath("$.idx").value(travelRecommendEntity.getIdx()));
+    }
+
+    @Test
+    @DisplayName("여행지 추천 검색어 등록 테스트")
+    void 여행지추천검색어등록테스트() throws Exception {
+        List<String> recommendList = new ArrayList<>();
+        recommendList.add("서울");
+        recommendList.add("인천");
+
+        TravelRecommendEntity travelRecommendEntity = TravelRecommendEntity.builder()
+                        .recommendName(recommendList)
+                        .build();
+
+        mockMvc.perform(post("/api/travel/recommend")
+                        .contentType(APPLICATION_JSON_VALUE)
+                        .content(objectMapper.writeValueAsString(travelRecommendEntity)))
+                .andDo(print())
+                .andExpect(status().isCreated())
+                .andExpect(content().contentType("application/json;charset=utf-8"))
+                .andExpect(jsonPath("$.recommendName").value(recommendList));
+    }
+
+    @Test
+    @DisplayName("여행지 추천 검색어 수정 테스트")
+    void 여행지추천검색어수정테스트() throws Exception {
+        List<String> recommendList = new ArrayList<>();
+        recommendList.add("서울");
+        recommendList.add("인천");
+
+        TravelRecommendEntity travelRecommendEntity = TravelRecommendEntity.builder()
+                .recommendName(recommendList)
+                .build();
+
+        em.persist(travelRecommendEntity);
+
+        recommendList.add("대구");
+        TravelRecommendEntity updateTravelRecommendEntity = TravelRecommendEntity.builder()
+                        .idx(travelRecommendEntity.getIdx())
+                        .recommendName(recommendList)
+                        .build();
+
+        mockMvc.perform(put("/api/travel/{idx}/recommend", travelRecommendEntity.getIdx())
+                        .contentType(APPLICATION_JSON_VALUE)
+                        .content(objectMapper.writeValueAsString(updateTravelRecommendEntity)))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(content().contentType("application/json;charset=utf-8"))
+                .andExpect(jsonPath("$.recommendName").value(recommendList));
+    }
+
+    @Test
+    @DisplayName("여행지 추천 검색어 삭제 테스트")
+    void 여행지추천검색어삭제테스트() throws Exception {
+        List<String> recommendList = new ArrayList<>();
+        recommendList.add("서울");
+        recommendList.add("인천");
+
+        TravelRecommendEntity travelRecommendEntity = TravelRecommendEntity.builder()
+                .recommendName(recommendList)
+                .build();
+
+        em.persist(travelRecommendEntity);
+
+        mockMvc.perform(delete("/api/travel/{idx}/recommend", travelRecommendEntity.getIdx()))
+                .andDo(print())
+                .andExpect(status().isNoContent());
     }
 }
