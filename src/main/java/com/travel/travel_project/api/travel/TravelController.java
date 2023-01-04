@@ -12,6 +12,8 @@ import com.travel.travel_project.domain.travel.group.TravelGroupDTO;
 import com.travel.travel_project.domain.travel.group.TravelGroupEntity;
 import com.travel.travel_project.domain.travel.group.TravelGroupUserDTO;
 import com.travel.travel_project.domain.travel.group.TravelGroupUserEntity;
+import com.travel.travel_project.domain.travel.recommend.TravelRecommendDTO;
+import com.travel.travel_project.domain.travel.recommend.TravelRecommendEntity;
 import com.travel.travel_project.domain.travel.review.TravelReviewDTO;
 import com.travel.travel_project.domain.travel.review.TravelReviewEntity;
 import com.travel.travel_project.domain.travel.schedule.TravelScheduleDTO;
@@ -644,6 +646,130 @@ public class TravelController {
             return ResponseEntity.notFound().build();
         }
         travelService.deleteTravelSchedule(idx);
+        return ResponseEntity.noContent().build();
+    }
+
+    /**
+     * <pre>
+     * 1. MethodName : findTravelRecommendList
+     * 2. ClassName  : TravelController.java
+     * 3. Comment    : 여행지 추천 검색어 리스트 조회
+     * 4. 작성자      : CHO
+     * 5. 작성일      : 2023. 01. 04.
+     * </pre>
+     */
+    @ApiOperation(value = "여행지 추천 검색어 리스트 조회", notes = "여행지 추천 검색어 리스트를 조회한다.")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "여행지 추천 검색어 리스트 조회 성공", response = Map.class),
+            @ApiResponse(code = 400, message = "잘못된 요청", response = HttpClientErrorException.BadRequest.class),
+            @ApiResponse(code = 401, message = "허용되지 않는 관리자", response = HttpClientErrorException.Unauthorized.class),
+            @ApiResponse(code = 403, message = "접근거부", response = HttpClientErrorException.class),
+            @ApiResponse(code = 404, message = "존재 하지 않음", response = HttpClientErrorException.NotFound.class),
+            @ApiResponse(code = 500, message = "서버 에러", response = ServerError.class)
+    })
+    @GetMapping(value = "/recommend")
+    public ResponseEntity<Map<String, Object>> findTravelRecommendList(@RequestParam Map<String, Object> paramMap, Page page) {
+        Map<String, Object> recommendMap = new HashMap<>();
+        recommendMap.put("travelRecommendList", travelService.findTravelRecommendList(searchCommon.searchCommon(page, paramMap)));
+        return ResponseEntity.ok().body(recommendMap);
+    }
+
+    /**
+     * <pre>
+     * 1. MethodName : findOneTravelRecommend
+     * 2. ClassName  : TravelController.java
+     * 3. Comment    : 여행지 추천 검색어 상세 조회
+     * 4. 작성자      : CHO
+     * 5. 작성일      : 2023. 01. 04.
+     * </pre>
+     */
+    @ApiOperation(value = "여행지 추천 검색어 상세 조회", notes = "여행지 추천 검색어 상세 조회한다.")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "여행지 추천 검색어 상세 조회 성공", response = TravelRecommendDTO.class),
+            @ApiResponse(code = 400, message = "잘못된 요청", response = HttpClientErrorException.BadRequest.class),
+            @ApiResponse(code = 401, message = "허용되지 않는 관리자", response = HttpClientErrorException.Unauthorized.class),
+            @ApiResponse(code = 403, message = "접근거부", response = HttpClientErrorException.class),
+            @ApiResponse(code = 404, message = "존재 하지 않음", response = HttpClientErrorException.NotFound.class),
+            @ApiResponse(code = 500, message = "서버 에러", response = ServerError.class)
+    })
+    @GetMapping(value = "/{idx}/recommend")
+    public ResponseEntity<TravelRecommendDTO> findOneTravelRecommend(@PathVariable Long idx) {
+        return ResponseEntity.ok(travelService.findOneTravelRecommend(idx));
+    }
+
+    /**
+     * <pre>
+     * 1. MethodName : insertTravelRecommend
+     * 2. ClassName  : TravelController.java
+     * 3. Comment    : 여행지 추천 검색어 등록
+     * 4. 작성자      : CHO
+     * 5. 작성일      : 2023. 01. 04.
+     * </pre>
+     */
+    @ApiOperation(value = "여행지 추천 검색어 등록", notes = "여행지 추천 검색어를 등록한다.")
+    @ApiResponses(value = {
+            @ApiResponse(code = 201, message = "여행지 추천 검색어 등록 성공", response = TravelRecommendDTO.class),
+            @ApiResponse(code = 400, message = "잘못된 요청", response = HttpClientErrorException.BadRequest.class),
+            @ApiResponse(code = 401, message = "허용되지 않는 관리자", response = HttpClientErrorException.Unauthorized.class),
+            @ApiResponse(code = 403, message = "접근거부", response = HttpClientErrorException.class),
+            @ApiResponse(code = 404, message = "존재 하지 않음", response = HttpClientErrorException.NotFound.class),
+            @ApiResponse(code = 500, message = "서버 에러", response = ServerError.class)
+    })
+    @PostMapping("/recommend")
+    public ResponseEntity<TravelRecommendDTO> insertTravelRecommend(@Valid @RequestBody TravelRecommendEntity travelRecommendEntity) {
+        return ResponseEntity.created(URI.create("")).body(travelService.insertTravelRecommend(travelRecommendEntity));
+    }
+
+    /**
+     * <pre>
+     * 1. MethodName : updateTravelRecommend
+     * 2. ClassName  : TravelController.java
+     * 3. Comment    : 여행지 추천 검색어 수정
+     * 4. 작성자      : CHO
+     * 5. 작성일      : 2023. 01. 04.
+     * </pre>
+     */
+    @ApiOperation(value = "여행지 추천 검색어 수정", notes = "여행지 추천 검색어를 수정한다.")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "여행지 추천 검색어 수정 성공", response = TravelRecommendDTO.class),
+            @ApiResponse(code = 400, message = "잘못된 요청", response = HttpClientErrorException.BadRequest.class),
+            @ApiResponse(code = 401, message = "허용되지 않는 관리자", response = HttpClientErrorException.Unauthorized.class),
+            @ApiResponse(code = 403, message = "접근거부", response = HttpClientErrorException.class),
+            @ApiResponse(code = 404, message = "존재 하지 않음", response = HttpClientErrorException.NotFound.class),
+            @ApiResponse(code = 500, message = "서버 에러", response = ServerError.class)
+    })
+    @PutMapping(value = "/{idx}/recommend")
+    public ResponseEntity<TravelRecommendDTO> updateTravelRecommend(@PathVariable Long idx, @Valid @RequestBody TravelRecommendEntity travelRecommendEntity) {
+        if (travelService.findOneTravelRecommend(idx) == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(travelService.updateTravelRecommend(travelRecommendEntity));
+    }
+
+    /**
+     * <pre>
+     * 1. MethodName : deleteTravelRecommend
+     * 2. ClassName  : TravelController.java
+     * 3. Comment    : 여행지 추천 검색어 삭제
+     * 4. 작성자      : CHO
+     * 5. 작성일      : 2023. 01. 04.
+     * </pre>
+     */
+    @ApiOperation(value = "여행지 추천 검색어 삭제", notes = "여행지 추천 검색어를 삭제한다.")
+    @ApiResponses(value = {
+            @ApiResponse(code = 204, message = "여행지 추천 검색어 삭제 성공", response = Long.class),
+            @ApiResponse(code = 400, message = "잘못된 요청", response = HttpClientErrorException.BadRequest.class),
+            @ApiResponse(code = 401, message = "허용되지 않는 관리자", response = HttpClientErrorException.Unauthorized.class),
+            @ApiResponse(code = 403, message = "접근거부", response = HttpClientErrorException.class),
+            @ApiResponse(code = 404, message = "존재 하지 않음", response = HttpClientErrorException.NotFound.class),
+            @ApiResponse(code = 500, message = "서버 에러", response = ServerError.class)
+    })
+    @DeleteMapping(value = "/{idx}/recommend")
+    public ResponseEntity<Long> deleteTravelRecommend(@PathVariable Long idx) {
+        if (travelService.findOneTravelRecommend(idx) == null) {
+            return ResponseEntity.notFound().build();
+        }
+        travelService.deleteTravelRecommend(idx);
         return ResponseEntity.noContent().build();
     }
 }
