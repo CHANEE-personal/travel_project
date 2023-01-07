@@ -93,9 +93,18 @@ class TravelRepositoryTest {
         Map<String, Object> travelMap = new HashMap<>();
         travelMap.put("jpaStartPage", 0);
         travelMap.put("size", 3);
+        travelMap.put("searchKeyword", "서울");
 
         // then
-        assertThat(travelRepository.findTravelList(travelMap)).isNotEmpty();
+        assertThat(travelRepository.findTravelList(travelMap)).isEmpty();
+        travelRepository.findTravelList(travelMap);
+        travelRepository.findTravelList(travelMap);
+
+        travelMap.put("searchKeyword", "인천");
+        travelRepository.findTravelList(travelMap);
+
+        assertThat(travelRepository.findTravelKeyword().get(0).getSearchKeyword()).isEqualTo("서울");
+        assertThat(travelRepository.findTravelKeyword().get(1).getSearchKeyword()).isEqualTo("인천");
     }
 
     @Test
@@ -1196,5 +1205,11 @@ class TravelRepositoryTest {
         em.clear();
 
         assertThat(deleteIdx).isEqualTo(travelRecommendDTO.getIdx());
+    }
+
+    @Test
+    @DisplayName("추천 검색어 or 검색어 랭킹을 통한 여행지 검색 조회")
+    void 추천검색어or검색어랭킹을통한여행지검색조회() {
+        assertThat(travelRepository.searchTravel("서울").get(0).getTravelTitle()).isEqualTo("서울 여행지");
     }
 }
