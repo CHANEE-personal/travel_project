@@ -13,6 +13,7 @@ import com.travel.travel_project.domain.travel.review.TravelReviewDTO;
 import com.travel.travel_project.domain.travel.review.TravelReviewEntity;
 import com.travel.travel_project.domain.travel.schedule.TravelScheduleDTO;
 import com.travel.travel_project.domain.travel.schedule.TravelScheduleEntity;
+import com.travel.travel_project.domain.travel.search.SearchDTO;
 import com.travel.travel_project.exception.TravelException;
 import com.travel.travel_project.domain.travel.TravelDTO;
 import com.travel.travel_project.domain.travel.TravelEntity;
@@ -581,5 +582,35 @@ public class TravelService {
         } catch (Exception e) {
             throw new TravelException(ERROR_DELETE_TRAVEL_RECOMMEND, e);
         }
+    }
+
+    /**
+     * <pre>
+     * 1. MethodName : rankingTravelKeyword
+     * 2. ClassName  : TravelRepository.java
+     * 3. Comment    : 여행지 검색어 랭킹 리스트 조회
+     * 4. 작성자      : CHO
+     * 5. 작성일      : 2023. 01. 07.
+     * </pre>
+     */
+    @Cacheable(value = "rankKeyword")
+    @Transactional(readOnly = true)
+    public List<SearchDTO> rankingTravelKeyword() {
+        return travelRepository.rankingTravelKeyword();
+    }
+
+    /**
+     * <pre>
+     * 1. MethodName : findTravelKeyword
+     * 2. ClassName  : TravelRepository.java
+     * 3. Comment    : 추천 검색어 or 검색어 랭킹을 통한 여행지 검색
+     * 4. 작성자      : CHO
+     * 5. 작성일      : 2023. 01. 07.
+     * </pre>
+     */
+    @Cacheable(value = "searchKeyword", key = "#searchKeyword")
+    @Transactional(readOnly = true)
+    public List<TravelDTO> findTravelKeyword(String searchKeyword) {
+        return travelRepository.findTravelKeyword(searchKeyword);
     }
 }

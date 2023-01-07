@@ -12,6 +12,9 @@ import com.travel.travel_project.domain.travel.review.TravelReviewDTO;
 import com.travel.travel_project.domain.travel.review.TravelReviewEntity;
 import com.travel.travel_project.domain.travel.schedule.TravelScheduleDTO;
 import com.travel.travel_project.domain.travel.schedule.TravelScheduleEntity;
+import com.travel.travel_project.domain.travel.search.QSearchEntity;
+import com.travel.travel_project.domain.travel.search.SearchDTO;
+import com.travel.travel_project.domain.travel.search.SearchEntity;
 import com.travel.travel_project.exception.TravelException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -21,6 +24,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.*;
 
+import static com.querydsl.core.types.Projections.fields;
 import static com.travel.travel_project.common.StringUtil.getInt;
 import static com.travel.travel_project.common.StringUtil.getString;
 import static com.travel.travel_project.domain.common.QCommonEntity.commonEntity;
@@ -47,6 +51,9 @@ public class TravelRepository {
 
     private BooleanExpression searchTravelInfo(Map<String, Object> travelMap) {
         String searchKeyword = getString(travelMap.get("searchKeyword"), "");
+
+        // 검색어 저장
+        em.persist(SearchEntity.builder().searchKeyword(searchKeyword).build());
 
         return !Objects.equals(searchKeyword, "") ?
                 travelEntity.travelTitle.contains(searchKeyword).or(travelEntity.travelDescription.contains(searchKeyword)) :
@@ -90,6 +97,7 @@ public class TravelRepository {
                 .selectFrom(travelEntity)
                 .orderBy(travelEntity.idx.desc())
                 .innerJoin(travelEntity.newTravelCode, commonEntity)
+                .fetchJoin()
                 .where(searchTravelCode(travelMap), searchTravelInfo(travelMap), searchTravelDate(travelMap))
                 .offset(getInt(travelMap.get("jpaStartPage"), 0))
                 .limit(getInt(travelMap.get("size"), 0))
@@ -608,5 +616,50 @@ public class TravelRepository {
     public Long deleteTravelRecommend(Long idx) {
         em.remove(em.find(TravelRecommendEntity.class, idx));
         return idx;
+    }
+
+    /**
+     * <pre>
+     * 1. MethodName : rankingTravelKeyword
+     * 2. ClassName  : TravelRepository.java
+     * 3. Comment    : 여행지 검색어 랭킹 리스트 조회
+     * 4. 작성자      : CHO
+     * 5. 작성일      : 2023. 01. 07.
+     * </pre>
+     */
+    public List<SearchDTO> rankingTravelKeyword() {
+        List<SearchEntity> keywordList = queryFactory
+                .select(fields(SearchEntity.class,
+                        QSearchEntity.searchEntity.searchKeyword,
+                        QSearchEntity.searchEntity.searchKeyword.count().as("count")))
+                .from(QSearchEntity.searchEntity)
+                .groupBy(QSearchEntity.searchEntity.searchKeyword)
+                .orderBy(QSearchEntity.searchEntity.searchKeyword.count().desc())
+                .offset(0)
+                .limit(10)
+                .fetch();
+
+        return keywordList != null ? SearchEntity.toDtoList(keywordList) : Collections.emptyList();
+    }
+
+    /**
+     * <pre>
+     * 1. MethodName : findTravelKeyword
+     * 2. ClassName  : TravelRepository.java
+     * 3. Comment    : 추천 검색어 or 검색어 랭킹을 통한 여행지 검색
+     * 4. 작성자      : CHO
+     * 5. 작성일      : 2023. 01. 07.
+     * </pre>
+     */
+    public List<TravelDTO> findTravelKeyword(String searchKeyword) {
+        List<TravelEntity> searchTravel = queryFactory
+                .selectFrom(travelEntity)
+                .innerJoin(travelEntity.newTravelCode, commonEntity)
+                .fetchJoin()
+                .where(travelEntity.travelTitle.contains(searchKeyword)
+                        .or(travelEntity.travelDescription.contains(searchKeyword)))
+                .fetch();
+
+        return searchTravel != null ? TravelEntity.toPartDtoList(searchTravel) : Collections.emptyList();
     }
 }

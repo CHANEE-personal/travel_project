@@ -6,6 +6,7 @@ import com.travel.travel_project.domain.travel.group.TravelGroupUserEntity;
 import com.travel.travel_project.domain.travel.recommend.TravelRecommendEntity;
 import com.travel.travel_project.domain.travel.review.TravelReviewEntity;
 import com.travel.travel_project.domain.travel.schedule.TravelScheduleEntity;
+import com.travel.travel_project.domain.travel.search.SearchEntity;
 import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -524,5 +525,29 @@ class TravelControllerTest {
         mockMvc.perform(delete("/api/travel/{idx}/recommend", travelRecommendEntity.getIdx()))
                 .andDo(print())
                 .andExpect(status().isNoContent());
+    }
+
+    @Test
+    @DisplayName("검색어 랭킹 리스트 조회 테스트")
+    void 검색어랭킹리스트조회테스트() throws Exception {
+        em.persist(SearchEntity.builder().searchKeyword("서울").build());
+        em.persist(SearchEntity.builder().searchKeyword("서울").build());
+        em.persist(SearchEntity.builder().searchKeyword("인천").build());
+
+        mockMvc.perform(get("/api/travel/rank"))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(content().contentType("application/json;charset=utf-8"))
+                .andExpect(jsonPath("$.rankList.length()", greaterThan(0)));
+    }
+
+    @Test
+    @DisplayName("검색어를 통한 여행지 조회 테스트")
+    void 검색어를통한여행지조회테스트() throws Exception {
+        mockMvc.perform(get("/api/travel/keyword").param("keyword", "서울"))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(content().contentType("application/json;charset=utf-8"))
+                .andExpect(jsonPath("$.travelList.length()", greaterThan(0)));
     }
 }

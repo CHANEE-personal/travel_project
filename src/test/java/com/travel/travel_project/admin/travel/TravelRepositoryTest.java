@@ -13,8 +13,7 @@ import com.travel.travel_project.domain.travel.review.TravelReviewDTO;
 import com.travel.travel_project.domain.travel.review.TravelReviewEntity;
 import com.travel.travel_project.domain.travel.schedule.TravelScheduleDTO;
 import com.travel.travel_project.domain.travel.schedule.TravelScheduleEntity;
-import com.travel.travel_project.domain.user.UserDTO;
-import com.travel.travel_project.domain.user.UserEntity;
+import com.travel.travel_project.domain.travel.search.SearchEntity;
 import com.travel.travel_project.exception.TravelException;
 import lombok.RequiredArgsConstructor;
 import org.json.JSONArray;
@@ -93,9 +92,18 @@ class TravelRepositoryTest {
         Map<String, Object> travelMap = new HashMap<>();
         travelMap.put("jpaStartPage", 0);
         travelMap.put("size", 3);
+        travelMap.put("searchKeyword", "서울");
 
         // then
-        assertThat(travelRepository.findTravelList(travelMap)).isNotEmpty();
+        assertThat(travelRepository.findTravelList(travelMap)).isEmpty();
+        travelRepository.findTravelList(travelMap);
+        travelRepository.findTravelList(travelMap);
+
+        travelMap.put("searchKeyword", "인천");
+        travelRepository.findTravelList(travelMap);
+
+        assertThat(travelRepository.rankingTravelKeyword().get(0).getSearchKeyword()).isEqualTo("서울");
+        assertThat(travelRepository.rankingTravelKeyword().get(1).getSearchKeyword()).isEqualTo("인천");
     }
 
     @Test
@@ -1196,5 +1204,23 @@ class TravelRepositoryTest {
         em.clear();
 
         assertThat(deleteIdx).isEqualTo(travelRecommendDTO.getIdx());
+    }
+
+    @Test
+    @DisplayName("검색어 랭킹 리스트 조회 테스트")
+    void 검색어랭킹리스트조회테스트() {
+        em.persist(SearchEntity.builder().searchKeyword("서울").build());
+        em.persist(SearchEntity.builder().searchKeyword("서울").build());
+        em.persist(SearchEntity.builder().searchKeyword("서울").build());
+        em.persist(SearchEntity.builder().searchKeyword("인천").build());
+
+        assertThat(travelRepository.rankingTravelKeyword().get(0).getSearchKeyword()).isEqualTo("서울");
+        assertThat(travelRepository.rankingTravelKeyword().get(1).getSearchKeyword()).isEqualTo("인천");
+    }
+
+    @Test
+    @DisplayName("추천 검색어 or 검색어 랭킹을 통한 여행지 검색 조회")
+    void 추천검색어or검색어랭킹을통한여행지검색조회() {
+        assertThat(travelRepository.findTravelKeyword("서울").get(0).getTravelTitle()).isEqualTo("서울 여행지");
     }
 }
