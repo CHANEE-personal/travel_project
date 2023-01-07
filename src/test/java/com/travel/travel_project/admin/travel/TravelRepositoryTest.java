@@ -13,6 +13,7 @@ import com.travel.travel_project.domain.travel.review.TravelReviewDTO;
 import com.travel.travel_project.domain.travel.review.TravelReviewEntity;
 import com.travel.travel_project.domain.travel.schedule.TravelScheduleDTO;
 import com.travel.travel_project.domain.travel.schedule.TravelScheduleEntity;
+import com.travel.travel_project.domain.travel.search.SearchEntity;
 import com.travel.travel_project.domain.user.UserDTO;
 import com.travel.travel_project.domain.user.UserEntity;
 import com.travel.travel_project.exception.TravelException;
@@ -103,8 +104,8 @@ class TravelRepositoryTest {
         travelMap.put("searchKeyword", "인천");
         travelRepository.findTravelList(travelMap);
 
-        assertThat(travelRepository.findTravelKeyword().get(0).getSearchKeyword()).isEqualTo("서울");
-        assertThat(travelRepository.findTravelKeyword().get(1).getSearchKeyword()).isEqualTo("인천");
+        assertThat(travelRepository.rankingTravelKeyword().get(0).getSearchKeyword()).isEqualTo("서울");
+        assertThat(travelRepository.rankingTravelKeyword().get(1).getSearchKeyword()).isEqualTo("인천");
     }
 
     @Test
@@ -1208,8 +1209,20 @@ class TravelRepositoryTest {
     }
 
     @Test
+    @DisplayName("검색어 랭킹 리스트 조회 테스트")
+    void 검색어랭킹리스트조회테스트() {
+        em.persist(SearchEntity.builder().searchKeyword("서울").build());
+        em.persist(SearchEntity.builder().searchKeyword("서울").build());
+        em.persist(SearchEntity.builder().searchKeyword("서울").build());
+        em.persist(SearchEntity.builder().searchKeyword("인천").build());
+
+        assertThat(travelRepository.rankingTravelKeyword().get(0).getSearchKeyword()).isEqualTo("서울");
+        assertThat(travelRepository.rankingTravelKeyword().get(1).getSearchKeyword()).isEqualTo("인천");
+    }
+
+    @Test
     @DisplayName("추천 검색어 or 검색어 랭킹을 통한 여행지 검색 조회")
     void 추천검색어or검색어랭킹을통한여행지검색조회() {
-        assertThat(travelRepository.searchTravel("서울").get(0).getTravelTitle()).isEqualTo("서울 여행지");
+        assertThat(travelRepository.findTravelKeyword("서울").get(0).getTravelTitle()).isEqualTo("서울 여행지");
     }
 }

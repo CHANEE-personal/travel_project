@@ -620,14 +620,14 @@ public class TravelRepository {
 
     /**
      * <pre>
-     * 1. MethodName : findTravelKeyword
+     * 1. MethodName : rankingTravelKeyword
      * 2. ClassName  : TravelRepository.java
-     * 3. Comment    : 여행지 검색어 리스트 조회
+     * 3. Comment    : 여행지 검색어 랭킹 리스트 조회
      * 4. 작성자      : CHO
      * 5. 작성일      : 2023. 01. 07.
      * </pre>
      */
-    public List<SearchDTO> findTravelKeyword() {
+    public List<SearchDTO> rankingTravelKeyword() {
         List<SearchEntity> keywordList = queryFactory
                 .select(fields(SearchEntity.class,
                         QSearchEntity.searchEntity.searchKeyword,
@@ -651,7 +651,7 @@ public class TravelRepository {
      * 5. 작성일      : 2023. 01. 07.
      * </pre>
      */
-    public List<TravelDTO> searchTravel(String searchKeyword) {
+    public List<TravelDTO> findTravelKeyword(String searchKeyword) {
         List<TravelEntity> searchTravel = queryFactory
                 .selectFrom(travelEntity)
                 .innerJoin(travelEntity.newTravelCode, commonEntity)
