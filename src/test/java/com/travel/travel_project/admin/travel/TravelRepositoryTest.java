@@ -14,8 +14,6 @@ import com.travel.travel_project.domain.travel.review.TravelReviewEntity;
 import com.travel.travel_project.domain.travel.schedule.TravelScheduleDTO;
 import com.travel.travel_project.domain.travel.schedule.TravelScheduleEntity;
 import com.travel.travel_project.domain.travel.search.SearchEntity;
-import com.travel.travel_project.domain.user.UserDTO;
-import com.travel.travel_project.domain.user.UserEntity;
 import com.travel.travel_project.exception.TravelException;
 import lombok.RequiredArgsConstructor;
 import org.json.JSONArray;

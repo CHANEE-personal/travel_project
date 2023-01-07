@@ -544,7 +544,6 @@ class TravelControllerTest {
     @Test
     @DisplayName("검색어를 통한 여행지 조회 테스트")
     void 검색어를통한여행지조회테스트() throws Exception {
-//        String keyword = URLDecoder.decode("서울", UTF_8);
         mockMvc.perform(get("/api/travel/keyword").param("keyword", "서울"))
                 .andDo(print())
                 .andExpect(status().isOk())
