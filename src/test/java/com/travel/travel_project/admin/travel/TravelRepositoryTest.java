@@ -3,6 +3,8 @@ package com.travel.travel_project.admin.travel;
 import com.travel.travel_project.domain.travel.TravelDTO;
 import com.travel.travel_project.domain.travel.TravelEntity;
 import com.travel.travel_project.api.travel.TravelRepository;
+import com.travel.travel_project.domain.travel.festival.TravelFestivalDTO;
+import com.travel.travel_project.domain.travel.festival.TravelFestivalEntity;
 import com.travel.travel_project.domain.travel.group.TravelGroupDTO;
 import com.travel.travel_project.domain.travel.group.TravelGroupEntity;
 import com.travel.travel_project.domain.travel.group.TravelGroupUserDTO;
@@ -40,10 +42,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
-import static com.travel.travel_project.domain.user.Role.ROLE_TRAVEL_USER;
-import static com.travel.travel_project.exception.ApiExceptionType.NOT_FOUND_TRAVEL;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.BDDMockito.given;
@@ -163,8 +162,8 @@ class TravelRepositoryTest {
 
         List<TravelDTO> travelList = new ArrayList<>();
         travelList.add(TravelDTO.builder().idx(1L).travelCode(1)
-                        .travelTitle("여행지 소개").travelDescription("여행지 소개")
-                        .travelAddress("인천광역시 서구").travelZipCode("123-456").visible("Y").build());
+                .travelTitle("여행지 소개").travelDescription("여행지 소개")
+                .travelAddress("인천광역시 서구").travelZipCode("123-456").visible("Y").build());
 
         // when
         when(mockTravelRepository.findTravelList(travelMap)).thenReturn(travelList);
@@ -546,7 +545,7 @@ class TravelRepositoryTest {
                 .build();
 
         TravelDTO travelDTO = travelRepository.insertTravel(travelEntity);
-        
+
         // when
         // 좋아요 수 증가
         Integer favoriteCount = travelRepository.favoriteTravel(travelDTO.getIdx());
@@ -558,7 +557,7 @@ class TravelRepositoryTest {
         // 증가한 좋아요 수 조회
         Integer addFavoriteCount = mockTravelRepository.favoriteTravel(travelDTO.getIdx());
         assertThat(favoriteCount).isEqualTo(addFavoriteCount);
-        
+
         // verify
         verify(mockTravelRepository, times(1)).favoriteTravel(travelDTO.getIdx());
         verify(mockTravelRepository, atLeastOnce()).favoriteTravel(travelDTO.getIdx());
@@ -752,7 +751,7 @@ class TravelRepositoryTest {
 
         // verify
         verify(mockTravelRepository, times(1)).replyTravelReview(travelDTO.getIdx());
-        verify(mockTravelRepository,  atLeastOnce()).replyTravelReview(travelDTO.getIdx());
+        verify(mockTravelRepository, atLeastOnce()).replyTravelReview(travelDTO.getIdx());
         verifyNoMoreInteractions(mockTravelRepository);
 
         InOrder inOrder = inOrder(mockTravelRepository);
@@ -847,7 +846,7 @@ class TravelRepositoryTest {
 
         // verify
         verify(mockTravelRepository, times(1)).detailReplyTravelReview(travelReviewInfo.getIdx());
-        verify(mockTravelRepository,  atLeastOnce()).detailReplyTravelReview(travelReviewInfo.getIdx());
+        verify(mockTravelRepository, atLeastOnce()).detailReplyTravelReview(travelReviewInfo.getIdx());
         verifyNoMoreInteractions(mockTravelRepository);
 
         InOrder inOrder = inOrder(mockTravelRepository);
@@ -1171,9 +1170,9 @@ class TravelRepositoryTest {
 
         list.add("대구");
         recommendEntity = TravelRecommendEntity.builder()
-                        .idx(travelRecommendDTO.getIdx())
-                        .recommendName(list)
-                        .build();
+                .idx(travelRecommendDTO.getIdx())
+                .recommendName(list)
+                .build();
         em.flush();
         em.clear();
 
@@ -1222,5 +1221,158 @@ class TravelRepositoryTest {
     @DisplayName("추천 검색어 or 검색어 랭킹을 통한 여행지 검색 조회")
     void 추천검색어or검색어랭킹을통한여행지검색조회() {
         assertThat(travelRepository.findTravelKeyword("서울").get(0).getTravelTitle()).isEqualTo("서울 여행지");
+    }
+
+    @Test
+    @DisplayName("축제 리스트 갯수 그룹 조회")
+    void 축제리스트갯수그룹조회() {
+        // 등록
+        LocalDateTime dateTime = LocalDateTime.now();
+
+        TravelFestivalEntity travelFestivalEntity = TravelFestivalEntity.builder()
+                .travelCode(1)
+                .festivalTitle("축제 제목")
+                .festivalDescription("축제 내용")
+                .festivalMonth(dateTime.getMonthValue())
+                .festivalDay(dateTime.getDayOfMonth())
+                .festivalTime(dateTime)
+                .build();
+
+        em.persist(travelFestivalEntity);
+
+        TravelFestivalEntity travelFestivalEntity1 = TravelFestivalEntity.builder()
+                .travelCode(2)
+                .festivalTitle("축제 제목")
+                .festivalDescription("축제 내용")
+                .festivalMonth(dateTime.getMonthValue())
+                .festivalDay(dateTime.getDayOfMonth())
+                .festivalTime(dateTime)
+                .build();
+
+        em.persist(travelFestivalEntity1);
+
+        TravelFestivalEntity travelFestivalEntity2 = TravelFestivalEntity.builder()
+                .travelCode(2)
+                .festivalTitle("축제 제목")
+                .festivalDescription("축제 내용")
+                .festivalMonth(dateTime.getMonthValue())
+                .festivalDay(dateTime.getDayOfMonth()+1)
+                .festivalTime(dateTime)
+                .build();
+
+        em.persist(travelFestivalEntity2);
+
+        em.flush();
+        em.clear();
+
+        assertThat(travelRepository.findTravelFestivalGroup(dateTime.getMonthValue())).isNotEmpty();
+    }
+
+    @Test
+    @DisplayName("축제리스트조회")
+    void 축제리스트조회() {
+        // 등록
+        LocalDateTime dateTime = LocalDateTime.now();
+
+        TravelFestivalEntity travelFestivalEntity = TravelFestivalEntity.builder()
+                .travelCode(1)
+                .festivalTitle("축제 제목")
+                .festivalDescription("축제 내용")
+                .festivalMonth(dateTime.getMonthValue())
+                .festivalDay(dateTime.getDayOfMonth())
+                .festivalTime(dateTime)
+                .build();
+
+        em.persist(travelFestivalEntity);
+
+        TravelFestivalEntity travelFestivalEntity1 = TravelFestivalEntity.builder()
+                .travelCode(2)
+                .festivalTitle("축제 제목")
+                .festivalDescription("축제 내용")
+                .festivalMonth(dateTime.getMonthValue())
+                .festivalDay(dateTime.getDayOfMonth())
+                .festivalTime(dateTime)
+                .build();
+
+        em.persist(travelFestivalEntity1);
+
+        em.flush();
+        em.clear();
+
+        assertThat(travelRepository.findTravelFestivalList(dateTime.getMonthValue(), dateTime.getDayOfMonth())).isNotEmpty();
+    }
+
+    @Test
+    @DisplayName("축제 상세 조회 테스트")
+    void 축제상세조회테스트() {
+        // 등록
+        LocalDateTime dateTime = LocalDateTime.now();
+
+        TravelFestivalEntity travelFestivalEntity = TravelFestivalEntity.builder()
+                .travelCode(1)
+                .festivalTitle("축제 제목")
+                .festivalDescription("축제 내용")
+                .festivalMonth(dateTime.getMonthValue())
+                .festivalDay(dateTime.getDayOfMonth())
+                .festivalTime(dateTime)
+                .build();
+
+        TravelFestivalDTO travelFestivalDTO = travelRepository.changeTravelFestival(travelFestivalEntity);
+
+        assertThat(travelRepository.findOneTravelFestival(travelFestivalDTO.getIdx()).getFestivalTitle()).isEqualTo("축제 제목");
+    }
+
+    @Test
+    @DisplayName("축제 등록 or 수정 테스트")
+    void 축제등록or수정테스트() {
+        // 등록
+        LocalDateTime dateTime = LocalDateTime.now();
+
+        TravelFestivalEntity travelFestivalEntity = TravelFestivalEntity.builder()
+                .travelCode(1)
+                .festivalTitle("축제 제목")
+                .festivalDescription("축제 내용")
+                .festivalMonth(dateTime.getMonthValue())
+                .festivalDay(dateTime.getDayOfMonth())
+                .festivalTime(dateTime)
+                .build();
+
+        TravelFestivalDTO travelFestivalDTO = travelRepository.changeTravelFestival(travelFestivalEntity);
+        assertThat(travelFestivalDTO.getFestivalTitle()).isEqualTo("축제 제목");
+
+        travelFestivalEntity = TravelFestivalEntity.builder()
+                .idx(travelFestivalDTO.getIdx())
+                .travelCode(1)
+                .festivalTitle("축제 수정 제목")
+                .festivalDescription("축제 수정 내용")
+                .festivalMonth(dateTime.getMonthValue())
+                .festivalDay(dateTime.getDayOfMonth())
+                .festivalTime(dateTime)
+                .build();
+
+        TravelFestivalDTO updateFestival = travelRepository.changeTravelFestival(travelFestivalEntity);
+        assertThat(updateFestival.getFestivalTitle()).isEqualTo("축제 수정 제목");
+    }
+
+    @Test
+    @DisplayName("축제 삭제 테스트")
+    void 축제삭제테스트() {
+        // 등록
+        LocalDateTime dateTime = LocalDateTime.now();
+
+        TravelFestivalEntity travelFestivalEntity = TravelFestivalEntity.builder()
+                .travelCode(1)
+                .festivalTitle("축제 제목")
+                .festivalDescription("축제 내용")
+                .festivalMonth(dateTime.getMonthValue())
+                .festivalDay(dateTime.getDayOfMonth())
+                .festivalTime(dateTime)
+                .build();
+
+        TravelFestivalDTO travelFestivalDTO = travelRepository.changeTravelFestival(travelFestivalEntity);
+
+        // 삭제
+        Long deleteIdx = travelRepository.deleteTravelFestival(travelFestivalDTO.getIdx());
+        assertThat(deleteIdx).isEqualTo(travelFestivalDTO.getIdx());
     }
 }
