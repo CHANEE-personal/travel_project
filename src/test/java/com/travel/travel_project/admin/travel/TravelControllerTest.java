@@ -1,6 +1,7 @@
 package com.travel.travel_project.admin.travel;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.travel.travel_project.domain.travel.festival.TravelFestivalEntity;
 import com.travel.travel_project.domain.travel.group.TravelGroupEntity;
 import com.travel.travel_project.domain.travel.group.TravelGroupUserEntity;
 import com.travel.travel_project.domain.travel.recommend.TravelRecommendEntity;
@@ -52,7 +53,7 @@ import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppC
 @TestPropertySource(locations = "classpath:application.properties")
 @TestConstructor(autowireMode = ALL)
 @RequiredArgsConstructor
-@AutoConfigureTestDatabase(replace= NONE)
+@AutoConfigureTestDatabase(replace = NONE)
 @DisplayName("여행지 Api Test")
 class TravelControllerTest {
     private MockMvc mockMvc;
@@ -117,10 +118,10 @@ class TravelControllerTest {
     @DisplayName("여행지 이미지 등록 테스트")
     void 여행지이미지등록테스트() throws Exception {
         List<MultipartFile> imageFiles = of(
-                new MockMultipartFile("0522045010647","0522045010647.png",
-                        "image/png" , new FileInputStream("src/main/resources/static/images/0522045010647.png")),
-                new MockMultipartFile("0522045010772","0522045010772.png" ,
-                        "image/png" , new FileInputStream("src/main/resources/static/images/0522045010772.png"))
+                new MockMultipartFile("0522045010647", "0522045010647.png",
+                        "image/png", new FileInputStream("src/main/resources/static/images/0522045010647.png")),
+                new MockMultipartFile("0522045010772", "0522045010772.png",
+                        "image/png", new FileInputStream("src/main/resources/static/images/0522045010772.png"))
         );
 
         mockMvc.perform(multipart("/api/travel/1/images")
@@ -144,8 +145,8 @@ class TravelControllerTest {
                 .build();
 
         mockMvc.perform(post("/api/travel/1/reply")
-                .contentType(APPLICATION_JSON_VALUE)
-                .content(objectMapper.writeValueAsString(travelReviewEntity)))
+                        .contentType(APPLICATION_JSON_VALUE)
+                        .content(objectMapper.writeValueAsString(travelReviewEntity)))
                 .andDo(print())
                 .andExpect(status().isCreated())
                 .andExpect(content().contentType("application/json;charset=utf-8"))
@@ -204,7 +205,7 @@ class TravelControllerTest {
         em.persist(travelReviewEntity);
 
         mockMvc.perform(delete("/api/travel/{idx}/reply", travelReviewEntity.getIdx()))
-                        .andDo(print())
+                .andDo(print())
                 .andExpect(status().isNoContent())
                 .andExpect(content().string(getString(travelReviewEntity.getIdx())));
     }
@@ -469,8 +470,8 @@ class TravelControllerTest {
         recommendList.add("인천");
 
         TravelRecommendEntity travelRecommendEntity = TravelRecommendEntity.builder()
-                        .recommendName(recommendList)
-                        .build();
+                .recommendName(recommendList)
+                .build();
 
         mockMvc.perform(post("/api/travel/recommend")
                         .contentType(APPLICATION_JSON_VALUE)
@@ -496,9 +497,9 @@ class TravelControllerTest {
 
         recommendList.add("대구");
         TravelRecommendEntity updateTravelRecommendEntity = TravelRecommendEntity.builder()
-                        .idx(travelRecommendEntity.getIdx())
-                        .recommendName(recommendList)
-                        .build();
+                .idx(travelRecommendEntity.getIdx())
+                .recommendName(recommendList)
+                .build();
 
         mockMvc.perform(put("/api/travel/{idx}/recommend", travelRecommendEntity.getIdx())
                         .contentType(APPLICATION_JSON_VALUE)
@@ -549,5 +550,184 @@ class TravelControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(content().contentType("application/json;charset=utf-8"))
                 .andExpect(jsonPath("$.travelList.length()", greaterThan(0)));
+    }
+
+    @Test
+    @DisplayName("축제 리스트 갯수 그룹 조회")
+    void 축제리스트갯수그룹조회() throws Exception {
+        // 등록
+        LocalDateTime dateTime = LocalDateTime.now();
+
+        TravelFestivalEntity travelFestivalEntity = TravelFestivalEntity.builder()
+                .travelCode(1)
+                .festivalTitle("축제 제목")
+                .festivalDescription("축제 내용")
+                .festivalMonth(dateTime.getMonthValue())
+                .festivalDay(dateTime.getDayOfMonth())
+                .festivalTime(dateTime)
+                .build();
+
+        em.persist(travelFestivalEntity);
+
+        TravelFestivalEntity travelFestivalEntity1 = TravelFestivalEntity.builder()
+                .travelCode(2)
+                .festivalTitle("축제 제목")
+                .festivalDescription("축제 내용")
+                .festivalMonth(dateTime.getMonthValue())
+                .festivalDay(dateTime.getDayOfMonth())
+                .festivalTime(dateTime)
+                .build();
+
+        em.persist(travelFestivalEntity1);
+        em.flush();
+        em.clear();
+
+        mockMvc.perform(get("/api/travel/festival/list/{month}", dateTime.getMonthValue()))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(content().contentType("application/json;charset=utf-8"))
+                .andExpect(jsonPath("$.festivalGroup.length()", greaterThan(0)));
+    }
+
+    @Test
+    @DisplayName("축제리스트조회")
+    void 축제리스트조회() throws Exception {
+        // 등록
+        LocalDateTime dateTime = LocalDateTime.now();
+
+        TravelFestivalEntity travelFestivalEntity = TravelFestivalEntity.builder()
+                .travelCode(1)
+                .festivalTitle("축제 제목")
+                .festivalDescription("축제 내용")
+                .festivalMonth(dateTime.getMonthValue())
+                .festivalDay(dateTime.getDayOfMonth())
+                .festivalTime(dateTime)
+                .build();
+
+        em.persist(travelFestivalEntity);
+
+        TravelFestivalEntity travelFestivalEntity1 = TravelFestivalEntity.builder()
+                .travelCode(2)
+                .festivalTitle("축제 제목")
+                .festivalDescription("축제 내용")
+                .festivalMonth(dateTime.getMonthValue())
+                .festivalDay(dateTime.getDayOfMonth())
+                .festivalTime(dateTime)
+                .build();
+
+        em.persist(travelFestivalEntity1);
+
+        em.flush();
+        em.clear();
+
+        mockMvc.perform(get("/api/travel/festival/list/{month}/{day}", dateTime.getMonthValue(), dateTime.getDayOfMonth()))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(content().contentType("application/json;charset=utf-8"))
+                .andExpect(jsonPath("$.festivalList.length()", greaterThan(0)));
+    }
+
+    @Test
+    @DisplayName("축제 상세 조회 테스트")
+    void 축제상세조회테스트() throws Exception {
+        // 등록
+        LocalDateTime dateTime = LocalDateTime.now();
+
+        TravelFestivalEntity travelFestivalEntity = TravelFestivalEntity.builder()
+                .travelCode(1)
+                .festivalTitle("축제 제목")
+                .festivalDescription("축제 내용")
+                .festivalMonth(dateTime.getMonthValue())
+                .festivalDay(dateTime.getDayOfMonth())
+                .festivalTime(dateTime)
+                .build();
+
+        em.persist(travelFestivalEntity);
+
+        mockMvc.perform(get("/api/travel/festival/{idx}", travelFestivalEntity.getIdx()))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(content().contentType("application/json;charset=utf-8"))
+                .andExpect(jsonPath("$.idx").value(travelFestivalEntity.getIdx()));
+    }
+
+    @Test
+    @DisplayName("축제 등록 테스트")
+    void 축제등록테스트() throws Exception {
+        // 등록
+        LocalDateTime dateTime = LocalDateTime.now();
+
+        TravelFestivalEntity travelFestivalEntity = TravelFestivalEntity.builder()
+                .travelCode(1)
+                .festivalTitle("축제 제목")
+                .festivalDescription("축제 내용")
+                .festivalMonth(dateTime.getMonthValue())
+                .festivalDay(dateTime.getDayOfMonth())
+                .festivalTime(dateTime)
+                .build();
+
+        mockMvc.perform(post("/api/travel/festival")
+                        .contentType(APPLICATION_JSON_VALUE)
+                        .content(objectMapper.writeValueAsString(travelFestivalEntity)))
+                .andDo(print())
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.festivalTitle").value("축제 제목"));
+    }
+
+    @Test
+    @DisplayName("축제 수정 테스트")
+    void 축제수정테스트() throws Exception {
+        // 등록
+        LocalDateTime dateTime = LocalDateTime.now();
+
+        TravelFestivalEntity travelFestivalEntity = TravelFestivalEntity.builder()
+                .travelCode(1)
+                .festivalTitle("축제 제목")
+                .festivalDescription("축제 내용")
+                .festivalMonth(dateTime.getMonthValue())
+                .festivalDay(dateTime.getDayOfMonth())
+                .festivalTime(dateTime)
+                .build();
+
+        em.persist(travelFestivalEntity);
+
+        travelFestivalEntity = TravelFestivalEntity.builder()
+                .idx(travelFestivalEntity.getIdx())
+                .travelCode(1)
+                .festivalTitle("축제 수정 제목")
+                .festivalDescription("축제 수정 내용")
+                .festivalMonth(dateTime.getMonthValue())
+                .festivalDay(dateTime.getDayOfMonth())
+                .festivalTime(dateTime)
+                .build();
+
+        mockMvc.perform(put("/api/travel/festival/{idx}", travelFestivalEntity.getIdx())
+                        .contentType(APPLICATION_JSON_VALUE)
+                        .content(objectMapper.writeValueAsString(travelFestivalEntity)))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.festivalTitle").value("축제 수정 제목"));
+    }
+
+    @Test
+    @DisplayName("축제 삭제 테스트")
+    void 축제삭제테스트() throws Exception {
+        // 등록
+        LocalDateTime dateTime = LocalDateTime.now();
+
+        TravelFestivalEntity travelFestivalEntity = TravelFestivalEntity.builder()
+                .travelCode(1)
+                .festivalTitle("축제 제목")
+                .festivalDescription("축제 내용")
+                .festivalMonth(dateTime.getMonthValue())
+                .festivalDay(dateTime.getDayOfMonth())
+                .festivalTime(dateTime)
+                .build();
+
+        em.persist(travelFestivalEntity);
+
+        mockMvc.perform(delete("/api/travel/festival/{idx}", travelFestivalEntity.getIdx()))
+                .andDo(print())
+                .andExpect(status().isNoContent());
     }
 }
