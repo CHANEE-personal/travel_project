@@ -3,6 +3,8 @@ package com.travel.travel_project.api.travel;
 import com.travel.travel_project.common.SaveFile;
 import com.travel.travel_project.domain.file.CommonImageDTO;
 import com.travel.travel_project.domain.file.CommonImageEntity;
+import com.travel.travel_project.domain.travel.festival.TravelFestivalDTO;
+import com.travel.travel_project.domain.travel.festival.TravelFestivalEntity;
 import com.travel.travel_project.domain.travel.group.TravelGroupDTO;
 import com.travel.travel_project.domain.travel.group.TravelGroupEntity;
 import com.travel.travel_project.domain.travel.group.TravelGroupUserDTO;
@@ -612,5 +614,107 @@ public class TravelService {
     @Transactional(readOnly = true)
     public List<TravelDTO> findTravelKeyword(String searchKeyword) {
         return travelRepository.findTravelKeyword(searchKeyword);
+    }
+
+    /**
+     * <pre>
+     * 1. MethodName : findTravelFestivalGroup
+     * 2. ClassName  : TravelService.java
+     * 3. Comment    : 축제 리스트 조회
+     * 4. 작성자      : CHO
+     * 5. 작성일      : 2023. 01. 08.
+     * </pre>
+     */
+    @Cacheable(value = "festival", key = "#month")
+    @Transactional(readOnly = true)
+    public List<TravelFestivalDTO> findTravelFestivalGroup(Integer month) {
+        return travelRepository.findTravelFestivalGroup(month);
+    }
+
+    /**
+     * <pre>
+     * 1. MethodName : findTravelFestivalList
+     * 2. ClassName  : TravelService.java
+     * 3. Comment    : 월과 일을 이용한 축제 리스트 조회
+     * 4. 작성자      : CHO
+     * 5. 작성일      : 2023. 01. 08.
+     * </pre>
+     */
+    @Cacheable(value = "festival", key = "#travelFestivalEntity")
+    @Transactional(readOnly = true)
+    public List<TravelFestivalDTO> findTravelFestivalList(TravelFestivalEntity travelFestivalEntity) {
+        return travelRepository.findTravelFestivalList(travelFestivalEntity);
+    }
+
+    /**
+     * <pre>
+     * 1. MethodName : findOneTravelFestival
+     * 2. ClassName  : TravelService.java
+     * 3. Comment    : 축제 상세 조회
+     * 4. 작성자      : CHO
+     * 5. 작성일      : 2023. 01. 08.
+     * </pre>
+     */
+    @Cacheable(value = "festival", key = "#idx")
+    @Transactional(readOnly = true)
+    public TravelFestivalDTO findOneTravelFestival(Long idx) {
+        return travelRepository.findOneTravelFestival(idx);
+    }
+
+    /**
+     * <pre>
+     * 1. MethodName : insertTravelFestival
+     * 2. ClassName  : TravelService.java
+     * 3. Comment    : 축제 등록
+     * 4. 작성자      : CHO
+     * 5. 작성일      : 2023. 01. 08.
+     * </pre>
+     */
+    @CachePut(value = "festival")
+    @Transactional
+    public TravelFestivalDTO insertTravelFestival(TravelFestivalEntity travelFestivalEntity) {
+        try {
+            return travelRepository.changeTravelFestival(travelFestivalEntity);
+        } catch (Exception e) {
+            throw new TravelException(ERROR_FESTIVAL, e);
+        }
+    }
+
+    /**
+     * <pre>
+     * 1. MethodName : updateTravelFestival
+     * 2. ClassName  : TravelService.java
+     * 3. Comment    : 축제 수정
+     * 4. 작성자      : CHO
+     * 5. 작성일      : 2023. 01. 08.
+     * </pre>
+     */
+    @CachePut(value = "festival", key = "#travelFestivalEntity.idx")
+    @Transactional
+    public TravelFestivalDTO updateTravelFestival(TravelFestivalEntity travelFestivalEntity) {
+        try {
+            return travelRepository.changeTravelFestival(travelFestivalEntity);
+        } catch (Exception e) {
+            throw new TravelException(ERROR_UPDATE_FESTIVAL, e);
+        }
+    }
+
+    /**
+     * <pre>
+     * 1. MethodName : deleteTravelFestival
+     * 2. ClassName  : TravelService.java
+     * 3. Comment    : 축제 삭제
+     * 4. 작성자      : CHO
+     * 5. 작성일      : 2023. 01. 08.
+     * </pre>
+     */
+    @CacheEvict(value = "festival", key = "#idx")
+    @Transactional
+    public Long deleteTravelFestival(Long idx) {
+        try {
+            return travelRepository.deleteTravelFestival(idx);
+        } catch (Exception e) {
+            throw new TravelException(ERROR_DELETE_FESTIVAL, e);
+        }
     }
 }

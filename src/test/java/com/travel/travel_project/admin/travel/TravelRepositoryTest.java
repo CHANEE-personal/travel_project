@@ -1299,7 +1299,7 @@ class TravelRepositoryTest {
         em.flush();
         em.clear();
 
-        assertThat(travelRepository.findTravelFestivalList(dateTime.getMonthValue(), dateTime.getDayOfMonth())).isNotEmpty();
+        assertThat(travelRepository.findTravelFestivalList(travelFestivalEntity)).isNotEmpty();
     }
 
     @Test

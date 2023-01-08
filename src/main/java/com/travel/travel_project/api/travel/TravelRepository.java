@@ -706,11 +706,12 @@ public class TravelRepository {
      * 5. 작성일      : 2023. 01. 08.
      * </pre>
      */
-    public List<TravelFestivalDTO> findTravelFestivalList(Integer month, Integer day) {
+    public List<TravelFestivalDTO> findTravelFestivalList(TravelFestivalEntity existTravelFestivalEntity) {
         List<TravelFestivalEntity> festivalList = queryFactory
                 .selectFrom(travelFestivalEntity)
                 .orderBy(travelFestivalEntity.idx.desc())
-                .where(searchTravelFestival(month, day))
+                .where(searchTravelFestival(existTravelFestivalEntity.getFestivalMonth()
+                        , existTravelFestivalEntity.getFestivalDay()))
                 .fetch();
 
         return festivalList != null ? TravelFestivalEntity.toDtoList(festivalList) : emptyList();
