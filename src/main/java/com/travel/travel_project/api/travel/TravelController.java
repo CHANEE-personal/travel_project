@@ -8,6 +8,8 @@ import com.travel.travel_project.domain.file.CommonImageDTO;
 import com.travel.travel_project.domain.file.CommonImageEntity;
 import com.travel.travel_project.domain.travel.TravelDTO;
 import com.travel.travel_project.domain.travel.TravelEntity;
+import com.travel.travel_project.domain.travel.festival.TravelFestivalDTO;
+import com.travel.travel_project.domain.travel.festival.TravelFestivalEntity;
 import com.travel.travel_project.domain.travel.group.TravelGroupDTO;
 import com.travel.travel_project.domain.travel.group.TravelGroupEntity;
 import com.travel.travel_project.domain.travel.group.TravelGroupUserDTO;
@@ -821,5 +823,155 @@ public class TravelController {
         Map<String, Object> travelMap = new HashMap<>();
         travelMap.put("travelList", travelService.findTravelKeyword(keyword));
         return ResponseEntity.ok().body(travelMap);
+    }
+
+    /**
+     * <pre>
+     * 1. MethodName : findTravelFestivalGroup
+     * 2. ClassName  : TravelController.java
+     * 3. Comment    : 축제 리스트 조회
+     * 4. 작성자      : CHO
+     * 5. 작성일      : 2023. 01. 08.
+     * </pre>
+     */
+    @ApiOperation(value = "축제 리스트 조회", notes = "축제 리스트를 조회한다.")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "축제 리스트 조회 성공", response = Map.class),
+            @ApiResponse(code = 400, message = "잘못된 요청", response = HttpClientErrorException.BadRequest.class),
+            @ApiResponse(code = 401, message = "허용되지 않는 관리자", response = HttpClientErrorException.Unauthorized.class),
+            @ApiResponse(code = 403, message = "접근거부", response = HttpClientErrorException.class),
+            @ApiResponse(code = 404, message = "존재 하지 않음", response = HttpClientErrorException.NotFound.class),
+            @ApiResponse(code = 500, message = "서버 에러", response = ServerError.class)
+    })
+    @GetMapping("/festival/list/{month}")
+    public ResponseEntity<Map<String, Object>> findTravelFestivalGroup(@PathVariable Integer month) {
+        Map<String, Object> festivalMap = new HashMap<>();
+        festivalMap.put("festivalGroup", travelService.findTravelFestivalGroup(month));
+        return ResponseEntity.ok().body(festivalMap);
+    }
+
+    /**
+     * <pre>
+     * 1. MethodName : findTravelFestivalList
+     * 2. ClassName  : TravelController.java
+     * 3. Comment    : 월과 일을 이용한 축제 리스트 조회
+     * 4. 작성자      : CHO
+     * 5. 작성일      : 2023. 01. 08.
+     * </pre>
+     */
+    @ApiOperation(value = "축제 리스트 조회", notes = "축제 리스트를 조회한다.")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "축제 리스트 조회 성공", response = Map.class),
+            @ApiResponse(code = 400, message = "잘못된 요청", response = HttpClientErrorException.BadRequest.class),
+            @ApiResponse(code = 401, message = "허용되지 않는 관리자", response = HttpClientErrorException.Unauthorized.class),
+            @ApiResponse(code = 403, message = "접근거부", response = HttpClientErrorException.class),
+            @ApiResponse(code = 404, message = "존재 하지 않음", response = HttpClientErrorException.NotFound.class),
+            @ApiResponse(code = 500, message = "서버 에러", response = ServerError.class)
+    })
+    @GetMapping("/festival/list/{month}/{day}")
+    public ResponseEntity<Map<String, Object>> findTravelFestivalList(@PathVariable Integer month, @PathVariable Integer day) {
+        Map<String, Object> festivalMap = new HashMap<>();
+        festivalMap.put("festivalList", travelService.findTravelFestivalList(TravelFestivalEntity.builder()
+                .festivalMonth(month).festivalDay(day).build()));
+        return ResponseEntity.ok().body(festivalMap);
+    }
+
+    /**
+     * <pre>
+     * 1. MethodName : findOneTravelFestival
+     * 2. ClassName  : TravelController.java
+     * 3. Comment    : 축제 상세 조회
+     * 4. 작성자      : CHO
+     * 5. 작성일      : 2023. 01. 08.
+     * </pre>
+     */
+    @ApiOperation(value = "축제 상세 조회", notes = "축제를 상세 조회한다.")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "축제 상세 조회 성공", response = TravelFestivalDTO.class),
+            @ApiResponse(code = 400, message = "잘못된 요청", response = HttpClientErrorException.BadRequest.class),
+            @ApiResponse(code = 401, message = "허용되지 않는 관리자", response = HttpClientErrorException.Unauthorized.class),
+            @ApiResponse(code = 403, message = "접근거부", response = HttpClientErrorException.class),
+            @ApiResponse(code = 404, message = "존재 하지 않음", response = HttpClientErrorException.NotFound.class),
+            @ApiResponse(code = 500, message = "서버 에러", response = ServerError.class)
+    })
+    @GetMapping("/festival/{idx}")
+    public ResponseEntity<TravelFestivalDTO> findOneTravelFestival(@PathVariable Long idx) {
+        return ResponseEntity.ok(travelService.findOneTravelFestival(idx));
+    }
+
+    /**
+     * <pre>
+     * 1. MethodName : insertTravelFestival
+     * 2. ClassName  : TravelController.java
+     * 3. Comment    : 축제 등록
+     * 4. 작성자      : CHO
+     * 5. 작성일      : 2023. 01. 08.
+     * </pre>
+     */
+    @ApiOperation(value = "축제 등록", notes = "축제를 등록한다.")
+    @ApiResponses(value = {
+            @ApiResponse(code = 201, message = "축제 등록 성공", response = TravelFestivalDTO.class),
+            @ApiResponse(code = 400, message = "잘못된 요청", response = HttpClientErrorException.BadRequest.class),
+            @ApiResponse(code = 401, message = "허용되지 않는 관리자", response = HttpClientErrorException.Unauthorized.class),
+            @ApiResponse(code = 403, message = "접근거부", response = HttpClientErrorException.class),
+            @ApiResponse(code = 404, message = "존재 하지 않음", response = HttpClientErrorException.NotFound.class),
+            @ApiResponse(code = 500, message = "서버 에러", response = ServerError.class)
+    })
+    @PostMapping("/festival")
+    public ResponseEntity<TravelFestivalDTO> insertTravelFestival(@Valid @RequestBody TravelFestivalEntity travelFestivalEntity) {
+        return ResponseEntity.created(URI.create("")).body(travelService.insertTravelFestival(travelFestivalEntity));
+    }
+
+    /**
+     * <pre>
+     * 1. MethodName : updateTravelFestival
+     * 2. ClassName  : TravelController.java
+     * 3. Comment    : 축제 수정
+     * 4. 작성자      : CHO
+     * 5. 작성일      : 2023. 01. 08.
+     * </pre>
+     */
+    @ApiOperation(value = "축제 수정", notes = "축제를 수정한다.")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "축제 수정 성공", response = TravelFestivalDTO.class),
+            @ApiResponse(code = 400, message = "잘못된 요청", response = HttpClientErrorException.BadRequest.class),
+            @ApiResponse(code = 401, message = "허용되지 않는 관리자", response = HttpClientErrorException.Unauthorized.class),
+            @ApiResponse(code = 403, message = "접근거부", response = HttpClientErrorException.class),
+            @ApiResponse(code = 404, message = "존재 하지 않음", response = HttpClientErrorException.NotFound.class),
+            @ApiResponse(code = 500, message = "서버 에러", response = ServerError.class)
+    })
+    @PutMapping("/festival/{idx}")
+    public ResponseEntity<TravelFestivalDTO> updateTravelFestival(@PathVariable Long idx, @Valid @RequestBody TravelFestivalEntity travelFestivalEntity) {
+        if (travelService.findOneTravelFestival(idx) == null) {
+            ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(travelService.updateTravelFestival(travelFestivalEntity));
+    }
+
+    /**
+     * <pre>
+     * 1. MethodName : deleteTravelFestival
+     * 2. ClassName  : TravelController.java
+     * 3. Comment    : 축제 삭제
+     * 4. 작성자      : CHO
+     * 5. 작성일      : 2023. 01. 08.
+     * </pre>
+     */
+    @ApiOperation(value = "축제 삭제", notes = "축제를 삭제한다.")
+    @ApiResponses(value = {
+            @ApiResponse(code = 204, message = "축제 삭제 성공", response = Long.class),
+            @ApiResponse(code = 400, message = "잘못된 요청", response = HttpClientErrorException.BadRequest.class),
+            @ApiResponse(code = 401, message = "허용되지 않는 관리자", response = HttpClientErrorException.Unauthorized.class),
+            @ApiResponse(code = 403, message = "접근거부", response = HttpClientErrorException.class),
+            @ApiResponse(code = 404, message = "존재 하지 않음", response = HttpClientErrorException.NotFound.class),
+            @ApiResponse(code = 500, message = "서버 에러", response = ServerError.class)
+    })
+    @DeleteMapping("/festival/{idx}")
+    public ResponseEntity<Long> deleteTravelFestival(@PathVariable Long idx) {
+        if (travelService.findOneTravelFestival(idx) == null) {
+            ResponseEntity.notFound().build();
+        }
+        travelService.deleteTravelFestival(idx);
+        return ResponseEntity.noContent().build();
     }
 }

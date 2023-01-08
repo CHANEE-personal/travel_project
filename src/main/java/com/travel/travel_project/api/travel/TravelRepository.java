@@ -4,6 +4,9 @@ import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.travel.travel_project.domain.travel.TravelDTO;
 import com.travel.travel_project.domain.travel.TravelEntity;
+import com.travel.travel_project.domain.travel.festival.QTravelFestivalEntity;
+import com.travel.travel_project.domain.travel.festival.TravelFestivalDTO;
+import com.travel.travel_project.domain.travel.festival.TravelFestivalEntity;
 import com.travel.travel_project.domain.travel.group.*;
 import com.travel.travel_project.domain.travel.recommend.QTravelRecommendEntity;
 import com.travel.travel_project.domain.travel.recommend.TravelRecommendDTO;
@@ -30,11 +33,13 @@ import static com.travel.travel_project.common.StringUtil.getString;
 import static com.travel.travel_project.domain.common.QCommonEntity.commonEntity;
 import static com.travel.travel_project.domain.file.QCommonImageEntity.commonImageEntity;
 import static com.travel.travel_project.domain.travel.QTravelEntity.travelEntity;
+import static com.travel.travel_project.domain.travel.festival.QTravelFestivalEntity.travelFestivalEntity;
 import static com.travel.travel_project.domain.travel.group.QTravelGroupEntity.travelGroupEntity;
 import static com.travel.travel_project.domain.travel.review.QTravelReviewEntity.travelReviewEntity;
 import static com.travel.travel_project.exception.ApiExceptionType.*;
 import static java.time.LocalDate.now;
 import static java.time.LocalDateTime.of;
+import static java.util.Collections.emptyList;
 
 @Repository
 @RequiredArgsConstructor
@@ -64,6 +69,11 @@ public class TravelRepository {
         LocalDateTime startDateTime = travelMap.get("searchStartTime") != null ? (LocalDateTime) travelMap.get("searchStartTime") : now().minusDays(now().getDayOfMonth() - 1).atStartOfDay();
         LocalDateTime endDateTime = travelMap.get("searchEndTime") != null ? (LocalDateTime) travelMap.get("searchStartTime") : of(now().minusDays(now().getDayOfMonth()).plusMonths(1), LocalTime.of(23, 59, 59));
         return travelEntity.createTime.goe(startDateTime).and(travelEntity.createTime.loe(endDateTime));
+    }
+
+    private BooleanExpression searchTravelFestival(Integer month, Integer day) {
+        return travelFestivalEntity.festivalMonth.eq(month)
+                .and(travelFestivalEntity.festivalDay.eq(day));
     }
 
     /**
@@ -103,7 +113,7 @@ public class TravelRepository {
                 .limit(getInt(travelMap.get("size"), 0))
                 .fetch();
 
-        return travelList != null ? TravelEntity.toPartDtoList(travelList) : Collections.emptyList();
+        return travelList != null ? TravelEntity.toPartDtoList(travelList) : emptyList();
     }
 
     /**
@@ -313,7 +323,7 @@ public class TravelRepository {
                         .and(travelReviewEntity.visible.eq("Y")))
                 .fetch();
 
-        return replyTravelReview != null ? TravelReviewEntity.toDtoList(replyTravelReview) : Collections.emptyList();
+        return replyTravelReview != null ? TravelReviewEntity.toDtoList(replyTravelReview) : emptyList();
     }
 
     /**
@@ -381,7 +391,7 @@ public class TravelRepository {
                 .limit(getInt(travelMap.get("size"), 0))
                 .fetch();
 
-        return travelList != null ? TravelEntity.toDtoList(travelList) : Collections.emptyList();
+        return travelList != null ? TravelEntity.toDtoList(travelList) : emptyList();
     }
 
     /**
@@ -415,7 +425,7 @@ public class TravelRepository {
                 .limit(getInt(groupMap.get("size"), 0))
                 .fetch();
 
-        return travelGroupList != null ? TravelGroupEntity.toDtoList(travelGroupList) : Collections.emptyList();
+        return travelGroupList != null ? TravelGroupEntity.toDtoList(travelGroupList) : emptyList();
     }
 
     /**
@@ -565,7 +575,7 @@ public class TravelRepository {
                 .limit(getInt(recommendMap.get("size"), 0))
                 .fetch();
 
-        return recommendList != null ? TravelRecommendEntity.toDtoList(recommendList) : Collections.emptyList();
+        return recommendList != null ? TravelRecommendEntity.toDtoList(recommendList) : emptyList();
     }
 
     /**
@@ -639,7 +649,7 @@ public class TravelRepository {
                 .limit(10)
                 .fetch();
 
-        return keywordList != null ? SearchEntity.toDtoList(keywordList) : Collections.emptyList();
+        return keywordList != null ? SearchEntity.toDtoList(keywordList) : emptyList();
     }
 
     /**
@@ -660,6 +670,100 @@ public class TravelRepository {
                         .or(travelEntity.travelDescription.contains(searchKeyword)))
                 .fetch();
 
-        return searchTravel != null ? TravelEntity.toPartDtoList(searchTravel) : Collections.emptyList();
+        return searchTravel != null ? TravelEntity.toPartDtoList(searchTravel) : emptyList();
+    }
+
+    /**
+     * <pre>
+     * 1. MethodName : findTravelFestivalGroup
+     * 2. ClassName  : TravelRepository.java
+     * 3. Comment    : 축제 리스트 조회
+     * 4. 작성자      : CHO
+     * 5. 작성일      : 2023. 01. 08.
+     * </pre>
+     */
+    public List<TravelFestivalDTO> findTravelFestivalGroup(Integer month) {
+        List<TravelFestivalEntity> travelGroup = queryFactory
+                .select(fields(TravelFestivalEntity.class,
+                        travelFestivalEntity.festivalMonth,
+                        travelFestivalEntity.festivalDay,
+                        travelFestivalEntity.count().as("count")))
+                .from(travelFestivalEntity)
+                .where(travelFestivalEntity.festivalMonth.eq(month))
+                .groupBy(travelFestivalEntity.festivalMonth,
+                        travelFestivalEntity.festivalDay)
+                .fetch();
+
+        return travelGroup != null ? TravelFestivalEntity.toDtoList(travelGroup) : emptyList();
+    }
+
+    /**
+     * <pre>
+     * 1. MethodName : findTravelFestivalList
+     * 2. ClassName  : TravelRepository.java
+     * 3. Comment    : 월과 일을 이용한 축제 리스트 조회
+     * 4. 작성자      : CHO
+     * 5. 작성일      : 2023. 01. 08.
+     * </pre>
+     */
+    public List<TravelFestivalDTO> findTravelFestivalList(TravelFestivalEntity existTravelFestivalEntity) {
+        List<TravelFestivalEntity> festivalList = queryFactory
+                .selectFrom(travelFestivalEntity)
+                .orderBy(travelFestivalEntity.idx.desc())
+                .where(searchTravelFestival(existTravelFestivalEntity.getFestivalMonth()
+                        , existTravelFestivalEntity.getFestivalDay()))
+                .fetch();
+
+        return festivalList != null ? TravelFestivalEntity.toDtoList(festivalList) : emptyList();
+    }
+
+    /**
+     * <pre>
+     * 1. MethodName : findOneTravelFestival
+     * 2. ClassName  : TravelRepository.java
+     * 3. Comment    : 축제 상세 조회
+     * 4. 작성자      : CHO
+     * 5. 작성일      : 2023. 01. 08.
+     * </pre>
+     */
+    public TravelFestivalDTO findOneTravelFestival(Long idx) {
+        TravelFestivalEntity oneFestival = Optional.ofNullable(queryFactory
+                .selectFrom(travelFestivalEntity)
+                .where(travelFestivalEntity.idx.eq(idx))
+                .fetchOne()).orElseThrow(() -> new TravelException(NOT_FOUND_FESTIVAL, new Throwable()));
+
+        return TravelFestivalEntity.toDto(oneFestival);
+    }
+
+    /**
+     * <pre>
+     * 1. MethodName : changeTravelFestival
+     * 2. ClassName  : TravelRepository.java
+     * 3. Comment    : 축제 등록 or 수정
+     * 4. 작성자      : CHO
+     * 5. 작성일      : 2023. 01. 08.
+     * </pre>
+     */
+    public TravelFestivalDTO changeTravelFestival(TravelFestivalEntity travelFestivalEntity) {
+        if (travelFestivalEntity.getIdx() == null) {
+            em.persist(travelFestivalEntity);
+        } else {
+            em.merge(travelFestivalEntity);
+        }
+        return TravelFestivalEntity.toDto(travelFestivalEntity);
+    }
+
+    /**
+     * <pre>
+     * 1. MethodName : deleteTravelFestival
+     * 2. ClassName  : TravelRepository.java
+     * 3. Comment    : 축제 삭제
+     * 4. 작성자      : CHO
+     * 5. 작성일      : 2023. 01. 08.
+     * </pre>
+     */
+    public Long deleteTravelFestival(Long idx) {
+        em.remove(em.find(TravelFestivalEntity.class, idx));
+        return idx;
     }
 }

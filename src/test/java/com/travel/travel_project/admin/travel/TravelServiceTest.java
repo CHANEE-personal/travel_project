@@ -3,6 +3,8 @@ package com.travel.travel_project.admin.travel;
 import com.travel.travel_project.domain.travel.TravelDTO;
 import com.travel.travel_project.domain.travel.TravelEntity;
 import com.travel.travel_project.api.travel.TravelService;
+import com.travel.travel_project.domain.travel.festival.TravelFestivalDTO;
+import com.travel.travel_project.domain.travel.festival.TravelFestivalEntity;
 import com.travel.travel_project.domain.travel.group.TravelGroupDTO;
 import com.travel.travel_project.domain.travel.group.TravelGroupEntity;
 import com.travel.travel_project.domain.travel.group.TravelGroupUserDTO;
@@ -1097,5 +1099,158 @@ class TravelServiceTest {
     @DisplayName("추천 검색어 or 검색어 랭킹을 통한 여행지 검색 조회")
     void 추천검색어or검색어랭킹을통한여행지검색조회() {
         assertThat(travelService.findTravelKeyword("서울").get(0).getTravelTitle()).isEqualTo("서울 여행지");
+    }
+
+    @Test
+    @DisplayName("축제 리스트 갯수 그룹 조회")
+    void 축제리스트갯수그룹조회() {
+        // 등록
+        LocalDateTime dateTime = LocalDateTime.now();
+
+        TravelFestivalEntity travelFestivalEntity = TravelFestivalEntity.builder()
+                .travelCode(1)
+                .festivalTitle("축제 제목")
+                .festivalDescription("축제 내용")
+                .festivalMonth(dateTime.getMonthValue())
+                .festivalDay(dateTime.getDayOfMonth())
+                .festivalTime(dateTime)
+                .build();
+
+        em.persist(travelFestivalEntity);
+
+        TravelFestivalEntity travelFestivalEntity1 = TravelFestivalEntity.builder()
+                .travelCode(2)
+                .festivalTitle("축제 제목")
+                .festivalDescription("축제 내용")
+                .festivalMonth(dateTime.getMonthValue())
+                .festivalDay(dateTime.getDayOfMonth())
+                .festivalTime(dateTime)
+                .build();
+
+        em.persist(travelFestivalEntity1);
+
+        TravelFestivalEntity travelFestivalEntity2 = TravelFestivalEntity.builder()
+                .travelCode(2)
+                .festivalTitle("축제 제목")
+                .festivalDescription("축제 내용")
+                .festivalMonth(dateTime.getMonthValue())
+                .festivalDay(dateTime.getDayOfMonth()+1)
+                .festivalTime(dateTime)
+                .build();
+
+        em.persist(travelFestivalEntity2);
+
+        em.flush();
+        em.clear();
+
+        assertThat(travelService.findTravelFestivalGroup(dateTime.getMonthValue())).isNotEmpty();
+    }
+
+    @Test
+    @DisplayName("축제리스트조회")
+    void 축제리스트조회() {
+        // 등록
+        LocalDateTime dateTime = LocalDateTime.now();
+
+        TravelFestivalEntity travelFestivalEntity = TravelFestivalEntity.builder()
+                .travelCode(1)
+                .festivalTitle("축제 제목")
+                .festivalDescription("축제 내용")
+                .festivalMonth(dateTime.getMonthValue())
+                .festivalDay(dateTime.getDayOfMonth())
+                .festivalTime(dateTime)
+                .build();
+
+        em.persist(travelFestivalEntity);
+
+        TravelFestivalEntity travelFestivalEntity1 = TravelFestivalEntity.builder()
+                .travelCode(2)
+                .festivalTitle("축제 제목")
+                .festivalDescription("축제 내용")
+                .festivalMonth(dateTime.getMonthValue())
+                .festivalDay(dateTime.getDayOfMonth())
+                .festivalTime(dateTime)
+                .build();
+
+        em.persist(travelFestivalEntity1);
+
+        em.flush();
+        em.clear();
+
+        assertThat(travelService.findTravelFestivalList(travelFestivalEntity)).isNotEmpty();
+    }
+
+    @Test
+    @DisplayName("축제 상세 조회 테스트")
+    void 축제상세조회테스트() {
+        // 등록
+        LocalDateTime dateTime = LocalDateTime.now();
+
+        TravelFestivalEntity travelFestivalEntity = TravelFestivalEntity.builder()
+                .travelCode(1)
+                .festivalTitle("축제 제목")
+                .festivalDescription("축제 내용")
+                .festivalMonth(dateTime.getMonthValue())
+                .festivalDay(dateTime.getDayOfMonth())
+                .festivalTime(dateTime)
+                .build();
+
+        TravelFestivalDTO travelFestivalDTO = travelService.insertTravelFestival(travelFestivalEntity);
+
+        assertThat(travelService.findOneTravelFestival(travelFestivalDTO.getIdx()).getFestivalTitle()).isEqualTo("축제 제목");
+    }
+
+    @Test
+    @DisplayName("축제 등록 or 수정 테스트")
+    void 축제등록or수정테스트() {
+        // 등록
+        LocalDateTime dateTime = LocalDateTime.now();
+
+        TravelFestivalEntity travelFestivalEntity = TravelFestivalEntity.builder()
+                .travelCode(1)
+                .festivalTitle("축제 제목")
+                .festivalDescription("축제 내용")
+                .festivalMonth(dateTime.getMonthValue())
+                .festivalDay(dateTime.getDayOfMonth())
+                .festivalTime(dateTime)
+                .build();
+
+        TravelFestivalDTO travelFestivalDTO = travelService.insertTravelFestival(travelFestivalEntity);
+        assertThat(travelFestivalDTO.getFestivalTitle()).isEqualTo("축제 제목");
+
+        travelFestivalEntity = TravelFestivalEntity.builder()
+                .idx(travelFestivalDTO.getIdx())
+                .travelCode(1)
+                .festivalTitle("축제 수정 제목")
+                .festivalDescription("축제 수정 내용")
+                .festivalMonth(dateTime.getMonthValue())
+                .festivalDay(dateTime.getDayOfMonth())
+                .festivalTime(dateTime)
+                .build();
+
+        TravelFestivalDTO updateFestival = travelService.updateTravelFestival(travelFestivalEntity);
+        assertThat(updateFestival.getFestivalTitle()).isEqualTo("축제 수정 제목");
+    }
+
+    @Test
+    @DisplayName("축제 삭제 테스트")
+    void 축제삭제테스트() {
+        // 등록
+        LocalDateTime dateTime = LocalDateTime.now();
+
+        TravelFestivalEntity travelFestivalEntity = TravelFestivalEntity.builder()
+                .travelCode(1)
+                .festivalTitle("축제 제목")
+                .festivalDescription("축제 내용")
+                .festivalMonth(dateTime.getMonthValue())
+                .festivalDay(dateTime.getDayOfMonth())
+                .festivalTime(dateTime)
+                .build();
+
+        TravelFestivalDTO travelFestivalDTO = travelService.insertTravelFestival(travelFestivalEntity);
+
+        // 삭제
+        Long deleteIdx = travelService.deleteTravelFestival(travelFestivalDTO.getIdx());
+        assertThat(deleteIdx).isEqualTo(travelFestivalDTO.getIdx());
     }
 }
