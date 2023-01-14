@@ -411,42 +411,6 @@ public class TravelService {
 
     /**
      * <pre>
-     * 1. MethodName : insertTravelGroupUser
-     * 2. ClassName  : TravelService.java
-     * 3. Comment    : 유저 여행 그룹 등록
-     * 4. 작성자      : CHO
-     * 5. 작성일      : 2022. 11. 27.
-     * </pre>
-     */
-    @Transactional
-    public TravelGroupUserDTO insertTravelGroupUser(TravelGroupUserEntity travelGroupUserEntity) {
-        try {
-            return travelQueryRepository.insertTravelGroupUser(travelGroupUserEntity);
-        } catch (Exception e) {
-            throw new TravelException(ERROR_TRAVEL_GROUP_UESR);
-        }
-    }
-
-    /**
-     * <pre>
-     * 1. MethodName : deleteTravelGroupUser
-     * 2. ClassName  : TravelService.java
-     * 3. Comment    : 유저 여행 그룹 삭제
-     * 4. 작성자      : CHO
-     * 5. 작성일      : 2022. 11. 27.
-     * </pre>
-     */
-    @Transactional
-    public Long deleteTravelGroupUser(Long idx) {
-        try {
-            return travelQueryRepository.deleteTravelGroupUser(idx);
-        } catch (Exception e) {
-            throw new TravelException(ERROR_DELETE_TRAVEL_GROUP_USER);
-        }
-    }
-
-    /**
-     * <pre>
      * 1. MethodName : findTravelRecommendList
      * 2. ClassName  : TravelService.java
      * 3. Comment    : 여행지 추천 검색어 리스트 조회
@@ -455,8 +419,8 @@ public class TravelService {
      * </pre>
      */
     @Transactional(readOnly = true)
-    public List<TravelRecommendDTO> findTravelRecommendList(Map<String, Object> recommendMap) {
-        return travelQueryRepository.findTravelRecommendList(recommendMap);
+    public Page<TravelRecommendDTO> findTravelRecommendList(Map<String, Object> recommendMap, PageRequest pageRequest) {
+        return travelQueryRepository.findTravelRecommendList(recommendMap, pageRequest);
     }
 
     /**

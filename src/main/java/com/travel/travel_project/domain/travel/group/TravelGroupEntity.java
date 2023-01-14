@@ -5,6 +5,7 @@ import com.travel.travel_project.domain.common.NewCommonMappedClass;
 import com.travel.travel_project.domain.travel.TravelEntity;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
+import org.hibernate.annotations.DynamicUpdate;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
@@ -23,7 +24,8 @@ import static javax.persistence.GenerationType.IDENTITY;
 @SuperBuilder
 @EqualsAndHashCode(of = "idx", callSuper = false)
 @AllArgsConstructor
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@DynamicUpdate
 @Table(name = "tv_group_mst")
 public class TravelGroupEntity extends NewCommonMappedClass {
     @Transient
@@ -56,6 +58,11 @@ public class TravelGroupEntity extends NewCommonMappedClass {
     @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "travel_idx", referencedColumnName = "idx")
     private TravelEntity travelEntity;
+
+    public void addGroup(TravelGroupUserEntity travelGroupUserEntity) {
+        travelGroupUserEntity.setTravelGroupEntity(this);
+        this.travelGroupList.add(travelGroupUserEntity);
+    }
 
     public void update(TravelGroupEntity travelGroupEntity) {
         this.groupName = travelGroupEntity.groupName;

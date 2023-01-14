@@ -1,6 +1,11 @@
 package com.travel.travel_project.api.user;
 
 import com.travel.travel_project.domain.common.CommonEntity;
+import com.travel.travel_project.domain.travel.TravelEntity;
+import com.travel.travel_project.domain.travel.group.TravelGroupDTO;
+import com.travel.travel_project.domain.travel.group.TravelGroupEntity;
+import com.travel.travel_project.domain.travel.group.TravelGroupUserDTO;
+import com.travel.travel_project.domain.travel.group.TravelGroupUserEntity;
 import com.travel.travel_project.domain.travel.schedule.TravelScheduleDTO;
 import com.travel.travel_project.domain.travel.schedule.TravelScheduleEntity;
 import com.travel.travel_project.domain.user.UserDTO;
@@ -539,5 +544,91 @@ class UserServiceTest {
         Long deleteIdx = userService.deleteTravelSchedule(oneSchedule.getIdx());
 
         assertThat(deleteIdx).isEqualTo(oneSchedule.getIdx());
+    }
+
+    @Test
+    @DisplayName("유저 여행 그룹 등록 Mockito 테스트")
+    void 유저여행그룹등록Mockito테스트() {
+        // given
+        // 유저 등록
+        UserEntity userEntity = UserEntity.builder()
+                .idx(1L).userId("test01")
+                .name("조찬희").password("test01")
+                .email("test01@test.com").visible("Y").build();
+        userService.insertUser(userEntity);
+        userDTO = UserEntity.toDto(userEntity);
+
+        TravelEntity travelEntity = TravelEntity.builder()
+                .travelCode(1)
+                .travelTitle("여행지 소개")
+                .travelDescription("여행지 소개")
+                .travelAddress("인천광역시 서구")
+                .travelZipCode("123-456")
+                .favoriteCount(1)
+                .viewCount(0)
+                .popular(false)
+                .visible("Y")
+                .build();
+
+        em.persist(travelEntity);
+
+        TravelGroupEntity travelGroupEntity = TravelGroupEntity.builder()
+                .travelEntity(travelEntity)
+                .groupName("서울모임").groupDescription("서울모임").visible("Y").build();
+
+        em.persist(travelGroupEntity);
+
+        TravelGroupDTO travelGroupDTO = TravelGroupEntity.toDto(travelGroupEntity);
+
+        TravelGroupUserEntity travelGroupUserEntity = TravelGroupUserEntity.builder().build();
+
+        TravelGroupUserDTO travelGroupUserInfo = userService.insertTravelGroupUser(userDTO.getIdx(), travelGroupDTO.getIdx(), travelGroupUserEntity);
+
+        // then
+        assertThat(travelGroupUserInfo.getGroupIdx()).isEqualTo(travelGroupDTO.getIdx());
+        assertThat(travelGroupUserInfo.getUserIdx()).isEqualTo(1L);
+    }
+
+    @Test
+    @DisplayName("유저 여행 그룹 삭제 Mockito 테스트")
+    void 유저여행그룹삭제Mockito테스트() {
+        // given
+        // 유저 등록
+        UserEntity userEntity = UserEntity.builder()
+                .idx(1L).userId("test01")
+                .name("조찬희").password("test01")
+                .email("test01@test.com").visible("Y").build();
+        userService.insertUser(userEntity);
+        userDTO = UserEntity.toDto(userEntity);
+
+        TravelEntity travelEntity = TravelEntity.builder()
+                .travelCode(1)
+                .travelTitle("여행지 소개")
+                .travelDescription("여행지 소개")
+                .travelAddress("인천광역시 서구")
+                .travelZipCode("123-456")
+                .favoriteCount(1)
+                .viewCount(0)
+                .popular(false)
+                .visible("Y")
+                .build();
+
+        em.persist(travelEntity);
+
+        TravelGroupEntity travelGroupEntity = TravelGroupEntity.builder()
+                .travelEntity(travelEntity)
+                .groupName("서울모임").groupDescription("서울모임").visible("Y").build();
+
+        em.persist(travelGroupEntity);
+        TravelGroupDTO travelGroupDTO = TravelGroupEntity.toDto(travelGroupEntity);
+
+        TravelGroupUserEntity travelGroupUserEntity = TravelGroupUserEntity.builder().build();
+
+        TravelGroupUserDTO travelGroupUserInfo = userService.insertTravelGroupUser(userDTO.getIdx(), travelGroupDTO.getIdx(), travelGroupUserEntity);
+
+        Long deleteIdx = userService.deleteTravelGroupUser(travelGroupUserInfo.getIdx());
+
+        // then
+        assertThat(deleteIdx).isEqualTo(travelGroupUserInfo.getIdx());
     }
 }

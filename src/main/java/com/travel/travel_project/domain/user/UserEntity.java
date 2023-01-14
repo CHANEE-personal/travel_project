@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.travel.travel_project.domain.common.NewCommonMappedClass;
 import com.travel.travel_project.domain.faq.FaqDTO;
+import com.travel.travel_project.domain.travel.group.TravelGroupEntity;
 import com.travel.travel_project.domain.travel.group.TravelGroupUserEntity;
 import com.travel.travel_project.domain.travel.schedule.TravelScheduleEntity;
 import com.vladmihalcea.hibernate.type.json.JsonStringType;
@@ -98,6 +99,11 @@ public class UserEntity extends NewCommonMappedClass {
     public void addSchedule(TravelScheduleEntity travelScheduleEntity) {
         travelScheduleEntity.setUserEntity(this);
         this.userScheduleList.add(travelScheduleEntity);
+    }
+
+    public void addGroup(TravelGroupUserEntity travelGroupUserEntity) {
+        travelGroupUserEntity.setUserEntity(this);
+        this.userList.add(travelGroupUserEntity);
     }
 
     public static UserDTO toDto(UserEntity entity) {

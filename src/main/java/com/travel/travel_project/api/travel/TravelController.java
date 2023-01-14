@@ -32,12 +32,10 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.validation.Valid;
 import java.net.URI;
 import java.rmi.ServerError;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static java.lang.Math.ceil;
 import static org.springframework.http.MediaType.MULTIPART_FORM_DATA_VALUE;
 
 @RestController
@@ -461,80 +459,9 @@ public class TravelController {
             @ApiResponse(code = 404, message = "존재 하지 않음", response = HttpClientErrorException.NotFound.class),
             @ApiResponse(code = 500, message = "서버 에러", response = ServerError.class)
     })
-    @DeleteMapping("/{idx}/group/{groupIdx}")
+    @DeleteMapping("/group/{groupIdx}")
     public ResponseEntity<Long> deleteTravelGroup(@PathVariable Long groupIdx) {
         travelService.deleteTravelGroup(groupIdx);
-        return ResponseEntity.noContent().build();
-    }
-
-    /**
-     * <pre>
-     * 1. MethodName : insertTravelGroupUser
-     * 2. ClassName  : TravelController.java
-     * 3. Comment    : 유저 여행 그룹 등록
-     * 4. 작성자      : CHO
-     * 5. 작성일      : 2022. 11. 27.
-     * </pre>
-     */
-    @ApiOperation(value = "유저 여행 그룹 등록", notes = "유저 여행 그룹을 등록한다.")
-    @ApiResponses(value = {
-            @ApiResponse(code = 201, message = "유저 여행 그룹 등록 성공", response = TravelGroupUserDTO.class),
-            @ApiResponse(code = 400, message = "잘못된 요청", response = HttpClientErrorException.BadRequest.class),
-            @ApiResponse(code = 401, message = "허용되지 않는 관리자", response = HttpClientErrorException.Unauthorized.class),
-            @ApiResponse(code = 403, message = "접근거부", response = HttpClientErrorException.class),
-            @ApiResponse(code = 404, message = "존재 하지 않음", response = HttpClientErrorException.NotFound.class),
-            @ApiResponse(code = 500, message = "서버 에러", response = ServerError.class)
-    })
-    @PostMapping("/group_user")
-    public ResponseEntity<TravelGroupUserDTO> insertTravelGroupUser(@Valid @RequestBody TravelGroupUserEntity travelGroupUserEntity) {
-        return ResponseEntity.created(URI.create("")).body(travelService.insertTravelGroupUser(travelGroupUserEntity));
-    }
-
-    /**
-     * <pre>
-     * 1. MethodName : deleteTravelGroupUser
-     * 2. ClassName  : TravelController.java
-     * 3. Comment    : 유저 여행 그룹 삭제
-     * 4. 작성자      : CHO
-     * 5. 작성일      : 2022. 11. 27.
-     * </pre>
-     */
-    @ApiOperation(value = "유저 여행 그룹 삭제", notes = "유저 여행 그룹을 삭제한다.")
-    @ApiResponses(value = {
-            @ApiResponse(code = 204, message = "유저 여행 그룹 삭제 성공", response = Long.class),
-            @ApiResponse(code = 400, message = "잘못된 요청", response = HttpClientErrorException.BadRequest.class),
-            @ApiResponse(code = 401, message = "허용되지 않는 관리자", response = HttpClientErrorException.Unauthorized.class),
-            @ApiResponse(code = 403, message = "접근거부", response = HttpClientErrorException.class),
-            @ApiResponse(code = 404, message = "존재 하지 않음", response = HttpClientErrorException.NotFound.class),
-            @ApiResponse(code = 500, message = "서버 에러", response = ServerError.class)
-    })
-    @DeleteMapping("/{idx}/group_user")
-    public ResponseEntity<Long> deleteTravelGroupUser(@PathVariable Long idx) {
-        travelService.deleteTravelGroupUser(idx);
-        return ResponseEntity.noContent().build();
-    }
-
-    /**
-     * <pre>
-     * 1. MethodName : deleteTravelSchedule
-     * 2. ClassName  : TravelController.java
-     * 3. Comment    : 유저 여행 스케줄 삭제
-     * 4. 작성자      : CHO
-     * 5. 작성일      : 2022. 12. 13.
-     * </pre>
-     */
-    @ApiOperation(value = "유저 여행 스케줄 삭제", notes = "유저 여행 스케줄을 삭제한다.")
-    @ApiResponses(value = {
-            @ApiResponse(code = 204, message = "유저 여행 스케줄 삭제 성공", response = Long.class),
-            @ApiResponse(code = 400, message = "잘못된 요청", response = HttpClientErrorException.BadRequest.class),
-            @ApiResponse(code = 401, message = "허용되지 않는 관리자", response = HttpClientErrorException.Unauthorized.class),
-            @ApiResponse(code = 403, message = "접근거부", response = HttpClientErrorException.class),
-            @ApiResponse(code = 404, message = "존재 하지 않음", response = HttpClientErrorException.NotFound.class),
-            @ApiResponse(code = 500, message = "서버 에러", response = ServerError.class)
-    })
-    @DeleteMapping("/{idx}/schedule")
-    public ResponseEntity<Long> deleteTravelSchedule(@PathVariable Long idx) {
-        userService.deleteTravelSchedule(idx);
         return ResponseEntity.noContent().build();
     }
 
@@ -557,10 +484,8 @@ public class TravelController {
             @ApiResponse(code = 500, message = "서버 에러", response = ServerError.class)
     })
     @GetMapping(value = "/recommend")
-    public ResponseEntity<Map<String, Object>> findTravelRecommendList(@RequestParam Map<String, Object> paramMap, Paging paging) {
-        Map<String, Object> recommendMap = new HashMap<>();
-        recommendMap.put("travelRecommendList", travelService.findTravelRecommendList(searchCommon.searchCommon(paging, paramMap)));
-        return ResponseEntity.ok().body(recommendMap);
+    public ResponseEntity<Page<TravelRecommendDTO>> findTravelRecommendList(@RequestParam Map<String, Object> paramMap, Paging paging) {
+        return ResponseEntity.ok().body(travelService.findTravelRecommendList(paramMap, paging.getPageRequest(paging.getPageNum(), paging.getSize())));
     }
 
     /**

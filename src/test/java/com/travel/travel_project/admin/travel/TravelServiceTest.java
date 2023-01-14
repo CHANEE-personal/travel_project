@@ -7,21 +7,16 @@ import com.travel.travel_project.domain.travel.festival.TravelFestivalDTO;
 import com.travel.travel_project.domain.travel.festival.TravelFestivalEntity;
 import com.travel.travel_project.domain.travel.group.TravelGroupDTO;
 import com.travel.travel_project.domain.travel.group.TravelGroupEntity;
-import com.travel.travel_project.domain.travel.group.TravelGroupUserDTO;
-import com.travel.travel_project.domain.travel.group.TravelGroupUserEntity;
 import com.travel.travel_project.domain.travel.recommend.TravelRecommendDTO;
 import com.travel.travel_project.domain.travel.recommend.TravelRecommendEntity;
 import com.travel.travel_project.domain.travel.review.TravelReviewDTO;
 import com.travel.travel_project.domain.travel.review.TravelReviewEntity;
-import com.travel.travel_project.domain.travel.schedule.TravelScheduleDTO;
-import com.travel.travel_project.domain.travel.schedule.TravelScheduleEntity;
 import com.travel.travel_project.domain.travel.search.SearchEntity;
 import com.travel.travel_project.exception.TravelException;
 import lombok.RequiredArgsConstructor;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.InOrder;
@@ -964,52 +959,10 @@ class TravelServiceTest {
     }
 
     @Test
-    @DisplayName("유저 여행 그룹 등록 Mockito 테스트")
-    void 유저여행그룹등록Mockito테스트() {
-        // given
-        TravelGroupEntity travelGroupEntity = TravelGroupEntity.builder()
-                .groupName("서울모임").groupDescription("서울모임").visible("Y").build();
-        em.persist(travelGroupEntity);
-
-        TravelGroupDTO travelGroupDTO = TravelGroupEntity.toDto(travelGroupEntity);
-
-        TravelGroupUserEntity travelGroupUserEntity = TravelGroupUserEntity.builder()
-                .userIdx(1L).groupIdx(travelGroupDTO.getIdx()).build();
-
-        TravelGroupUserDTO travelGroupUserInfo = travelService.insertTravelGroupUser(travelGroupUserEntity);
-
-        // then
-        assertThat(travelGroupUserInfo.getGroupIdx()).isEqualTo(travelGroupDTO.getIdx());
-        assertThat(travelGroupUserInfo.getUserIdx()).isEqualTo(1L);
-    }
-
-    @Test
-    @DisplayName("유저 여행 그룹 삭제 Mockito 테스트")
-    void 유저여행그룹삭제Mockito테스트() {
-        // given
-        TravelGroupEntity travelGroupEntity = TravelGroupEntity.builder()
-                .groupName("서울모임").groupDescription("서울모임").visible("Y").build();
-        em.persist(travelGroupEntity);
-
-        TravelGroupDTO travelGroupDTO = TravelGroupEntity.toDto(travelGroupEntity);
-
-        TravelGroupUserEntity travelGroupUserEntity = TravelGroupUserEntity.builder()
-                .userIdx(1L).groupIdx(travelGroupDTO.getIdx()).build();
-
-        TravelGroupUserDTO travelGroupUserInfo = travelService.insertTravelGroupUser(travelGroupUserEntity);
-
-        Long deleteIdx = travelService.deleteTravelGroupUser(travelGroupUserInfo.getIdx());
-
-        // then
-        assertThat(deleteIdx).isEqualTo(travelGroupUserInfo.getIdx());
-    }
-
-    @Test
     @DisplayName("여행지 추천 검색어 리스트 조회 테스트")
     void 여행지추천검색어리스트조회테스트() {
         Map<String, Object> travelRecommendMap = new HashMap<>();
-        travelRecommendMap.put("jpaStartPage", 0);
-        travelRecommendMap.put("size", 3);
+        PageRequest pageRequest = PageRequest.of(1, 3);
         List<String> list = new ArrayList<>();
         list.add("서울");
         list.add("인천");
@@ -1020,7 +973,7 @@ class TravelServiceTest {
 
         travelService.insertTravelRecommend(recommendEntity);
 
-        assertThat(travelService.findTravelRecommendList(travelRecommendMap)).isNotEmpty();
+        assertThat(travelService.findTravelRecommendList(travelRecommendMap, pageRequest)).isNotEmpty();
     }
 
     @Test

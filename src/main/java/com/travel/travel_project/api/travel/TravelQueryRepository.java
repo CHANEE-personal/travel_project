@@ -10,10 +10,6 @@ import com.travel.travel_project.domain.travel.group.*;
 import com.travel.travel_project.domain.travel.recommend.QTravelRecommendEntity;
 import com.travel.travel_project.domain.travel.recommend.TravelRecommendDTO;
 import com.travel.travel_project.domain.travel.recommend.TravelRecommendEntity;
-import com.travel.travel_project.domain.travel.review.TravelReviewDTO;
-import com.travel.travel_project.domain.travel.review.TravelReviewEntity;
-import com.travel.travel_project.domain.travel.schedule.TravelScheduleDTO;
-import com.travel.travel_project.domain.travel.schedule.TravelScheduleEntity;
 import com.travel.travel_project.domain.travel.search.QSearchEntity;
 import com.travel.travel_project.domain.travel.search.SearchDTO;
 import com.travel.travel_project.domain.travel.search.SearchEntity;
@@ -33,12 +29,10 @@ import static com.querydsl.core.types.Projections.fields;
 import static com.travel.travel_project.common.StringUtil.getInt;
 import static com.travel.travel_project.common.StringUtil.getString;
 import static com.travel.travel_project.domain.common.QCommonEntity.commonEntity;
-import static com.travel.travel_project.domain.faq.FaqEntity.toDtoList;
 import static com.travel.travel_project.domain.file.QCommonImageEntity.commonImageEntity;
 import static com.travel.travel_project.domain.travel.QTravelEntity.travelEntity;
 import static com.travel.travel_project.domain.travel.festival.QTravelFestivalEntity.travelFestivalEntity;
 import static com.travel.travel_project.domain.travel.group.QTravelGroupEntity.travelGroupEntity;
-import static com.travel.travel_project.domain.travel.review.QTravelReviewEntity.travelReviewEntity;
 import static com.travel.travel_project.exception.ApiExceptionType.*;
 import static java.time.LocalDate.now;
 import static java.time.LocalDateTime.of;
@@ -77,23 +71,6 @@ public class TravelQueryRepository {
     private BooleanExpression searchTravelFestival(Integer month, Integer day) {
         return travelFestivalEntity.festivalMonth.eq(month)
                 .and(travelFestivalEntity.festivalDay.eq(day));
-    }
-
-    /**
-     * <pre>
-     * 1. MethodName : findTravelCount
-     * 2. ClassName  : TravelRepository.java
-     * 3. Comment    : 여행지 소개 리스트 갯수 조회
-     * 4. 작성자      : CHO
-     * 5. 작성일      : 2022. 10. 05.
-     * </pre>
-     */
-    public int findTravelCount(Map<String, Object> travelMap) {
-        return queryFactory.selectFrom(travelEntity)
-                .innerJoin(travelEntity.newTravelCode, commonEntity)
-                .fetchJoin()
-                .where(searchTravelCode(travelMap), searchTravelInfo(travelMap), searchTravelDate(travelMap))
-                .fetch().size();
     }
 
     /**
@@ -181,48 +158,6 @@ public class TravelQueryRepository {
                 .fetchFirst()).orElseThrow(() -> new TravelException(NOT_FOUND_TRAVEL));
 
         return TravelEntity.toDto(findOneNextTravel);
-    }
-
-    /**
-     * <pre>
-     * 1. MethodName : insertTravel
-     * 2. ClassName  : TravelRepository.java
-     * 3. Comment    : 관리자 > 여행지 등록
-     * 4. 작성자      : CHO
-     * 5. 작성일      : 2022. 10. 05.
-     * </pre>
-     */
-    public TravelDTO insertTravel(TravelEntity travelEntity) {
-        em.persist(travelEntity);
-        return TravelEntity.toDto(travelEntity);
-    }
-
-    /**
-     * <pre>
-     * 1. MethodName : updateTravel
-     * 2. ClassName  : TravelRepository.java
-     * 3. Comment    : 관리자 > 여행지 수정
-     * 4. 작성자      : CHO
-     * 5. 작성일      : 2022. 10. 05.
-     * </pre>
-     */
-    public TravelDTO updateTravel(TravelEntity travelEntity) {
-        em.merge(travelEntity);
-        return TravelEntity.toDto(travelEntity);
-    }
-
-    /**
-     * <pre>
-     * 1. MethodName : deleteTravel
-     * 2. ClassName  : TravelRepository.java
-     * 3. Comment    : 관리자 > 여행지 삭제
-     * 4. 작성자      : CHO
-     * 5. 작성일      : 2022. 10. 05.
-     * </pre>
-     */
-    public Long deleteTravel(Long idx) {
-        em.remove(em.find(TravelEntity.class, idx));
-        return idx;
     }
 
     /**
@@ -372,34 +307,6 @@ public class TravelQueryRepository {
 
     /**
      * <pre>
-     * 1. MethodName : insertTravelGroupUser
-     * 2. ClassName  : TravelRepository.java
-     * 3. Comment    : 유저 여행지 그룹 등록
-     * 4. 작성자      : CHO
-     * 5. 작성일      : 2022. 11. 27.
-     * </pre>
-     */
-    public TravelGroupUserDTO insertTravelGroupUser(TravelGroupUserEntity travelGroupUserEntity) {
-        em.persist(travelGroupUserEntity);
-        return TravelGroupUserEntity.toDto(travelGroupUserEntity);
-    }
-
-    /**
-     * <pre>
-     * 1. MethodName : deleteTravelGroupUser
-     * 2. ClassName  : TravelRepository.java
-     * 3. Comment    : 유저 여행지 그룹 삭제
-     * 4. 작성자      : CHO
-     * 5. 작성일      : 2022. 11. 27.
-     * </pre>
-     */
-    public Long deleteTravelGroupUser(Long idx) {
-        em.remove(em.find(TravelGroupUserEntity.class, idx));
-        return idx;
-    }
-
-    /**
-     * <pre>
      * 1. MethodName : findTravelRecommendList
      * 2. ClassName  : TravelRepository.java
      * 3. Comment    : 여행지 추천 검색어 리스트 조회
@@ -407,17 +314,16 @@ public class TravelQueryRepository {
      * 5. 작성일      : 2023. 01. 04.
      * </pre>
      */
-    public List<TravelRecommendDTO> findTravelRecommendList(Map<String, Object> recommendMap) {
+    public Page<TravelRecommendDTO> findTravelRecommendList(Map<String, Object> recommendMap, PageRequest pageRequest) {
         List<TravelRecommendEntity> recommendList = queryFactory
                 .selectFrom(QTravelRecommendEntity.travelRecommendEntity)
                 .orderBy(QTravelRecommendEntity.travelRecommendEntity.idx.desc())
-                .offset(getInt(recommendMap.get("jpaStartPage"), 0))
-                .limit(getInt(recommendMap.get("size"), 0))
+                .offset(pageRequest.getOffset())
+                .limit(pageRequest.getPageSize())
                 .fetch();
 
-        return recommendList != null ? TravelRecommendEntity.toDtoList(recommendList) : emptyList();
+        return new PageImpl<>(TravelRecommendEntity.toDtoList(recommendList), pageRequest, recommendList.size());
     }
-
     /**
      * <pre>
      * 1. MethodName : rankingTravelKeyword

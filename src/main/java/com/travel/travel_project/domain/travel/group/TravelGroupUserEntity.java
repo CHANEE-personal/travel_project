@@ -3,11 +3,10 @@ package com.travel.travel_project.domain.travel.group;
 import com.travel.travel_project.domain.user.UserEntity;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
+import org.hibernate.annotations.DynamicUpdate;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotNull;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -19,7 +18,8 @@ import static javax.persistence.GenerationType.IDENTITY;
 @SuperBuilder
 @EqualsAndHashCode(of = "idx", callSuper = false)
 @AllArgsConstructor
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@DynamicUpdate
 @Table(name = "tv_group_user")
 public class TravelGroupUserEntity {
     @Transient
@@ -30,20 +30,12 @@ public class TravelGroupUserEntity {
     @Column(name = "idx")
     private Long idx;
 
-    @Column(name = "user_idx")
-    @NotNull(message = "유저 idx 입력은 필수입니다.")
-    private Long userIdx;
-
-    @Column(name = "group_idx")
-    @NotNull(message = "그룹 idx 입력은 필수입니다.")
-    private Long groupIdx;
-
-    @ManyToOne
-    @JoinColumn(name = "idx", insertable = false, updatable = false)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_idx", nullable = false)
     private UserEntity userEntity;
 
-    @ManyToOne
-    @JoinColumn(name = "idx", insertable = false, updatable = false)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "group_idx", nullable = false)
     private TravelGroupEntity travelGroupEntity;
 
     public static TravelGroupUserDTO toDto(TravelGroupUserEntity entity) {
@@ -51,8 +43,8 @@ public class TravelGroupUserEntity {
         return TravelGroupUserDTO.builder()
                 .idx(entity.getIdx())
                 .rowNum(entity.getRowNum())
-                .userIdx(entity.getUserIdx())
-                .groupIdx(entity.getGroupIdx())
+                .userIdx(entity.userEntity.getIdx())
+                .groupIdx(entity.travelGroupEntity.getIdx())
                 .build();
     }
 

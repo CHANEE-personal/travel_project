@@ -1,8 +1,13 @@
 package com.travel.travel_project.api.user;
 
 import com.travel.travel_project.api.common.CommonRepository;
+import com.travel.travel_project.api.travel.group.GroupRepository;
+import com.travel.travel_project.api.travel.group.GroupUserRepository;
 import com.travel.travel_project.api.travel.schedule.ScheduleRepository;
 import com.travel.travel_project.domain.common.CommonEntity;
+import com.travel.travel_project.domain.travel.group.TravelGroupEntity;
+import com.travel.travel_project.domain.travel.group.TravelGroupUserDTO;
+import com.travel.travel_project.domain.travel.group.TravelGroupUserEntity;
 import com.travel.travel_project.domain.travel.schedule.TravelScheduleDTO;
 import com.travel.travel_project.domain.travel.schedule.TravelScheduleEntity;
 import com.travel.travel_project.domain.user.UserDTO;
@@ -27,6 +32,8 @@ public class UserService {
     private final UserRepository userRepository;
     private final ScheduleRepository scheduleRepository;
     private final CommonRepository commonRepository;
+    private final GroupRepository groupRepository;
+    private final GroupUserRepository groupUserRepository;
 
     private UserEntity oneUser(Long idx) {
         return userRepository.findById(idx)
@@ -41,6 +48,11 @@ public class UserService {
     private TravelScheduleEntity oneSchedule(Long idx) {
         return scheduleRepository.findById(idx)
                 .orElseThrow(() -> new TravelException(NOT_FOUND_SCHEDULE));
+    }
+
+    private TravelGroupEntity oneGroup(Long idx) {
+        return groupRepository.findById(idx)
+                .orElseThrow(() -> new TravelException(NOT_FOUND_TRAVEL_GROUP));
     }
 
     @Transactional(readOnly = true)
@@ -275,6 +287,45 @@ public class UserService {
             return idx;
         } catch (Exception e) {
             throw new TravelException(ERROR_DELETE_TRAVEL_SCHEDULE);
+        }
+    }
+
+    /**
+     * <pre>
+     * 1. MethodName : insertTravelGroupUser
+     * 2. ClassName  : TravelService.java
+     * 3. Comment    : 유저 여행 그룹 등록
+     * 4. 작성자      : CHO
+     * 5. 작성일      : 2022. 11. 27.
+     * </pre>
+     */
+    @Transactional
+    public TravelGroupUserDTO insertTravelGroupUser(Long idx, Long groupIdx, TravelGroupUserEntity travelGroupUserEntity) {
+        try {
+            oneGroup(groupIdx).addGroup(travelGroupUserEntity);
+            oneUser(idx).addGroup(travelGroupUserEntity);
+            return TravelGroupUserEntity.toDto(groupUserRepository.save(travelGroupUserEntity));
+        } catch (Exception e) {
+            throw new TravelException(ERROR_TRAVEL_GROUP_UESR);
+        }
+    }
+
+    /**
+     * <pre>
+     * 1. MethodName : deleteTravelGroupUser
+     * 2. ClassName  : TravelService.java
+     * 3. Comment    : 유저 여행 그룹 삭제
+     * 4. 작성자      : CHO
+     * 5. 작성일      : 2022. 11. 27.
+     * </pre>
+     */
+    @Transactional
+    public Long deleteTravelGroupUser(Long idx) {
+        try {
+            groupUserRepository.findById(idx);
+            return idx;
+        } catch (Exception e) {
+            throw new TravelException(ERROR_DELETE_TRAVEL_GROUP_USER);
         }
     }
 }
