@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.travel.travel_project.domain.common.NewCommonMappedClass;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
+import org.hibernate.annotations.DynamicUpdate;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
@@ -18,8 +19,9 @@ import static javax.persistence.GenerationType.IDENTITY;
 @Setter
 @SuperBuilder
 @EqualsAndHashCode(of = "idx", callSuper = false)
-@NoArgsConstructor
 @AllArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@DynamicUpdate
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Table(name = "travel_notice")
 public class NoticeEntity extends NewCommonMappedClass {
@@ -60,6 +62,13 @@ public class NoticeEntity extends NewCommonMappedClass {
         this.topFixed = !topFixed;
     }
 
+    public void update(NoticeEntity noticeEntity) {
+        this.title = noticeEntity.title;
+        this.description = noticeEntity.description;
+        this.visible = noticeEntity.visible;
+        this.topFixed = noticeEntity.topFixed;
+    }
+
     public static NoticeDTO toDto(NoticeEntity entity) {
         return NoticeDTO.builder()
                 .rowNum(entity.getRowNum())
@@ -73,29 +82,10 @@ public class NoticeEntity extends NewCommonMappedClass {
 
     }
 
-    public static NoticeEntity toEntity(NoticeDTO dto) {
-        return NoticeEntity.builder()
-                .rowNum(dto.getRowNum())
-                .idx(dto.getIdx())
-                .title(dto.getTitle())
-                .description(dto.getDescription())
-                .topFixed(dto.getTopFixed())
-                .viewCount(dto.getViewCount())
-                .visible(dto.getVisible())
-                .build();
-    }
-
     public static List<NoticeDTO> toDtoList(List<NoticeEntity> entityList) {
         if (entityList == null) return null;
         return entityList.stream()
                 .map(NoticeEntity::toDto)
-                .collect(Collectors.toList());
-    }
-
-    public static List<NoticeEntity> toEntityList(List<NoticeDTO> dtoList) {
-        if (dtoList == null) return null;
-        return dtoList.stream()
-                .map(NoticeEntity::toEntity)
                 .collect(Collectors.toList());
     }
 }

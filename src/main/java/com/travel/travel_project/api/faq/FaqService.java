@@ -1,16 +1,16 @@
 package com.travel.travel_project.api.faq;
 
+import com.travel.travel_project.api.common.CommonRepository;
+import com.travel.travel_project.domain.common.CommonEntity;
 import com.travel.travel_project.domain.faq.FaqDTO;
 import com.travel.travel_project.domain.faq.FaqEntity;
 import com.travel.travel_project.exception.TravelException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.CachePut;
-import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
 import java.util.Map;
 
 import static com.travel.travel_project.exception.ApiExceptionType.*;
@@ -19,24 +19,18 @@ import static com.travel.travel_project.exception.ApiExceptionType.*;
 @RequiredArgsConstructor
 public class FaqService {
 
+    private final FaqQueryRepository faqQueryRepository;
     private final FaqRepository faqRepository;
+    private final CommonRepository commonRepository;
 
-    /**
-     * <pre>
-     * 1. MethodName : findFaqCount
-     * 2. ClassName  : FaqService.java
-     * 3. Comment    : FAQ 리스트 갯수 조회
-     * 4. 작성자      : CHO
-     * 5. 작성일      : 2022. 11. 29.
-     * </pre>
-     */
-    @Transactional
-    public int findFaqCount(Map<String, Object> faqMap) {
-        try {
-            return faqRepository.findFaqCount(faqMap);
-        } catch (Exception e) {
-            throw new TravelException(NOT_FOUND_FAQ_LIST, e);
-        }
+    private FaqEntity oneFaq(Long idx) {
+        return faqRepository.findById(idx)
+                .orElseThrow(() -> new TravelException(NOT_FOUND_FAQ));
+    }
+
+    private CommonEntity oneCommon(Integer commonCode) {
+        return commonRepository.findByCommonCode(commonCode)
+                .orElseThrow(() -> new TravelException(NOT_FOUND_FAQ));
     }
 
     /**
@@ -48,10 +42,9 @@ public class FaqService {
      * 5. 작성일      : 2022. 11. 29.
      * </pre>
      */
-    @Cacheable(value = "faq", key = "#faqMap")
     @Transactional(readOnly = true)
-    public List<FaqDTO> findFaqList(Map<String, Object> faqMap) {
-        return faqRepository.findFaqList(faqMap);
+    public Page<FaqDTO> findFaqList(Map<String, Object> faqMap, PageRequest pageRequest) {
+        return faqQueryRepository.findFaqList(faqMap, pageRequest);
     }
 
     /**
@@ -63,10 +56,9 @@ public class FaqService {
      * 5. 작성일      : 2022. 11. 29.
      * </pre>
      */
-    @Cacheable(value = "faq", key = "#idx")
     @Transactional(readOnly = true)
     public FaqDTO findOneFaq(Long idx) {
-        return faqRepository.findOneFaq(idx);
+        return faqQueryRepository.findOneFaq(idx);
     }
 
     /**
@@ -78,13 +70,13 @@ public class FaqService {
      * 5. 작성일      : 2022. 11. 29.
      * </pre>
      */
-    @CachePut("faq")
     @Transactional
     public FaqDTO insertFaq(FaqEntity faqEntity) {
         try {
-            return faqRepository.insertFaq(faqEntity);
+            oneCommon(faqEntity.getFaqCode()).addCommon(faqEntity);
+            return FaqEntity.toDto(faqRepository.save(faqEntity));
         } catch (Exception e) {
-            throw new TravelException(ERROR_FAQ, e);
+            throw new TravelException(ERROR_FAQ);
         }
     }
 
@@ -97,13 +89,13 @@ public class FaqService {
      * 5. 작성일      : 2022. 11. 29.
      * </pre>
      */
-    @CachePut(value = "faq", key = "#faqEntity.idx")
     @Transactional
-    public FaqDTO updateFaq(FaqEntity faqEntity) {
+    public FaqDTO updateFaq(Long idx, FaqEntity faqEntity) {
         try {
-            return faqRepository.updateFaq(faqEntity);
+            oneFaq(idx).update(faqEntity);
+            return FaqEntity.toDto(faqEntity);
         } catch (Exception e) {
-            throw new TravelException(ERROR_UPDATE_FAQ, e);
+            throw new TravelException(ERROR_UPDATE_FAQ);
         }
     }
 
@@ -116,13 +108,13 @@ public class FaqService {
      * 5. 작성일      : 2022. 11. 29.
      * </pre>
      */
-    @CacheEvict(value = "faq", key = "#idx")
     @Transactional
     public Long deleteFaq(Long idx) {
         try {
-            return faqRepository.deleteFaq(idx);
+            faqRepository.deleteById(idx);
+            return idx;
         } catch (Exception e) {
-            throw new TravelException(ERROR_DELETE_FAQ, e);
+            throw new TravelException(ERROR_DELETE_FAQ);
         }
     }
 }

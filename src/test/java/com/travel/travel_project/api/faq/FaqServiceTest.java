@@ -1,5 +1,6 @@
 package com.travel.travel_project.api.faq;
 
+import com.travel.travel_project.domain.common.CommonEntity;
 import com.travel.travel_project.domain.faq.FaqDTO;
 import com.travel.travel_project.domain.faq.FaqEntity;
 import lombok.RequiredArgsConstructor;
@@ -13,6 +14,9 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.event.EventListener;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.test.context.TestConstructor;
 import org.springframework.test.context.TestPropertySource;
 
@@ -23,9 +27,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 import static org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase.Replace.NONE;
 import static org.springframework.test.context.TestConstructor.AutowireMode.ALL;
@@ -44,17 +48,28 @@ class FaqServiceTest {
 
     private FaqEntity faqEntity;
     private FaqDTO faqDTO;
+
+    private CommonEntity commonEntity;
+    private final EntityManager em;
     
     void createFaq() {
+        commonEntity = CommonEntity.builder()
+                .commonCode(999)
+                .commonName("서울")
+                .visible("Y")
+                .build();
+
+        em.persist(commonEntity);
+
         faqEntity = FaqEntity.builder()
-                .faqCode(3L)
                 .title("FAQ 등록 테스트")
                 .description("FAQ 등록 테스트")
                 .viewCount(1)
                 .visible("Y")
+                .faqCode(commonEntity.getCommonCode())
                 .build();
-        
-        faqDTO = FaqEntity.toDto(faqEntity);
+
+        faqDTO = faqService.insertFaq(faqEntity);
     }
     
     @BeforeEach
@@ -67,29 +82,33 @@ class FaqServiceTest {
     @DisplayName("FAQ 리스트 조회 Mockito 테스트")
     void FAQ리스트조회Mockito테스트() {
         Map<String, Object> faqMap = new HashMap<>();
-        faqMap.put("jpaStartPage", 1);
-        faqMap.put("size", 3);
+
+        PageRequest pageRequest = PageRequest.of(0, 3);
 
         List<FaqDTO> faqList = new ArrayList<>();
         faqList.add(faqDTO);
 
+        Page<FaqDTO> resultPage = new PageImpl<>(faqList, pageRequest, faqList.size());
+
         // when
-        when(mockFaqService.findFaqList(faqMap)).thenReturn(faqList);
-        List<FaqDTO> newFaqList = mockFaqService.findFaqList(faqMap);
+        when(mockFaqService.findFaqList(faqMap, pageRequest)).thenReturn(resultPage);
+        Page<FaqDTO> newFaqList = mockFaqService.findFaqList(faqMap, pageRequest);
+
+        List<FaqDTO> findFaqList = newFaqList.stream().collect(Collectors.toList());
 
         // then
-        assertThat(newFaqList.get(0).getIdx()).isEqualTo(faqList.get(0).getIdx());
-        assertThat(newFaqList.get(0).getFaqCode()).isEqualTo(faqList.get(0).getFaqCode());
-        assertThat(newFaqList.get(0).getTitle()).isEqualTo(faqList.get(0).getTitle());
-        assertThat(newFaqList.get(0).getDescription()).isEqualTo(faqList.get(0).getDescription());
+        assertThat(findFaqList.get(0).getIdx()).isEqualTo(faqList.get(0).getIdx());
+        assertThat(findFaqList.get(0).getFaqCode()).isEqualTo(faqList.get(0).getFaqCode());
+        assertThat(findFaqList.get(0).getTitle()).isEqualTo(faqList.get(0).getTitle());
+        assertThat(findFaqList.get(0).getDescription()).isEqualTo(faqList.get(0).getDescription());
 
         // verify
-        verify(mockFaqService, times(1)).findFaqList(faqMap);
-        verify(mockFaqService, atLeastOnce()).findFaqList(faqMap);
+        verify(mockFaqService, times(1)).findFaqList(faqMap, pageRequest);
+        verify(mockFaqService, atLeastOnce()).findFaqList(faqMap, pageRequest);
         verifyNoMoreInteractions(mockFaqService);
 
         InOrder inOrder = inOrder(mockFaqService);
-        inOrder.verify(mockFaqService).findFaqList(faqMap);
+        inOrder.verify(mockFaqService).findFaqList(faqMap, pageRequest);
     }
 
     @Test
@@ -101,7 +120,6 @@ class FaqServiceTest {
 
         // then
         assertThat(faqInfo.getIdx()).isEqualTo(faqEntity.getIdx());
-        assertThat(faqInfo.getFaqCode()).isEqualTo(faqEntity.getFaqCode());
         assertThat(faqInfo.getTitle()).isEqualTo(faqEntity.getTitle());
         assertThat(faqInfo.getDescription()).isEqualTo(faqEntity.getDescription());
 
@@ -147,14 +165,13 @@ class FaqServiceTest {
 
         FaqEntity updateFaqEntity = FaqEntity.builder()
                 .idx(faqInfo.getIdx())
-                .faqCode(3L)
                 .title("FAQ 수정 테스트")
                 .description("FAQ 수정 테스트")
                 .viewCount(1)
                 .visible("Y")
                 .build();
 
-        FaqDTO newFaqInfo = faqService.updateFaq(updateFaqEntity);
+        FaqDTO newFaqInfo = faqService.updateFaq(faqInfo.getIdx(), updateFaqEntity);
 
         // when
         when(mockFaqService.findOneFaq(newFaqInfo.getIdx())).thenReturn(newFaqInfo);

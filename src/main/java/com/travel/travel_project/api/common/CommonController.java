@@ -1,7 +1,6 @@
 package com.travel.travel_project.api.common;
 
-import com.travel.travel_project.common.Page;
-import com.travel.travel_project.common.SearchCommon;
+import com.travel.travel_project.common.Paging;
 import com.travel.travel_project.domain.common.CommonDTO;
 import com.travel.travel_project.domain.common.CommonEntity;
 import io.swagger.annotations.Api;
@@ -9,6 +8,7 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.HttpClientErrorException;
@@ -26,7 +26,6 @@ import java.util.Map;
 public class CommonController {
 
     private final CommonService commonService;
-    private final SearchCommon searchCommon;
 
     /**
      * <pre>
@@ -47,8 +46,8 @@ public class CommonController {
             @ApiResponse(code = 500, message = "서버 에러", response = ServerError.class)
     })
     @GetMapping("/lists")
-    public ResponseEntity<List<CommonDTO>> findCommonList(@RequestParam(required = false) Map<String, Object> paramMap, Page page) {
-        return ResponseEntity.ok(commonService.findCommonList(searchCommon.searchCommon(page, paramMap)));
+    public ResponseEntity<Page<CommonDTO>> findCommonList(@RequestParam(required = false) Map<String, Object> paramMap, Paging paging) {
+        return ResponseEntity.ok(commonService.findCommonList(paramMap, paging.getPageRequest(paging.getPageNum(), paging.getSize())));
     }
 
     /**
@@ -117,10 +116,7 @@ public class CommonController {
     })
     @PutMapping("/{idx}")
     public ResponseEntity<CommonDTO> updateCommonCode(@PathVariable Long idx, @Valid @RequestBody CommonEntity commonEntity) {
-        if (commonService.findOneCommon(idx) == null) {
-            return ResponseEntity.notFound().build();
-        }
-        return ResponseEntity.ok(commonService.updateCommonCode(commonEntity));
+        return ResponseEntity.ok(commonService.updateCommonCode(idx, commonEntity));
     }
 
     /**
@@ -143,9 +139,6 @@ public class CommonController {
     })
     @DeleteMapping("/{idx}")
     public ResponseEntity<Long> deleteCommonCode(@PathVariable Long idx) {
-        if (commonService.findOneCommon(idx) == null) {
-            return ResponseEntity.notFound().build();
-        }
         commonService.deleteCommonCode(idx);
         return ResponseEntity.noContent().build();
     }

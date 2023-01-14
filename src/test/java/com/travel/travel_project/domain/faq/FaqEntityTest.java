@@ -13,7 +13,6 @@ class FaqEntityTest {
     @BeforeEach
     void setUp() {
         faqEntity = FaqEntity.builder()
-                .faqCode(1L)
                 .title("FAQ")
                 .description("FAQ")
                 .viewCount(1)

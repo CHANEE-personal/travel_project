@@ -12,6 +12,9 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.event.EventListener;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.test.context.TestConstructor;
 import org.springframework.test.context.TestPropertySource;
 
@@ -22,9 +25,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.*;
 import static org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase.Replace.NONE;
 import static org.springframework.test.context.TestConstructor.AutowireMode.ALL;
@@ -51,6 +54,7 @@ class CommonServiceTest {
                 .commonName("서울")
                 .visible("Y")
                 .build();
+
         commonDTO = CommonEntity.toDto(commonEntity);
     }
 
@@ -65,26 +69,33 @@ class CommonServiceTest {
     void 공통코드리스트조회Mockito테스트() {
         // given
         Map<String, Object> commonMap = new HashMap<>();
-        commonMap.put("jpaStartPage", 1);
-        commonMap.put("size", 3);
+        commonMap.put("searchKeyword", "서울");
+
+        PageRequest pageRequest = PageRequest.of(0, 3);
+
         List<CommonDTO> commonList = new ArrayList<>();
-        commonList.add(commonDTO);
+        commonList.add(CommonDTO.builder().idx(1L).commonCode(1).commonName("서울").visible("Y").build());
+
+        Page<CommonDTO> resultPage = new PageImpl<>(commonList, pageRequest, commonList.size());
 
         // when
-        given(mockCommonService.findCommonList(commonMap)).willReturn(commonList);
-        List<CommonDTO> newCommonList = mockCommonService.findCommonList(commonMap);
+        when(mockCommonService.findCommonList(commonMap, pageRequest)).thenReturn(resultPage);
+        Page<CommonDTO> newCommonList = mockCommonService.findCommonList(commonMap, pageRequest);
+
+        List<CommonDTO> commonDTOList = newCommonList.stream().collect(Collectors.toList());
 
         // then
-        assertThat(newCommonList.get(0).getCommonCode()).isEqualTo(1);
-        assertThat(newCommonList.get(0).getCommonName()).isEqualTo("서울");
+        assertThat(commonDTOList.get(0).getIdx()).isEqualTo(commonList.get(0).getIdx());
+        assertThat(commonDTOList.get(0).getCommonCode()).isEqualTo(commonList.get(0).getCommonCode());
+        assertThat(commonDTOList.get(0).getCommonName()).isEqualTo(commonList.get(0).getCommonName());
 
         // verify
-        verify(mockCommonService, times(1)).findCommonList(commonMap);
-        verify(mockCommonService, atLeastOnce()).findCommonList(commonMap);
+        verify(mockCommonService, times(1)).findCommonList(commonMap, pageRequest);
+        verify(mockCommonService, atLeastOnce()).findCommonList(commonMap, pageRequest);
         verifyNoMoreInteractions(mockCommonService);
 
         InOrder inOrder = inOrder(mockCommonService);
-        inOrder.verify(mockCommonService).findCommonList(commonMap);
+        inOrder.verify(mockCommonService).findCommonList(commonMap, pageRequest);
     }
 
     @Test
@@ -94,7 +105,7 @@ class CommonServiceTest {
         CommonDTO newCommonDTO = commonService.insertCommonCode(commonEntity);
 
         // when
-        given(mockCommonService.findOneCommon(newCommonDTO.getIdx())).willReturn(newCommonDTO);
+        when(mockCommonService.findOneCommon(newCommonDTO.getIdx())).thenReturn(newCommonDTO);
         CommonDTO commonInfo = mockCommonService.findOneCommon(newCommonDTO.getIdx());
 
         // then
@@ -117,7 +128,7 @@ class CommonServiceTest {
         CommonDTO newCommonDTO = commonService.insertCommonCode(commonEntity);
 
         // when
-        given(mockCommonService.findOneCommon(newCommonDTO.getIdx())).willReturn(newCommonDTO);
+        when(mockCommonService.findOneCommon(newCommonDTO.getIdx())).thenReturn(newCommonDTO);
         CommonDTO commonInfo = mockCommonService.findOneCommon(newCommonDTO.getIdx());
 
         // then
@@ -141,12 +152,12 @@ class CommonServiceTest {
         CommonEntity newCommonEntity = CommonEntity.builder()
                 .idx(commonDTO.getIdx())
                 .commonCode(2).commonName("인천").visible("Y").build();
-        commonService.updateCommonCode(newCommonEntity);
+        commonService.updateCommonCode(commonDTO.getIdx(), newCommonEntity);
 
         CommonDTO newCommonInfo = CommonEntity.toDto(newCommonEntity);
 
         // when
-        given(mockCommonService.findOneCommon(newCommonInfo.getIdx())).willReturn(newCommonInfo);
+        when(mockCommonService.findOneCommon(newCommonInfo.getIdx())).thenReturn(newCommonInfo);
         CommonDTO commonInfo = mockCommonService.findOneCommon(newCommonInfo.getIdx());
 
         // then
@@ -171,7 +182,7 @@ class CommonServiceTest {
         commonDTO = CommonEntity.toDto(commonEntity);
 
         // when
-        given(mockCommonService.findOneCommon(commonDTO.getIdx())).willReturn(commonDTO);
+        when(mockCommonService.findOneCommon(commonDTO.getIdx())).thenReturn(commonDTO);
         Long deleteIdx = commonService.deleteCommonCode(commonDTO.getIdx());
 
         // then

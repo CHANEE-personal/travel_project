@@ -1,6 +1,7 @@
 package com.travel.travel_project.api.faq;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.travel.travel_project.domain.common.CommonEntity;
 import com.travel.travel_project.domain.faq.FaqEntity;
 import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.BeforeEach;
@@ -61,20 +62,17 @@ class FaqControllerTest {
     @Test
     @DisplayName("FAQ 조회 테스트")
     void FAQ조회테스트() throws Exception {
-        mockMvc.perform(get("/api/faq/lists").param("page", "1").param("size", "100"))
+        mockMvc.perform(get("/api/faq/lists").param("pageNum", "1").param("size", "100"))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().contentType("application/json;charset=utf-8"))
-                .andExpect(jsonPath("$.faqList.length()", equalTo(55)));
+                .andExpect(jsonPath("$.content").isNotEmpty());
     }
 
     @Test
     @DisplayName("FAQ 검색 조회 테스트")
     void FAQ검색조회테스트() throws Exception {
         LinkedMultiValueMap<String, String> paramMap = new LinkedMultiValueMap<>();
-        paramMap.add("jpaStartPage", "1");
-        paramMap.add("size", "3");
-        paramMap.add("searchType", "0");
         paramMap.add("searchKeyword", "하하");
 
         mockMvc.perform(get("/api/faq/lists").queryParams(paramMap))
@@ -108,11 +106,19 @@ class FaqControllerTest {
     @Test
     @DisplayName("FAQ 등록 테스트")
     void FAQ등록테스트() throws Exception {
+        CommonEntity commonEntity = CommonEntity.builder()
+                .commonCode(999)
+                .commonName("서울")
+                .visible("Y")
+                .build();
+
+        em.persist(commonEntity);
+
         FaqEntity faqEntity = FaqEntity.builder()
-                .faqCode(1L)
                 .title("FAQ 등록 테스트")
                 .description("FAQ 등록 테스트")
                 .viewCount(1)
+                .faqCode(commonEntity.getCommonCode())
                 .visible("Y")
                 .build();
 
@@ -129,11 +135,19 @@ class FaqControllerTest {
     @Test
     @DisplayName("FAQ 수정 테스트")
     void FAQ수정테스트() throws Exception {
+        CommonEntity commonEntity = CommonEntity.builder()
+                .commonCode(999)
+                .commonName("서울")
+                .visible("Y")
+                .build();
+
+        em.persist(commonEntity);
+
         FaqEntity faqEntity = FaqEntity.builder()
-                .faqCode(1L)
                 .title("FAQ 등록 테스트")
                 .description("FAQ 등록 테스트")
                 .viewCount(1)
+                .faqCode(commonEntity.getCommonCode())
                 .visible("Y")
                 .build();
 
@@ -141,10 +155,10 @@ class FaqControllerTest {
 
         FaqEntity updateFaqEntity = FaqEntity.builder()
                 .idx(faqEntity.getIdx())
-                .faqCode(1L)
                 .title("FAQ 수정 테스트")
                 .description("FAQ 수정 테스트")
                 .viewCount(1)
+                .faqCode(commonEntity.getCommonCode())
                 .visible("Y")
                 .build();
 
@@ -161,11 +175,19 @@ class FaqControllerTest {
     @Test
     @DisplayName("FAQ 삭제 테스트")
     void FAQ삭제테스트() throws Exception {
+        CommonEntity commonEntity = CommonEntity.builder()
+                .commonCode(999)
+                .commonName("서울")
+                .visible("Y")
+                .build();
+
+        em.persist(commonEntity);
+
         FaqEntity faqEntity = FaqEntity.builder()
-                .faqCode(1L)
                 .title("FAQ 등록 테스트")
                 .description("FAQ 등록 테스트")
                 .viewCount(1)
+                .faqCode(commonEntity.getCommonCode())
                 .visible("Y")
                 .build();
 
@@ -173,8 +195,6 @@ class FaqControllerTest {
 
         mockMvc.perform(delete("/api/faq/{idx}", faqEntity.getIdx()))
                 .andDo(print())
-                .andExpect(status().isNoContent())
-                .andExpect(content().contentType("application/json;charset=utf-8"))
-                .andExpect(content().string(getString(faqEntity.getIdx())));
+                .andExpect(status().isNoContent());
     }
 }

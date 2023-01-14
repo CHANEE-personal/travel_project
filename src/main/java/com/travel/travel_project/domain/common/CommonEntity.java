@@ -47,13 +47,26 @@ public class CommonEntity extends NewCommonMappedClass implements Serializable {
     @NotEmpty(message = "공통 코드 사용 여부는 필수입니다.")
     private String visible;
 
+    @Builder.Default
     @JsonIgnore
     @OneToMany(mappedBy = "newTravelCode", cascade = MERGE, fetch = LAZY)
     private List<TravelEntity> adminTravelEntityList = new ArrayList<>();
 
+    @Builder.Default
     @JsonIgnore
     @OneToMany(mappedBy = "newFaqCode", cascade = MERGE, fetch = LAZY)
     private List<FaqEntity> faqEntityList = new ArrayList<>();
+
+    public void addCommon(FaqEntity faqEntity) {
+        faqEntity.setNewFaqCode(this);
+        this.faqEntityList.add(faqEntity);
+    }
+
+    public void update(CommonEntity commonEntity) {
+        this.commonCode = commonEntity.commonCode;
+        this.commonName = commonEntity.commonName;
+        this.visible = commonEntity.visible;
+    }
 
     public static CommonDTO toDto(CommonEntity entity) {
         if (entity == null) return null;
