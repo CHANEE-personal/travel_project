@@ -594,13 +594,12 @@ class TravelServiceTest {
     }
 
     @Test
-    @DisplayName("여행지댓글등록Mockito테스트")
-    void 여행지댓글등록Mockito테스트() {
+    @DisplayName("여행지리뷰등록Mockito테스트")
+    void 여행지리뷰등록Mockito테스트() {
         // given
         TravelDTO travelInfo = travelService.insertTravel(travelEntity);
 
         TravelReviewEntity travelReviewEntity = TravelReviewEntity.builder()
-                .travelIdx(travelInfo.getIdx())
                 .reviewTitle("리뷰등록테스트")
                 .reviewDescription("리뷰등록테스트")
                 .viewCount(0)
@@ -609,7 +608,7 @@ class TravelServiceTest {
                 .visible("Y")
                 .build();
 
-        TravelReviewDTO travelReviewDTO = travelService.replyTravel(travelReviewEntity);
+        TravelReviewDTO travelReviewDTO = travelService.reviewTravel(travelInfo.getIdx(), travelReviewEntity);
         List<TravelReviewDTO> reviewList = new ArrayList<>();
         reviewList.add(travelReviewDTO);
 
@@ -638,13 +637,12 @@ class TravelServiceTest {
 
     @Test
     @DisplayName("여행지댓글수정Mockito테스트")
-    void 여행지댓글수정Mockito테스트() {
+    void 여행지리뷰수정Mockito테스트() {
         // given
         TravelDTO travelInfo = travelService.insertTravel(travelEntity);
 
         // 댓글 등록
         TravelReviewEntity travelReviewEntity = TravelReviewEntity.builder()
-                .travelIdx(travelInfo.getIdx())
                 .reviewTitle("리뷰등록테스트")
                 .reviewDescription("리뷰등록테스트")
                 .viewCount(0)
@@ -653,21 +651,21 @@ class TravelServiceTest {
                 .visible("Y")
                 .build();
 
-        TravelReviewDTO reviewDTO = travelService.replyTravel(travelReviewEntity);
+        TravelReviewDTO reviewDTO = travelService.reviewTravel(travelInfo.getIdx(), travelReviewEntity);
 
         // 댓글 수정
         travelReviewEntity = TravelReviewEntity.builder()
                 .idx(reviewDTO.getIdx())
-                .travelIdx(travelInfo.getIdx())
                 .reviewTitle("리뷰수정테스트")
                 .reviewDescription("리뷰수정테스트")
                 .viewCount(0)
                 .favoriteCount(0)
+                .newTravelEntity(travelEntity)
                 .popular(false)
                 .visible("Y")
                 .build();
 
-        TravelReviewDTO travelReviewDTO = travelService.updateReplyTravel(travelReviewEntity);
+        TravelReviewDTO travelReviewDTO = travelService.updateReviewTravel(reviewDTO.getIdx(), travelReviewEntity);
         List<TravelReviewDTO> reviewList = new ArrayList<>();
         reviewList.add(travelReviewDTO);
 
@@ -679,31 +677,30 @@ class TravelServiceTest {
                 .build();
 
         // when
-        when(mockTravelService.replyTravelReview(travelDTO.getIdx())).thenReturn(reviewList);
-        List<TravelReviewDTO> reviewDTOList = mockTravelService.replyTravelReview(travelDTO.getIdx());
+        when(mockTravelService.travelReviewList(travelDTO.getIdx())).thenReturn(reviewList);
+        List<TravelReviewDTO> reviewDTOList = mockTravelService.travelReviewList(travelDTO.getIdx());
 
         // then
         assertThat(reviewDTOList.get(0).getReviewTitle()).isEqualTo("리뷰수정테스트");
         assertThat(reviewDTOList.get(0).getReviewDescription()).isEqualTo("리뷰수정테스트");
 
         // verify
-        verify(mockTravelService, times(1)).replyTravelReview(travelDTO.getIdx());
-        verify(mockTravelService,  atLeastOnce()).replyTravelReview(travelDTO.getIdx());
+        verify(mockTravelService, times(1)).travelReviewList(travelDTO.getIdx());
+        verify(mockTravelService,  atLeastOnce()).travelReviewList(travelDTO.getIdx());
         verifyNoMoreInteractions(mockTravelService);
 
         InOrder inOrder = inOrder(mockTravelService);
-        inOrder.verify(mockTravelService).replyTravelReview(travelDTO.getIdx());
+        inOrder.verify(mockTravelService).travelReviewList(travelDTO.getIdx());
     }
 
     @Test
-    @DisplayName("여행지 댓글 삭제 Mockito 테스트")
-    void 여행지댓글삭제Mockito테스트() {
+    @DisplayName("여행지 리뷰 삭제 Mockito 테스트")
+    void 여행지리뷰삭제Mockito테스트() {
         // given
         // 여행지 등록
         TravelDTO travelInfo = travelService.insertTravel(travelEntity);
-        // 여행지 댓글 등록
+        // 여행지 리뷰 등록
         TravelReviewEntity travelReviewEntity = TravelReviewEntity.builder()
-                .travelIdx(travelInfo.getIdx())
                 .reviewTitle("리뷰등록테스트")
                 .reviewDescription("리뷰등록테스트")
                 .viewCount(0)
@@ -711,22 +708,22 @@ class TravelServiceTest {
                 .popular(false)
                 .visible("Y")
                 .build();
-        TravelReviewDTO travelReviewDTO = travelService.replyTravel(travelReviewEntity);
-        // 여행지 댓글 삭제
-        Long deleteIdx = travelService.deleteReplyTravel(travelReviewDTO.getIdx());
+
+        TravelReviewDTO travelReviewDTO = travelService.reviewTravel(travelInfo.getIdx(), travelReviewEntity);
+        // 여행지 리뷰 삭제
+        Long deleteIdx = travelService.deleteReviewTravel(travelReviewDTO.getIdx());
 
         // then
         assertThat(travelReviewDTO.getIdx()).isEqualTo(deleteIdx);
     }
 
     @Test
-    @DisplayName("여행지 댓글 리스트 조회 Mockito 테스트")
-    void 여행지댓글리스트조회Mockito테스트() {
+    @DisplayName("여행지 리뷰 리스트 조회 테스트")
+    void 여행지리뷰리스트조회테스트() {
         // given
         TravelDTO travelInfo = travelService.insertTravel(travelEntity);
 
         TravelReviewEntity travelReviewEntity = TravelReviewEntity.builder()
-                .travelIdx(travelInfo.getIdx())
                 .reviewTitle("리뷰등록테스트")
                 .reviewDescription("리뷰등록테스트")
                 .viewCount(0)
@@ -735,8 +732,28 @@ class TravelServiceTest {
                 .visible("Y")
                 .build();
 
-        travelService.replyTravel(travelReviewEntity);
-        List<TravelReviewDTO> reviewList = travelService.replyTravelReview(travelInfo.getIdx());
+        travelService.reviewTravel(travelInfo.getIdx(), travelReviewEntity);
+
+        travelService.travelReviewList(travelInfo.getIdx());
+    }
+
+    @Test
+    @DisplayName("여행지 리뷰 리스트 조회 Mockito 테스트")
+    void 여행지리뷰리스트조회Mockito테스트() {
+        // given
+        TravelDTO travelInfo = travelService.insertTravel(travelEntity);
+
+        TravelReviewEntity travelReviewEntity = TravelReviewEntity.builder()
+                .reviewTitle("리뷰등록테스트")
+                .reviewDescription("리뷰등록테스트")
+                .viewCount(0)
+                .favoriteCount(0)
+                .popular(false)
+                .visible("Y")
+                .build();
+
+        travelService.reviewTravel(travelInfo.getIdx(), travelReviewEntity);
+        List<TravelReviewDTO> reviewList = travelService.travelReviewList(travelInfo.getIdx());
 
         travelDTO = TravelDTO.builder()
                 .travelCode(1)
@@ -746,22 +763,21 @@ class TravelServiceTest {
                 .build();
 
         // when
-        when(mockTravelService.replyTravelReview(travelInfo.getIdx())).thenReturn(reviewList);
+        when(mockTravelService.travelReviewList(travelInfo.getIdx())).thenReturn(reviewList);
 
         // then
-        assertThat(mockTravelService.replyTravelReview(travelInfo.getIdx()).get(0).getTravelIdx()).isEqualTo(travelInfo.getIdx());
-        assertThat(mockTravelService.replyTravelReview(travelInfo.getIdx()).get(0).getReviewTitle()).isEqualTo("리뷰등록테스트");
-        assertThat(mockTravelService.replyTravelReview(travelInfo.getIdx()).get(0).getReviewDescription()).isEqualTo("리뷰등록테스트");
+        assertThat(mockTravelService.travelReviewList(travelInfo.getIdx()).get(0).getTravelIdx()).isEqualTo(travelInfo.getIdx());
+        assertThat(mockTravelService.travelReviewList(travelInfo.getIdx()).get(0).getReviewTitle()).isEqualTo("리뷰등록테스트");
+        assertThat(mockTravelService.travelReviewList(travelInfo.getIdx()).get(0).getReviewDescription()).isEqualTo("리뷰등록테스트");
     }
 
     @Test
-    @DisplayName("여행지 댓글 상세 조회 Mockito 테스트")
-    void 여행지댓글상세조회Mockito테스트() {
+    @DisplayName("여행지 리뷰 상세 조회 Mockito 테스트")
+    void 여행지리뷰상세조회Mockito테스트() {
         // given
         TravelDTO travelInfo = travelService.insertTravel(travelEntity);
 
         TravelReviewEntity travelReviewEntity = TravelReviewEntity.builder()
-                .travelIdx(travelInfo.getIdx())
                 .reviewTitle("리뷰등록테스트")
                 .reviewDescription("리뷰등록테스트")
                 .viewCount(0)
@@ -770,11 +786,11 @@ class TravelServiceTest {
                 .visible("Y")
                 .build();
 
-        TravelReviewDTO travelReviewDTO = travelService.replyTravel(travelReviewEntity);
+        TravelReviewDTO travelReviewDTO = travelService.reviewTravel(travelInfo.getIdx(), travelReviewEntity);
 
         // when
-        when(mockTravelService.detailReplyTravelReview(travelReviewDTO.getIdx())).thenReturn(travelReviewDTO);
-        TravelReviewDTO travelReviewInfo = mockTravelService.detailReplyTravelReview(travelReviewDTO.getIdx());
+        when(mockTravelService.detailTravelReview(travelReviewDTO.getIdx())).thenReturn(travelReviewDTO);
+        TravelReviewDTO travelReviewInfo = mockTravelService.detailTravelReview(travelReviewDTO.getIdx());
 
         // then
         assertThat(travelReviewDTO.getTravelIdx()).isEqualTo(travelInfo.getIdx());
@@ -782,12 +798,12 @@ class TravelServiceTest {
         assertThat(travelReviewInfo.getReviewDescription()).isEqualTo("리뷰등록테스트");
 
         // verify
-        verify(mockTravelService, times(1)).detailReplyTravelReview(travelReviewInfo.getIdx());
-        verify(mockTravelService,  atLeastOnce()).detailReplyTravelReview(travelReviewInfo.getIdx());
+        verify(mockTravelService, times(1)).detailTravelReview(travelReviewInfo.getIdx());
+        verify(mockTravelService,  atLeastOnce()).detailTravelReview(travelReviewInfo.getIdx());
         verifyNoMoreInteractions(mockTravelService);
 
         InOrder inOrder = inOrder(mockTravelService);
-        inOrder.verify(mockTravelService).detailReplyTravelReview(travelReviewInfo.getIdx());
+        inOrder.verify(mockTravelService).detailTravelReview(travelReviewInfo.getIdx());
     }
 
     @Test
@@ -795,30 +811,32 @@ class TravelServiceTest {
     void 여행지그룹리스트Mockito조회테스트() {
         // given
         Map<String, Object> groupMap = new HashMap<>();
-        groupMap.put("jpaStartPage", 1);
-        groupMap.put("size", 3);
+        PageRequest pageRequest = PageRequest.of(1, 3);
 
         List<TravelGroupDTO> travelGroupList = new ArrayList<>();
         travelGroupList.add(TravelGroupDTO.builder().travelIdx(1L).groupName("서울모임")
                 .groupDescription("서울모임").visible("Y").build());
 
-        // when
-        when(mockTravelService.findTravelGroupList(groupMap)).thenReturn(travelGroupList);
-        List<TravelGroupDTO> newTravelGroupList = mockTravelService.findTravelGroupList(groupMap);
+        Page<TravelGroupDTO> resultPage = new PageImpl<>(travelGroupList, pageRequest, travelGroupList.size());
 
+        // when
+        when(mockTravelService.findTravelGroupList(groupMap, pageRequest)).thenReturn(resultPage);
+        Page<TravelGroupDTO> newTravelGroupList = mockTravelService.findTravelGroupList(groupMap, pageRequest);
+
+        List<TravelGroupDTO> findTravelGroupList = newTravelGroupList.stream().collect(Collectors.toList());
         // then
-        assertThat(newTravelGroupList.get(0).getIdx()).isEqualTo(travelGroupList.get(0).getIdx());
-        assertThat(newTravelGroupList.get(0).getTravelIdx()).isEqualTo(travelGroupList.get(0).getTravelIdx());
-        assertThat(newTravelGroupList.get(0).getGroupName()).isEqualTo(travelGroupList.get(0).getGroupName());
-        assertThat(newTravelGroupList.get(0).getGroupDescription()).isEqualTo(travelGroupList.get(0).getGroupDescription());
+        assertThat(findTravelGroupList.get(0).getIdx()).isEqualTo(travelGroupList.get(0).getIdx());
+        assertThat(findTravelGroupList.get(0).getTravelIdx()).isEqualTo(travelGroupList.get(0).getTravelIdx());
+        assertThat(findTravelGroupList.get(0).getGroupName()).isEqualTo(travelGroupList.get(0).getGroupName());
+        assertThat(findTravelGroupList.get(0).getGroupDescription()).isEqualTo(travelGroupList.get(0).getGroupDescription());
 
         // verify
-        verify(mockTravelService, times(1)).findTravelGroupList(groupMap);
-        verify(mockTravelService, atLeastOnce()).findTravelGroupList(groupMap);
+        verify(mockTravelService, times(1)).findTravelGroupList(groupMap, pageRequest);
+        verify(mockTravelService, atLeastOnce()).findTravelGroupList(groupMap, pageRequest);
         verifyNoMoreInteractions(mockTravelService);
 
         InOrder inOrder = inOrder(mockTravelService);
-        inOrder.verify(mockTravelService).findTravelGroupList(groupMap);
+        inOrder.verify(mockTravelService).findTravelGroupList(groupMap, pageRequest);
     }
 
     @Test
@@ -850,10 +868,14 @@ class TravelServiceTest {
     @Test
     @DisplayName("여행지 그룹 등록 Mockito 테스트")
     void 여행지그룹등록Mockito테스트() {
-        TravelGroupEntity travelGroupEntity = TravelGroupEntity.builder()
-                .travelIdx(1L).groupName("서울모임").groupDescription("서울모임").visible("Y").build();
+        // 여행지 등록
+        em.persist(travelEntity);
+        travelDTO = TravelEntity.toDto(travelEntity);
 
-        TravelGroupDTO travelGroupDTO = travelService.insertTravelGroup(travelGroupEntity);
+        TravelGroupEntity travelGroupEntity = TravelGroupEntity.builder()
+                .groupName("서울모임").groupDescription("서울모임").visible("Y").build();
+
+        TravelGroupDTO travelGroupDTO = travelService.insertTravelGroup(travelDTO.getIdx(), travelGroupEntity);
 
         // when
         when(mockTravelService.findOneTravelGroup(travelGroupDTO.getIdx())).thenReturn(travelGroupDTO);
@@ -878,17 +900,22 @@ class TravelServiceTest {
     @DisplayName("여행지 그룹 수정 Mockito 테스트")
     void 여행지그룹수정Mockito테스트() {
         // given
-        TravelGroupEntity travelGroupEntity = TravelGroupEntity.builder()
-                .travelIdx(1L).groupName("서울모임").groupDescription("서울모임").visible("Y").build();
+        // 여행지 등록
+        em.persist(travelEntity);
+        travelDTO = TravelEntity.toDto(travelEntity);
 
-        TravelGroupDTO travelGroupDTO = travelService.insertTravelGroup(travelGroupEntity);
+        TravelGroupEntity travelGroupEntity = TravelGroupEntity.builder()
+                .groupName("서울모임").groupDescription("서울모임").visible("Y").build();
+
+        TravelGroupDTO travelGroupDTO = travelService.insertTravelGroup(travelDTO.getIdx(), travelGroupEntity);
 
         TravelGroupEntity newTravelGroupEntity = TravelGroupEntity.builder()
                 .idx(travelGroupDTO.getIdx())
-                .travelIdx(1L).groupName("인천모임").groupDescription("인천모임")
+                .travelEntity(travelEntity)
+                .groupName("인천모임").groupDescription("인천모임")
                 .visible("Y").build();
 
-        travelService.updateTravelGroup(newTravelGroupEntity);
+        travelService.updateTravelGroup(travelGroupDTO.getIdx(), newTravelGroupEntity);
 
         TravelGroupDTO newTravelGroupDTO = TravelGroupEntity.toDto(newTravelGroupEntity);
 
@@ -915,7 +942,7 @@ class TravelServiceTest {
     void 여행지그룹삭제Mockito테스트() {
         // given
         TravelGroupEntity travelGroupEntity = TravelGroupEntity.builder()
-                .travelIdx(1L).groupName("서울모임").groupDescription("서울모임").visible("Y").build();
+                .groupName("서울모임").groupDescription("서울모임").visible("Y").build();
         em.persist(travelGroupEntity);
 
         TravelGroupDTO travelGroupDTO = TravelGroupEntity.toDto(travelGroupEntity);
@@ -941,7 +968,7 @@ class TravelServiceTest {
     void 유저여행그룹등록Mockito테스트() {
         // given
         TravelGroupEntity travelGroupEntity = TravelGroupEntity.builder()
-                .travelIdx(1L).groupName("서울모임").groupDescription("서울모임").visible("Y").build();
+                .groupName("서울모임").groupDescription("서울모임").visible("Y").build();
         em.persist(travelGroupEntity);
 
         TravelGroupDTO travelGroupDTO = TravelGroupEntity.toDto(travelGroupEntity);
@@ -961,7 +988,7 @@ class TravelServiceTest {
     void 유저여행그룹삭제Mockito테스트() {
         // given
         TravelGroupEntity travelGroupEntity = TravelGroupEntity.builder()
-                .travelIdx(1L).groupName("서울모임").groupDescription("서울모임").visible("Y").build();
+                .groupName("서울모임").groupDescription("서울모임").visible("Y").build();
         em.persist(travelGroupEntity);
 
         TravelGroupDTO travelGroupDTO = TravelGroupEntity.toDto(travelGroupEntity);

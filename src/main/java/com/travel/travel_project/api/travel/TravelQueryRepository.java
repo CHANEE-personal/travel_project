@@ -271,86 +271,6 @@ public class TravelQueryRepository {
 
     /**
      * <pre>
-     * 1. MethodName : replyTravel
-     * 2. ClassName  : TravelRepository.java
-     * 3. Comment    : 여행지 댓글 달기
-     * 4. 작성자      : CHO
-     * 5. 작성일      : 2022. 10. 30.
-     * </pre>
-     */
-    public TravelReviewDTO replyTravel(TravelReviewEntity travelReviewEntity) {
-        em.persist(travelReviewEntity);
-        return TravelReviewEntity.toDto(travelReviewEntity);
-    }
-
-    /**
-     * <pre>
-     * 1. MethodName : updateReplyTravel
-     * 2. ClassName  : TravelRepository.java
-     * 3. Comment    : 여행지 댓글 수정
-     * 4. 작성자      : CHO
-     * 5. 작성일      : 2022. 11. 23.
-     * </pre>
-     */
-    public TravelReviewDTO updateReplyTravel(TravelReviewEntity travelReviewEntity) {
-        em.merge(travelReviewEntity);
-        return TravelReviewEntity.toDto(travelReviewEntity);
-    }
-
-    /**
-     * <pre>
-     * 1. MethodName : deleteReplyTravel
-     * 2. ClassName  : TravelRepository.java
-     * 3. Comment    : 여행지 댓글 삭제
-     * 4. 작성자      : CHO
-     * 5. 작성일      : 2022. 11. 23.
-     * </pre>
-     */
-    public Long deleteReplyTravel(Long idx) {
-        em.remove(em.find(TravelReviewEntity.class, idx));
-        return idx;
-    }
-
-    /**
-     * <pre>
-     * 1. MethodName : replyTravelReview
-     * 2. ClassName  : TravelRepository.java
-     * 3. Comment    : 여행지 댓글 리스트 조회
-     * 4. 작성자      : CHO
-     * 5. 작성일      : 2022. 11. 23.
-     * </pre>
-     */
-    public List<TravelReviewDTO> replyTravelReview(Long idx) {
-        List<TravelReviewEntity> replyTravelReview = queryFactory
-                .selectFrom(travelReviewEntity)
-                .where(travelReviewEntity.travelIdx.eq(idx)
-                        .and(travelReviewEntity.visible.eq("Y")))
-                .fetch();
-
-        return replyTravelReview != null ? TravelReviewEntity.toDtoList(replyTravelReview) : emptyList();
-    }
-
-    /**
-     * <pre>
-     * 1. MethodName : detailReplyTravelReview
-     * 2. ClassName  : TravelRepository.java
-     * 3. Comment    : 여행지 댓글 상세 조회
-     * 4. 작성자      : CHO
-     * 5. 작성일      : 2022. 11. 23.
-     * </pre>
-     */
-    public TravelReviewDTO detailReplyTravelReview(Long idx) {
-        TravelReviewEntity detailReplyTravelReview = Optional.ofNullable(queryFactory
-                .selectFrom(travelReviewEntity)
-                .where(travelReviewEntity.idx.eq(idx)
-                        .and(travelReviewEntity.visible.eq("Y")))
-                .fetchOne()).orElseThrow(() -> new TravelException(NOT_FOUND_TRAVEL_REVIEW));
-
-        return TravelReviewEntity.toDto(detailReplyTravelReview);
-    }
-
-    /**
-     * <pre>
      * 1. MethodName : togglePopular
      * 2. ClassName  : TravelRepository.java
      * 3. Comment    : 인기 여행지 선정
@@ -421,15 +341,15 @@ public class TravelQueryRepository {
      * 5. 작성일      : 2022. 11. 25.
      * </pre>
      */
-    public List<TravelGroupDTO> findTravelGroupList(Map<String, Object> groupMap) {
+    public Page<TravelGroupDTO> findTravelGroupList(Map<String, Object> groupMap, PageRequest pageRequest) {
         List<TravelGroupEntity> travelGroupList = queryFactory
                 .selectFrom(travelGroupEntity)
                 .orderBy(travelGroupEntity.idx.desc())
-                .offset(getInt(groupMap.get("jpaStartPage"), 0))
-                .limit(getInt(groupMap.get("size"), 0))
+                .offset(pageRequest.getOffset())
+                .limit(pageRequest.getPageSize())
                 .fetch();
 
-        return travelGroupList != null ? TravelGroupEntity.toDtoList(travelGroupList) : emptyList();
+        return new PageImpl<>(TravelGroupEntity.toDtoList(travelGroupList), pageRequest, travelGroupList.size());
     }
 
     /**
@@ -448,48 +368,6 @@ public class TravelQueryRepository {
                 .fetchOne()).orElseThrow(() -> new TravelException(NOT_FOUND_TRAVEL_GROUP));
 
         return TravelGroupEntity.toDto(travelGroup);
-    }
-
-    /**
-     * <pre>
-     * 1. MethodName : insertTravelGroup
-     * 2. ClassName  : TravelRepository.java
-     * 3. Comment    : 여행지 그룹 등록
-     * 4. 작성자      : CHO
-     * 5. 작성일      : 2022. 11. 25.
-     * </pre>
-     */
-    public TravelGroupDTO insertTravelGroup(TravelGroupEntity travelGroupEntity) {
-        em.persist(travelGroupEntity);
-        return TravelGroupEntity.toDto(travelGroupEntity);
-    }
-
-    /**
-     * <pre>
-     * 1. MethodName : updateTravelGroup
-     * 2. ClassName  : TravelRepository.java
-     * 3. Comment    : 여행지 그룹 수정
-     * 4. 작성자      : CHO
-     * 5. 작성일      : 2022. 11. 25.
-     * </pre>
-     */
-    public TravelGroupDTO updateTravelGroup(TravelGroupEntity travelGroupEntity) {
-        em.merge(travelGroupEntity);
-        return TravelGroupEntity.toDto(travelGroupEntity);
-    }
-
-    /**
-     * <pre>
-     * 1. MethodName : deleteTravelGroup
-     * 2. ClassName  : TravelRepository.java
-     * 3. Comment    : 여행지 그룹 삭제
-     * 4. 작성자      : CHO
-     * 5. 작성일      : 2022. 11. 25.
-     * </pre>
-     */
-    public Long deleteTravelGroup(Long idx) {
-        em.remove(em.find(TravelGroupEntity.class, idx));
-        return idx;
     }
 
     /**
@@ -517,48 +395,6 @@ public class TravelQueryRepository {
      */
     public Long deleteTravelGroupUser(Long idx) {
         em.remove(em.find(TravelGroupUserEntity.class, idx));
-        return idx;
-    }
-
-    /**
-     * <pre>
-     * 1. MethodName : insertTravelSchedule
-     * 2. ClassName  : TravelRepository.java
-     * 3. Comment    : 여행지 스케줄 등록
-     * 4. 작성자      : CHO
-     * 5. 작성일      : 2022. 12. 13.
-     * </pre>
-     */
-    public TravelScheduleDTO insertTravelSchedule(TravelScheduleEntity travelScheduleEntity) {
-        em.persist(travelScheduleEntity);
-        return TravelScheduleEntity.toDto(travelScheduleEntity);
-    }
-
-    /**
-     * <pre>
-     * 1. MethodName : updateTravelSchedule
-     * 2. ClassName  : TravelRepository.java
-     * 3. Comment    : 여행지 스케줄 수정
-     * 4. 작성자      : CHO
-     * 5. 작성일      : 2022. 12. 13.
-     * </pre>
-     */
-    public TravelScheduleDTO updateTravelSchedule(TravelScheduleEntity travelScheduleEntity) {
-        em.merge(travelScheduleEntity);
-        return TravelScheduleEntity.toDto(travelScheduleEntity);
-    }
-
-    /**
-     * <pre>
-     * 1. MethodName : deleteTravelSchedule
-     * 2. ClassName  : TravelRepository.java
-     * 3. Comment    : 여행지 스케줄 삭제
-     * 4. 작성자      : CHO
-     * 5. 작성일      : 2022. 12. 13.
-     * </pre>
-     */
-    public Long deleteTravelSchedule(Long idx) {
-        em.remove(em.find(TravelScheduleEntity.class, idx));
         return idx;
     }
 

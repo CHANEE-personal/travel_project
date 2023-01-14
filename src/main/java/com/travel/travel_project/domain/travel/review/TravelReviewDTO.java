@@ -35,12 +35,6 @@ public class TravelReviewDTO extends NewCommonDTO {
     @ApiModelProperty(required = true, value = "여행지 리뷰 상세 내용((ex)이 여행지는...)")
     private String reviewDescription;
 
-    @ApiModelProperty(required = true, value = "부모 idx((ex)1)")
-    private Long reviewParentIdx;
-
-    @ApiModelProperty(required = true, value = "최상위 idx((ex)1)")
-    private Long reviewTopIdx;
-
     @ApiModelProperty(value = "리뷰 조회수((ex)0)", example = "1")
     private int viewCount;
 

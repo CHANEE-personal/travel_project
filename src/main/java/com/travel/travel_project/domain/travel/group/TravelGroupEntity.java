@@ -2,6 +2,7 @@ package com.travel.travel_project.domain.travel.group;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.travel.travel_project.domain.common.NewCommonMappedClass;
+import com.travel.travel_project.domain.travel.TravelEntity;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 
@@ -13,6 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static javax.persistence.FetchType.LAZY;
 import static javax.persistence.GenerationType.IDENTITY;
 
 @Entity
@@ -32,10 +34,6 @@ public class TravelGroupEntity extends NewCommonMappedClass {
     @Column(name = "idx")
     private Long idx;
 
-    @Column(name = "travel_idx")
-    @NotNull(message = "여행지 idx 입력은 필수입니다.")
-    private Long travelIdx;
-
     @Column(name = "group_name")
     @NotEmpty(message = "그룹명 입력은 필수입니다.")
     @Lob
@@ -49,16 +47,28 @@ public class TravelGroupEntity extends NewCommonMappedClass {
     @Column(name = "visible")
     private String visible;
 
+    @Builder.Default
     @JsonIgnore
     @OneToMany(mappedBy = "travelGroupEntity", cascade = CascadeType.REMOVE)
     private List<TravelGroupUserEntity> travelGroupList = new ArrayList<>();
+
+    @JsonIgnore
+    @ManyToOne(fetch = LAZY)
+    @JoinColumn(name = "travel_idx", referencedColumnName = "idx")
+    private TravelEntity travelEntity;
+
+    public void update(TravelGroupEntity travelGroupEntity) {
+        this.groupName = travelGroupEntity.groupName;
+        this.groupDescription = travelGroupEntity.groupDescription;
+        this.visible = travelGroupEntity.visible;
+    }
 
     public static TravelGroupDTO toDto(TravelGroupEntity entity) {
         if (entity == null) return null;
         return TravelGroupDTO.builder()
                 .rowNum(entity.getRowNum())
                 .idx(entity.getIdx())
-                .travelIdx(entity.getTravelIdx())
+                .travelIdx(entity.getTravelEntity().getIdx())
                 .groupName(entity.getGroupName())
                 .groupDescription(entity.getGroupDescription())
                 .visible(entity.getVisible())

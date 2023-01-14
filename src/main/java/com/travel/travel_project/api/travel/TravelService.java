@@ -2,8 +2,9 @@ package com.travel.travel_project.api.travel;
 
 import com.travel.travel_project.api.common.CommonRepository;
 import com.travel.travel_project.api.travel.festival.FestivalRepository;
+import com.travel.travel_project.api.travel.group.GroupRepository;
 import com.travel.travel_project.api.travel.recommend.RecommendRepository;
-import com.travel.travel_project.api.travel.schedule.ScheduleRepository;
+import com.travel.travel_project.api.travel.review.ReviewRepository;
 import com.travel.travel_project.common.SaveFile;
 import com.travel.travel_project.domain.common.CommonEntity;
 import com.travel.travel_project.domain.file.CommonImageDTO;
@@ -46,6 +47,8 @@ public class TravelService {
     private final TravelRepository travelRepository;
     private final RecommendRepository recommendRepository;
     private final FestivalRepository festivalRepository;
+    private final ReviewRepository reviewRepository;
+    private final GroupRepository groupRepository;
 
     private CommonEntity oneCommon(Integer commonCode) {
         return commonRepository.findByCommonCode(commonCode)
@@ -65,6 +68,16 @@ public class TravelService {
     private TravelFestivalEntity oneFestival(Long idx) {
         return festivalRepository.findById(idx)
                 .orElseThrow(() -> new TravelException(NOT_FOUND_FESTIVAL));
+    }
+
+    private TravelReviewEntity oneReview(Long idx) {
+        return reviewRepository.findById(idx)
+                .orElseThrow(() -> new TravelException(NOT_FOUND_TRAVEL_REVIEW));
+    }
+
+    private TravelGroupEntity oneGroup(Long idx) {
+        return groupRepository.findById(idx)
+                .orElseThrow(() -> new TravelException(NOT_FOUND_TRAVEL_GROUP));
     }
 
     /**
@@ -205,17 +218,18 @@ public class TravelService {
 
     /**
      * <pre>
-     * 1. MethodName : replyTravel
+     * 1. MethodName : reviewTravel
      * 2. ClassName  : TravelService.java
-     * 3. Comment    : 여행지 댓글 달기
+     * 3. Comment    : 여행지 리뷰 등록
      * 4. 작성자      : CHO
      * 5. 작성일      : 2022. 10. 30.
      * </pre>
      */
     @Transactional
-    public TravelReviewDTO replyTravel(TravelReviewEntity travelReviewEntity) {
+    public TravelReviewDTO reviewTravel(Long idx, TravelReviewEntity travelReviewEntity) {
         try {
-            return travelQueryRepository.replyTravel(travelReviewEntity);
+            oneTravel(idx).addReview(travelReviewEntity);
+            return TravelReviewEntity.toDto(reviewRepository.save(travelReviewEntity));
         } catch (Exception e) {
             throw new TravelException(ERROR_REVIEW_TRAVEL);
         }
@@ -223,17 +237,18 @@ public class TravelService {
 
     /**
      * <pre>
-     * 1. MethodName : updateReplyTravel
+     * 1. MethodName : updateReviewTravel
      * 2. ClassName  : TravelService.java
-     * 3. Comment    : 여행지 댓글 수정
+     * 3. Comment    : 여행지 리뷰 수정
      * 4. 작성자      : CHO
      * 5. 작성일      : 2022. 11. 23.
      * </pre>
      */
     @Transactional
-    public TravelReviewDTO updateReplyTravel(TravelReviewEntity travelReviewEntity) {
+    public TravelReviewDTO updateReviewTravel(Long idx, TravelReviewEntity travelReviewEntity) {
         try {
-            return travelQueryRepository.updateReplyTravel(travelReviewEntity);
+            oneReview(idx).update(travelReviewEntity);
+            return TravelReviewEntity.toDto(travelReviewEntity);
         } catch (Exception e) {
             throw new TravelException(ERROR_UPDATE_REVIEW_TRAVEL);
         }
@@ -241,17 +256,18 @@ public class TravelService {
 
     /**
      * <pre>
-     * 1. MethodName : deleteReplyTravel
+     * 1. MethodName : deleteReviewTravel
      * 2. ClassName  : TravelService.java
-     * 3. Comment    : 여행지 댓글 삭제
+     * 3. Comment    : 여행지 리뷰 삭제
      * 4. 작성자      : CHO
      * 5. 작성일      : 2022. 11. 23.
      * </pre>
      */
     @Transactional
-    public Long deleteReplyTravel(Long idx) {
+    public Long deleteReviewTravel(Long idx) {
         try {
-            return travelQueryRepository.deleteReplyTravel(idx);
+            reviewRepository.deleteById(idx);
+            return idx;
         } catch (Exception e) {
             throw new TravelException(ERROR_DELETE_REVIEW_TRAVEL);
         }
@@ -261,28 +277,28 @@ public class TravelService {
      * <pre>
      * 1. MethodName : replyTravelReview
      * 2. ClassName  : TravelService.java
-     * 3. Comment    : 여행지 댓글 리스트 조회
+     * 3. Comment    : 여행지 리뷰 리스트 조회
      * 4. 작성자      : CHO
      * 5. 작성일      : 2022. 11. 23.
      * </pre>
      */
-    @Transactional
-    public List<TravelReviewDTO> replyTravelReview(Long idx) {
-        return travelQueryRepository.replyTravelReview(idx);
+    @Transactional(readOnly = true)
+    public List<TravelReviewDTO> travelReviewList(Long idx) {
+        return TravelReviewEntity.toDtoList(reviewRepository.findByNewTravelEntityIdx(idx));
     }
 
     /**
      * <pre>
      * 1. MethodName : detailReplyTravelReview
      * 2. ClassName  : TravelService.java
-     * 3. Comment    : 여행지 댓글 상세 조회
+     * 3. Comment    : 여행지 리뷰 상세 조회
      * 4. 작성자      : CHO
      * 5. 작성일      : 2022. 11. 23.
      * </pre>
      */
     @Transactional
-    public TravelReviewDTO detailReplyTravelReview(Long idx) {
-        return travelQueryRepository.detailReplyTravelReview(idx);
+    public TravelReviewDTO detailTravelReview(Long idx) {
+        return TravelReviewEntity.toDto(oneReview(idx));
     }
 
     /**
@@ -310,24 +326,6 @@ public class TravelService {
 
     /**
      * <pre>
-     * 1. MethodName : findTravelGroupCount
-     * 2. ClassName  : TravelService.java
-     * 3. Comment    : 여행지 그룹 리스트 갯수 조회
-     * 4. 작성자      : CHO
-     * 5. 작성일      : 2022. 11. 25.
-     * </pre>
-     */
-    @Transactional
-    public int findTravelGroupCount(Map<String, Object> groupMap) {
-        try {
-            return travelQueryRepository.findTravelGroupCount(groupMap);
-        } catch (Exception e) {
-            throw new TravelException(NOT_FOUND_TRAVEL_GROUP_LIST);
-        }
-    }
-
-    /**
-     * <pre>
      * 1. MethodName : findTravelGroupList
      * 2. ClassName  : TravelService.java
      * 3. Comment    : 여행 그룹 리스트 조회
@@ -336,8 +334,8 @@ public class TravelService {
      * </pre>
      */
     @Transactional(readOnly = true)
-    public List<TravelGroupDTO> findTravelGroupList(Map<String, Object> groupMap) {
-        return travelQueryRepository.findTravelGroupList(groupMap);
+    public Page<TravelGroupDTO> findTravelGroupList(Map<String, Object> groupMap, PageRequest pageRequest) {
+        return travelQueryRepository.findTravelGroupList(groupMap, pageRequest);
     }
 
     /**
@@ -364,9 +362,10 @@ public class TravelService {
      * </pre>
      */
     @Transactional
-    public TravelGroupDTO insertTravelGroup(TravelGroupEntity travelGroupEntity) {
+    public TravelGroupDTO insertTravelGroup(Long idx, TravelGroupEntity travelGroupEntity) {
         try {
-            return travelQueryRepository.insertTravelGroup(travelGroupEntity);
+            oneTravel(idx).addGroup(travelGroupEntity);
+            return TravelGroupEntity.toDto(groupRepository.save(travelGroupEntity));
         } catch (Exception e) {
             throw new TravelException(ERROR_TRAVEL_GROUP);
         }
@@ -382,9 +381,10 @@ public class TravelService {
      * </pre>
      */
     @Transactional
-    public TravelGroupDTO updateTravelGroup(TravelGroupEntity travelGroupEntity) {
+    public TravelGroupDTO updateTravelGroup(Long groupIdx, TravelGroupEntity travelGroupEntity) {
         try {
-            return travelQueryRepository.updateTravelGroup(travelGroupEntity);
+            oneGroup(groupIdx).update(travelGroupEntity);
+            return TravelGroupEntity.toDto(travelGroupEntity);
         } catch (Exception e) {
             throw new TravelException(ERROR_UPDATE_TRAVEL_GROUP);
         }
@@ -402,7 +402,8 @@ public class TravelService {
     @Transactional
     public Long deleteTravelGroup(Long idx) {
         try {
-            return travelQueryRepository.deleteTravelGroup(idx);
+            groupRepository.deleteById(idx);
+            return idx;
         } catch (Exception e) {
             throw new TravelException(ERROR_DELETE_TRAVEL_GROUP);
         }
