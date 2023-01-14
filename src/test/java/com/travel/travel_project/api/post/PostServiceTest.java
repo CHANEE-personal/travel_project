@@ -2,6 +2,8 @@ package com.travel.travel_project.api.post;
 
 import com.travel.travel_project.domain.post.PostDTO;
 import com.travel.travel_project.domain.post.PostEntity;
+import com.travel.travel_project.domain.post.reply.ReplyDTO;
+import com.travel.travel_project.domain.post.reply.ReplyEntity;
 import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -14,6 +16,9 @@ import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.event.EventListener;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.test.context.TestConstructor;
 import org.springframework.test.context.TestPropertySource;
 
@@ -24,6 +29,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
@@ -47,10 +53,9 @@ class PostServiceTest {
 
     private PostEntity postEntity;
     private PostDTO postDTO;
-    private PostEntity postChildEntity;
-    private PostDTO postChildDTO;
-    private PostEntity postParentEntity;
-    private PostDTO postParentDTO;
+    private ReplyEntity replyEntity;
+    private ReplyDTO replyDTO;
+    private ReplyEntity replyEntity2;
 
     void createPost() {
         postEntity = PostEntity.builder()
@@ -65,33 +70,24 @@ class PostServiceTest {
         em.persist(postEntity);
         postDTO = PostEntity.toDto(postEntity);
 
-        postParentEntity = PostEntity.builder()
-                .postTitle("게시글 댓글 테스트")
-                .postDescription("게시글 댓글 테스트")
-                .popular(false)
-                .postParentIdx(postEntity.getIdx())
-                .postTopIdx(postEntity.getIdx())
-                .viewCount(0)
+        replyEntity = ReplyEntity.builder()
+                .commentTitle("댓글 테스트")
+                .commentDescription("댓글 테스트")
                 .favoriteCount(0)
                 .visible("Y")
                 .build();
 
-        em.persist(postParentEntity);
-        postParentDTO = PostEntity.toDto(postParentEntity);
+        replyDTO = postService.insertReply(postDTO.getIdx(), replyEntity);
 
-        postChildEntity = PostEntity.builder()
-                .postTitle("게시글 대댓글 테스트")
-                .postDescription("게시글 대댓글 테스트")
-                .popular(false)
-                .postParentIdx(postParentEntity.getIdx())
-                .postTopIdx(postEntity.getIdx())
-                .viewCount(0)
+        replyEntity2 = ReplyEntity.builder()
+                .commentTitle("대댓글 테스트")
+                .commentDescription("대댓글 테스트")
                 .favoriteCount(0)
                 .visible("Y")
+                .parent(replyEntity)
                 .build();
 
-        em.persist(postChildEntity);
-        postChildDTO = PostEntity.toDto(postChildEntity);
+        postService.insertReply(postDTO.getIdx(), replyEntity2);
     }
 
     @BeforeEach
@@ -105,43 +101,46 @@ class PostServiceTest {
     void 게시글리스트조회Mockito테스트() {
         // given
         Map<String, Object> postMap = new HashMap<>();
-        postMap.put("jpaStartPage", 1);
-        postMap.put("size", 3);
+        PageRequest pageRequest = PageRequest.of(0, 3);
 
         List<PostDTO> postList = new ArrayList<>();
         postList.add(postDTO);
-        postList.add(postParentDTO);
-        postList.add(postChildDTO);
+
+        Page<PostDTO> resultPage = new PageImpl<>(postList, pageRequest, postList.size());
+
 
         // when
-        when(mockPostService.findPostList(postMap)).thenReturn(postList);
-        List<PostDTO> findPostList = mockPostService.findPostList(postMap);
+        when(mockPostService.findPostList(postMap, pageRequest)).thenReturn(resultPage);
+        Page<PostDTO> newPostList = mockPostService.findPostList(postMap, pageRequest);
 
+        List<PostDTO> findPostList = newPostList.stream().collect(Collectors.toList());
         // then
         // 게시글 관련
         assertThat(findPostList.get(0).getIdx()).isEqualTo(postList.get(0).getIdx());
         assertThat(findPostList.get(0).getPostTitle()).isEqualTo("게시글 테스트");
         assertThat(findPostList.get(0).getPostDescription()).isEqualTo("게시글 테스트");
 
-        // 게시글 댓글 관련
-        assertThat(findPostList.get(1).getPostParentIdx()).isEqualTo(postList.get(0).getIdx());
-        assertThat(findPostList.get(1).getPostTopIdx()).isEqualTo(postList.get(0).getIdx());
-        assertThat(findPostList.get(1).getPostTitle()).isEqualTo("게시글 댓글 테스트");
-        assertThat(findPostList.get(1).getPostDescription()).isEqualTo("게시글 댓글 테스트");
-
-        // 게시글 대댓글 관련
-        assertThat(findPostList.get(2).getPostParentIdx()).isEqualTo(postList.get(1).getIdx());
-        assertThat(findPostList.get(2).getPostTopIdx()).isEqualTo(postList.get(0).getIdx());
-        assertThat(findPostList.get(2).getPostTitle()).isEqualTo("게시글 대댓글 테스트");
-        assertThat(findPostList.get(2).getPostDescription()).isEqualTo("게시글 대댓글 테스트");
-
         // verify
-        verify(mockPostService, times(1)).findPostList(postMap);
-        verify(mockPostService, atLeastOnce()).findPostList(postMap);
+        verify(mockPostService, times(1)).findPostList(postMap, pageRequest);
+        verify(mockPostService, atLeastOnce()).findPostList(postMap, pageRequest);
         verifyNoMoreInteractions(mockPostService);
 
         InOrder inOrder = inOrder(mockPostService);
-        inOrder.verify(mockPostService).findPostList(postMap);
+        inOrder.verify(mockPostService).findPostList(postMap, pageRequest);
+    }
+
+    @Test
+    @DisplayName("게시글 상세 조회 테스트")
+    void 게시글상세조회테스트() {
+        PostDTO onePost = postService.findOnePost(postDTO.getIdx());
+
+        // 게시글
+        assertThat(onePost.getPostTitle()).isEqualTo("게시글 테스트");
+
+        // 댓글, 대댓글
+        assertThat(onePost.getPostReplyList().get(0).getCommentTitle()).isEqualTo("대댓글 테스트");
+        assertThat(onePost.getPostReplyList().get(1).getCommentTitle()).isEqualTo("댓글 테스트");
+
     }
 
     @Test
@@ -217,7 +216,7 @@ class PostServiceTest {
                 .visible("Y")
                 .build();
 
-        PostDTO updatePost = postService.updatePost(updatePostEntity);
+        PostDTO updatePost = postService.updatePost(postInfo.getIdx(), updatePostEntity);
 
         // when
         when(mockPostService.findOnePost(updatePost.getIdx())).thenReturn(updatePost);
@@ -253,6 +252,54 @@ class PostServiceTest {
 
         InOrder inOrder = inOrder(mockPostService);
         inOrder.verify(mockPostService).findOnePost(postDTO.getIdx());
+    }
+
+    @Test
+    @DisplayName("댓글수정테스트")
+    void 댓글수정테스트() {
+        ReplyEntity insertEntity = ReplyEntity.builder()
+                .commentTitle("등록 테스트")
+                .commentDescription("등록 테스트")
+                .favoriteCount(0)
+                .postEntity(postEntity)
+                .visible("Y")
+                .build();
+
+        em.persist(insertEntity);
+
+        ReplyEntity updateEntity = ReplyEntity.builder()
+                .idx(insertEntity.getIdx())
+                .commentTitle("수정 테스트")
+                .commentDescription("수정 테스트")
+                .favoriteCount(0)
+                .postEntity(postEntity)
+                .visible("Y")
+                .build();
+
+        ReplyDTO updateReply = postService.updateReply(insertEntity.getIdx(), updateEntity);
+        em.flush();
+        em.clear();
+        assertThat(updateReply.getCommentTitle()).isEqualTo("수정 테스트");
+    }
+
+    @Test
+    @DisplayName("댓글삭제테스트")
+    void 댓글삭제테스트() {
+        ReplyEntity insertEntity = ReplyEntity.builder()
+                .commentTitle("등록 테스트")
+                .commentDescription("등록 테스트")
+                .favoriteCount(0)
+                .postEntity(postEntity)
+                .visible("Y")
+                .build();
+
+        em.persist(insertEntity);
+
+        Long deleteIdx = postService.deleteReply(insertEntity.getIdx());
+        em.flush();
+        em.clear();
+
+        assertThat(deleteIdx).isEqualTo(insertEntity.getIdx());
     }
 
     @Test

@@ -2,6 +2,7 @@ package com.travel.travel_project.domain.post;
 
 import com.travel.travel_project.domain.common.NewCommonDTO;
 import com.travel.travel_project.domain.file.CommonImageDTO;
+import com.travel.travel_project.domain.post.reply.ReplyDTO;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.*;
@@ -33,12 +34,6 @@ public class PostDTO extends NewCommonDTO {
     @ApiModelProperty(required = true, value = "게시글 상세 내용((ex)이 여행지는...)")
     private String postDescription;
 
-    @ApiModelProperty(required = true, value = "부모 idx((ex)1)")
-    private Long postParentIdx;
-
-    @ApiModelProperty(required = true, value = "최상위 idx((ex)1)")
-    private Long postTopIdx;
-
     @ApiModelProperty(value = "게시글 조회수((ex)0)", example = "1")
     private int viewCount;
 
@@ -53,4 +48,7 @@ public class PostDTO extends NewCommonDTO {
 
     @ApiModelProperty(value = "postImageList", hidden = true)
     private List<CommonImageDTO> postImageList = new ArrayList<>();
+
+    @ApiModelProperty(value = "postReplyList", hidden = true)
+    private List<ReplyDTO> postReplyList = new ArrayList<>();
 }
