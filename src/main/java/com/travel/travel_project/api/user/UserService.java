@@ -1,13 +1,16 @@
 package com.travel.travel_project.api.user;
 
+import com.travel.travel_project.api.common.CommonRepository;
+import com.travel.travel_project.api.travel.schedule.ScheduleRepository;
+import com.travel.travel_project.domain.common.CommonEntity;
 import com.travel.travel_project.domain.travel.schedule.TravelScheduleDTO;
+import com.travel.travel_project.domain.travel.schedule.TravelScheduleEntity;
 import com.travel.travel_project.domain.user.UserDTO;
 import com.travel.travel_project.domain.user.UserEntity;
 import com.travel.travel_project.exception.TravelException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.CachePut;
-import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,25 +23,42 @@ import static com.travel.travel_project.exception.ApiExceptionType.*;
 @RequiredArgsConstructor
 public class UserService {
 
+    private final UserQueryRepository userQueryRepository;
     private final UserRepository userRepository;
+    private final ScheduleRepository scheduleRepository;
+    private final CommonRepository commonRepository;
+
+    private UserEntity oneUser(Long idx) {
+        return userRepository.findById(idx)
+                .orElseThrow(() -> new TravelException(NOT_FOUND_USER));
+    }
+
+    private CommonEntity oneCommon(Integer commonCode) {
+        return commonRepository.findByCommonCode(commonCode)
+                .orElseThrow(() -> new TravelException(NOT_FOUND_FAQ));
+    }
+
+    private TravelScheduleEntity oneSchedule(Long idx) {
+        return scheduleRepository.findById(idx)
+                .orElseThrow(() -> new TravelException(NOT_FOUND_SCHEDULE));
+    }
 
     @Transactional(readOnly = true)
     public String adminLogin(UserEntity userEntity) {
         try {
-            return userRepository.adminLogin(userEntity);
+            return userQueryRepository.adminLogin(userEntity);
         } catch (Exception e) {
-            throw new TravelException(NOT_FOUND_USER, e);
+            throw new TravelException(NOT_FOUND_USER);
         }
     }
 
-    @CachePut("user")
     @Transactional
     public void insertToken(UserEntity paramUserEntity) {
         try {
-            UserEntity userEntity = UserEntity.toEntity(userRepository.findOneUser(paramUserEntity.getIdx()));
-            userRepository.insertUserToken(userEntity);
+            UserEntity userEntity = oneUser(paramUserEntity.getIdx());
+            userQueryRepository.insertUserToken(userEntity);
         } catch (Exception e) {
-            throw new TravelException(ERROR_USER, e);
+            throw new TravelException(ERROR_USER);
         }
     }
 
@@ -51,10 +71,9 @@ public class UserService {
      * 5. 작성일       : 2022. 10. 11.
      * </pre>
      */
-    @Cacheable(value = "user", key = "#userMap")
     @Transactional(readOnly = true)
-    public List<UserDTO> findUserList(Map<String, Object> userMap) {
-        return userRepository.findUserList(userMap);
+    public Page<UserDTO> findUserList(Map<String, Object> userMap, PageRequest pageRequest) {
+        return userQueryRepository.findUserList(userMap, pageRequest);
     }
 
     /**
@@ -66,10 +85,9 @@ public class UserService {
      * 5. 작성일       : 2022. 10. 11.
      * </pre>
      */
-    @Cacheable(value = "user", key = "#idx")
     @Transactional(readOnly = true)
     public UserDTO findOneUser(Long idx) {
-        return userRepository.findOneUser(idx);
+        return UserEntity.toDto(oneUser(idx));
     }
 
     /**
@@ -83,7 +101,7 @@ public class UserService {
      */
     @Transactional(readOnly = true)
     public UserDTO findOneUserById(String userId) {
-        return userRepository.findOneUserById(userId);
+        return userQueryRepository.findOneUserById(userId);
     }
 
     /**
@@ -97,7 +115,7 @@ public class UserService {
      */
     @Transactional(readOnly = true)
     public String findOneUserByToken(String token) {
-        return userRepository.findOneUserByToken(token);
+        return userQueryRepository.findOneUserByToken(token);
     }
 
     /**
@@ -105,17 +123,16 @@ public class UserService {
      * 1. MethodName : insertUser
      * 2. ClassName  : UserService.java
      * 3. Comment    : 유저 회원가입
-     * 4. 작성자       : CHO
-     * 5. 작성일       : 2022. 10. 11.
+     * 4. 작성자      : CHO
+     * 5. 작성일      : 2022. 10. 11.
      * </pre>
      */
-    @CachePut("user")
     @Transactional
     public UserDTO insertUser(UserEntity userEntity) {
         try {
-            return userRepository.insertUser(userEntity);
+            return UserEntity.toDto(userRepository.save(userEntity));
         } catch (Exception e) {
-            throw new TravelException(ERROR_USER, e);
+            throw new TravelException(ERROR_USER);
         }
     }
 
@@ -128,13 +145,13 @@ public class UserService {
      * 5. 작성일       : 2022. 10. 11.
      * </pre>
      */
-    @CachePut(value = "user", key = "#userEntity.idx")
     @Transactional
-    public UserDTO updateUser(UserEntity userEntity) {
+    public UserDTO updateUser(Long idx, UserEntity userEntity) {
         try {
-            return userRepository.updateUser(userEntity);
+            oneUser(idx).update(userEntity);
+            return UserEntity.toDto(userEntity);
         } catch (Exception e) {
-            throw new TravelException(ERROR_UPDATE_USER, e);
+            throw new TravelException(ERROR_UPDATE_USER);
         }
     }
 
@@ -147,13 +164,13 @@ public class UserService {
      * 5. 작성일       : 2022. 10. 11.
      * </pre>
      */
-    @CacheEvict(value = "user", key = "#idx")
     @Transactional
     public Long deleteUser(Long idx) {
         try {
-            return userRepository.deleteUser(idx);
+            userRepository.deleteById(idx);
+            return idx;
         } catch (Exception e) {
-            throw new TravelException(ERROR_DELETE_USER, e);
+            throw new TravelException(ERROR_DELETE_USER);
         }
     }
 
@@ -166,13 +183,12 @@ public class UserService {
      * 5. 작성일      : 2022. 12. 07.
      * </pre>
      */
-    @CachePut(value = "user", key = "#idx")
     @Transactional
     public UserDTO addFavoriteTravel(Long idx, Long favoriteIdx) {
         try {
-            return userRepository.addFavoriteTravel(idx, favoriteIdx);
+            return userQueryRepository.addFavoriteTravel(idx, favoriteIdx);
         } catch (Exception e) {
-            throw new TravelException(ERROR_FAVORITE_TRAVEL, e);
+            throw new TravelException(ERROR_FAVORITE_TRAVEL);
         }
     }
 
@@ -185,10 +201,9 @@ public class UserService {
      * 5. 작성일      : 2022. 12. 14.
      * </pre>
      */
-    @Cacheable(value = "schedule", key = "#userIdx")
     @Transactional(readOnly = true)
     public List<TravelScheduleDTO> findUserSchedule(Long userIdx) {
-        return userRepository.findUserSchedule(userIdx);
+        return userQueryRepository.findUserSchedule(userIdx);
     }
 
     /**
@@ -200,9 +215,66 @@ public class UserService {
      * 5. 작성일      : 2022. 12. 14.
      * </pre>
      */
-    @Cacheable(value = "schedule", key = "#scheduleIdx")
     @Transactional(readOnly = true)
     public TravelScheduleDTO findOneUserSchedule(Long userIdx, Long scheduleIdx) {
-        return userRepository.findOneUserSchedule(userIdx, scheduleIdx);
+        return userQueryRepository.findOneUserSchedule(userIdx, scheduleIdx);
+    }
+
+    /**
+     * <pre>
+     * 1. MethodName : insertTravelSchedule
+     * 2. ClassName  : TravelService.java
+     * 3. Comment    : 유저 여행 스케줄 등록
+     * 4. 작성자      : CHO
+     * 5. 작성일      : 2022. 12. 13.
+     * </pre>
+     */
+    @Transactional
+    public TravelScheduleDTO insertTravelSchedule(Long idx, TravelScheduleEntity travelScheduleEntity) {
+        try {
+            oneCommon(travelScheduleEntity.getCommonEntity().getCommonCode()).addSchedule(travelScheduleEntity);
+            oneUser(idx).addSchedule(travelScheduleEntity);
+            return TravelScheduleEntity.toDto(scheduleRepository.save(travelScheduleEntity));
+        } catch (Exception e) {
+            throw new TravelException(ERROR_TRAVEL_SCHEDULE);
+        }
+    }
+
+    /**
+     * <pre>
+     * 1. MethodName : updateTravelSchedule
+     * 2. ClassName  : TravelService.java
+     * 3. Comment    : 유저 여행 스케줄 수정
+     * 4. 작성자      : CHO
+     * 5. 작성일      : 2022. 12. 13.
+     * </pre>
+     */
+    @Transactional
+    public TravelScheduleDTO updateTravelSchedule(Long idx, TravelScheduleEntity travelScheduleEntity) {
+        try {
+            oneSchedule(idx).update(travelScheduleEntity);
+            return TravelScheduleEntity.toDto(travelScheduleEntity);
+        } catch (Exception e) {
+            throw new TravelException(ERROR_UPDATE_TRAVEL_SCHEDULE);
+        }
+    }
+
+    /**
+     * <pre>
+     * 1. MethodName : deleteTravelSchedule
+     * 2. ClassName  : TravelService.java
+     * 3. Comment    : 유저 여행 스케줄 삭제
+     * 4. 작성자      : CHO
+     * 5. 작성일      : 2022. 12. 13.
+     * </pre>
+     */
+    @Transactional
+    public Long deleteTravelSchedule(Long idx) {
+        try {
+            scheduleRepository.deleteById(idx);
+            return idx;
+        } catch (Exception e) {
+            throw new TravelException(ERROR_DELETE_TRAVEL_SCHEDULE);
+        }
     }
 }

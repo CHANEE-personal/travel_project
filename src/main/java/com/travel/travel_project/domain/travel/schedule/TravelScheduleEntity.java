@@ -1,11 +1,14 @@
 package com.travel.travel_project.domain.travel.schedule;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.travel.travel_project.domain.common.CommonEntity;
 import com.travel.travel_project.domain.common.NewCommonMappedClass;
+import com.travel.travel_project.domain.travel.TravelEntity;
 import com.travel.travel_project.domain.user.UserEntity;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
+import org.hibernate.annotations.DynamicUpdate;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.*;
@@ -24,7 +27,8 @@ import static javax.persistence.GenerationType.IDENTITY;
 @SuperBuilder
 @EqualsAndHashCode(of = "idx", callSuper = false)
 @AllArgsConstructor
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@DynamicUpdate
 @Table(name = "travel_schedule")
 public class TravelScheduleEntity extends NewCommonMappedClass {
 
@@ -35,16 +39,6 @@ public class TravelScheduleEntity extends NewCommonMappedClass {
     @GeneratedValue(strategy = IDENTITY)
     @Column(name = "idx")
     private Long idx;
-
-    @NotNull(message = "여행지 코드 입력은 필수입니다.")
-    @ApiModelProperty(required = true, value = "여행지 idx((ex)1)")
-    @Column(name = "travel_idx")
-    private Long travelIdx;
-
-    @NotNull(message = "유저 idx 입력은 필수입니다.")
-    @ApiModelProperty(required = true, value = "유저 idx((ex)1)")
-    @Column(name = "user_idx")
-    private Long userIdx;
 
     @Column(name = "schedule_description")
     @Lob
@@ -58,16 +52,26 @@ public class TravelScheduleEntity extends NewCommonMappedClass {
 
     @JsonIgnore
     @ManyToOne
-    @JoinColumn(name = "user_idx", insertable = false, updatable = false)
+    @JoinColumn(name = "user_idx", nullable = false)
     private UserEntity userEntity;
+
+    @JsonIgnore
+    @OneToOne
+    @JoinColumn(name ="travel_code", nullable = false)
+    private CommonEntity commonEntity;
+
+    public void update(TravelScheduleEntity travelScheduleEntity) {
+        this.scheduleDescription = travelScheduleEntity.scheduleDescription;
+        this.scheduleTime = travelScheduleEntity.scheduleTime;
+    }
 
     public static TravelScheduleDTO toDto(TravelScheduleEntity entity) {
         if (entity == null) return null;
         return TravelScheduleDTO.builder()
                 .rowNum(entity.getRowNum())
                 .idx(entity.getIdx())
-                .userIdx(entity.getUserIdx())
-                .travelIdx(entity.getTravelIdx())
+                .userIdx(entity.userEntity.getIdx())
+                .travelCode(entity.commonEntity.getCommonCode())
                 .scheduleDescription(entity.getScheduleDescription())
                 .scheduleTime(entity.getScheduleTime())
                 .build();

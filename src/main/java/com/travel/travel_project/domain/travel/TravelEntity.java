@@ -5,6 +5,7 @@ import com.travel.travel_project.domain.common.CommonEntity;
 import com.travel.travel_project.domain.common.NewCommonMappedClass;
 import com.travel.travel_project.domain.file.CommonImageEntity;
 import com.travel.travel_project.domain.travel.review.TravelReviewEntity;
+import com.travel.travel_project.domain.travel.schedule.TravelScheduleEntity;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.BatchSize;
@@ -88,6 +89,21 @@ public class TravelEntity extends NewCommonMappedClass {
     @Where(clause = "type_name = 'travel'")
     @OneToMany(mappedBy = "travelImageEntity", fetch = LAZY)
     private List<CommonImageEntity> commonImageEntityList = new ArrayList<>();
+
+    public void update(TravelEntity travelEntity) {
+        this.travelTitle = travelEntity.travelTitle;
+        this.travelDescription = travelEntity.travelDescription;
+        this.travelCode = travelEntity.travelCode;
+        this.travelAddress = travelEntity.travelAddress;
+        this.travelZipCode = travelEntity.travelZipCode;
+        this.visible = travelEntity.visible;
+        this.popular = travelEntity.popular;
+    }
+
+    public void addReview(TravelReviewEntity travelReviewEntity) {
+        travelReviewEntity.setNewTravelEntity(this);
+        this.travelReviewEntityList.add(travelReviewEntity);
+    }
 
     public void togglePopular(Boolean popular) {
         this.popular = !popular;

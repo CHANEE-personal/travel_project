@@ -6,8 +6,8 @@ public class TravelException extends RuntimeException {
     @Getter
     private final BaseExceptionType baseExceptionType;
 
-    public TravelException(BaseExceptionType baseExceptionType, Throwable cause) {
-        super(baseExceptionType.getErrorMessage(), cause);
+    public TravelException(BaseExceptionType baseExceptionType) {
+        super(baseExceptionType.getErrorMessage());
         this.baseExceptionType = baseExceptionType;
     }
 }

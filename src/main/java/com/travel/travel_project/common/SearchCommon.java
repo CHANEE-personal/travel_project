@@ -23,19 +23,19 @@ public class SearchCommon {
      * 5. 작성일       : 2021. 08. 08.
      * </pre>
      */
-    public Map<String, Object> searchCommon(Page page, Map<String, Object> paramMap) {
+    public Map<String, Object> searchCommon(Paging paging, Map<String, Object> paramMap) {
         Map<String, Object> searchMap = new HashMap<>();
 
         // 페이징 처리
-        page.setPageNum(getInt(page.getPageNum(), 1));
-        page.setSize(getInt(page.getSize(), 10));
+        paging.setPageNum(getInt(paging.getPageNum(), 1));
+        paging.setSize(getInt(paging.getSize(), 10));
 
         // 검색 조건
         searchMap.put("searchType", getString(paramMap.get("searchType"), ""));
         searchMap.put("searchKeyword", getString(paramMap.get("searchKeyword"), ""));
-        searchMap.put("jpaStartPage", getInt(page.getStartPage(), 0));
-        searchMap.put("startPage", getInt(page.getPageNum(), 1));
-        searchMap.put("size", getInt(page.getSize(), 10));
+        searchMap.put("jpaStartPage", getInt(paging.getStartPage(), 0));
+        searchMap.put("startPage", getInt(paging.getPageNum(), 1));
+        searchMap.put("size", getInt(paging.getSize(), 10));
 
         return searchMap;
     }

@@ -34,6 +34,10 @@ public class TravelRecommendEntity extends NewCommonMappedClass {
     @Column(columnDefinition = "json", name = "recommend_name")
     private List<String> recommendName = new ArrayList<>();
 
+    public void update(TravelRecommendEntity travelRecommendEntity) {
+        this.recommendName = travelRecommendEntity.recommendName;
+    }
+
     public static TravelRecommendDTO toDto(TravelRecommendEntity entity) {
         if (entity == null) return null;
         return TravelRecommendDTO.builder()

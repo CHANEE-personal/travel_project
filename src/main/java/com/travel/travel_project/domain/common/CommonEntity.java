@@ -3,6 +3,7 @@ package com.travel.travel_project.domain.common;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.travel.travel_project.domain.faq.FaqEntity;
 import com.travel.travel_project.domain.travel.TravelEntity;
+import com.travel.travel_project.domain.travel.schedule.TravelScheduleEntity;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 
@@ -57,9 +58,22 @@ public class CommonEntity extends NewCommonMappedClass implements Serializable {
     @OneToMany(mappedBy = "newFaqCode", cascade = MERGE, fetch = LAZY)
     private List<FaqEntity> faqEntityList = new ArrayList<>();
 
+    @JsonIgnore
+    @OneToOne(mappedBy = "commonEntity", fetch = LAZY)
+    private TravelScheduleEntity travelScheduleEntity;
+
     public void addCommon(FaqEntity faqEntity) {
         faqEntity.setNewFaqCode(this);
         this.faqEntityList.add(faqEntity);
+    }
+
+    public void addTravel(TravelEntity travelEntity) {
+        travelEntity.setNewTravelCode(this);
+        this.adminTravelEntityList.add(travelEntity);
+    }
+
+    public void addSchedule(TravelScheduleEntity travelScheduleEntity) {
+        travelScheduleEntity.setCommonEntity(this);
     }
 
     public void update(CommonEntity commonEntity) {

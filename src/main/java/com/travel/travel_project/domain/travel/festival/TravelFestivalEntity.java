@@ -60,6 +60,14 @@ public class TravelFestivalEntity extends NewCommonMappedClass {
     @NotNull(message = "축제 일정 입력은 필수입니다.")
     private LocalDateTime festivalTime;
 
+    public void update(TravelFestivalEntity travelFestivalEntity) {
+        this.festivalTitle = travelFestivalEntity.festivalTitle;
+        this.festivalDescription = travelFestivalEntity.festivalDescription;
+        this.festivalDay = travelFestivalEntity.festivalDay;
+        this.festivalMonth = travelFestivalEntity.festivalMonth;
+        this.festivalTime = travelFestivalEntity.festivalTime;
+    }
+
     public static TravelFestivalDTO toDto(TravelFestivalEntity entity) {
         if (entity == null) return null;
         return TravelFestivalDTO.builder()

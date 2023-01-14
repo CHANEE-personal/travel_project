@@ -76,13 +76,29 @@ public class UserEntity extends NewCommonMappedClass {
     @Column(columnDefinition = "json", name = "favorite_travel_ids")
     private List<String> favoriteTravelIdx = new ArrayList<>();
 
+    @Builder.Default
     @JsonIgnore
     @OneToMany(mappedBy = "userEntity", cascade = CascadeType.REMOVE)
     private List<TravelGroupUserEntity> userList = new ArrayList<>();
 
+    @Builder.Default
     @JsonIgnore
     @OneToMany(mappedBy = "userEntity", cascade = CascadeType.REMOVE)
     private List<TravelScheduleEntity> userScheduleList = new ArrayList<>();
+
+    public void update(UserEntity userEntity) {
+        this.userId = userEntity.userId;
+        this.password = userEntity.password;
+        this.name = userEntity.name;
+        this.email = userEntity.email;
+        this.visible = userEntity.visible;
+        this.role = userEntity.role;
+    }
+
+    public void addSchedule(TravelScheduleEntity travelScheduleEntity) {
+        travelScheduleEntity.setUserEntity(this);
+        this.userScheduleList.add(travelScheduleEntity);
+    }
 
     public static UserDTO toDto(UserEntity entity) {
         if (entity == null) return null;

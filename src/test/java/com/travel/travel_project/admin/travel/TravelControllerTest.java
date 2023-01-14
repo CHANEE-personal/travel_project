@@ -357,8 +357,8 @@ class TravelControllerTest {
     @DisplayName("유저 여행 스케줄 등록 테스트")
     void 유저여행스케줄등록테스트() throws Exception {
         TravelScheduleEntity travelScheduleEntity = TravelScheduleEntity.builder()
-                .travelIdx(1L)
-                .userIdx(1L)
+//                .travelIdx(1L)
+//                .userIdx(1L)
                 .scheduleDescription("스케줄 테스트")
                 .scheduleTime(LocalDateTime.now())
                 .build();
@@ -378,8 +378,8 @@ class TravelControllerTest {
     @DisplayName("유저 여행 스케줄 수정 테스트")
     void 유저여행스케줄수정테스트() throws Exception {
         TravelScheduleEntity travelScheduleEntity = TravelScheduleEntity.builder()
-                .travelIdx(1L)
-                .userIdx(1L)
+//                .travelIdx(1L)
+//                .userIdx(1L)
                 .scheduleDescription("스케줄 테스트")
                 .scheduleTime(LocalDateTime.now())
                 .build();
@@ -388,8 +388,8 @@ class TravelControllerTest {
 
         TravelScheduleEntity updateTravelScheduleEntity = TravelScheduleEntity.builder()
                 .idx(travelScheduleEntity.getIdx())
-                .travelIdx(1L)
-                .userIdx(1L)
+//                .travelIdx(1L)
+//                .userIdx(1L)
                 .scheduleDescription("스케줄 수정 테스트")
                 .scheduleTime(LocalDateTime.now())
                 .build();
@@ -407,8 +407,8 @@ class TravelControllerTest {
     @DisplayName("유저 여행 스케줄 삭제 테스트")
     void 유저여행스케줄삭제테스트() throws Exception {
         TravelScheduleEntity travelScheduleEntity = TravelScheduleEntity.builder()
-                .travelIdx(1L)
-                .userIdx(1L)
+//                .travelIdx(1L)
+//                .userIdx(1L)
                 .scheduleDescription("스케줄 테스트")
                 .scheduleTime(LocalDateTime.now())
                 .build();
