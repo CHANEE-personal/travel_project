@@ -1,5 +1,11 @@
 package com.travel.travel_project.api.user;
 
+import com.travel.travel_project.domain.common.CommonEntity;
+import com.travel.travel_project.domain.travel.TravelEntity;
+import com.travel.travel_project.domain.travel.group.TravelGroupDTO;
+import com.travel.travel_project.domain.travel.group.TravelGroupEntity;
+import com.travel.travel_project.domain.travel.group.TravelGroupUserDTO;
+import com.travel.travel_project.domain.travel.group.TravelGroupUserEntity;
 import com.travel.travel_project.domain.travel.schedule.TravelScheduleDTO;
 import com.travel.travel_project.domain.travel.schedule.TravelScheduleEntity;
 import com.travel.travel_project.domain.user.UserDTO;
@@ -18,6 +24,9 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.event.EventListener;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.test.context.TestConstructor;
 import org.springframework.test.context.TestPropertySource;
 
@@ -29,6 +38,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import static com.travel.travel_project.domain.user.Role.ROLE_ADMIN;
 import static com.travel.travel_project.domain.user.Role.ROLE_TRAVEL_USER;
@@ -59,8 +69,10 @@ class UserServiceTest {
 
     void createUser() {
         userEntity = UserEntity.builder()
-                .userId("cksgml159")
-                .email("cksgml159@naver.com")
+                .userId("test111")
+                .password("test111")
+                .email("test@naver.com")
+                .name("test")
                 .role(ROLE_ADMIN)
                 .visible("Y")
                 .build();
@@ -80,11 +92,11 @@ class UserServiceTest {
     void 유저리스트조회테스트() {
         // given
         Map<String, Object> userMap = new HashMap<>();
-        userMap.put("jpaStartPage", 1);
-        userMap.put("size", 3);
+        PageRequest pageRequest = PageRequest.of(0, 3);
+        Page<UserDTO> userList = userService.findUserList(userMap, pageRequest);
 
         // then
-        assertThat(userService.findUserList(userMap)).isNotEmpty();
+        assertThat(userList.getTotalElements()).isGreaterThan(0);
     }
 
     @Test
@@ -92,32 +104,36 @@ class UserServiceTest {
     void 유저리스트Mockito검색조회테스트() {
         // given
         Map<String, Object> userMap = new HashMap<>();
-        userMap.put("jpaStartPage", 1);
-        userMap.put("size", 3);
+        PageRequest pageRequest = PageRequest.of(0, 3);
+
 
         List<UserDTO> userList = new ArrayList<>();
         userList.add(UserDTO.builder().idx(1L).userId("test01")
                 .adminName("관리자01").name("조찬희").password("test01")
                 .email("test01@test.com").visible("Y").build());
 
+        Page<UserDTO> resultPage = new PageImpl<>(userList, pageRequest, userList.size());
+
         // when
-        when(mockUserService.findUserList(userMap)).thenReturn(userList);
-        List<UserDTO> newUserList = mockUserService.findUserList(userMap);
+        when(mockUserService.findUserList(userMap, pageRequest)).thenReturn(resultPage);
+        Page<UserDTO> newUserList = mockUserService.findUserList(userMap, pageRequest);
+
+        List<UserDTO> findUserList = newUserList.stream().collect(Collectors.toList());
 
         // then
-        assertThat(newUserList.get(0).getIdx()).isEqualTo(userList.get(0).getIdx());
-        assertThat(newUserList.get(0).getUserId()).isEqualTo(userList.get(0).getUserId());
-        assertThat(newUserList.get(0).getAdminName()).isEqualTo(userList.get(0).getAdminName());
-        assertThat(newUserList.get(0).getName()).isEqualTo(userList.get(0).getName());
-        assertThat(newUserList.get(0).getEmail()).isEqualTo(userList.get(0).getEmail());
+        assertThat(findUserList.get(0).getIdx()).isEqualTo(userList.get(0).getIdx());
+        assertThat(findUserList.get(0).getUserId()).isEqualTo(userList.get(0).getUserId());
+        assertThat(findUserList.get(0).getAdminName()).isEqualTo(userList.get(0).getAdminName());
+        assertThat(findUserList.get(0).getName()).isEqualTo(userList.get(0).getName());
+        assertThat(findUserList.get(0).getEmail()).isEqualTo(userList.get(0).getEmail());
 
         // verify
-        verify(mockUserService, times(1)).findUserList(userMap);
-        verify(mockUserService, atLeastOnce()).findUserList(userMap);
+        verify(mockUserService, times(1)).findUserList(userMap, pageRequest);
+        verify(mockUserService, atLeastOnce()).findUserList(userMap, pageRequest);
         verifyNoMoreInteractions(mockUserService);
 
         InOrder inOrder = inOrder(mockUserService);
-        inOrder.verify(mockUserService).findUserList(userMap);
+        inOrder.verify(mockUserService).findUserList(userMap, pageRequest);
     }
 
     @Test
@@ -125,28 +141,31 @@ class UserServiceTest {
     void 유저리스트BDD검색조회테스트() {
         // given
         Map<String, Object> userMap = new HashMap<>();
-        userMap.put("jpaStartPage", 1);
-        userMap.put("size", 3);
+        PageRequest pageRequest = PageRequest.of(1, 3);
 
         List<UserDTO> userList = new ArrayList<>();
         userList.add(UserDTO.builder().idx(1L).userId("test01")
                 .adminName("관리자01").name("조찬희").password("test01")
                 .email("test01@test.com").visible("Y").build());
 
+        Page<UserDTO> resultPage = new PageImpl<>(userList, pageRequest, userList.size());
+
         // when
-        given(mockUserService.findUserList(userMap)).willReturn(userList);
-        List<UserDTO> newUserList = mockUserService.findUserList(userMap);
+        given(mockUserService.findUserList(userMap, pageRequest)).willReturn(resultPage);
+        Page<UserDTO> newUserList = mockUserService.findUserList(userMap, pageRequest);
+
+        List<UserDTO> findUserList = newUserList.stream().collect(Collectors.toList());
 
         // then
-        assertThat(newUserList.get(0).getIdx()).isEqualTo(userList.get(0).getIdx());
-        assertThat(newUserList.get(0).getUserId()).isEqualTo(userList.get(0).getUserId());
-        assertThat(newUserList.get(0).getAdminName()).isEqualTo(userList.get(0).getAdminName());
-        assertThat(newUserList.get(0).getName()).isEqualTo(userList.get(0).getName());
-        assertThat(newUserList.get(0).getEmail()).isEqualTo(userList.get(0).getEmail());
+        assertThat(findUserList.get(0).getIdx()).isEqualTo(userList.get(0).getIdx());
+        assertThat(findUserList.get(0).getUserId()).isEqualTo(userList.get(0).getUserId());
+        assertThat(findUserList.get(0).getAdminName()).isEqualTo(userList.get(0).getAdminName());
+        assertThat(findUserList.get(0).getName()).isEqualTo(userList.get(0).getName());
+        assertThat(findUserList.get(0).getEmail()).isEqualTo(userList.get(0).getEmail());
 
         // verify
-        then(mockUserService).should(times(1)).findUserList(userMap);
-        then(mockUserService).should(atLeastOnce()).findUserList(userMap);
+        then(mockUserService).should(times(1)).findUserList(userMap, pageRequest);
+        then(mockUserService).should(atLeastOnce()).findUserList(userMap, pageRequest);
         then(mockUserService).shouldHaveNoMoreInteractions();
     }
 
@@ -214,6 +233,7 @@ class UserServiceTest {
                 .password("test")
                 .name("test")
                 .email("test@test.com")
+                .role(ROLE_ADMIN)
                 .visible("Y")
                 .build();
 
@@ -224,11 +244,12 @@ class UserServiceTest {
                 .userId("test1")
                 .password("test1")
                 .name("test1")
+                .role(ROLE_ADMIN)
                 .email("test1@test.com")
                 .visible("Y")
                 .build();
 
-        userService.updateUser(newUserEntity);
+        userService.updateUser(idx, newUserEntity);
         UserDTO newUserDTO = UserEntity.toDto(newUserEntity);
 
         // when
@@ -257,6 +278,7 @@ class UserServiceTest {
                 .password("test")
                 .name("test")
                 .email("test@test.com")
+                .role(ROLE_ADMIN)
                 .visible("Y")
                 .build();
 
@@ -271,7 +293,7 @@ class UserServiceTest {
                 .visible("Y")
                 .build();
 
-        userService.updateUser(newUserEntity);
+        userService.updateUser(idx, newUserEntity);
         UserDTO newUserDTO = UserEntity.toDto(newUserEntity);
 
         // when
@@ -291,7 +313,8 @@ class UserServiceTest {
     @Test
     @DisplayName("유저 회원탈퇴 테스트")
     void 유저탈퇴테스트() {
-        assertThat(userService.deleteUser(userEntity.getIdx())).isEqualTo(userDTO.getIdx());
+        UserDTO oneUser = userService.insertUser(userEntity);
+        assertThat(userService.deleteUser(oneUser.getIdx())).isEqualTo(oneUser.getIdx());
     }
 
     @Test
@@ -369,8 +392,6 @@ class UserServiceTest {
     void 유저가작성한스케줄리스트조회() {
         // given
         TravelScheduleDTO travelScheduleEntity = TravelScheduleDTO.builder()
-                .userIdx(1L)
-                .travelIdx(1L)
                 .scheduleDescription("스케줄 테스트")
                 .scheduleTime(LocalDateTime.now())
                 .build();
@@ -397,15 +418,23 @@ class UserServiceTest {
     @Test
     @DisplayName("유저가 작성한 스케줄 상세 조회")
     void 유저가작성한스케줄상세조회() {
+        CommonEntity commonEntity = CommonEntity.builder()
+                .commonCode(999)
+                .commonName("서울")
+                .visible("Y")
+                .build();
+
+        em.persist(commonEntity);
+
+        UserDTO oneUser = userService.insertUser(userEntity);
         // given
         TravelScheduleEntity travelScheduleEntity = TravelScheduleEntity.builder()
-                .userIdx(1L)
-                .travelIdx(1L)
+                .commonEntity(commonEntity)
                 .scheduleDescription("스케줄 테스트")
                 .scheduleTime(LocalDateTime.now())
                 .build();
 
-        em.persist(travelScheduleEntity);
+        userService.insertTravelSchedule(oneUser.getIdx(), travelScheduleEntity);
         TravelScheduleDTO travelScheduleDTO = TravelScheduleEntity.toDto(travelScheduleEntity);
 
         // when
@@ -422,5 +451,184 @@ class UserServiceTest {
 
         InOrder inOrder = inOrder(mockUserService);
         inOrder.verify(mockUserService).findOneUserSchedule(travelScheduleDTO.getUserIdx(), travelScheduleDTO.getIdx());
+    }
+
+    @Test
+    @DisplayName("유저 여행 스케줄 등록 테스트")
+    void 유저여행스케줄등록테스트() {
+        CommonEntity commonEntity = CommonEntity.builder()
+                .commonCode(999)
+                .commonName("서울")
+                .visible("Y")
+                .build();
+
+        em.persist(commonEntity);
+
+        UserDTO oneUser = userService.insertUser(userEntity);
+
+        // given
+        TravelScheduleEntity travelScheduleEntity = TravelScheduleEntity.builder()
+                .commonEntity(commonEntity)
+                .scheduleDescription("스케줄 테스트")
+                .scheduleTime(LocalDateTime.now())
+                .build();
+
+        TravelScheduleDTO oneSchedule = userService.insertTravelSchedule(oneUser.getIdx(), travelScheduleEntity);
+
+        assertThat(oneSchedule.getUserIdx()).isEqualTo(oneUser.getIdx());
+        assertThat(oneSchedule.getTravelCode()).isEqualTo(commonEntity.getCommonCode());
+        assertThat(oneSchedule.getScheduleDescription()).isEqualTo("스케줄 테스트");
+    }
+
+    @Test
+    @DisplayName("유저 여행 스케줄 수정 테스트")
+    void 유저여행스케줄수정테스트() {
+        CommonEntity commonEntity = CommonEntity.builder()
+                .commonCode(999)
+                .commonName("서울")
+                .visible("Y")
+                .build();
+
+        em.persist(commonEntity);
+
+        UserDTO oneUser = userService.insertUser(userEntity);
+
+        // given
+        TravelScheduleEntity travelScheduleEntity = TravelScheduleEntity.builder()
+                .commonEntity(commonEntity)
+                .scheduleDescription("스케줄 테스트")
+                .scheduleTime(LocalDateTime.now())
+                .build();
+
+        TravelScheduleDTO oneSchedule = userService.insertTravelSchedule(oneUser.getIdx(), travelScheduleEntity);
+
+        travelScheduleEntity = TravelScheduleEntity.builder()
+                .idx(oneSchedule.getIdx())
+                .userEntity(userEntity)
+                .commonEntity(commonEntity)
+                .scheduleDescription("스케줄 수정 테스트")
+                .scheduleTime(LocalDateTime.now())
+                .build();
+
+        TravelScheduleDTO updateSchedule = userService.updateTravelSchedule(oneSchedule.getIdx(), travelScheduleEntity);
+
+        assertThat(updateSchedule.getScheduleDescription()).isEqualTo("스케줄 수정 테스트");
+
+        assertThat(oneSchedule.getUserIdx()).isEqualTo(oneUser.getIdx());
+        assertThat(oneSchedule.getTravelCode()).isEqualTo(commonEntity.getCommonCode());
+        assertThat(oneSchedule.getScheduleDescription()).isEqualTo("스케줄 테스트");
+    }
+
+    @Test
+    @DisplayName("유저 여행 스케줄 삭제 테스트")
+    void 유저여행스케줄삭제테스트() {
+        CommonEntity commonEntity = CommonEntity.builder()
+                .commonCode(999)
+                .commonName("서울")
+                .visible("Y")
+                .build();
+
+        em.persist(commonEntity);
+
+        UserDTO oneUser = userService.insertUser(userEntity);
+
+        // given
+        TravelScheduleEntity travelScheduleEntity = TravelScheduleEntity.builder()
+                .commonEntity(commonEntity)
+                .scheduleDescription("스케줄 테스트")
+                .scheduleTime(LocalDateTime.now())
+                .build();
+
+        TravelScheduleDTO oneSchedule = userService.insertTravelSchedule(oneUser.getIdx(), travelScheduleEntity);
+
+        Long deleteIdx = userService.deleteTravelSchedule(oneSchedule.getIdx());
+
+        assertThat(deleteIdx).isEqualTo(oneSchedule.getIdx());
+    }
+
+    @Test
+    @DisplayName("유저 여행 그룹 등록 Mockito 테스트")
+    void 유저여행그룹등록Mockito테스트() {
+        // given
+        // 유저 등록
+        UserEntity userEntity = UserEntity.builder()
+                .idx(1L).userId("test01")
+                .name("조찬희").password("test01")
+                .email("test01@test.com").visible("Y").build();
+        userService.insertUser(userEntity);
+        userDTO = UserEntity.toDto(userEntity);
+
+        TravelEntity travelEntity = TravelEntity.builder()
+                .travelCode(1)
+                .travelTitle("여행지 소개")
+                .travelDescription("여행지 소개")
+                .travelAddress("인천광역시 서구")
+                .travelZipCode("123-456")
+                .favoriteCount(1)
+                .viewCount(0)
+                .popular(false)
+                .visible("Y")
+                .build();
+
+        em.persist(travelEntity);
+
+        TravelGroupEntity travelGroupEntity = TravelGroupEntity.builder()
+                .travelEntity(travelEntity)
+                .groupName("서울모임").groupDescription("서울모임").visible("Y").build();
+
+        em.persist(travelGroupEntity);
+
+        TravelGroupDTO travelGroupDTO = TravelGroupEntity.toDto(travelGroupEntity);
+
+        TravelGroupUserEntity travelGroupUserEntity = TravelGroupUserEntity.builder().build();
+
+        TravelGroupUserDTO travelGroupUserInfo = userService.insertTravelGroupUser(userDTO.getIdx(), travelGroupDTO.getIdx(), travelGroupUserEntity);
+
+        // then
+        assertThat(travelGroupUserInfo.getGroupIdx()).isEqualTo(travelGroupDTO.getIdx());
+        assertThat(travelGroupUserInfo.getUserIdx()).isEqualTo(1L);
+    }
+
+    @Test
+    @DisplayName("유저 여행 그룹 삭제 Mockito 테스트")
+    void 유저여행그룹삭제Mockito테스트() {
+        // given
+        // 유저 등록
+        UserEntity userEntity = UserEntity.builder()
+                .idx(1L).userId("test01")
+                .name("조찬희").password("test01")
+                .email("test01@test.com").visible("Y").build();
+        userService.insertUser(userEntity);
+        userDTO = UserEntity.toDto(userEntity);
+
+        TravelEntity travelEntity = TravelEntity.builder()
+                .travelCode(1)
+                .travelTitle("여행지 소개")
+                .travelDescription("여행지 소개")
+                .travelAddress("인천광역시 서구")
+                .travelZipCode("123-456")
+                .favoriteCount(1)
+                .viewCount(0)
+                .popular(false)
+                .visible("Y")
+                .build();
+
+        em.persist(travelEntity);
+
+        TravelGroupEntity travelGroupEntity = TravelGroupEntity.builder()
+                .travelEntity(travelEntity)
+                .groupName("서울모임").groupDescription("서울모임").visible("Y").build();
+
+        em.persist(travelGroupEntity);
+        TravelGroupDTO travelGroupDTO = TravelGroupEntity.toDto(travelGroupEntity);
+
+        TravelGroupUserEntity travelGroupUserEntity = TravelGroupUserEntity.builder().build();
+
+        TravelGroupUserDTO travelGroupUserInfo = userService.insertTravelGroupUser(userDTO.getIdx(), travelGroupDTO.getIdx(), travelGroupUserEntity);
+
+        Long deleteIdx = userService.deleteTravelGroupUser(travelGroupUserInfo.getIdx());
+
+        // then
+        assertThat(deleteIdx).isEqualTo(travelGroupUserInfo.getIdx());
     }
 }

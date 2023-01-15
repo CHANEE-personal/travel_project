@@ -16,7 +16,7 @@ import java.util.List;
 @SuperBuilder
 @EqualsAndHashCode(of = "idx", callSuper = false)
 @AllArgsConstructor
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @ApiModel
 public class TravelRecommendDTO extends NewCommonDTO {
     @ApiModelProperty(required = true, value = "rowNum", hidden = true, example = "1")

@@ -19,7 +19,7 @@ import static com.fasterxml.jackson.annotation.JsonFormat.Shape.STRING;
 @SuperBuilder
 @EqualsAndHashCode(of = "idx", callSuper = false)
 @AllArgsConstructor
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @ApiModel
 public class TravelScheduleDTO extends NewCommonDTO {
 
@@ -33,9 +33,9 @@ public class TravelScheduleDTO extends NewCommonDTO {
     @ApiModelProperty(required = true, value = "userIdx", example = "1")
     private Long userIdx;
 
-    @NotNull(message = "여행지 IDX 입력은 필수입니다.")
-    @ApiModelProperty(required = true, value = "travelIdx", example = "1")
-    private Long travelIdx;
+    @NotNull(message = "여행지 코드 입력은 필수입니다.")
+    @ApiModelProperty(required = true, value = "travelCode", example = "1")
+    private Integer travelCode;
 
     @NotEmpty(message = "스케줄 입력은 필수입니다.")
     @ApiModelProperty(required = true, value = "scheduleDescription")

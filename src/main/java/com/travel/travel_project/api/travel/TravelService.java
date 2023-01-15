@@ -1,6 +1,12 @@
 package com.travel.travel_project.api.travel;
 
+import com.travel.travel_project.api.common.CommonRepository;
+import com.travel.travel_project.api.travel.festival.FestivalRepository;
+import com.travel.travel_project.api.travel.group.GroupRepository;
+import com.travel.travel_project.api.travel.recommend.RecommendRepository;
+import com.travel.travel_project.api.travel.review.ReviewRepository;
 import com.travel.travel_project.common.SaveFile;
+import com.travel.travel_project.domain.common.CommonEntity;
 import com.travel.travel_project.domain.file.CommonImageDTO;
 import com.travel.travel_project.domain.file.CommonImageEntity;
 import com.travel.travel_project.domain.travel.festival.TravelFestivalDTO;
@@ -13,23 +19,20 @@ import com.travel.travel_project.domain.travel.recommend.TravelRecommendDTO;
 import com.travel.travel_project.domain.travel.recommend.TravelRecommendEntity;
 import com.travel.travel_project.domain.travel.review.TravelReviewDTO;
 import com.travel.travel_project.domain.travel.review.TravelReviewEntity;
-import com.travel.travel_project.domain.travel.schedule.TravelScheduleDTO;
-import com.travel.travel_project.domain.travel.schedule.TravelScheduleEntity;
 import com.travel.travel_project.domain.travel.search.SearchDTO;
 import com.travel.travel_project.exception.TravelException;
 import com.travel.travel_project.domain.travel.TravelDTO;
 import com.travel.travel_project.domain.travel.TravelEntity;
 import lombok.RequiredArgsConstructor;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.CachePut;
-import org.springframework.cache.annotation.Cacheable;
-import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import static com.travel.travel_project.exception.ApiExceptionType.*;
 
@@ -37,21 +40,44 @@ import static com.travel.travel_project.exception.ApiExceptionType.*;
 @RequiredArgsConstructor
 public class TravelService {
 
-    private final TravelRepository travelRepository;
+    private final TravelQueryRepository travelQueryRepository;
     private final SaveFile saveFile;
 
-    /**
-     * <pre>
-     * 1. MethodName : findTravelCount
-     * 2. ClassName  : TravelService.java
-     * 3. Comment    : 여행지 소개 리스트 갯수 조회
-     * 4. 작성자      : CHO
-     * 5. 작성일      : 2022. 10. 5.
-     * </pre>
-     */
-    @Transactional(readOnly = true)
-    public int findTravelCount(Map<String, Object> travelMap) {
-        return travelRepository.findTravelCount(travelMap);
+    private final CommonRepository commonRepository;
+    private final TravelRepository travelRepository;
+    private final RecommendRepository recommendRepository;
+    private final FestivalRepository festivalRepository;
+    private final ReviewRepository reviewRepository;
+    private final GroupRepository groupRepository;
+
+    private CommonEntity oneCommon(Integer commonCode) {
+        return commonRepository.findByCommonCode(commonCode)
+                .orElseThrow(() -> new TravelException(NOT_FOUND_FAQ));
+    }
+
+    private TravelEntity oneTravel(Long idx) {
+        return travelRepository.findById(idx)
+                .orElseThrow(() -> new TravelException(NOT_FOUND_TRAVEL));
+    }
+
+    private TravelRecommendEntity oneRecommend(Long idx) {
+        return recommendRepository.findById(idx)
+                .orElseThrow(() -> new TravelException(NOT_FOUND_TRAVEL_RECOMMEND));
+    }
+
+    private TravelFestivalEntity oneFestival(Long idx) {
+        return festivalRepository.findById(idx)
+                .orElseThrow(() -> new TravelException(NOT_FOUND_FESTIVAL));
+    }
+
+    private TravelReviewEntity oneReview(Long idx) {
+        return reviewRepository.findById(idx)
+                .orElseThrow(() -> new TravelException(NOT_FOUND_TRAVEL_REVIEW));
+    }
+
+    private TravelGroupEntity oneGroup(Long idx) {
+        return groupRepository.findById(idx)
+                .orElseThrow(() -> new TravelException(NOT_FOUND_TRAVEL_GROUP));
     }
 
     /**
@@ -63,10 +89,9 @@ public class TravelService {
      * 5. 작성일      : 2022. 10. 5.
      * </pre>
      */
-    @Cacheable(value = "travel", key = "#travelMap")
     @Transactional(readOnly = true)
-    public List<TravelDTO> findTravelList(Map<String, Object> travelMap) {
-        return travelRepository.findTravelList(travelMap);
+    public Page<TravelDTO> findTravelList(Map<String, Object> travelMap, PageRequest pageRequest) {
+        return travelQueryRepository.findTravelList(travelMap, pageRequest);
     }
 
     /**
@@ -78,10 +103,9 @@ public class TravelService {
      * 5. 작성일      : 2022. 10. 5.
      * </pre>
      */
-    @Cacheable(value = "travel", key = "#idx")
     @Transactional
     public TravelDTO findOneTravel(Long idx) {
-        return travelRepository.findOneTravel(idx);
+        return travelQueryRepository.findOneTravel(idx);
     }
 
     /**
@@ -93,13 +117,13 @@ public class TravelService {
      * 5. 작성일      : 2022. 10. 5.
      * </pre>
      */
-    @CachePut("travel")
     @Transactional
     public TravelDTO insertTravel(TravelEntity travelEntity) {
         try {
-            return travelRepository.insertTravel(travelEntity);
+            oneCommon(travelEntity.getTravelCode()).addTravel(travelEntity);
+            return TravelEntity.toDto(travelRepository.save(travelEntity));
         } catch (Exception e) {
-            throw new TravelException(ERROR_TRAVEL, e);
+            throw new TravelException(ERROR_TRAVEL);
         }
     }
 
@@ -112,13 +136,12 @@ public class TravelService {
      * 5. 작성일      : 2022. 12. 11.
      * </pre>
      */
-    @Modifying(clearAutomatically = true)
     @Transactional
     public List<CommonImageDTO> insertTravelImage(List<MultipartFile> files, CommonImageEntity commonImageEntity) {
         try {
             return saveFile.saveFile(files, commonImageEntity);
         } catch (Exception e) {
-            throw new TravelException(ERROR_IMAGE, e);
+            throw new TravelException(ERROR_IMAGE);
         }
     }
 
@@ -131,13 +154,13 @@ public class TravelService {
      * 5. 작성일      : 2022. 10. 5.
      * </pre>
      */
-    @CachePut(value = "travel", key = "#travelEntity.idx")
     @Transactional
-    public TravelDTO updateTravel(TravelEntity travelEntity) {
+    public TravelDTO updateTravel(Long idx, TravelEntity travelEntity) {
         try {
-            return travelRepository.updateTravel(travelEntity);
+            oneTravel(idx).update(travelEntity);
+            return TravelEntity.toDto(travelEntity);
         } catch (Exception e) {
-            throw new TravelException(ERROR_UPDATE_TRAVEL, e);
+            throw new TravelException(ERROR_UPDATE_TRAVEL);
         }
     }
 
@@ -150,13 +173,13 @@ public class TravelService {
      * 5. 작성일      : 2022. 10. 5.
      * </pre>
      */
-    @CacheEvict(value = "travel", key = "#idx")
     @Transactional
     public Long deleteTravel(Long idx) {
         try {
-            return travelRepository.deleteTravel(idx);
+            travelRepository.deleteById(idx);
+            return idx;
         } catch (Exception e) {
-            throw new TravelException(ERROR_DELETE_TRAVEL, e);
+            throw new TravelException(ERROR_DELETE_TRAVEL);
         }
     }
 
@@ -169,13 +192,13 @@ public class TravelService {
      * 5. 작성일      : 2022. 10. 6.
      * </pre>
      */
-    @CachePut(value = "travel", key = "#idx")
     @Transactional
     public int favoriteTravel(Long idx) {
         try {
-            return travelRepository.favoriteTravel(idx);
+            oneTravel(idx).updateFavoriteCount();
+            return oneTravel(idx).getFavoriteCount();
         } catch (Exception e) {
-            throw new TravelException(ERROR_FAVORITE_TRAVEL, e);
+            throw new TravelException(ERROR_FAVORITE_TRAVEL);
         }
     }
 
@@ -188,66 +211,65 @@ public class TravelService {
      * 5. 작성일      : 2022. 10. 14.
      * </pre>
      */
-    @Cacheable(value = "travel", key = "#travelMap")
     @Transactional(readOnly = true)
-    public List<TravelDTO> popularityTravel(Map<String, Object> travelMap) {
-        return travelRepository.popularityTravel(travelMap);
+    public Page<TravelDTO> popularityTravel(Map<String, Object> travelMap, PageRequest pageRequest) {
+        return travelQueryRepository.popularityTravel(travelMap, pageRequest);
     }
 
     /**
      * <pre>
-     * 1. MethodName : replyTravel
+     * 1. MethodName : reviewTravel
      * 2. ClassName  : TravelService.java
-     * 3. Comment    : 여행지 댓글 달기
+     * 3. Comment    : 여행지 리뷰 등록
      * 4. 작성자      : CHO
      * 5. 작성일      : 2022. 10. 30.
      * </pre>
      */
-    @CachePut(value = "reply")
     @Transactional
-    public TravelReviewDTO replyTravel(TravelReviewEntity travelReviewEntity) {
+    public TravelReviewDTO reviewTravel(Long idx, TravelReviewEntity travelReviewEntity) {
         try {
-            return travelRepository.replyTravel(travelReviewEntity);
+            oneTravel(idx).addReview(travelReviewEntity);
+            return TravelReviewEntity.toDto(reviewRepository.save(travelReviewEntity));
         } catch (Exception e) {
-            throw new TravelException(ERROR_REVIEW_TRAVEL, e);
+            throw new TravelException(ERROR_REVIEW_TRAVEL);
         }
     }
 
     /**
      * <pre>
-     * 1. MethodName : updateReplyTravel
+     * 1. MethodName : updateReviewTravel
      * 2. ClassName  : TravelService.java
-     * 3. Comment    : 여행지 댓글 수정
+     * 3. Comment    : 여행지 리뷰 수정
      * 4. 작성자      : CHO
      * 5. 작성일      : 2022. 11. 23.
      * </pre>
      */
-    @CachePut(value = "reply", key = "#travelReviewEntity.idx")
     @Transactional
-    public TravelReviewDTO updateReplyTravel(TravelReviewEntity travelReviewEntity) {
+    public TravelReviewDTO updateReviewTravel(Long idx, TravelReviewEntity travelReviewEntity) {
         try {
-            return travelRepository.updateReplyTravel(travelReviewEntity);
+            oneReview(idx).update(travelReviewEntity);
+            return TravelReviewEntity.toDto(travelReviewEntity);
         } catch (Exception e) {
-            throw new TravelException(ERROR_UPDATE_REVIEW_TRAVEL, e);
+            throw new TravelException(ERROR_UPDATE_REVIEW_TRAVEL);
         }
     }
 
     /**
      * <pre>
-     * 1. MethodName : deleteReplyTravel
+     * 1. MethodName : deleteReviewTravel
      * 2. ClassName  : TravelService.java
-     * 3. Comment    : 여행지 댓글 삭제
+     * 3. Comment    : 여행지 리뷰 삭제
      * 4. 작성자      : CHO
      * 5. 작성일      : 2022. 11. 23.
      * </pre>
      */
-    @CacheEvict(value = "reply", key = "#idx")
     @Transactional
-    public Long deleteReplyTravel(Long idx) {
+    public Long deleteReviewTravel(Long idx) {
         try {
-            return travelRepository.deleteReplyTravel(idx);
+            reviewRepository.deleteById(idx);
+            return idx;
         } catch (Exception e) {
-            throw new TravelException(ERROR_DELETE_REVIEW_TRAVEL, e);
+            throw new TravelException(ERROR_DELETE_REVIEW_TRAVEL);
         }
     }
 
@@ -255,29 +277,28 @@ public class TravelService {
      * <pre>
      * 1. MethodName : replyTravelReview
      * 2. ClassName  : TravelService.java
-     * 3. Comment    : 여행지 댓글 리스트 조회
+     * 3. Comment    : 여행지 리뷰 리스트 조회
      * 4. 작성자      : CHO
      * 5. 작성일      : 2022. 11. 23.
      * </pre>
      */
-    @Transactional
-    public List<TravelReviewDTO> replyTravelReview(Long idx) {
-        return travelRepository.replyTravelReview(idx);
+    @Transactional(readOnly = true)
+    public List<TravelReviewDTO> travelReviewList(Long idx) {
+        return TravelReviewEntity.toDtoList(reviewRepository.findByNewTravelEntityIdx(idx));
     }
 
     /**
      * <pre>
      * 1. MethodName : detailReplyTravelReview
      * 2. ClassName  : TravelService.java
-     * 3. Comment    : 여행지 댓글 상세 조회
+     * 3. Comment    : 여행지 리뷰 상세 조회
      * 4. 작성자      : CHO
      * 5. 작성일      : 2022. 11. 23.
      * </pre>
      */
-    @Cacheable(value = "reply", key = "#idx")
     @Transactional
-    public TravelReviewDTO detailReplyTravelReview(Long idx) {
-        return travelRepository.detailReplyTravelReview(idx);
+    public TravelReviewDTO detailTravelReview(Long idx) {
+        return TravelReviewEntity.toDto(oneReview(idx));
     }
 
     /**
@@ -289,31 +310,17 @@ public class TravelService {
      * 5. 작성일      : 2022. 10. 28.
      * </pre>
      */
-    @CachePut(value = "travel", key = "#idx")
     @Transactional
     public Boolean togglePopular(Long idx) {
         try {
-            return travelRepository.togglePopular(idx);
-        } catch (Exception e) {
-            throw new TravelException(ERROR_UPDATE_TRAVEL, e);
-        }
-    }
+            TravelEntity oneTravel = oneTravel(idx);
+            Optional.ofNullable(oneTravel)
+                    .ifPresent(travelEntity -> travelEntity.togglePopular(oneTravel.getPopular()));
 
-    /**
-     * <pre>
-     * 1. MethodName : findTravelGroupCount
-     * 2. ClassName  : TravelService.java
-     * 3. Comment    : 여행지 그룹 리스트 갯수 조회
-     * 4. 작성자      : CHO
-     * 5. 작성일      : 2022. 11. 25.
-     * </pre>
-     */
-    @Transactional
-    public int findTravelGroupCount(Map<String, Object> groupMap) {
-        try {
-            return travelRepository.findTravelGroupCount(groupMap);
+            assert oneTravel != null;
+            return oneTravel.getPopular();
         } catch (Exception e) {
-            throw new TravelException(NOT_FOUND_TRAVEL_GROUP_LIST, e);
+            throw new TravelException(ERROR_UPDATE_TRAVEL);
         }
     }
 
@@ -326,10 +333,9 @@ public class TravelService {
      * 5. 작성일      : 2022. 11. 25.
      * </pre>
      */
-    @Cacheable(value = "group", key = "#groupMap")
     @Transactional(readOnly = true)
-    public List<TravelGroupDTO> findTravelGroupList(Map<String, Object> groupMap) {
-        return travelRepository.findTravelGroupList(groupMap);
+    public Page<TravelGroupDTO> findTravelGroupList(Map<String, Object> groupMap, PageRequest pageRequest) {
+        return travelQueryRepository.findTravelGroupList(groupMap, pageRequest);
     }
 
     /**
@@ -341,10 +347,9 @@ public class TravelService {
      * 5. 작성일      : 2022. 11. 25.
      * </pre>
      */
-    @Cacheable("group")
     @Transactional(readOnly = true)
     public TravelGroupDTO findOneTravelGroup(Long idx) {
-        return travelRepository.findOneTravelGroup(idx);
+        return travelQueryRepository.findOneTravelGroup(idx);
     }
 
     /**
@@ -356,13 +361,13 @@ public class TravelService {
      * 5. 작성일      : 2022. 11. 25.
      * </pre>
      */
-    @CachePut("group")
     @Transactional
-    public TravelGroupDTO insertTravelGroup(TravelGroupEntity travelGroupEntity) {
+    public TravelGroupDTO insertTravelGroup(Long idx, TravelGroupEntity travelGroupEntity) {
         try {
-            return travelRepository.insertTravelGroup(travelGroupEntity);
+            oneTravel(idx).addGroup(travelGroupEntity);
+            return TravelGroupEntity.toDto(groupRepository.save(travelGroupEntity));
         } catch (Exception e) {
-            throw new TravelException(ERROR_TRAVEL_GROUP, e);
+            throw new TravelException(ERROR_TRAVEL_GROUP);
         }
     }
 
@@ -375,13 +380,13 @@ public class TravelService {
      * 5. 작성일      : 2022. 11. 25.
      * </pre>
      */
-    @CachePut(value = "group", key = "#travelGroupEntity.idx")
     @Transactional
-    public TravelGroupDTO updateTravelGroup(TravelGroupEntity travelGroupEntity) {
+    public TravelGroupDTO updateTravelGroup(Long groupIdx, TravelGroupEntity travelGroupEntity) {
         try {
-            return travelRepository.updateTravelGroup(travelGroupEntity);
+            oneGroup(groupIdx).update(travelGroupEntity);
+            return TravelGroupEntity.toDto(travelGroupEntity);
         } catch (Exception e) {
-            throw new TravelException(ERROR_UPDATE_TRAVEL_GROUP, e);
+            throw new TravelException(ERROR_UPDATE_TRAVEL_GROUP);
         }
     }
 
@@ -394,108 +399,13 @@ public class TravelService {
      * 5. 작성일      : 2022. 11. 25.
      * </pre>
      */
-    @CacheEvict(value = "group", key = "#idx")
     @Transactional
     public Long deleteTravelGroup(Long idx) {
         try {
-            return travelRepository.deleteTravelGroup(idx);
+            groupRepository.deleteById(idx);
+            return idx;
         } catch (Exception e) {
-            throw new TravelException(ERROR_DELETE_TRAVEL_GROUP, e);
-        }
-    }
-
-    /**
-     * <pre>
-     * 1. MethodName : insertTravelGroupUser
-     * 2. ClassName  : TravelService.java
-     * 3. Comment    : 유저 여행 그룹 등록
-     * 4. 작성자      : CHO
-     * 5. 작성일      : 2022. 11. 27.
-     * </pre>
-     */
-    @CachePut("group_user")
-    @Transactional
-    public TravelGroupUserDTO insertTravelGroupUser(TravelGroupUserEntity travelGroupUserEntity) {
-        try {
-            return travelRepository.insertTravelGroupUser(travelGroupUserEntity);
-        } catch (Exception e) {
-            throw new TravelException(ERROR_TRAVEL_GROUP_UESR, e);
-        }
-    }
-
-    /**
-     * <pre>
-     * 1. MethodName : deleteTravelGroupUser
-     * 2. ClassName  : TravelService.java
-     * 3. Comment    : 유저 여행 그룹 삭제
-     * 4. 작성자      : CHO
-     * 5. 작성일      : 2022. 11. 27.
-     * </pre>
-     */
-    @CacheEvict(value = "group_user", key = "#idx")
-    @Transactional
-    public Long deleteTravelGroupUser(Long idx) {
-        try {
-            return travelRepository.deleteTravelGroupUser(idx);
-        } catch (Exception e) {
-            throw new TravelException(ERROR_DELETE_TRAVEL_GROUP_USER, e);
-        }
-    }
-
-    /**
-     * <pre>
-     * 1. MethodName : insertTravelSchedule
-     * 2. ClassName  : TravelService.java
-     * 3. Comment    : 유저 여행 스케줄 등록
-     * 4. 작성자      : CHO
-     * 5. 작성일      : 2022. 12. 13.
-     * </pre>
-     */
-    @CachePut("schedule")
-    @Transactional
-    public TravelScheduleDTO insertTravelSchedule(TravelScheduleEntity travelScheduleEntity) {
-        try {
-            return travelRepository.insertTravelSchedule(travelScheduleEntity);
-        } catch (Exception e) {
-            throw new TravelException(ERROR_TRAVEL_SCHEDULE, e);
-        }
-    }
-
-    /**
-     * <pre>
-     * 1. MethodName : updateTravelSchedule
-     * 2. ClassName  : TravelService.java
-     * 3. Comment    : 유저 여행 스케줄 수정
-     * 4. 작성자      : CHO
-     * 5. 작성일      : 2022. 12. 13.
-     * </pre>
-     */
-    @CachePut(value = "schedule", key = "#travelScheduleEntity.idx")
-    @Transactional
-    public TravelScheduleDTO updateTravelSchedule(TravelScheduleEntity travelScheduleEntity) {
-        try {
-            return travelRepository.updateTravelSchedule(travelScheduleEntity);
-        } catch (Exception e) {
-            throw new TravelException(ERROR_UPDATE_TRAVEL_SCHEDULE, e);
-        }
-    }
-
-    /**
-     * <pre>
-     * 1. MethodName : deleteTravelSchedule
-     * 2. ClassName  : TravelService.java
-     * 3. Comment    : 유저 여행 스케줄 삭제
-     * 4. 작성자      : CHO
-     * 5. 작성일      : 2022. 12. 13.
-     * </pre>
-     */
-    @CacheEvict(value = "schedule", key = "#idx")
-    @Transactional
-    public Long deleteTravelSchedule(Long idx) {
-        try {
-            return travelRepository.deleteTravelSchedule(idx);
-        } catch (Exception e) {
-            throw new TravelException(ERROR_DELETE_TRAVEL_SCHEDULE, e);
+            throw new TravelException(ERROR_DELETE_TRAVEL_GROUP);
         }
     }
 
@@ -508,10 +418,9 @@ public class TravelService {
      * 5. 작성일      : 2023. 01. 04.
      * </pre>
      */
-    @Cacheable(value = "recommend")
     @Transactional(readOnly = true)
-    public List<TravelRecommendDTO> findTravelRecommendList(Map<String, Object> recommendMap) {
-        return travelRepository.findTravelRecommendList(recommendMap);
+    public Page<TravelRecommendDTO> findTravelRecommendList(Map<String, Object> recommendMap, PageRequest pageRequest) {
+        return travelQueryRepository.findTravelRecommendList(recommendMap, pageRequest);
     }
 
     /**
@@ -523,10 +432,9 @@ public class TravelService {
      * 5. 작성일      : 2023. 01. 04.
      * </pre>
      */
-    @Cacheable(value = "recommend",key = "#idx")
     @Transactional(readOnly = true)
     public TravelRecommendDTO findOneTravelRecommend(Long idx) {
-        return travelRepository.findOneTravelRecommend(idx);
+        return TravelRecommendEntity.toDto(oneRecommend(idx));
     }
 
     /**
@@ -538,13 +446,12 @@ public class TravelService {
      * 5. 작성일      : 2023. 01. 04.
      * </pre>
      */
-    @CachePut(value = "recommend")
     @Transactional
     public TravelRecommendDTO insertTravelRecommend(TravelRecommendEntity travelRecommendEntity) {
         try {
-            return travelRepository.changeTravelRecommend(travelRecommendEntity);
+            return TravelRecommendEntity.toDto(recommendRepository.save(travelRecommendEntity));
         } catch (Exception e) {
-            throw new TravelException(ERROR_TRAVEL_RECOMMEND, e);
+            throw new TravelException(ERROR_TRAVEL_RECOMMEND);
         }
     }
 
@@ -557,13 +464,13 @@ public class TravelService {
      * 5. 작성일      : 2023. 01. 04.
      * </pre>
      */
-    @CachePut(value = "recommend", key = "#travelRecommendEntity.idx")
     @Transactional
-    public TravelRecommendDTO updateTravelRecommend(TravelRecommendEntity travelRecommendEntity) {
+    public TravelRecommendDTO updateTravelRecommend(Long idx, TravelRecommendEntity travelRecommendEntity) {
         try {
-            return travelRepository.changeTravelRecommend(travelRecommendEntity);
+            oneRecommend(idx).update(travelRecommendEntity);
+            return TravelRecommendEntity.toDto(travelRecommendEntity);
         } catch (Exception e) {
-            throw new TravelException(ERROR_UPDATE_TRAVEL_RECOMMEND, e);
+            throw new TravelException(ERROR_UPDATE_TRAVEL_RECOMMEND);
         }
     }
 
@@ -576,13 +483,13 @@ public class TravelService {
      * 5. 작성일      : 2023. 01. 04.
      * </pre>
      */
-    @CacheEvict(value = "recommend", key = "#idx")
     @Transactional
     public Long deleteTravelRecommend(Long idx) {
         try {
-            return travelRepository.deleteTravelRecommend(idx);
+            recommendRepository.deleteById(idx);
+            return idx;
         } catch (Exception e) {
-            throw new TravelException(ERROR_DELETE_TRAVEL_RECOMMEND, e);
+            throw new TravelException(ERROR_DELETE_TRAVEL_RECOMMEND);
         }
     }
 
@@ -595,10 +502,9 @@ public class TravelService {
      * 5. 작성일      : 2023. 01. 07.
      * </pre>
      */
-    @Cacheable(value = "rankKeyword")
     @Transactional(readOnly = true)
     public List<SearchDTO> rankingTravelKeyword() {
-        return travelRepository.rankingTravelKeyword();
+        return travelQueryRepository.rankingTravelKeyword();
     }
 
     /**
@@ -610,10 +516,9 @@ public class TravelService {
      * 5. 작성일      : 2023. 01. 07.
      * </pre>
      */
-    @Cacheable(value = "searchKeyword", key = "#searchKeyword")
     @Transactional(readOnly = true)
     public List<TravelDTO> findTravelKeyword(String searchKeyword) {
-        return travelRepository.findTravelKeyword(searchKeyword);
+        return travelQueryRepository.findTravelKeyword(searchKeyword);
     }
 
     /**
@@ -625,10 +530,9 @@ public class TravelService {
      * 5. 작성일      : 2023. 01. 08.
      * </pre>
      */
-    @Cacheable(value = "festival", key = "#month")
     @Transactional(readOnly = true)
     public List<TravelFestivalDTO> findTravelFestivalGroup(Integer month) {
-        return travelRepository.findTravelFestivalGroup(month);
+        return travelQueryRepository.findTravelFestivalGroup(month);
     }
 
     /**
@@ -640,10 +544,9 @@ public class TravelService {
      * 5. 작성일      : 2023. 01. 08.
      * </pre>
      */
-    @Cacheable(value = "festival", key = "#travelFestivalEntity")
     @Transactional(readOnly = true)
     public List<TravelFestivalDTO> findTravelFestivalList(TravelFestivalEntity travelFestivalEntity) {
-        return travelRepository.findTravelFestivalList(travelFestivalEntity);
+        return travelQueryRepository.findTravelFestivalList(travelFestivalEntity);
     }
 
     /**
@@ -655,10 +558,9 @@ public class TravelService {
      * 5. 작성일      : 2023. 01. 08.
      * </pre>
      */
-    @Cacheable(value = "festival", key = "#idx")
     @Transactional(readOnly = true)
     public TravelFestivalDTO findOneTravelFestival(Long idx) {
-        return travelRepository.findOneTravelFestival(idx);
+        return TravelFestivalEntity.toDto(oneFestival(idx));
     }
 
     /**
@@ -670,13 +572,12 @@ public class TravelService {
      * 5. 작성일      : 2023. 01. 08.
      * </pre>
      */
-    @CachePut(value = "festival")
     @Transactional
     public TravelFestivalDTO insertTravelFestival(TravelFestivalEntity travelFestivalEntity) {
         try {
-            return travelRepository.changeTravelFestival(travelFestivalEntity);
+            return TravelFestivalEntity.toDto(festivalRepository.save(travelFestivalEntity));
         } catch (Exception e) {
-            throw new TravelException(ERROR_FESTIVAL, e);
+            throw new TravelException(ERROR_FESTIVAL);
         }
     }
 
@@ -689,13 +590,13 @@ public class TravelService {
      * 5. 작성일      : 2023. 01. 08.
      * </pre>
      */
-    @CachePut(value = "festival", key = "#travelFestivalEntity.idx")
     @Transactional
-    public TravelFestivalDTO updateTravelFestival(TravelFestivalEntity travelFestivalEntity) {
+    public TravelFestivalDTO updateTravelFestival(Long idx, TravelFestivalEntity travelFestivalEntity) {
         try {
-            return travelRepository.changeTravelFestival(travelFestivalEntity);
+            oneFestival(idx).update(travelFestivalEntity);
+            return TravelFestivalEntity.toDto(travelFestivalEntity);
         } catch (Exception e) {
-            throw new TravelException(ERROR_UPDATE_FESTIVAL, e);
+            throw new TravelException(ERROR_UPDATE_FESTIVAL);
         }
     }
 
@@ -708,13 +609,13 @@ public class TravelService {
      * 5. 작성일      : 2023. 01. 08.
      * </pre>
      */
-    @CacheEvict(value = "festival", key = "#idx")
     @Transactional
     public Long deleteTravelFestival(Long idx) {
         try {
-            return travelRepository.deleteTravelFestival(idx);
+            festivalRepository.deleteById(idx);
+            return idx;
         } catch (Exception e) {
-            throw new TravelException(ERROR_DELETE_FESTIVAL, e);
+            throw new TravelException(ERROR_DELETE_FESTIVAL);
         }
     }
 }

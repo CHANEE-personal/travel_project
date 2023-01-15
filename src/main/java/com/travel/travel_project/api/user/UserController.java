@@ -1,8 +1,11 @@
 package com.travel.travel_project.api.user;
 
-import com.travel.travel_project.common.Page;
+import com.travel.travel_project.common.Paging;
 import com.travel.travel_project.common.SearchCommon;
+import com.travel.travel_project.domain.travel.group.TravelGroupUserDTO;
+import com.travel.travel_project.domain.travel.group.TravelGroupUserEntity;
 import com.travel.travel_project.domain.travel.schedule.TravelScheduleDTO;
+import com.travel.travel_project.domain.travel.schedule.TravelScheduleEntity;
 import com.travel.travel_project.domain.user.AuthenticationRequest;
 import com.travel.travel_project.domain.user.UserDTO;
 import com.travel.travel_project.domain.user.UserEntity;
@@ -11,6 +14,7 @@ import com.travel.travel_project.jwt.JwtUtil;
 import com.travel.travel_project.jwt.MyUserDetailsService;
 import io.swagger.annotations.*;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -29,6 +33,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.http.ResponseEntity.ok;
 
 @RestController
@@ -61,8 +66,8 @@ public class UserController {
             @ApiResponse(code = 500, message = "서버 에러", response = ServerError.class)
     })
     @GetMapping
-    public ResponseEntity<List<UserDTO>> findUserList(@RequestParam(required = false) Map<String, Object> paramMap, Page page) {
-        return ResponseEntity.ok(userService.findUserList(searchCommon.searchCommon(page, paramMap)));
+    public ResponseEntity<Page<UserDTO>> findUserList(@RequestParam(required = false) Map<String, Object> paramMap, Paging paging) {
+        return ResponseEntity.ok(userService.findUserList(paramMap, paging.getPageRequest(paging.getPageNum(), paging.getSize())));
     }
 
     /**
@@ -163,9 +168,9 @@ public class UserController {
                 authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.getName(), request.getCredentials()));
             }
         } catch (DisabledException e) {
-            throw new Exception("USER_DISABLED", e);
+            throw new Exception("USER_DISABLED");
         } catch (BadCredentialsException e) {
-            throw new Exception("INVALID_CREDENTIALS", e);
+            throw new Exception("INVALID_CREDENTIALS");
         }
     }
 
@@ -212,10 +217,7 @@ public class UserController {
     })
     @PutMapping("/{idx}")
     public ResponseEntity<UserDTO> updateUser(@PathVariable Long idx, @Valid @RequestBody UserEntity userEntity) {
-        if (userService.findOneUser(idx) == null) {
-            return ResponseEntity.notFound().build();
-        }
-        return ResponseEntity.ok(userService.updateUser(userEntity));
+        return ResponseEntity.ok(userService.updateUser(idx, userEntity));
     }
 
     /**
@@ -238,9 +240,6 @@ public class UserController {
     })
     @DeleteMapping("/{idx}")
     public ResponseEntity<Long> deleteUser(@PathVariable Long idx) {
-        if (userService.findOneUser(idx) == null) {
-            return ResponseEntity.notFound().build();
-        }
         userService.deleteUser(idx);
         return ResponseEntity.noContent().build();
     }
@@ -265,9 +264,6 @@ public class UserController {
     })
     @PutMapping("/{idx}/favorite-travel")
     public ResponseEntity<UserDTO> addFavoriteTravel(@PathVariable Long idx, Long favoriteIdx) {
-        if (userService.findOneUser(idx) == null) {
-            return ResponseEntity.notFound().build();
-        }
         return ResponseEntity.ok(userService.addFavoriteTravel(idx, favoriteIdx));
     }
 
@@ -291,9 +287,6 @@ public class UserController {
     })
     @GetMapping("/{idx}/schedule")
     public ResponseEntity<List<TravelScheduleDTO>> findUserSchedule(@PathVariable Long idx) {
-        if (userService.findOneUser(idx) == null) {
-            return ResponseEntity.notFound().build();
-        }
         return ResponseEntity.ok(userService.findUserSchedule(idx));
     }
 
@@ -317,9 +310,101 @@ public class UserController {
     })
     @GetMapping("/{idx}/schedule/{scheduleIdx}")
     public ResponseEntity<TravelScheduleDTO> findOneUserSchedule(@PathVariable Long idx, @PathVariable Long scheduleIdx) {
-        if (userService.findOneUser(idx) == null) {
-            return ResponseEntity.notFound().build();
-        }
         return ResponseEntity.ok(userService.findOneUserSchedule(idx, scheduleIdx));
+    }
+
+    /**
+     * <pre>
+     * 1. MethodName : insertTravelSchedule
+     * 2. ClassName  : TravelController.java
+     * 3. Comment    : 유저 여행 스케줄 등록
+     * 4. 작성자      : CHO
+     * 5. 작성일      : 2022. 12. 13.
+     * </pre>
+     */
+    @ApiOperation(value = "유저 여행 스케줄 등록", notes = "유저 여행 스케줄을 등록한다.")
+    @ApiResponses(value = {
+            @ApiResponse(code = 201, message = "유저 여행 스케줄 등록 성공", response = TravelScheduleDTO.class),
+            @ApiResponse(code = 400, message = "잘못된 요청", response = HttpClientErrorException.BadRequest.class),
+            @ApiResponse(code = 401, message = "허용되지 않는 관리자", response = HttpClientErrorException.Unauthorized.class),
+            @ApiResponse(code = 403, message = "접근거부", response = HttpClientErrorException.class),
+            @ApiResponse(code = 404, message = "존재 하지 않음", response = HttpClientErrorException.NotFound.class),
+            @ApiResponse(code = 500, message = "서버 에러", response = ServerError.class)
+    })
+    @PostMapping(value = "/{idx}/schedule", consumes = APPLICATION_JSON_VALUE)
+    public ResponseEntity<TravelScheduleDTO> insertTravelSchedule(@PathVariable Long idx, @Valid @RequestBody TravelScheduleEntity travelScheduleEntity) {
+        System.out.println("===commonEntity===");
+        System.out.println(travelScheduleEntity.getCommonEntity());
+        return ResponseEntity.created(URI.create("")).body(userService.insertTravelSchedule(idx, travelScheduleEntity));
+    }
+
+    /**
+     * <pre>
+     * 1. MethodName : updateTravelSchedule
+     * 2. ClassName  : TravelController.java
+     * 3. Comment    : 유저 여행 스케줄 수정
+     * 4. 작성자      : CHO
+     * 5. 작성일      : 2022. 12. 13.
+     * </pre>
+     */
+    @ApiOperation(value = "유저 여행 스케줄 수정", notes = "유저 여행 스케줄을 수정한다.")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "유저 여행 스케줄 수정 성공", response = TravelScheduleDTO.class),
+            @ApiResponse(code = 400, message = "잘못된 요청", response = HttpClientErrorException.BadRequest.class),
+            @ApiResponse(code = 401, message = "허용되지 않는 관리자", response = HttpClientErrorException.Unauthorized.class),
+            @ApiResponse(code = 403, message = "접근거부", response = HttpClientErrorException.class),
+            @ApiResponse(code = 404, message = "존재 하지 않음", response = HttpClientErrorException.NotFound.class),
+            @ApiResponse(code = 500, message = "서버 에러", response = ServerError.class)
+    })
+    @PutMapping("/{idx}/schedule")
+    public ResponseEntity<TravelScheduleDTO> updateTravelSchedule(@PathVariable Long idx, @Valid @RequestBody TravelScheduleEntity travelScheduleEntity) {
+        return ResponseEntity.ok(userService.updateTravelSchedule(idx, travelScheduleEntity));
+    }
+
+    /**
+     * <pre>
+     * 1. MethodName : insertTravelGroupUser
+     * 2. ClassName  : TravelController.java
+     * 3. Comment    : 유저 여행 그룹 등록
+     * 4. 작성자      : CHO
+     * 5. 작성일      : 2022. 11. 27.
+     * </pre>
+     */
+    @ApiOperation(value = "유저 여행 그룹 등록", notes = "유저 여행 그룹을 등록한다.")
+    @ApiResponses(value = {
+            @ApiResponse(code = 201, message = "유저 여행 그룹 등록 성공", response = TravelGroupUserDTO.class),
+            @ApiResponse(code = 400, message = "잘못된 요청", response = HttpClientErrorException.BadRequest.class),
+            @ApiResponse(code = 401, message = "허용되지 않는 관리자", response = HttpClientErrorException.Unauthorized.class),
+            @ApiResponse(code = 403, message = "접근거부", response = HttpClientErrorException.class),
+            @ApiResponse(code = 404, message = "존재 하지 않음", response = HttpClientErrorException.NotFound.class),
+            @ApiResponse(code = 500, message = "서버 에러", response = ServerError.class)
+    })
+    @PostMapping("/{idx}/group_user/{groupIdx}")
+    public ResponseEntity<TravelGroupUserDTO> insertTravelGroupUser(@PathVariable Long idx, @PathVariable Long groupIdx, @Valid @RequestBody TravelGroupUserEntity travelGroupUserEntity) {
+        return ResponseEntity.created(URI.create("")).body(userService.insertTravelGroupUser(idx, groupIdx, travelGroupUserEntity));
+    }
+
+    /**
+     * <pre>
+     * 1. MethodName : deleteTravelGroupUser
+     * 2. ClassName  : TravelController.java
+     * 3. Comment    : 유저 여행 그룹 삭제
+     * 4. 작성자      : CHO
+     * 5. 작성일      : 2022. 11. 27.
+     * </pre>
+     */
+    @ApiOperation(value = "유저 여행 그룹 삭제", notes = "유저 여행 그룹을 삭제한다.")
+    @ApiResponses(value = {
+            @ApiResponse(code = 204, message = "유저 여행 그룹 삭제 성공", response = Long.class),
+            @ApiResponse(code = 400, message = "잘못된 요청", response = HttpClientErrorException.BadRequest.class),
+            @ApiResponse(code = 401, message = "허용되지 않는 관리자", response = HttpClientErrorException.Unauthorized.class),
+            @ApiResponse(code = 403, message = "접근거부", response = HttpClientErrorException.class),
+            @ApiResponse(code = 404, message = "존재 하지 않음", response = HttpClientErrorException.NotFound.class),
+            @ApiResponse(code = 500, message = "서버 에러", response = ServerError.class)
+    })
+    @DeleteMapping("/group_user/{idx}")
+    public ResponseEntity<Long> deleteTravelGroupUser(@PathVariable Long idx) {
+        userService.deleteTravelGroupUser(idx);
+        return ResponseEntity.noContent().build();
     }
 }

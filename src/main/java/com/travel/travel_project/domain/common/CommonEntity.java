@@ -3,8 +3,10 @@ package com.travel.travel_project.domain.common;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.travel.travel_project.domain.faq.FaqEntity;
 import com.travel.travel_project.domain.travel.TravelEntity;
+import com.travel.travel_project.domain.travel.schedule.TravelScheduleEntity;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
+import org.hibernate.annotations.DynamicUpdate;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
@@ -14,6 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static javax.persistence.CascadeType.ALL;
 import static javax.persistence.CascadeType.MERGE;
 import static javax.persistence.FetchType.LAZY;
 import static javax.persistence.GenerationType.IDENTITY;
@@ -23,7 +26,8 @@ import static javax.persistence.GenerationType.IDENTITY;
 @Entity
 @SuperBuilder
 @EqualsAndHashCode(of = "idx", callSuper = false)
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@DynamicUpdate
 @AllArgsConstructor
 @Table(name = "tv_cmm_code")
 public class CommonEntity extends NewCommonMappedClass implements Serializable {
@@ -47,13 +51,39 @@ public class CommonEntity extends NewCommonMappedClass implements Serializable {
     @NotEmpty(message = "공통 코드 사용 여부는 필수입니다.")
     private String visible;
 
+    @Builder.Default
     @JsonIgnore
     @OneToMany(mappedBy = "newTravelCode", cascade = MERGE, fetch = LAZY)
     private List<TravelEntity> adminTravelEntityList = new ArrayList<>();
 
+    @Builder.Default
     @JsonIgnore
     @OneToMany(mappedBy = "newFaqCode", cascade = MERGE, fetch = LAZY)
     private List<FaqEntity> faqEntityList = new ArrayList<>();
+
+    @JsonIgnore
+    @OneToOne(mappedBy = "commonEntity", fetch = LAZY, cascade = ALL)
+    private TravelScheduleEntity travelScheduleEntity;
+
+    public void addCommon(FaqEntity faqEntity) {
+        faqEntity.setNewFaqCode(this);
+        this.faqEntityList.add(faqEntity);
+    }
+
+    public void addTravel(TravelEntity travelEntity) {
+        travelEntity.setNewTravelCode(this);
+        this.adminTravelEntityList.add(travelEntity);
+    }
+
+    public void addSchedule(TravelScheduleEntity travelScheduleEntity) {
+        travelScheduleEntity.setCommonEntity(this);
+    }
+
+    public void update(CommonEntity commonEntity) {
+        this.commonCode = commonEntity.commonCode;
+        this.commonName = commonEntity.commonName;
+        this.visible = commonEntity.visible;
+    }
 
     public static CommonDTO toDto(CommonEntity entity) {
         if (entity == null) return null;

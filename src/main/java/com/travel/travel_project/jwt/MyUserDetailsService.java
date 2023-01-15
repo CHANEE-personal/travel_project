@@ -30,7 +30,7 @@ public class MyUserDetailsService implements UserDetailsService {
             // 아이디 일치하는지 확인
             return new User(userInfo.getName(), userInfo.getPassword(), createAuthorityList("ROLE_ADMIN"));
         } catch (Exception e) {
-            throw new TravelException(NOT_FOUND_USER, e);
+            throw new TravelException(NOT_FOUND_USER);
         }
     }
 }

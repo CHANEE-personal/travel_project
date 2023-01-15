@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.travel.travel_project.domain.common.CommonEntity;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
+import org.hibernate.annotations.DynamicUpdate;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
@@ -21,9 +22,10 @@ import static javax.persistence.GenerationType.IDENTITY;
 @Setter
 @SuperBuilder
 @EqualsAndHashCode(of = "idx", callSuper = false)
-@NoArgsConstructor
 @AllArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@DynamicUpdate
 @Table(name = "travel_faq")
 public class FaqEntity {
     @Transient
@@ -36,7 +38,7 @@ public class FaqEntity {
 
     @Column(name = "faq_code")
     @NotNull(message = "FAQ Code 입력은 필수입니다.")
-    private Long faqCode;
+    private Integer faqCode;
 
     @Column(name = "title")
     @NotEmpty(message = "제목 입력은 필수입니다.")
@@ -62,6 +64,12 @@ public class FaqEntity {
     // 조회 수 증가
     public void updateViewCount() {
         this.viewCount++;
+    }
+
+    public void update(FaqEntity faqEntity) {
+        this.title = faqEntity.title;
+        this.description = faqEntity.description;
+        this.visible = faqEntity.visible;
     }
 
     public static FaqDTO toDto(FaqEntity entity) {

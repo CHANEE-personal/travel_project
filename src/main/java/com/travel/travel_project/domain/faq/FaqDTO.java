@@ -12,7 +12,7 @@ import javax.validation.constraints.NotNull;
 @Setter
 @SuperBuilder
 @EqualsAndHashCode(of = "idx", callSuper = false)
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @ApiModel(value = "FAQ 관련")
 public class FaqDTO {
@@ -24,7 +24,7 @@ public class FaqDTO {
 
     @NotNull(message = "FAQ CODE 입력은 필수입니다.")
     @ApiModelProperty(required = true, value = "faq_code")
-    private Long faqCode;
+    private Integer faqCode;
 
     @NotEmpty(message = "FAQ 제목 입력은 필수입니다.")
     @ApiModelProperty(required = true, value = "title")

@@ -12,7 +12,7 @@ import javax.validation.constraints.NotEmpty;
 @Setter
 @SuperBuilder
 @EqualsAndHashCode(of = "idx", callSuper = false)
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @ApiModel(value = "공지사항 관련 변수")
 public class NoticeDTO extends NewCommonDTO {

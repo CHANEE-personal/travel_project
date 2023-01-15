@@ -4,11 +4,13 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.travel.travel_project.domain.common.NewCommonMappedClass;
 import com.travel.travel_project.domain.faq.FaqDTO;
+import com.travel.travel_project.domain.travel.group.TravelGroupEntity;
 import com.travel.travel_project.domain.travel.group.TravelGroupUserEntity;
 import com.travel.travel_project.domain.travel.schedule.TravelScheduleEntity;
 import com.vladmihalcea.hibernate.type.json.JsonStringType;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
+import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
 
@@ -28,7 +30,8 @@ import static javax.persistence.GenerationType.IDENTITY;
 @Setter
 @SuperBuilder
 @EqualsAndHashCode(of = "idx", callSuper = false)
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@DynamicUpdate
 @AllArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
 @TypeDef(name = "json", typeClass = JsonStringType.class)
@@ -76,13 +79,34 @@ public class UserEntity extends NewCommonMappedClass {
     @Column(columnDefinition = "json", name = "favorite_travel_ids")
     private List<String> favoriteTravelIdx = new ArrayList<>();
 
+    @Builder.Default
     @JsonIgnore
     @OneToMany(mappedBy = "userEntity", cascade = CascadeType.REMOVE)
     private List<TravelGroupUserEntity> userList = new ArrayList<>();
 
+    @Builder.Default
     @JsonIgnore
     @OneToMany(mappedBy = "userEntity", cascade = CascadeType.REMOVE)
     private List<TravelScheduleEntity> userScheduleList = new ArrayList<>();
+
+    public void update(UserEntity userEntity) {
+        this.userId = userEntity.userId;
+        this.password = userEntity.password;
+        this.name = userEntity.name;
+        this.email = userEntity.email;
+        this.visible = userEntity.visible;
+        this.role = userEntity.role;
+    }
+
+    public void addSchedule(TravelScheduleEntity travelScheduleEntity) {
+        travelScheduleEntity.setUserEntity(this);
+        this.userScheduleList.add(travelScheduleEntity);
+    }
+
+    public void addGroup(TravelGroupUserEntity travelGroupUserEntity) {
+        travelGroupUserEntity.setUserEntity(this);
+        this.userList.add(travelGroupUserEntity);
+    }
 
     public static UserDTO toDto(UserEntity entity) {
         if (entity == null) return null;

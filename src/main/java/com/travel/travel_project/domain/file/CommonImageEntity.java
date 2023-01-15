@@ -7,6 +7,7 @@ import com.travel.travel_project.domain.post.PostEntity;
 import com.travel.travel_project.domain.travel.TravelEntity;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.*;
+import org.hibernate.annotations.DynamicUpdate;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.*;
@@ -22,7 +23,8 @@ import static javax.persistence.FetchType.LAZY;
 @Setter
 @Builder
 @EqualsAndHashCode(of = "idx", callSuper = false)
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@DynamicUpdate
 @AllArgsConstructor
 @Table(name = "travel_image")
 public class CommonImageEntity {

@@ -55,10 +55,10 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
         } catch (ExpiredJwtException e) {
             log.info("Security exception for user {} - {}", e.getClaims().getSubject(), e.getMessage());
             response.setStatus(SC_UNAUTHORIZED);
-            log.debug("Exception " + e.getMessage(), e);
+            log.debug("Exception " + e.getMessage());
         } catch (Exception e) {
             e.printStackTrace();
-            throw new TravelException(NOT_FOUND_USER, e);
+            throw new TravelException(NOT_FOUND_USER);
         }
         filterChain.doFilter(request, response);
     }

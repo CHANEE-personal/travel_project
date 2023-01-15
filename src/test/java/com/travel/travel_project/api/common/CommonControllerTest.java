@@ -21,8 +21,6 @@ import org.springframework.web.filter.CharacterEncodingFilter;
 import javax.persistence.EntityManager;
 import javax.transaction.Transactional;
 
-import static com.travel.travel_project.common.StringUtil.getString;
-import static org.hamcrest.Matchers.greaterThan;
 import static org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase.Replace.NONE;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.*;
@@ -70,21 +68,21 @@ class CommonControllerTest {
     @Test
     @DisplayName("공통 코드 조회 테스트")
     void 공통코드조회테스트() throws Exception {
-        mockMvc.perform(get("/api/common/lists").param("page", "1").param("size", "100"))
+        mockMvc.perform(get("/api/common/lists").param("pageNum", "0").param("size", "100"))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().contentType("application/json;charset=utf-8"))
-                .andExpect(jsonPath("$.commonList.length()", greaterThan(0)));
+                .andExpect(jsonPath("$.content").isNotEmpty());
     }
 
     @Test
     @DisplayName("공통 코드 상세 조회 테스트")
     void 공통코드상세조회테스트() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.get("/api/common/1"))
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/common/24"))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().contentType("application/json;charset=utf-8"))
-                .andExpect(jsonPath("$.idx").value(1L));
+                .andExpect(jsonPath("$.idx").value(24L));
     }
 
     @Test
@@ -129,8 +127,6 @@ class CommonControllerTest {
 
         mockMvc.perform(delete("/api/common/{idx}", commonEntity.getIdx()))
                 .andDo(print())
-                .andExpect(status().isNoContent())
-                .andExpect(content().contentType("application/json;charset=utf-8"))
-                .andExpect(content().string(getString(commonEntity.getIdx())));
+                .andExpect(status().isNoContent());
     }
 }

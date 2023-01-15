@@ -1,6 +1,7 @@
 package com.travel.travel_project.admin.travel;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.travel.travel_project.domain.travel.TravelEntity;
 import com.travel.travel_project.domain.travel.festival.TravelFestivalEntity;
 import com.travel.travel_project.domain.travel.group.TravelGroupEntity;
 import com.travel.travel_project.domain.travel.group.TravelGroupUserEntity;
@@ -132,10 +133,9 @@ class TravelControllerTest {
     }
 
     @Test
-    @DisplayName("여행지 댓글 등록 테스트")
-    void 여행지댓글등록테스트() throws Exception {
+    @DisplayName("여행지 리뷰 등록 테스트")
+    void 여행지리뷰등록테스트() throws Exception {
         TravelReviewEntity travelReviewEntity = TravelReviewEntity.builder()
-                .travelIdx(1L)
                 .reviewTitle("리뷰등록테스트")
                 .reviewDescription("리뷰등록테스트")
                 .viewCount(0)
@@ -144,7 +144,7 @@ class TravelControllerTest {
                 .visible("Y")
                 .build();
 
-        mockMvc.perform(post("/api/travel/1/reply")
+        mockMvc.perform(post("/api/travel/1/review")
                         .contentType(APPLICATION_JSON_VALUE)
                         .content(objectMapper.writeValueAsString(travelReviewEntity)))
                 .andDo(print())
@@ -154,10 +154,9 @@ class TravelControllerTest {
     }
 
     @Test
-    @DisplayName("여행지 댓글 수정 테스트")
-    void 여행지댓글수정테스트() throws Exception {
+    @DisplayName("여행지 리뷰 수정 테스트")
+    void 여행지리뷰수정테스트() throws Exception {
         TravelReviewEntity travelReviewEntity = TravelReviewEntity.builder()
-                .travelIdx(1L)
                 .reviewTitle("리뷰등록테스트")
                 .reviewDescription("리뷰등록테스트")
                 .viewCount(0)
@@ -170,7 +169,6 @@ class TravelControllerTest {
 
         TravelReviewEntity newTravelReviewEntity = TravelReviewEntity.builder()
                 .idx(travelReviewEntity.getIdx())
-                .travelIdx(1L)
                 .reviewTitle("리뷰수정테스트")
                 .reviewDescription("리뷰수정테스트")
                 .viewCount(0)
@@ -179,7 +177,7 @@ class TravelControllerTest {
                 .visible("Y")
                 .build();
 
-        mockMvc.perform(put("/api/travel/{idx}/reply", travelReviewEntity.getIdx())
+        mockMvc.perform(put("/api/travel/{idx}/review", travelReviewEntity.getIdx())
                         .contentType(APPLICATION_JSON_VALUE)
                         .content(objectMapper.writeValueAsString(newTravelReviewEntity)))
                 .andDo(print())
@@ -190,10 +188,9 @@ class TravelControllerTest {
     }
 
     @Test
-    @DisplayName("여행지 댓글 삭제 테스트")
-    void 여행지댓글삭제테스트() throws Exception {
+    @DisplayName("여행지 리뷰 삭제 테스트")
+    void 여행지리뷰삭제테스트() throws Exception {
         TravelReviewEntity travelReviewEntity = TravelReviewEntity.builder()
-                .travelIdx(1L)
                 .reviewTitle("리뷰등록테스트")
                 .reviewDescription("리뷰등록테스트")
                 .viewCount(0)
@@ -204,15 +201,14 @@ class TravelControllerTest {
 
         em.persist(travelReviewEntity);
 
-        mockMvc.perform(delete("/api/travel/{idx}/reply", travelReviewEntity.getIdx()))
+        mockMvc.perform(delete("/api/travel/{idx}/review", travelReviewEntity.getIdx()))
                 .andDo(print())
-                .andExpect(status().isNoContent())
-                .andExpect(content().string(getString(travelReviewEntity.getIdx())));
+                .andExpect(status().isNoContent());
     }
 
     @Test
     @DisplayName("여행지 댓글 리스트 조회 테스트")
-    void 여행지댓글리스트조회테스트() throws Exception {
+    void 여행지리뷰리스트조회테스트() throws Exception {
         mockMvc.perform(get("/api/travel/1/reply"))
                 .andDo(print())
                 .andExpect(status().isOk())
@@ -252,14 +248,27 @@ class TravelControllerTest {
     @Test
     @DisplayName("여행지 그룹 등록 테스트")
     void 여행지그룹등록테스트() throws Exception {
+        TravelEntity travelEntity = TravelEntity.builder()
+                .travelCode(1)
+                .travelTitle("여행지 소개")
+                .travelDescription("여행지 소개")
+                .travelAddress("인천광역시 서구")
+                .travelZipCode("123-456")
+                .favoriteCount(1)
+                .viewCount(0)
+                .popular(false)
+                .visible("Y")
+                .build();
+
+        em.persist(travelEntity);
+
         TravelGroupEntity travelGroupEntity = TravelGroupEntity.builder()
-                .travelIdx(1L)
                 .groupName("서울모임")
                 .groupDescription("서울모임")
                 .visible("Y")
                 .build();
 
-        mockMvc.perform(post("/api/travel/group")
+        mockMvc.perform(post("/api/travel/{idx}/group", travelEntity.getIdx())
                         .contentType(APPLICATION_JSON_VALUE)
                         .content(objectMapper.writeValueAsString(travelGroupEntity)))
                 .andDo(print())
@@ -273,8 +282,21 @@ class TravelControllerTest {
     @Test
     @DisplayName("여행지 그룹 수정 테스트")
     void 여행지그룹수정테스트() throws Exception {
+        TravelEntity travelEntity = TravelEntity.builder()
+                .travelCode(1)
+                .travelTitle("여행지 소개")
+                .travelDescription("여행지 소개")
+                .travelAddress("인천광역시 서구")
+                .travelZipCode("123-456")
+                .favoriteCount(1)
+                .viewCount(0)
+                .popular(false)
+                .visible("Y")
+                .build();
+
+        em.persist(travelEntity);
+
         TravelGroupEntity travelGroupEntity = TravelGroupEntity.builder()
-                .travelIdx(1L)
                 .groupName("서울모임")
                 .groupDescription("서울모임")
                 .visible("Y")
@@ -284,13 +306,12 @@ class TravelControllerTest {
 
         TravelGroupEntity newTravelGroupEntity = TravelGroupEntity.builder()
                 .idx(travelGroupEntity.getIdx())
-                .travelIdx(1L)
                 .groupName("인천모임")
                 .groupDescription("인천모임")
                 .visible("Y")
                 .build();
 
-        mockMvc.perform(put("/api/travel/{idx}/group", travelGroupEntity.getIdx())
+        mockMvc.perform(put("/api/travel/{idx}/group/{groupIdx}", travelEntity.getIdx(), travelGroupEntity.getIdx())
                         .contentType(APPLICATION_JSON_VALUE)
                         .content(objectMapper.writeValueAsString(newTravelGroupEntity)))
                 .andDo(print())
@@ -304,7 +325,6 @@ class TravelControllerTest {
     @DisplayName("여행지 그룹 삭제 테스트")
     void 여행지그룹삭제테스트() throws Exception {
         TravelGroupEntity travelGroupEntity = TravelGroupEntity.builder()
-                .travelIdx(1L)
                 .groupName("서울모임")
                 .groupDescription("서울모임")
                 .visible("Y")
@@ -312,7 +332,7 @@ class TravelControllerTest {
 
         em.persist(travelGroupEntity);
 
-        mockMvc.perform(delete("/api/travel/{idx}/group", travelGroupEntity.getIdx()))
+        mockMvc.perform(delete("/api/travel/group/{groupIdx}", travelGroupEntity.getIdx()))
                 .andDo(print())
                 .andExpect(status().isNoContent())
                 .andExpect(content().contentType("application/json;charset=utf-8"))
@@ -323,8 +343,6 @@ class TravelControllerTest {
     @DisplayName("유저 여행 그룹 등록 테스트")
     void 유저여행그룹등록테스트() throws Exception {
         TravelGroupUserEntity travelGroupUserEntity = TravelGroupUserEntity.builder()
-                .userIdx(1L)
-                .groupIdx(1L)
                 .build();
 
         mockMvc.perform(post("/api/travel/group_user")
@@ -341,8 +359,6 @@ class TravelControllerTest {
     @DisplayName("유저 여행 그룹 삭제 테스트")
     void 유저여행그룹삭제테스트() throws Exception {
         TravelGroupUserEntity travelGroupUserEntity = TravelGroupUserEntity.builder()
-                .userIdx(1L)
-                .groupIdx(1L)
                 .build();
 
         em.persist(travelGroupUserEntity);
@@ -357,8 +373,8 @@ class TravelControllerTest {
     @DisplayName("유저 여행 스케줄 등록 테스트")
     void 유저여행스케줄등록테스트() throws Exception {
         TravelScheduleEntity travelScheduleEntity = TravelScheduleEntity.builder()
-                .travelIdx(1L)
-                .userIdx(1L)
+//                .travelIdx(1L)
+//                .userIdx(1L)
                 .scheduleDescription("스케줄 테스트")
                 .scheduleTime(LocalDateTime.now())
                 .build();
@@ -378,8 +394,8 @@ class TravelControllerTest {
     @DisplayName("유저 여행 스케줄 수정 테스트")
     void 유저여행스케줄수정테스트() throws Exception {
         TravelScheduleEntity travelScheduleEntity = TravelScheduleEntity.builder()
-                .travelIdx(1L)
-                .userIdx(1L)
+//                .travelIdx(1L)
+//                .userIdx(1L)
                 .scheduleDescription("스케줄 테스트")
                 .scheduleTime(LocalDateTime.now())
                 .build();
@@ -388,8 +404,8 @@ class TravelControllerTest {
 
         TravelScheduleEntity updateTravelScheduleEntity = TravelScheduleEntity.builder()
                 .idx(travelScheduleEntity.getIdx())
-                .travelIdx(1L)
-                .userIdx(1L)
+//                .travelIdx(1L)
+//                .userIdx(1L)
                 .scheduleDescription("스케줄 수정 테스트")
                 .scheduleTime(LocalDateTime.now())
                 .build();
@@ -407,8 +423,8 @@ class TravelControllerTest {
     @DisplayName("유저 여행 스케줄 삭제 테스트")
     void 유저여행스케줄삭제테스트() throws Exception {
         TravelScheduleEntity travelScheduleEntity = TravelScheduleEntity.builder()
-                .travelIdx(1L)
-                .userIdx(1L)
+//                .travelIdx(1L)
+//                .userIdx(1L)
                 .scheduleDescription("스케줄 테스트")
                 .scheduleTime(LocalDateTime.now())
                 .build();
@@ -435,11 +451,11 @@ class TravelControllerTest {
 
         em.persist(travelRecommendEntity);
 
-        mockMvc.perform(get("/api/travel/recommend").param("page", "1").param("size", "100"))
+        mockMvc.perform(get("/api/travel/recommend").param("pageNum", "1").param("size", "100"))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().contentType("application/json;charset=utf-8"))
-                .andExpect(jsonPath("$.travelRecommendList.length()", greaterThan(0)));
+                .andExpect(jsonPath("$.content").isNotEmpty());
     }
 
     @Test

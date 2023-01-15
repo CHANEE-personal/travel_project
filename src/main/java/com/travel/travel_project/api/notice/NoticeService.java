@@ -1,5 +1,6 @@
 package com.travel.travel_project.api.notice;
 
+import com.travel.travel_project.domain.faq.FaqEntity;
 import com.travel.travel_project.domain.notice.NoticeDTO;
 import com.travel.travel_project.domain.notice.NoticeEntity;
 import com.travel.travel_project.exception.TravelException;
@@ -7,35 +8,26 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import static com.travel.travel_project.exception.ApiExceptionType.*;
 
 @Service
 @RequiredArgsConstructor
 public class NoticeService {
+    private final NoticeQueryRepository noticeQueryRepository;
     private final NoticeRepository noticeRepository;
 
-    /**
-     * <pre>
-     * 1. MethodName : findNoticeCount
-     * 2. ClassName  : NoticeService.java
-     * 3. Comment    : 공지사항 리스트 갯수 조회
-     * 4. 작성자      : CHO
-     * 5. 작성일      : 2022. 11. 28.
-     * </pre>
-     */
-    @Transactional
-    public int findNoticeCount(Map<String, Object> noticeMap) {
-        try {
-            return noticeRepository.findNoticeCount(noticeMap);
-        } catch (Exception e) {
-            throw new TravelException(NOT_FOUND_NOTICE_LIST, e);
-        }
+    private NoticeEntity oneNotice(Long idx) {
+        return noticeRepository.findById(idx)
+                .orElseThrow(() -> new TravelException(NOT_FOUND_NOTICE));
     }
 
     /**
@@ -47,10 +39,9 @@ public class NoticeService {
      * 5. 작성일      : 2022. 11. 28.
      * </pre>
      */
-    @Cacheable(value = "notice", key = "#noticeMap")
     @Transactional(readOnly = true)
-    public List<NoticeDTO> findNoticeList(Map<String, Object> noticeMap) {
-        return noticeRepository.findNoticeList(noticeMap);
+    public Page<NoticeDTO> findNoticeList(Map<String, Object> noticeMap, PageRequest pageRequest) {
+        return noticeQueryRepository.findNoticeList(noticeMap, pageRequest);
     }
 
     /**
@@ -62,10 +53,10 @@ public class NoticeService {
      * 5. 작성일       : 2022. 11. 28.
      * </pre>
      */
-    @Cacheable(value = "notice", key = "#idx")
-    @Transactional(readOnly = true)
+    @Transactional
     public NoticeDTO findOneNotice(Long idx) {
-        return noticeRepository.findOneNotice(idx);
+        oneNotice(idx).updateViewCount();
+        return NoticeEntity.toDto(oneNotice(idx));
     }
 
     /**
@@ -77,13 +68,12 @@ public class NoticeService {
      * 5. 작성일       : 2022. 11. 28.
      * </pre>
      */
-    @CachePut("notice")
     @Transactional
     public NoticeDTO insertNotice(NoticeEntity noticeEntity) {
         try {
-            return noticeRepository.insertNotice(noticeEntity);
+            return NoticeEntity.toDto(noticeRepository.save(noticeEntity));
         } catch (Exception e) {
-            throw new TravelException(ERROR_NOTICE, e);
+            throw new TravelException(ERROR_NOTICE);
         }
     }
 
@@ -96,13 +86,13 @@ public class NoticeService {
      * 5. 작성일       : 2022. 11. 28.
      * </pre>
      */
-    @CachePut(value = "notice", key = "#noticeEntity.idx")
     @Transactional
-    public NoticeDTO updateNotice(NoticeEntity noticeEntity) {
+    public NoticeDTO updateNotice(Long idx, NoticeEntity noticeEntity) {
         try {
-            return noticeRepository.updateNotice(noticeEntity);
+            oneNotice(idx).update(noticeEntity);
+            return NoticeEntity.toDto(noticeEntity);
         } catch (Exception e) {
-            throw new TravelException(ERROR_UPDATE_NOTICE, e);
+            throw new TravelException(ERROR_UPDATE_NOTICE);
         }
     }
 
@@ -115,13 +105,13 @@ public class NoticeService {
      * 5. 작성일       : 2022. 11. 28.
      * </pre>
      */
-    @CacheEvict(value = "notice", key = "#idx")
     @Transactional
     public Long deleteNotice(Long idx) {
         try {
-            return noticeRepository.deleteNotice(idx);
+            noticeRepository.deleteById(idx);
+            return idx;
         } catch (Exception e) {
-            throw new TravelException(ERROR_DELETE_NOTICE, e);
+            throw new TravelException(ERROR_DELETE_NOTICE);
         }
     }
 
@@ -130,17 +120,21 @@ public class NoticeService {
      * 1. MethodName : updateTopFixed
      * 2. ClassName  : NoticeService.java
      * 3. Comment    : 공지사항 고정글
-     * 4. 작성자       : CHO
-     * 5. 작성일       : 2022. 11. 28.
+     * 4. 작성자      : CHO
+     * 5. 작성일      : 2022. 11. 28.
      * </pre>
      */
-    @CachePut(value = "notice", key = "#idx")
     @Transactional
     public Boolean toggleTopFixed(Long idx) {
         try {
-            return noticeRepository.toggleTopFixed(idx);
+            NoticeEntity oneNotice = oneNotice(idx);
+            Optional.ofNullable(oneNotice)
+                    .ifPresent(noticeEntity -> noticeEntity.toggleTopFixed(oneNotice.getTopFixed()));
+
+            assert oneNotice != null;
+            return oneNotice.getTopFixed();
         } catch (Exception e) {
-            throw new TravelException(NOT_FOUND_NOTICE, e);
+            throw new TravelException(ERROR_UPDATE_NOTICE);
         }
     }
 }

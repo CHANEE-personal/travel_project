@@ -1,17 +1,21 @@
 package com.travel.travel_project.api.post;
 
+import com.travel.travel_project.domain.notice.NoticeEntity;
 import com.travel.travel_project.domain.post.PostDTO;
 import com.travel.travel_project.domain.post.PostEntity;
+import com.travel.travel_project.domain.post.reply.ReplyDTO;
+import com.travel.travel_project.domain.post.reply.ReplyEntity;
 import com.travel.travel_project.exception.TravelException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
-import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import static com.travel.travel_project.exception.ApiExceptionType.*;
 
@@ -19,24 +23,18 @@ import static com.travel.travel_project.exception.ApiExceptionType.*;
 @RequiredArgsConstructor
 public class PostService {
 
+    private final PostQueryRepository postQueryRepository;
     private final PostRepository postRepository;
+    private final ReplyRepository replyRepository;
 
-    /**
-     * <pre>
-     * 1. MethodName : findPostCount
-     * 2. ClassName  : PostService.java
-     * 3. Comment    : 게시글 리스트 갯수 조회
-     * 4. 작성자      : CHO
-     * 5. 작성일      : 2022. 12. 12.
-     * </pre>
-     */
-    @Transactional
-    public int findPostCount(Map<String, Object> postMap) {
-        try {
-            return postRepository.findPostCount(postMap);
-        } catch (Exception e) {
-            throw new TravelException(NOT_FOUND_POST_LIST, e);
-        }
+    private PostEntity onePost(Long idx) {
+        return postRepository.findById(idx)
+                .orElseThrow(() -> new TravelException(NOT_FOUND_POST));
+    }
+
+    private ReplyEntity oneReply(Long idx) {
+        return replyRepository.findById(idx)
+                .orElseThrow(() -> new TravelException(NOT_FOUND_REPLY));
     }
 
     /**
@@ -48,10 +46,9 @@ public class PostService {
      * 5. 작성일      : 2022. 12. 12.
      * </pre>
      */
-    @Cacheable(value = "post", key = "#postMap")
     @Transactional(readOnly = true)
-    public List<PostDTO> findPostList(Map<String, Object> postMap) {
-        return postRepository.findPostList(postMap);
+    public Page<PostDTO> findPostList(Map<String, Object> postMap, PageRequest pageRequest) {
+        return postQueryRepository.findPostList(postMap, pageRequest);
     }
 
     /**
@@ -63,10 +60,9 @@ public class PostService {
      * 5. 작성일      : 2022. 12. 12.
      * </pre>
      */
-    @Cacheable(value = "post", key = "#idx")
     @Transactional(readOnly = true)
     public PostDTO findOnePost(Long idx) {
-        return postRepository.findOnePost(idx);
+        return postQueryRepository.findOnePost(idx);
     }
 
     /**
@@ -78,13 +74,12 @@ public class PostService {
      * 5. 작성일      : 2022. 12. 12.
      * </pre>
      */
-    @CachePut("post")
     @Transactional
     public PostDTO insertPost(PostEntity postEntity) {
         try {
-            return postRepository.insertPost(postEntity);
+            return PostEntity.toDto(postRepository.save(postEntity));
         } catch (Exception e) {
-            throw new TravelException(ERROR_POST, e);
+            throw new TravelException(ERROR_POST);
         }
     }
 
@@ -97,13 +92,13 @@ public class PostService {
      * 5. 작성일      : 2022. 12. 12.
      * </pre>
      */
-    @CachePut(value = "post", key = "#postEntity.idx")
     @Transactional
-    public PostDTO updatePost(PostEntity postEntity) {
+    public PostDTO updatePost(Long idx, PostEntity postEntity) {
         try {
-            return postRepository.updatePost(postEntity);
+            onePost(idx).update(postEntity);
+            return PostEntity.toDto(postEntity);
         } catch (Exception e) {
-            throw new TravelException(ERROR_UPDATE_POST, e);
+            throw new TravelException(ERROR_UPDATE_POST);
         }
     }
 
@@ -116,13 +111,71 @@ public class PostService {
      * 5. 작성일      : 2022. 12. 12.
      * </pre>
      */
-    @CacheEvict(value = "post", key = "#idx")
     @Transactional
     public Long deletePost(Long idx) {
         try {
-            return postRepository.deletePost(idx);
+            postRepository.deleteById(idx);
+            return idx;
         } catch (Exception e) {
-            throw new TravelException(ERROR_DELETE_POST, e);
+            throw new TravelException(ERROR_DELETE_POST);
+        }
+    }
+
+    /**
+     * <pre>
+     * 1. MethodName : insertReply
+     * 2. ClassName  : PostService.java
+     * 3. Comment    : 게시글 댓글 등록
+     * 4. 작성자      : CHO
+     * 5. 작성일      : 2022. 12. 12.
+     * </pre>
+     */
+    @Transactional
+    public ReplyDTO insertReply(Long idx, ReplyEntity replyEntity) {
+        try {
+            ReplyEntity reply = replyEntity.getParent() != null ? replyEntity.getParent() : replyEntity;
+            replyEntity.addReply(onePost(idx), reply);
+            return ReplyEntity.toDto(replyRepository.save(replyEntity));
+        } catch (Exception e) {
+            throw new TravelException(ERROR_REPLY);
+        }
+    }
+
+    /**
+     * <pre>
+     * 1. MethodName : updateReply
+     * 2. ClassName  : PostService.java
+     * 3. Comment    : 게시글 댓글 수정
+     * 4. 작성자      : CHO
+     * 5. 작성일      : 2022. 12. 12.
+     * </pre>
+     */
+    @Transactional
+    public ReplyDTO updateReply(Long idx, ReplyEntity replyEntity) {
+        try {
+            oneReply(idx).update(replyEntity);
+            return ReplyEntity.toDto(replyEntity);
+        } catch (Exception e) {
+            throw new TravelException(ERROR_UPDATE_REPLY);
+        }
+    }
+
+    /**
+     * <pre>
+     * 1. MethodName : deleteReply
+     * 2. ClassName  : PostService.java
+     * 3. Comment    : 게시글 댓글 삭제
+     * 4. 작성자      : CHO
+     * 5. 작성일      : 2022. 12. 12.
+     * </pre>
+     */
+    @Transactional
+    public Long deleteReply(Long idx) {
+        try {
+            replyRepository.deleteById(idx);
+            return idx;
+        } catch (Exception e) {
+            throw new TravelException(ERROR_DELETE_REPLY);
         }
     }
 
@@ -131,17 +184,21 @@ public class PostService {
      * 1. MethodName : togglePopular
      * 2. ClassName  : PostService.java
      * 3. Comment    : 게시글 상단 고정
-     * 4. 작성자       : CHO
-     * 5. 작성일       : 2022. 12. 12.
+     * 4. 작성자      : CHO
+     * 5. 작성일      : 2022. 12. 12.
      * </pre>
      */
-    @CachePut(value = "post", key = "#idx")
     @Transactional
     public Boolean togglePopular(Long idx) {
         try {
-            return postRepository.togglePopular(idx);
+            PostEntity onePost = onePost(idx);
+            Optional.ofNullable(onePost)
+                    .ifPresent(postEntity -> postEntity.togglePopular(onePost.getPopular()));
+
+            assert onePost != null;
+            return onePost.getPopular();
         } catch (Exception e) {
-            throw new TravelException(ERROR_UPDATE_POST, e);
+            throw new TravelException(ERROR_UPDATE_POST);
         }
     }
 }

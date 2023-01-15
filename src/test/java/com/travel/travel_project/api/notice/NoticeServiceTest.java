@@ -13,6 +13,9 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.event.EventListener;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.test.context.TestConstructor;
 import org.springframework.test.context.TestPropertySource;
 
@@ -23,6 +26,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
@@ -67,28 +71,30 @@ class NoticeServiceTest {
     void 공지사항리스트조회Mockito테스트() {
         // given
         Map<String, Object> noticeMap = new HashMap<>();
-        noticeMap.put("jpaStartPage", 1);
-        noticeMap.put("size", 3);
+        PageRequest pageRequest = PageRequest.of(1, 3);
 
         List<NoticeDTO> noticeList = new ArrayList<>();
         noticeList.add(noticeDTO);
 
-        // when
-        when(mockNoticeService.findNoticeList(noticeMap)).thenReturn(noticeList);
-        List<NoticeDTO> newNoticeList = mockNoticeService.findNoticeList(noticeMap);
+        Page<NoticeDTO> resultPage = new PageImpl<>(noticeList, pageRequest, noticeList.size());
 
+        // when
+        when(mockNoticeService.findNoticeList(noticeMap, pageRequest)).thenReturn(resultPage);
+        Page<NoticeDTO> newNoticeList = mockNoticeService.findNoticeList(noticeMap, pageRequest);
+
+        List<NoticeDTO> findNoticeList = newNoticeList.stream().collect(Collectors.toList());
         // then
-        assertThat(newNoticeList.get(0).getIdx()).isEqualTo(noticeList.get(0).getIdx());
-        assertThat(newNoticeList.get(0).getTitle()).isEqualTo(noticeList.get(0).getTitle());
-        assertThat(newNoticeList.get(0).getDescription()).isEqualTo(noticeList.get(0).getDescription());
+        assertThat(findNoticeList.get(0).getIdx()).isEqualTo(noticeList.get(0).getIdx());
+        assertThat(findNoticeList.get(0).getTitle()).isEqualTo(noticeList.get(0).getTitle());
+        assertThat(findNoticeList.get(0).getDescription()).isEqualTo(noticeList.get(0).getDescription());
 
         // verify
-        verify(mockNoticeService, times(1)).findNoticeList(noticeMap);
-        verify(mockNoticeService, atLeastOnce()).findNoticeList(noticeMap);
+        verify(mockNoticeService, times(1)).findNoticeList(noticeMap, pageRequest);
+        verify(mockNoticeService, atLeastOnce()).findNoticeList(noticeMap, pageRequest);
         verifyNoMoreInteractions(mockNoticeService);
 
         InOrder inOrder = inOrder(mockNoticeService);
-        inOrder.verify(mockNoticeService).findNoticeList(noticeMap);
+        inOrder.verify(mockNoticeService).findNoticeList(noticeMap, pageRequest);
     }
 
     @Test
@@ -161,7 +167,7 @@ class NoticeServiceTest {
                 .visible("Y")
                 .build();
 
-        NoticeDTO updateNoticeDTO = noticeService.updateNotice(updateNoticeEntity);
+        NoticeDTO updateNoticeDTO = noticeService.updateNotice(newNoticeDTO.getIdx(), updateNoticeEntity);
 
         // when
         when(mockNoticeService.findOneNotice(updateNoticeDTO.getIdx())).thenReturn(updateNoticeDTO);
@@ -209,6 +215,8 @@ class NoticeServiceTest {
     void 공지사항고정글테스트() {
         NoticeDTO oneNotice = noticeService.insertNotice(noticeEntity);
         Boolean trueFixed = noticeService.toggleTopFixed(oneNotice.getIdx());
+        em.flush();
+        em.clear();
         assertThat(trueFixed).isEqualTo(true);
 
         Boolean falseFixed = noticeService.toggleTopFixed(oneNotice.getIdx());

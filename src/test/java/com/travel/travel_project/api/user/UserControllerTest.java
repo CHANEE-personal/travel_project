@@ -1,8 +1,11 @@
 package com.travel.travel_project.api.user;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.travel.travel_project.domain.travel.schedule.TravelScheduleDTO;
+import com.travel.travel_project.api.common.CommonRepository;
+import com.travel.travel_project.domain.common.CommonEntity;
+import com.travel.travel_project.domain.travel.schedule.TravelScheduleEntity;
 import com.travel.travel_project.domain.user.AuthenticationRequest;
+import com.travel.travel_project.domain.user.UserDTO;
 import com.travel.travel_project.domain.user.UserEntity;
 import com.travel.travel_project.jwt.JwtUtil;
 import lombok.RequiredArgsConstructor;
@@ -18,6 +21,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.event.EventListener;
 import org.springframework.restdocs.RestDocumentationContextProvider;
 import org.springframework.restdocs.RestDocumentationExtension;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -31,6 +35,7 @@ import org.springframework.web.filter.CharacterEncodingFilter;
 import javax.persistence.EntityManager;
 import javax.transaction.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -47,6 +52,7 @@ import static org.springframework.restdocs.operation.preprocess.Preprocessors.pr
 import static org.springframework.restdocs.payload.JsonFieldType.STRING;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
+import static org.springframework.security.crypto.factory.PasswordEncoderFactories.createDelegatingPasswordEncoder;
 import static org.springframework.test.context.TestConstructor.AutowireMode.ALL;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -69,8 +75,10 @@ class UserControllerTest {
     private final JwtUtil jwtUtil;
 
     private UserEntity userEntity;
+    private UserDTO userDTO;
     private MockMvc mockMvc;
     protected PasswordEncoder passwordEncoder;
+    private final CommonRepository commonRepository;
 
     Collection<? extends GrantedAuthority> getAuthorities() {
         List<SimpleGrantedAuthority> authorities = new ArrayList<>();
@@ -80,22 +88,24 @@ class UserControllerTest {
 
     @DisplayName("테스트 유저 생성")
     void createUser() {
-//        passwordEncoder = createDelegatingPasswordEncoder();
-//
-//        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken("admin04", "pass1234", getAuthorities());
-//        String token = jwtUtil.doGenerateToken(authenticationToken.getName(), 1000L * 10);
-//
-//        userEntity = UserEntity.builder()
-//                .userId("admin04")
-//                .password("pass1234")
-//                .name("test")
-//                .email("test@test.com")
-//                .role(ROLE_ADMIN)
-//                .userToken(token)
-//                .visible("Y")
-//                .build();
-//
-//        em.persist(userEntity);
+        passwordEncoder = createDelegatingPasswordEncoder();
+
+        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken("admin04", "pass1234", getAuthorities());
+        String token = jwtUtil.doGenerateToken(authenticationToken.getName(), 1000L * 10);
+
+        userEntity = UserEntity.builder()
+                .userId("admin99")
+                .password("pass1234")
+                .name("test")
+                .email("test@test.com")
+                .role(ROLE_ADMIN)
+                .userToken(token)
+                .visible("Y")
+                .build();
+
+        em.persist(userEntity);
+
+        userDTO = UserEntity.toDto(userEntity);
     }
 
     @BeforeEach

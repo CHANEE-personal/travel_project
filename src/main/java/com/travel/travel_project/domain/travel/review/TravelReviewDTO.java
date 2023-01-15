@@ -14,7 +14,7 @@ import javax.validation.constraints.NotNull;
 @SuperBuilder
 @EqualsAndHashCode(of = "idx", callSuper = false)
 @AllArgsConstructor
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @ApiModel
 public class TravelReviewDTO extends NewCommonDTO {
     @ApiModelProperty(required = true, value = "rowNum", hidden = true, example = "1")
@@ -34,12 +34,6 @@ public class TravelReviewDTO extends NewCommonDTO {
     @NotEmpty(message = "여행지 리뷰 상세 내용 입력은 필수입니다.")
     @ApiModelProperty(required = true, value = "여행지 리뷰 상세 내용((ex)이 여행지는...)")
     private String reviewDescription;
-
-    @ApiModelProperty(required = true, value = "부모 idx((ex)1)")
-    private Long reviewParentIdx;
-
-    @ApiModelProperty(required = true, value = "최상위 idx((ex)1)")
-    private Long reviewTopIdx;
 
     @ApiModelProperty(value = "리뷰 조회수((ex)0)", example = "1")
     private int viewCount;

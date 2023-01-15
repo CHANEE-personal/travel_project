@@ -4,10 +4,13 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.travel.travel_project.domain.common.CommonEntity;
 import com.travel.travel_project.domain.common.NewCommonMappedClass;
 import com.travel.travel_project.domain.file.CommonImageEntity;
+import com.travel.travel_project.domain.travel.group.TravelGroupEntity;
 import com.travel.travel_project.domain.travel.review.TravelReviewEntity;
+import com.travel.travel_project.domain.travel.schedule.TravelScheduleEntity;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.BatchSize;
+import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.Where;
 
 import javax.persistence.*;
@@ -27,7 +30,8 @@ import static javax.persistence.GenerationType.IDENTITY;
 @SuperBuilder
 @EqualsAndHashCode(of = "idx", callSuper = false)
 @AllArgsConstructor
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@DynamicUpdate
 @Table(name = "tv_info_mst")
 public class TravelEntity extends NewCommonMappedClass {
 
@@ -78,16 +82,43 @@ public class TravelEntity extends NewCommonMappedClass {
     @JoinColumn(name = "travel_code", referencedColumnName = "common_code", insertable = false, updatable = false)
     private CommonEntity newTravelCode;
 
+    @Builder.Default
     @JsonIgnore
     @BatchSize(size = 20)
     @OneToMany(mappedBy = "newTravelEntity", fetch = LAZY)
     private List<TravelReviewEntity> travelReviewEntityList = new ArrayList<>();
 
+    @Builder.Default
+    @JsonIgnore
+    @OneToMany(mappedBy = "travelEntity", fetch = LAZY)
+    private List<TravelGroupEntity> travelGroupEntityList = new ArrayList<>();
+
+    @Builder.Default
     @JsonIgnore
     @BatchSize(size = 20)
     @Where(clause = "type_name = 'travel'")
     @OneToMany(mappedBy = "travelImageEntity", fetch = LAZY)
     private List<CommonImageEntity> commonImageEntityList = new ArrayList<>();
+
+    public void update(TravelEntity travelEntity) {
+        this.travelTitle = travelEntity.travelTitle;
+        this.travelDescription = travelEntity.travelDescription;
+        this.travelCode = travelEntity.travelCode;
+        this.travelAddress = travelEntity.travelAddress;
+        this.travelZipCode = travelEntity.travelZipCode;
+        this.visible = travelEntity.visible;
+        this.popular = travelEntity.popular;
+    }
+
+    public void addReview(TravelReviewEntity travelReviewEntity) {
+        travelReviewEntity.setNewTravelEntity(this);
+        this.travelReviewEntityList.add(travelReviewEntity);
+    }
+
+    public void addGroup(TravelGroupEntity travelGroupEntity) {
+        travelGroupEntity.setTravelEntity(this);
+        this.travelGroupEntityList.add(travelGroupEntity);
+    }
 
     public void togglePopular(Boolean popular) {
         this.popular = !popular;
