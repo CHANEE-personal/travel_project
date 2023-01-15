@@ -51,7 +51,7 @@ public class TravelScheduleEntity extends NewCommonMappedClass {
     private LocalDateTime scheduleTime;
 
     @JsonIgnore
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_idx", nullable = false)
     private UserEntity userEntity;
 

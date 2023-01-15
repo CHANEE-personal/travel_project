@@ -12,7 +12,7 @@ import javax.validation.constraints.NotNull;
 @SuperBuilder
 @EqualsAndHashCode(of = "idx", callSuper = false)
 @AllArgsConstructor
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @ApiModel
 public class TravelGroupUserDTO {
     @ApiModelProperty(required = true, value = "rnum", hidden = true, example = "1")

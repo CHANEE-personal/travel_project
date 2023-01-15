@@ -6,6 +6,7 @@ import com.travel.travel_project.domain.travel.TravelEntity;
 import com.travel.travel_project.domain.travel.schedule.TravelScheduleEntity;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
+import org.hibernate.annotations.DynamicUpdate;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
@@ -15,6 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static javax.persistence.CascadeType.ALL;
 import static javax.persistence.CascadeType.MERGE;
 import static javax.persistence.FetchType.LAZY;
 import static javax.persistence.GenerationType.IDENTITY;
@@ -24,7 +26,8 @@ import static javax.persistence.GenerationType.IDENTITY;
 @Entity
 @SuperBuilder
 @EqualsAndHashCode(of = "idx", callSuper = false)
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@DynamicUpdate
 @AllArgsConstructor
 @Table(name = "tv_cmm_code")
 public class CommonEntity extends NewCommonMappedClass implements Serializable {
@@ -59,7 +62,7 @@ public class CommonEntity extends NewCommonMappedClass implements Serializable {
     private List<FaqEntity> faqEntityList = new ArrayList<>();
 
     @JsonIgnore
-    @OneToOne(mappedBy = "commonEntity", fetch = LAZY)
+    @OneToOne(mappedBy = "commonEntity", fetch = LAZY, cascade = ALL)
     private TravelScheduleEntity travelScheduleEntity;
 
     public void addCommon(FaqEntity faqEntity) {

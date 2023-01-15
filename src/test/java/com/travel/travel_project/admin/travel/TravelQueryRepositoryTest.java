@@ -1,26 +1,13 @@
 package com.travel.travel_project.admin.travel;
 
-import com.travel.travel_project.domain.faq.FaqDTO;
 import com.travel.travel_project.domain.travel.TravelDTO;
 import com.travel.travel_project.domain.travel.TravelEntity;
 import com.travel.travel_project.api.travel.TravelQueryRepository;
-import com.travel.travel_project.domain.travel.festival.TravelFestivalDTO;
 import com.travel.travel_project.domain.travel.festival.TravelFestivalEntity;
 import com.travel.travel_project.domain.travel.group.TravelGroupDTO;
-import com.travel.travel_project.domain.travel.group.TravelGroupEntity;
-import com.travel.travel_project.domain.travel.group.TravelGroupUserDTO;
-import com.travel.travel_project.domain.travel.group.TravelGroupUserEntity;
-import com.travel.travel_project.domain.travel.recommend.TravelRecommendDTO;
-import com.travel.travel_project.domain.travel.recommend.TravelRecommendEntity;
-import com.travel.travel_project.domain.travel.review.TravelReviewDTO;
-import com.travel.travel_project.domain.travel.review.TravelReviewEntity;
-import com.travel.travel_project.domain.travel.schedule.TravelScheduleDTO;
-import com.travel.travel_project.domain.travel.schedule.TravelScheduleEntity;
 import com.travel.travel_project.domain.travel.search.SearchEntity;
 import com.travel.travel_project.exception.TravelException;
 import lombok.RequiredArgsConstructor;
-import org.json.JSONArray;
-import org.json.JSONException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

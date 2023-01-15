@@ -33,6 +33,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.http.ResponseEntity.ok;
 
 @RestController
@@ -330,8 +331,10 @@ public class UserController {
             @ApiResponse(code = 404, message = "존재 하지 않음", response = HttpClientErrorException.NotFound.class),
             @ApiResponse(code = 500, message = "서버 에러", response = ServerError.class)
     })
-    @PostMapping("/{idx}/schedule")
-    public ResponseEntity<TravelScheduleDTO> insertTravelSchedule(@PathVariable Long idx, @RequestBody TravelScheduleEntity travelScheduleEntity) {
+    @PostMapping(value = "/{idx}/schedule", consumes = APPLICATION_JSON_VALUE)
+    public ResponseEntity<TravelScheduleDTO> insertTravelSchedule(@PathVariable Long idx, @Valid @RequestBody TravelScheduleEntity travelScheduleEntity) {
+        System.out.println("===commonEntity===");
+        System.out.println(travelScheduleEntity.getCommonEntity());
         return ResponseEntity.created(URI.create("")).body(userService.insertTravelSchedule(idx, travelScheduleEntity));
     }
 
@@ -354,7 +357,7 @@ public class UserController {
             @ApiResponse(code = 500, message = "서버 에러", response = ServerError.class)
     })
     @PutMapping("/{idx}/schedule")
-    public ResponseEntity<TravelScheduleDTO> updateTravelSchedule(@PathVariable Long idx, @RequestBody TravelScheduleEntity travelScheduleEntity) {
+    public ResponseEntity<TravelScheduleDTO> updateTravelSchedule(@PathVariable Long idx, @Valid @RequestBody TravelScheduleEntity travelScheduleEntity) {
         return ResponseEntity.ok(userService.updateTravelSchedule(idx, travelScheduleEntity));
     }
 

@@ -12,7 +12,7 @@ import javax.validation.constraints.NotNull;
 @Setter
 @SuperBuilder
 @EqualsAndHashCode(of = "idx", callSuper = false)
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @ApiModel(value = "FAQ 관련")
 public class FaqDTO {
