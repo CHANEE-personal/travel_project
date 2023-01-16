@@ -366,7 +366,7 @@ public class TravelQueryRepository {
                         .or(travelEntity.travelDescription.contains(searchKeyword)))
                 .fetch();
 
-        return searchTravel != null ? TravelEntity.toPartDtoList(searchTravel) : emptyList();
+        return searchTravel != null ? TravelEntity.toDtoList(searchTravel) : emptyList();
     }
 
     /**

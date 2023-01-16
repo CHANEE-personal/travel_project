@@ -73,7 +73,7 @@ public class FaqService {
     @Transactional
     public FaqDTO insertFaq(FaqEntity faqEntity) {
         try {
-            oneCommon(faqEntity.getFaqCode()).addCommon(faqEntity);
+            oneCommon(faqEntity.getNewFaqCode().getCommonCode()).addCommon(faqEntity);
             return FaqEntity.toDto(faqRepository.save(faqEntity));
         } catch (Exception e) {
             throw new TravelException(ERROR_FAQ);

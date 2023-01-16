@@ -66,7 +66,7 @@ class FaqServiceTest {
                 .description("FAQ 등록 테스트")
                 .viewCount(1)
                 .visible("Y")
-                .faqCode(commonEntity.getCommonCode())
+                .newFaqCode(commonEntity)
                 .build();
 
         faqDTO = faqService.insertFaq(faqEntity);

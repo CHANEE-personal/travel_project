@@ -1,5 +1,6 @@
 package com.travel.travel_project.domain.travel.festival;
 
+import com.travel.travel_project.domain.common.CommonEntity;
 import com.travel.travel_project.domain.common.NewCommonMappedClass;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
@@ -14,6 +15,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static javax.persistence.FetchType.LAZY;
 import static javax.persistence.GenerationType.IDENTITY;
 
 @Entity
@@ -22,7 +24,7 @@ import static javax.persistence.GenerationType.IDENTITY;
 @SuperBuilder
 @EqualsAndHashCode(of = "idx", callSuper = false)
 @AllArgsConstructor
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor
 @DynamicUpdate
 @Table(name = "travel_festival")
 public class TravelFestivalEntity extends NewCommonMappedClass {
@@ -34,10 +36,6 @@ public class TravelFestivalEntity extends NewCommonMappedClass {
     @GeneratedValue(strategy = IDENTITY)
     @Column(name = "idx")
     private Long idx;
-
-    @Column(name = "travel_code")
-    @NotNull(message = "여행지 코드 입력은 필수입니다.")
-    private Integer travelCode;
 
     @Column(name = "festival_title")
     @Lob
@@ -62,6 +60,10 @@ public class TravelFestivalEntity extends NewCommonMappedClass {
     @NotNull(message = "축제 일정 입력은 필수입니다.")
     private LocalDateTime festivalTime;
 
+    @ManyToOne(fetch = LAZY)
+    @JoinColumn(name = "travel_code", referencedColumnName = "common_code")
+    private CommonEntity newFestivalCode;
+
     public void update(TravelFestivalEntity travelFestivalEntity) {
         this.festivalTitle = travelFestivalEntity.festivalTitle;
         this.festivalDescription = travelFestivalEntity.festivalDescription;
@@ -75,7 +77,6 @@ public class TravelFestivalEntity extends NewCommonMappedClass {
         return TravelFestivalDTO.builder()
                 .rowNum(entity.getRowNum())
                 .idx(entity.getIdx())
-                .travelCode(entity.getTravelCode())
                 .festivalTitle(entity.getFestivalTitle())
                 .festivalDescription(entity.getFestivalDescription())
                 .festivalMonth(entity.getFestivalMonth())

@@ -1,19 +1,15 @@
 package com.travel.travel_project.api.travel;
 
-import com.travel.travel_project.api.user.UserService;
 import com.travel.travel_project.common.Paging;
-import com.travel.travel_project.common.SearchCommon;
 import com.travel.travel_project.domain.common.EntityType;
-import com.travel.travel_project.domain.file.CommonImageDTO;
-import com.travel.travel_project.domain.file.CommonImageEntity;
+import com.travel.travel_project.domain.travel.image.TravelImageDTO;
+import com.travel.travel_project.domain.travel.image.TravelImageEntity;
 import com.travel.travel_project.domain.travel.TravelDTO;
 import com.travel.travel_project.domain.travel.TravelEntity;
 import com.travel.travel_project.domain.travel.festival.TravelFestivalDTO;
 import com.travel.travel_project.domain.travel.festival.TravelFestivalEntity;
 import com.travel.travel_project.domain.travel.group.TravelGroupDTO;
 import com.travel.travel_project.domain.travel.group.TravelGroupEntity;
-import com.travel.travel_project.domain.travel.group.TravelGroupUserDTO;
-import com.travel.travel_project.domain.travel.group.TravelGroupUserEntity;
 import com.travel.travel_project.domain.travel.recommend.TravelRecommendDTO;
 import com.travel.travel_project.domain.travel.recommend.TravelRecommendEntity;
 import com.travel.travel_project.domain.travel.review.TravelReviewDTO;
@@ -45,8 +41,6 @@ import static org.springframework.http.MediaType.MULTIPART_FORM_DATA_VALUE;
 public class TravelController {
 
     private final TravelService travelService;
-    private final UserService userService;
-    private final SearchCommon searchCommon;
 
     /**
      * <pre>
@@ -128,7 +122,7 @@ public class TravelController {
      */
     @ApiOperation(value = "여행지 이미지 저장", notes = "여행지 이미지를 저장한다.")
     @ApiResponses(value = {
-            @ApiResponse(code = 201, message = "여행지 이미지 등록성공", response = CommonImageDTO.class),
+            @ApiResponse(code = 201, message = "여행지 이미지 등록성공", response = TravelImageDTO.class),
             @ApiResponse(code = 400, message = "잘못된 요청", response = HttpClientErrorException.BadRequest.class),
             @ApiResponse(code = 401, message = "허용되지 않는 관리자", response = HttpClientErrorException.Unauthorized.class),
             @ApiResponse(code = 403, message = "접근거부", response = HttpClientErrorException.class),
@@ -136,8 +130,8 @@ public class TravelController {
             @ApiResponse(code = 500, message = "서버 에러", response = ServerError.class)
     })
     @PostMapping(value = "/{idx}/images", consumes = MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<List<CommonImageDTO>> insertTravelImage(@PathVariable Long idx, @RequestParam(value = "images") List<MultipartFile> fileName) {
-        return ResponseEntity.created(URI.create("")).body(travelService.insertTravelImage(fileName, CommonImageEntity.builder().typeIdx(idx).entityType(EntityType.TRAVEL).build()));
+    public ResponseEntity<List<TravelImageDTO>> insertTravelImage(@PathVariable Long idx, @RequestParam(value = "images") List<MultipartFile> fileName) {
+        return ResponseEntity.created(URI.create("")).body(travelService.insertTravelImage(idx, fileName, TravelImageEntity.builder().entityType(EntityType.TRAVEL).build()));
     }
 
     /**

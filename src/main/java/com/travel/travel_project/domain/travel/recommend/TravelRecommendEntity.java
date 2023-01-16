@@ -20,7 +20,7 @@ import static javax.persistence.GenerationType.IDENTITY;
 @SuperBuilder
 @EqualsAndHashCode(of = "idx", callSuper = false)
 @AllArgsConstructor
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor
 @DynamicUpdate
 @Table(name = "travel_recommend")
 public class TravelRecommendEntity extends NewCommonMappedClass {

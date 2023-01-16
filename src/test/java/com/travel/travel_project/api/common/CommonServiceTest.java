@@ -55,6 +55,8 @@ class CommonServiceTest {
                 .visible("Y")
                 .build();
 
+        em.persist(commonEntity);
+
         commonDTO = CommonEntity.toDto(commonEntity);
     }
 

@@ -71,7 +71,7 @@ class NoticeServiceTest {
     void 공지사항리스트조회Mockito테스트() {
         // given
         Map<String, Object> noticeMap = new HashMap<>();
-        PageRequest pageRequest = PageRequest.of(1, 3);
+        PageRequest pageRequest = PageRequest.of(0, 3);
 
         List<NoticeDTO> noticeList = new ArrayList<>();
         noticeList.add(noticeDTO);

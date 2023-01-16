@@ -1,11 +1,8 @@
 package com.travel.travel_project.domain.travel.schedule;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.travel.travel_project.domain.common.CommonEntity;
 import com.travel.travel_project.domain.common.NewCommonMappedClass;
-import com.travel.travel_project.domain.travel.TravelEntity;
 import com.travel.travel_project.domain.user.UserEntity;
-import io.swagger.annotations.ApiModelProperty;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.DynamicUpdate;
@@ -50,13 +47,11 @@ public class TravelScheduleEntity extends NewCommonMappedClass {
     @NotNull(message = "스케줄 일정 입력은 필수입니다.")
     private LocalDateTime scheduleTime;
 
-    @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_idx", nullable = false)
     private UserEntity userEntity;
 
-    @JsonIgnore
-    @OneToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name ="travel_code", nullable = false)
     private CommonEntity commonEntity;
 

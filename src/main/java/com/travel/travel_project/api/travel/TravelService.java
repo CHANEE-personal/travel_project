@@ -7,14 +7,12 @@ import com.travel.travel_project.api.travel.recommend.RecommendRepository;
 import com.travel.travel_project.api.travel.review.ReviewRepository;
 import com.travel.travel_project.common.SaveFile;
 import com.travel.travel_project.domain.common.CommonEntity;
-import com.travel.travel_project.domain.file.CommonImageDTO;
-import com.travel.travel_project.domain.file.CommonImageEntity;
+import com.travel.travel_project.domain.travel.image.TravelImageDTO;
+import com.travel.travel_project.domain.travel.image.TravelImageEntity;
 import com.travel.travel_project.domain.travel.festival.TravelFestivalDTO;
 import com.travel.travel_project.domain.travel.festival.TravelFestivalEntity;
 import com.travel.travel_project.domain.travel.group.TravelGroupDTO;
 import com.travel.travel_project.domain.travel.group.TravelGroupEntity;
-import com.travel.travel_project.domain.travel.group.TravelGroupUserDTO;
-import com.travel.travel_project.domain.travel.group.TravelGroupUserEntity;
 import com.travel.travel_project.domain.travel.recommend.TravelRecommendDTO;
 import com.travel.travel_project.domain.travel.recommend.TravelRecommendEntity;
 import com.travel.travel_project.domain.travel.review.TravelReviewDTO;
@@ -120,7 +118,7 @@ public class TravelService {
     @Transactional
     public TravelDTO insertTravel(TravelEntity travelEntity) {
         try {
-            oneCommon(travelEntity.getTravelCode()).addTravel(travelEntity);
+            oneCommon(travelEntity.getNewTravelCode().getCommonCode()).addTravel(travelEntity);
             return TravelEntity.toDto(travelRepository.save(travelEntity));
         } catch (Exception e) {
             throw new TravelException(ERROR_TRAVEL);
@@ -137,9 +135,9 @@ public class TravelService {
      * </pre>
      */
     @Transactional
-    public List<CommonImageDTO> insertTravelImage(List<MultipartFile> files, CommonImageEntity commonImageEntity) {
+    public List<TravelImageDTO> insertTravelImage(Long idx, List<MultipartFile> files, TravelImageEntity travelImageEntity) {
         try {
-            return saveFile.saveFile(files, commonImageEntity);
+            return saveFile.saveTravelFile(oneTravel(idx), files, travelImageEntity);
         } catch (Exception e) {
             throw new TravelException(ERROR_IMAGE);
         }
@@ -575,6 +573,7 @@ public class TravelService {
     @Transactional
     public TravelFestivalDTO insertTravelFestival(TravelFestivalEntity travelFestivalEntity) {
         try {
+            oneCommon(travelFestivalEntity.getNewFestivalCode().getCommonCode()).addFestival(travelFestivalEntity);
             return TravelFestivalEntity.toDto(festivalRepository.save(travelFestivalEntity));
         } catch (Exception e) {
             throw new TravelException(ERROR_FESTIVAL);

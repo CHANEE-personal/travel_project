@@ -118,7 +118,7 @@ class FaqControllerTest {
                 .title("FAQ 등록 테스트")
                 .description("FAQ 등록 테스트")
                 .viewCount(1)
-                .faqCode(commonEntity.getCommonCode())
+                .newFaqCode(commonEntity)
                 .visible("Y")
                 .build();
 
@@ -147,7 +147,7 @@ class FaqControllerTest {
                 .title("FAQ 등록 테스트")
                 .description("FAQ 등록 테스트")
                 .viewCount(1)
-                .faqCode(commonEntity.getCommonCode())
+                .newFaqCode(commonEntity)
                 .visible("Y")
                 .build();
 
@@ -158,7 +158,7 @@ class FaqControllerTest {
                 .title("FAQ 수정 테스트")
                 .description("FAQ 수정 테스트")
                 .viewCount(1)
-                .faqCode(commonEntity.getCommonCode())
+                .newFaqCode(commonEntity)
                 .visible("Y")
                 .build();
 
@@ -187,7 +187,7 @@ class FaqControllerTest {
                 .title("FAQ 등록 테스트")
                 .description("FAQ 등록 테스트")
                 .viewCount(1)
-                .faqCode(commonEntity.getCommonCode())
+                .newFaqCode(commonEntity)
                 .visible("Y")
                 .build();
 

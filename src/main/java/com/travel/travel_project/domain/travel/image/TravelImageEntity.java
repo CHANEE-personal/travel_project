@@ -1,9 +1,7 @@
-package com.travel.travel_project.domain.file;
+package com.travel.travel_project.domain.travel.image;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.travel.travel_project.domain.common.EntityType;
-import com.travel.travel_project.domain.post.PostEntity;
 import com.travel.travel_project.domain.travel.TravelEntity;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.*;
@@ -27,16 +25,13 @@ import static javax.persistence.FetchType.LAZY;
 @DynamicUpdate
 @AllArgsConstructor
 @Table(name = "travel_image")
-public class CommonImageEntity {
+public class TravelImageEntity {
+
     @Id
     @GeneratedValue
     @Column(name = "idx")
     @ApiModelProperty(value = "파일 IDX", required = true, hidden = true)
     private Long idx;
-
-    @Column(name = "type_idx")
-    @ApiModelProperty(value = "분야 IDX", required = true, hidden = true)
-    private Long typeIdx;
 
     @Column(name = "type_name")
     @Enumerated(EnumType.STRING)
@@ -77,21 +72,14 @@ public class CommonImageEntity {
     @ApiModelProperty(value = "등록일자", hidden = true)
     private LocalDateTime regDate;
 
-    @JsonIgnore
-    @ManyToOne(fetch = LAZY, cascade = CascadeType.REMOVE)
-    @JoinColumn(name = "type_idx", referencedColumnName = "idx", insertable = false, updatable = false)
+    @ManyToOne(fetch = LAZY)
+    @JoinColumn(name = "type_idx", referencedColumnName = "idx", nullable = false)
     private TravelEntity travelImageEntity;
 
-    @JsonIgnore
-    @ManyToOne(fetch = LAZY, cascade = CascadeType.REMOVE)
-    @JoinColumn(name = "type_idx", referencedColumnName = "idx", insertable = false, updatable = false)
-    private PostEntity postImageEntity;
-
-    public static CommonImageDTO toDto(CommonImageEntity entity) {
+    public static TravelImageDTO toDto(TravelImageEntity entity) {
         if (entity == null) return null;
-        return CommonImageDTO.builder()
+        return TravelImageDTO.builder()
                 .idx(entity.getIdx())
-                .typeIdx(entity.getTypeIdx())
                 .entityType(entity.getEntityType())
                 .fileMask(entity.getFileMask())
                 .fileSize(entity.getFileSize())
@@ -104,34 +92,10 @@ public class CommonImageEntity {
                 .build();
     }
 
-    public static CommonImageEntity toEntity(CommonImageDTO dto) {
-        if (dto == null) return null;
-        return CommonImageEntity.builder()
-                .idx(dto.getIdx())
-                .typeIdx(dto.getTypeIdx())
-                .entityType(dto.getEntityType())
-                .fileMask(dto.getFileMask())
-                .fileSize(dto.getFileSize())
-                .fileName(dto.getFileName())
-                .fileNum(dto.getFileNum())
-                .filePath(dto.getFilePath())
-                .imageType(dto.getImageType())
-                .visible(dto.getVisible())
-                .regDate(dto.getRegDate())
-                .build();
-    }
-
-    public static List<CommonImageDTO> toDtoList(List<CommonImageEntity> entityList) {
+    public static List<TravelImageDTO> toDtoList(List<TravelImageEntity> entityList) {
         if (entityList == null) return null;
         return entityList.stream()
-                .map(CommonImageEntity::toDto)
-                .collect(Collectors.toList());
-    }
-
-    public static List<CommonImageEntity> toEntityList(List<CommonImageDTO> dtoList) {
-        if (dtoList == null) return null;
-        return dtoList.stream()
-                .map(CommonImageEntity::toEntity)
+                .map(TravelImageEntity::toDto)
                 .collect(Collectors.toList());
     }
 }

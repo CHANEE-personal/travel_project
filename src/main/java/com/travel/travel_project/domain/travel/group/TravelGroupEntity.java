@@ -1,6 +1,5 @@
 package com.travel.travel_project.domain.travel.group;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.travel.travel_project.domain.common.NewCommonMappedClass;
 import com.travel.travel_project.domain.travel.TravelEntity;
 import lombok.*;
@@ -9,7 +8,6 @@ import org.hibernate.annotations.DynamicUpdate;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -50,11 +48,9 @@ public class TravelGroupEntity extends NewCommonMappedClass {
     private String visible;
 
     @Builder.Default
-    @JsonIgnore
     @OneToMany(mappedBy = "travelGroupEntity", cascade = CascadeType.REMOVE)
     private List<TravelGroupUserEntity> travelGroupList = new ArrayList<>();
 
-    @JsonIgnore
     @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "travel_idx", referencedColumnName = "idx")
     private TravelEntity travelEntity;
