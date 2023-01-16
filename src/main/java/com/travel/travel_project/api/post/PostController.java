@@ -1,10 +1,14 @@
 package com.travel.travel_project.api.post;
 
 import com.travel.travel_project.common.Paging;
+import com.travel.travel_project.domain.common.EntityType;
 import com.travel.travel_project.domain.post.PostDTO;
 import com.travel.travel_project.domain.post.PostEntity;
+import com.travel.travel_project.domain.post.image.PostImageDTO;
+import com.travel.travel_project.domain.post.image.PostImageEntity;
 import com.travel.travel_project.domain.post.reply.ReplyDTO;
 import com.travel.travel_project.domain.post.reply.ReplyEntity;
+import com.travel.travel_project.domain.travel.image.TravelImageDTO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
@@ -14,12 +18,15 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
 import java.net.URI;
 import java.rmi.ServerError;
 import java.util.List;
 import java.util.Map;
+
+import static org.springframework.http.MediaType.MULTIPART_FORM_DATA_VALUE;
 
 @RestController
 @RequestMapping("/api/post")
@@ -96,6 +103,29 @@ public class PostController {
     @PostMapping
     public ResponseEntity<PostDTO> insertPost(@Valid @RequestBody PostEntity postEntity) {
         return ResponseEntity.created(URI.create("")).body(postService.insertPost(postEntity));
+    }
+
+    /**
+     * <pre>
+     * 1. MethodName : insertPostImage
+     * 2. ClassName  : PostController.java
+     * 3. Comment    : 게시글 이미지 저장
+     * 4. 작성자      : CHO
+     * 5. 작성일      : 2022. 05. 07.
+     * </pre>
+     */
+    @ApiOperation(value = "게시글 이미지 저장", notes = "게시글 이미지를 저장한다.")
+    @ApiResponses(value = {
+            @ApiResponse(code = 201, message = "게시글 이미지 등록성공", response = TravelImageDTO.class),
+            @ApiResponse(code = 400, message = "잘못된 요청", response = HttpClientErrorException.BadRequest.class),
+            @ApiResponse(code = 401, message = "허용되지 않는 관리자", response = HttpClientErrorException.Unauthorized.class),
+            @ApiResponse(code = 403, message = "접근거부", response = HttpClientErrorException.class),
+            @ApiResponse(code = 404, message = "존재 하지 않음", response = HttpClientErrorException.NotFound.class),
+            @ApiResponse(code = 500, message = "서버 에러", response = ServerError.class)
+    })
+    @PostMapping(value = "/{idx}/images", consumes = MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<List<PostImageDTO>> insertPostImage(@PathVariable Long idx, @RequestParam(value = "images") List<MultipartFile> fileName) {
+        return ResponseEntity.created(URI.create("")).body(postService.insertPostImage(idx, fileName, PostImageEntity.builder().entityType(EntityType.POST).build()));
     }
 
     /**

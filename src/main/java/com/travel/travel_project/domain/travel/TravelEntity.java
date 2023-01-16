@@ -1,12 +1,10 @@
 package com.travel.travel_project.domain.travel;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.travel.travel_project.domain.common.CommonEntity;
 import com.travel.travel_project.domain.common.NewCommonMappedClass;
-import com.travel.travel_project.domain.file.CommonImageEntity;
+import com.travel.travel_project.domain.travel.image.TravelImageEntity;
 import com.travel.travel_project.domain.travel.group.TravelGroupEntity;
 import com.travel.travel_project.domain.travel.review.TravelReviewEntity;
-import com.travel.travel_project.domain.travel.schedule.TravelScheduleEntity;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.BatchSize;
@@ -15,7 +13,6 @@ import org.hibernate.annotations.Where;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -52,8 +49,7 @@ public class TravelEntity extends NewCommonMappedClass {
     @NotEmpty(message = "여행지 상세 내용 입력은 필수입니다.")
     private String travelDescription;
 
-    @Column(name = "travel_code")
-    @NotNull(message = "여행지 코드 입력은 필수입니다.")
+    @Column(name = "travel_code", insertable = false, updatable = false)
     private Integer travelCode;
 
     @Column(name = "travel_address")
@@ -77,33 +73,28 @@ public class TravelEntity extends NewCommonMappedClass {
     @Column(name = "popular")
     private Boolean popular;
 
-    @JsonIgnore
     @ManyToOne(fetch = LAZY)
-    @JoinColumn(name = "travel_code", referencedColumnName = "common_code", insertable = false, updatable = false)
+    @JoinColumn(name = "travel_code", referencedColumnName = "common_code")
     private CommonEntity newTravelCode;
 
     @Builder.Default
-    @JsonIgnore
     @BatchSize(size = 20)
-    @OneToMany(mappedBy = "newTravelEntity", fetch = LAZY)
+    @OneToMany(mappedBy = "newTravelEntity", fetch = LAZY, cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<TravelReviewEntity> travelReviewEntityList = new ArrayList<>();
 
     @Builder.Default
-    @JsonIgnore
-    @OneToMany(mappedBy = "travelEntity", fetch = LAZY)
+    @OneToMany(mappedBy = "travelEntity", fetch = LAZY, cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<TravelGroupEntity> travelGroupEntityList = new ArrayList<>();
 
     @Builder.Default
-    @JsonIgnore
     @BatchSize(size = 20)
     @Where(clause = "type_name = 'travel'")
-    @OneToMany(mappedBy = "travelImageEntity", fetch = LAZY)
-    private List<CommonImageEntity> commonImageEntityList = new ArrayList<>();
+    @OneToMany(mappedBy = "travelImageEntity", fetch = LAZY, cascade = CascadeType.REMOVE, orphanRemoval = true)
+    private List<TravelImageEntity> travelImageEntityList = new ArrayList<>();
 
     public void update(TravelEntity travelEntity) {
         this.travelTitle = travelEntity.travelTitle;
         this.travelDescription = travelEntity.travelDescription;
-        this.travelCode = travelEntity.travelCode;
         this.travelAddress = travelEntity.travelAddress;
         this.travelZipCode = travelEntity.travelZipCode;
         this.visible = travelEntity.visible;
@@ -118,6 +109,11 @@ public class TravelEntity extends NewCommonMappedClass {
     public void addGroup(TravelGroupEntity travelGroupEntity) {
         travelGroupEntity.setTravelEntity(this);
         this.travelGroupEntityList.add(travelGroupEntity);
+    }
+
+    public void addImage(TravelImageEntity travelImageEntity) {
+        travelImageEntity.setTravelImageEntity(this);
+        this.travelImageEntityList.add(travelImageEntity);
     }
 
     public void togglePopular(Boolean popular) {
@@ -137,7 +133,6 @@ public class TravelEntity extends NewCommonMappedClass {
         return TravelDTO.builder()
                 .idx(entity.getIdx())
                 .rowNum(entity.getRowNum())
-                .travelCode(entity.getTravelCode())
                 .travelTitle(entity.getTravelTitle())
                 .travelDescription(entity.getTravelDescription())
                 .travelAddress(entity.getTravelAddress())
@@ -150,29 +145,8 @@ public class TravelEntity extends NewCommonMappedClass {
                 .createTime(entity.getCreateTime())
                 .updater(entity.getUpdater())
                 .updateTime(entity.getUpdateTime())
-                .imageList(CommonImageEntity.toDtoList(entity.getCommonImageEntityList()))
+                .imageList(TravelImageEntity.toDtoList(entity.getTravelImageEntityList()))
                 .reviewList(TravelReviewEntity.toDtoList(entity.getTravelReviewEntityList()))
-                .build();
-    }
-
-    public static TravelDTO toPartDto(TravelEntity entity) {
-        if (entity == null) return null;
-        return TravelDTO.builder()
-                .idx(entity.getIdx())
-                .rowNum(entity.getRowNum())
-                .travelCode(entity.getTravelCode())
-                .travelTitle(entity.getTravelTitle())
-                .travelDescription(entity.getTravelDescription())
-                .travelAddress(entity.getTravelAddress())
-                .travelZipCode(entity.getTravelZipCode())
-                .favoriteCount(entity.getFavoriteCount())
-                .viewCount(entity.getViewCount())
-                .visible(entity.getVisible())
-                .popular(entity.getPopular())
-                .creator(entity.getCreator())
-                .createTime(entity.getCreateTime())
-                .updater(entity.getUpdater())
-                .updateTime(entity.getUpdateTime())
                 .build();
     }
 
@@ -180,13 +154,6 @@ public class TravelEntity extends NewCommonMappedClass {
         if (entityList == null) return null;
         return entityList.stream()
                 .map(TravelEntity::toDto)
-                .collect(Collectors.toList());
-    }
-
-    public static List<TravelDTO> toPartDtoList(List<TravelEntity> entityList) {
-        if (entityList == null) return null;
-        return entityList.stream()
-                .map(TravelEntity::toPartDto)
                 .collect(Collectors.toList());
     }
 }

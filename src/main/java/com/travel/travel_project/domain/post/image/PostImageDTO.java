@@ -1,4 +1,4 @@
-package com.travel.travel_project.domain.file;
+package com.travel.travel_project.domain.post.image;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.travel.travel_project.domain.common.EntityType;
@@ -21,7 +21,7 @@ import static com.fasterxml.jackson.annotation.JsonFormat.Shape.STRING;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @ApiModel
-public class CommonImageDTO {
+public class PostImageDTO {
     @ApiModelProperty(value = "파일 IDX", required = true, hidden = true, example = "1")
     private Long idx;
 

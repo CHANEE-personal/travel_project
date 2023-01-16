@@ -1,9 +1,8 @@
 package com.travel.travel_project.domain.post;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.travel.travel_project.domain.common.NewCommonMappedClass;
-import com.travel.travel_project.domain.file.CommonImageEntity;
+import com.travel.travel_project.domain.post.image.PostImageEntity;
 import com.travel.travel_project.domain.post.reply.ReplyEntity;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
@@ -64,23 +63,21 @@ public class PostEntity extends NewCommonMappedClass {
     private Boolean popular;
 
     @Builder.Default
-    @JsonIgnore
     @OneToMany(mappedBy = "postEntity", fetch = LAZY, cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<ReplyEntity> replyEntityList = new ArrayList<>();
 
     @Builder.Default
-    @JsonIgnore
     @BatchSize(size = 100)
     @Where(clause = "type_name = 'post'")
-    @OneToMany(mappedBy = "postImageEntity", fetch = LAZY)
-    private List<CommonImageEntity> postImageList = new ArrayList<>();
+    @OneToMany(mappedBy = "postImageEntity", fetch = LAZY, cascade = CascadeType.REMOVE, orphanRemoval = true)
+    private List<PostImageEntity> postImageList = new ArrayList<>();
 
     // 고정글 수정
     public void togglePopular(Boolean popular) {
         this.popular = !popular;
     }
 
-    public void addPostImage(CommonImageEntity commonImageEntity) {
+    public void addPostImage(PostImageEntity commonImageEntity) {
         commonImageEntity.setPostImageEntity(this);
         this.postImageList.add(commonImageEntity);
     }
@@ -108,7 +105,7 @@ public class PostEntity extends NewCommonMappedClass {
                 .viewCount(entity.getViewCount())
                 .favoriteCount(entity.getFavoriteCount())
                 .postReplyList(ReplyEntity.toDtoList(entity.getReplyEntityList()))
-                .postImageList(CommonImageEntity.toDtoList(entity.getPostImageList()))
+//                .postImageList(CommonImageEntity.toDtoList(entity.getPostImageList()))
                 .build();
     }
 

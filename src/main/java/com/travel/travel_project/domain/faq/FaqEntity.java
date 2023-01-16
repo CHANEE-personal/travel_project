@@ -36,10 +36,6 @@ public class FaqEntity {
     @Column(name = "idx")
     private Long idx;
 
-    @Column(name = "faq_code")
-    @NotNull(message = "FAQ Code 입력은 필수입니다.")
-    private Integer faqCode;
-
     @Column(name = "title")
     @NotEmpty(message = "제목 입력은 필수입니다.")
     private String title;
@@ -56,9 +52,8 @@ public class FaqEntity {
     @NotEmpty(message = "공지사항 노출 여부 선택은 필수입니다.")
     private String visible;
 
-    @JsonIgnore
     @ManyToOne(fetch = LAZY)
-    @JoinColumn(name = "faq_code", insertable = false, updatable = false)
+    @JoinColumn(name = "faq_code", referencedColumnName = "common_code")
     private CommonEntity newFaqCode;
 
     // 조회 수 증가
@@ -77,7 +72,6 @@ public class FaqEntity {
         return FaqDTO.builder()
                 .rowNum(entity.getRowNum())
                 .idx(entity.getIdx())
-                .faqCode(entity.getFaqCode())
                 .title(entity.getTitle())
                 .description(entity.getDescription())
                 .viewCount(entity.getViewCount())
@@ -90,7 +84,6 @@ public class FaqEntity {
         return FaqEntity.builder()
                 .rowNum(dto.getRowNum())
                 .idx(dto.getIdx())
-                .faqCode(dto.getFaqCode())
                 .title(dto.getTitle())
                 .description(dto.getDescription())
                 .viewCount(dto.getViewCount())

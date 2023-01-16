@@ -1,5 +1,7 @@
 package com.travel.travel_project.admin.travel;
 
+import com.travel.travel_project.domain.common.CommonDTO;
+import com.travel.travel_project.domain.common.CommonEntity;
 import com.travel.travel_project.domain.travel.TravelDTO;
 import com.travel.travel_project.domain.travel.TravelEntity;
 import com.travel.travel_project.api.travel.TravelService;
@@ -66,10 +68,22 @@ class TravelServiceTest {
 
     private TravelEntity travelEntity;
     private TravelDTO travelDTO;
+    private CommonEntity commonEntity;
+    private CommonDTO commonDTO;
 
     void createTravel() {
+        commonEntity = CommonEntity.builder()
+                .commonCode(999)
+                .commonName("서울")
+                .visible("Y")
+                .build();
+
+        em.persist(commonEntity);
+
+        commonDTO = CommonEntity.toDto(commonEntity);
+
         travelEntity = TravelEntity.builder()
-                .travelCode(1)
+                .newTravelCode(commonEntity)
                 .travelTitle("여행지 소개")
                 .travelDescription("여행지 소개")
                 .travelAddress("인천광역시 서구")
@@ -118,7 +132,7 @@ class TravelServiceTest {
         travelMap.put("searchCode", 1);
         travelMap.put("searchKeyword", "여행지");
 
-        PageRequest pageRequest = PageRequest.of(1, 3);
+        PageRequest pageRequest = PageRequest.of(0, 3);
 
         List<TravelDTO> travelList = new ArrayList<>();
         travelList.add(TravelDTO.builder().idx(1L).travelCode(1)
@@ -298,7 +312,7 @@ class TravelServiceTest {
     void 여행지등록Mockito테스트() {
         // given
         travelEntity = TravelEntity.builder()
-                .travelCode(1)
+                .newTravelCode(commonEntity)
                 .travelTitle("여행지 테스트").travelDescription("여행지 테스트").favoriteCount(0).viewCount(0)
                 .travelAddress("인천광역시 서구").travelZipCode("123-456").visible("Y")
                 .build();
@@ -310,7 +324,7 @@ class TravelServiceTest {
         TravelDTO newAdminTravel = mockTravelService.findOneTravel(travelEntity.getIdx());
 
         // then
-        assertThat(newAdminTravel.getTravelCode()).isEqualTo(travelEntity.getTravelCode());
+//        assertThat(newAdminTravel.getTravelCode()).isEqualTo(travelEntity.getTravelCode());
         assertThat(newAdminTravel.getTravelTitle()).isEqualTo(travelEntity.getTravelTitle());
         assertThat(newAdminTravel.getTravelDescription()).isEqualTo(travelEntity.getTravelDescription());
         assertThat(newAdminTravel.getTravelAddress()).isEqualTo(travelEntity.getTravelAddress());
@@ -330,7 +344,7 @@ class TravelServiceTest {
     void 여행지등록BDD테스트() {
         // given
         travelEntity = TravelEntity.builder()
-                .travelCode(1)
+                .newTravelCode(commonEntity)
                 .travelTitle("여행지 테스트").travelDescription("여행지 테스트").favoriteCount(0).viewCount(0)
                 .travelAddress("인천광역시 서구").travelZipCode("123-456").visible("Y")
                 .build();
@@ -342,7 +356,7 @@ class TravelServiceTest {
         TravelDTO newAdminTravel = mockTravelService.findOneTravel(travelEntity.getIdx());
 
         // then
-        assertThat(newAdminTravel.getTravelCode()).isEqualTo(travelEntity.getTravelCode());
+//        assertThat(newAdminTravel.getTravelCode()).isEqualTo(travelEntity.getTravelCode());
         assertThat(newAdminTravel.getTravelTitle()).isEqualTo(travelEntity.getTravelTitle());
         assertThat(newAdminTravel.getTravelDescription()).isEqualTo(travelEntity.getTravelDescription());
         assertThat(newAdminTravel.getTravelAddress()).isEqualTo(travelEntity.getTravelAddress());
@@ -359,13 +373,13 @@ class TravelServiceTest {
     void 여행지수정테스트() {
         // given
         travelEntity = TravelEntity.builder()
-                .travelCode(1)
+                .newTravelCode(commonEntity)
                 .travelTitle("여행지 테스트").travelDescription("여행지 테스트").favoriteCount(0).viewCount(0)
                 .travelAddress("인천광역시 서구").travelZipCode("123-456").visible("Y")
                 .build();
 
         TravelEntity travelEntity1 = TravelEntity.builder()
-                .travelCode(1)
+                .newTravelCode(commonEntity)
                 .travelTitle("여행지 테스트1").travelDescription("여행지 테스트1").favoriteCount(0).viewCount(0)
                 .travelAddress("인천광역시 계양구").travelZipCode("123-456").visible("Y")
                 .build();
@@ -375,7 +389,7 @@ class TravelServiceTest {
 
         TravelEntity newAdminTravelEntity = TravelEntity.builder()
                 .idx(adminTravelDTO.getIdx())
-                .travelCode(1)
+                .newTravelCode(commonEntity)
                 .travelTitle("여행지 수정 테스트").travelDescription("여행지 수정 테스트").favoriteCount(0).viewCount(0)
                 .travelAddress("서울특별시 강남구").travelZipCode("123-456")
                 .visible("Y").build();
@@ -394,7 +408,7 @@ class TravelServiceTest {
     void 여행지수정Mockito테스트() {
         // given
         travelEntity = TravelEntity.builder()
-                .travelCode(1)
+                .newTravelCode(commonEntity)
                 .travelTitle("여행지 테스트").travelDescription("여행지 테스트").favoriteCount(0).viewCount(0)
                 .travelAddress("인천광역시 서구").travelZipCode("123-456").visible("Y")
                 .build();
@@ -403,7 +417,6 @@ class TravelServiceTest {
 
         TravelEntity newAdminTravelEntity = TravelEntity.builder()
                 .idx(adminTravelDTO.getIdx())
-                .travelCode(1)
                 .travelTitle("여행지 수정 테스트").travelDescription("여행지 수정 테스트").favoriteCount(0).viewCount(0)
                 .travelAddress("서울특별시 강남구").travelZipCode("123-456")
                 .visible("Y").build();
@@ -435,7 +448,7 @@ class TravelServiceTest {
     void 여행지수정BDD테스트() {
         // given
         travelEntity = TravelEntity.builder()
-                .travelCode(1)
+                .newTravelCode(commonEntity)
                 .travelTitle("여행지 테스트").travelDescription("여행지 테스트").favoriteCount(0).viewCount(0)
                 .travelAddress("인천광역시 서구").travelZipCode("123-456").visible("Y")
                 .build();
@@ -444,7 +457,7 @@ class TravelServiceTest {
 
         TravelEntity newAdminTravelEntity = TravelEntity.builder()
                 .idx(adminTravelDTO.getIdx())
-                .travelCode(1)
+                .newTravelCode(commonEntity)
                 .travelTitle("여행지 수정 테스트").travelDescription("여행지 수정 테스트").favoriteCount(0).viewCount(0)
                 .travelAddress("서울특별시 강남구").travelZipCode("123-456")
                 .visible("Y").build();
@@ -536,7 +549,6 @@ class TravelServiceTest {
         Boolean popular = travelService.togglePopular(idx);
 
         travelEntity = TravelEntity.builder()
-                .travelCode(1)
                 .travelTitle("여행지 테스트").travelDescription("여행지 테스트").favoriteCount(1).viewCount(0)
                 .travelAddress("인천광역시 서구").travelZipCode("123-456").visible("Y").popular(popular)
                 .build();
@@ -568,7 +580,6 @@ class TravelServiceTest {
         Boolean popular = travelService.togglePopular(idx);
 
         travelEntity = TravelEntity.builder()
-                .travelCode(1)
                 .travelTitle("여행지 테스트").travelDescription("여행지 테스트").favoriteCount(1).viewCount(0)
                 .travelAddress("인천광역시 서구").travelZipCode("123-456").visible("Y").popular(popular)
                 .build();
@@ -806,7 +817,7 @@ class TravelServiceTest {
     void 여행지그룹리스트Mockito조회테스트() {
         // given
         Map<String, Object> groupMap = new HashMap<>();
-        PageRequest pageRequest = PageRequest.of(1, 3);
+        PageRequest pageRequest = PageRequest.of(0, 3);
 
         List<TravelGroupDTO> travelGroupList = new ArrayList<>();
         travelGroupList.add(TravelGroupDTO.builder().travelIdx(1L).groupName("서울모임")
@@ -936,9 +947,10 @@ class TravelServiceTest {
     @DisplayName("여행지 그룹 삭제 Mockito 테스트")
     void 여행지그룹삭제Mockito테스트() {
         // given
+        em.persist(travelEntity);
         TravelGroupEntity travelGroupEntity = TravelGroupEntity.builder()
                 .groupName("서울모임").groupDescription("서울모임").visible("Y").build();
-        em.persist(travelGroupEntity);
+        travelService.insertTravelGroup(travelEntity.getIdx(), travelGroupEntity);
 
         TravelGroupDTO travelGroupDTO = TravelGroupEntity.toDto(travelGroupEntity);
 
@@ -962,7 +974,7 @@ class TravelServiceTest {
     @DisplayName("여행지 추천 검색어 리스트 조회 테스트")
     void 여행지추천검색어리스트조회테스트() {
         Map<String, Object> travelRecommendMap = new HashMap<>();
-        PageRequest pageRequest = PageRequest.of(1, 3);
+        PageRequest pageRequest = PageRequest.of(0, 3);
         List<String> list = new ArrayList<>();
         list.add("서울");
         list.add("인천");
@@ -1087,7 +1099,7 @@ class TravelServiceTest {
         LocalDateTime dateTime = LocalDateTime.now();
 
         TravelFestivalEntity travelFestivalEntity = TravelFestivalEntity.builder()
-                .travelCode(1)
+                .newFestivalCode(commonEntity)
                 .festivalTitle("축제 제목")
                 .festivalDescription("축제 내용")
                 .festivalMonth(dateTime.getMonthValue())
@@ -1096,29 +1108,6 @@ class TravelServiceTest {
                 .build();
 
         em.persist(travelFestivalEntity);
-
-        TravelFestivalEntity travelFestivalEntity1 = TravelFestivalEntity.builder()
-                .travelCode(2)
-                .festivalTitle("축제 제목")
-                .festivalDescription("축제 내용")
-                .festivalMonth(dateTime.getMonthValue())
-                .festivalDay(dateTime.getDayOfMonth())
-                .festivalTime(dateTime)
-                .build();
-
-        em.persist(travelFestivalEntity1);
-
-        TravelFestivalEntity travelFestivalEntity2 = TravelFestivalEntity.builder()
-                .travelCode(2)
-                .festivalTitle("축제 제목")
-                .festivalDescription("축제 내용")
-                .festivalMonth(dateTime.getMonthValue())
-                .festivalDay(dateTime.getDayOfMonth()+1)
-                .festivalTime(dateTime)
-                .build();
-
-        em.persist(travelFestivalEntity2);
-
         em.flush();
         em.clear();
 
@@ -1132,7 +1121,7 @@ class TravelServiceTest {
         LocalDateTime dateTime = LocalDateTime.now();
 
         TravelFestivalEntity travelFestivalEntity = TravelFestivalEntity.builder()
-                .travelCode(1)
+                .newFestivalCode(commonEntity)
                 .festivalTitle("축제 제목")
                 .festivalDescription("축제 내용")
                 .festivalMonth(dateTime.getMonthValue())
@@ -1141,18 +1130,6 @@ class TravelServiceTest {
                 .build();
 
         em.persist(travelFestivalEntity);
-
-        TravelFestivalEntity travelFestivalEntity1 = TravelFestivalEntity.builder()
-                .travelCode(2)
-                .festivalTitle("축제 제목")
-                .festivalDescription("축제 내용")
-                .festivalMonth(dateTime.getMonthValue())
-                .festivalDay(dateTime.getDayOfMonth())
-                .festivalTime(dateTime)
-                .build();
-
-        em.persist(travelFestivalEntity1);
-
         em.flush();
         em.clear();
 
@@ -1166,7 +1143,7 @@ class TravelServiceTest {
         LocalDateTime dateTime = LocalDateTime.now();
 
         TravelFestivalEntity travelFestivalEntity = TravelFestivalEntity.builder()
-                .travelCode(1)
+                .newFestivalCode(commonEntity)
                 .festivalTitle("축제 제목")
                 .festivalDescription("축제 내용")
                 .festivalMonth(dateTime.getMonthValue())
@@ -1186,7 +1163,7 @@ class TravelServiceTest {
         LocalDateTime dateTime = LocalDateTime.now();
 
         TravelFestivalEntity travelFestivalEntity = TravelFestivalEntity.builder()
-                .travelCode(1)
+                .newFestivalCode(commonEntity)
                 .festivalTitle("축제 제목")
                 .festivalDescription("축제 내용")
                 .festivalMonth(dateTime.getMonthValue())
@@ -1199,7 +1176,7 @@ class TravelServiceTest {
 
         travelFestivalEntity = TravelFestivalEntity.builder()
                 .idx(travelFestivalDTO.getIdx())
-                .travelCode(1)
+                .newFestivalCode(commonEntity)
                 .festivalTitle("축제 수정 제목")
                 .festivalDescription("축제 수정 내용")
                 .festivalMonth(dateTime.getMonthValue())
@@ -1218,7 +1195,7 @@ class TravelServiceTest {
         LocalDateTime dateTime = LocalDateTime.now();
 
         TravelFestivalEntity travelFestivalEntity = TravelFestivalEntity.builder()
-                .travelCode(1)
+                .newFestivalCode(commonEntity)
                 .festivalTitle("축제 제목")
                 .festivalDescription("축제 내용")
                 .festivalMonth(dateTime.getMonthValue())

@@ -1,15 +1,11 @@
 package com.travel.travel_project.domain.post.reply;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.travel.travel_project.domain.common.NewCommonMappedClass;
-import com.travel.travel_project.domain.file.CommonImageEntity;
-import com.travel.travel_project.domain.post.PostDTO;
 import com.travel.travel_project.domain.post.PostEntity;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.DynamicUpdate;
-import org.hibernate.event.spi.ReplicateEventListener;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
@@ -66,8 +62,7 @@ public class ReplyEntity extends NewCommonMappedClass {
     private ReplyEntity parent;
 
     @Builder.Default
-    @JsonIgnore
-    @OneToMany(mappedBy = "parent", orphanRemoval = true)
+    @OneToMany(mappedBy = "parent", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<ReplyEntity> children = new ArrayList<>();
 
     public void update(ReplyEntity replyEntity) {

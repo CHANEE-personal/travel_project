@@ -1,8 +1,8 @@
 package com.travel.travel_project.domain.common;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.travel.travel_project.domain.faq.FaqEntity;
 import com.travel.travel_project.domain.travel.TravelEntity;
+import com.travel.travel_project.domain.travel.festival.TravelFestivalEntity;
 import com.travel.travel_project.domain.travel.schedule.TravelScheduleEntity;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
@@ -16,8 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static javax.persistence.CascadeType.ALL;
-import static javax.persistence.CascadeType.MERGE;
+import static javax.persistence.CascadeType.*;
 import static javax.persistence.FetchType.LAZY;
 import static javax.persistence.GenerationType.IDENTITY;
 
@@ -31,6 +30,7 @@ import static javax.persistence.GenerationType.IDENTITY;
 @AllArgsConstructor
 @Table(name = "tv_cmm_code")
 public class CommonEntity extends NewCommonMappedClass implements Serializable {
+
     @Transient
     private Integer rowNum;
 
@@ -52,18 +52,20 @@ public class CommonEntity extends NewCommonMappedClass implements Serializable {
     private String visible;
 
     @Builder.Default
-    @JsonIgnore
-    @OneToMany(mappedBy = "newTravelCode", cascade = MERGE, fetch = LAZY)
+    @OneToMany(mappedBy = "newTravelCode", cascade = ALL, fetch = LAZY)
     private List<TravelEntity> adminTravelEntityList = new ArrayList<>();
 
     @Builder.Default
-    @JsonIgnore
-    @OneToMany(mappedBy = "newFaqCode", cascade = MERGE, fetch = LAZY)
+    @OneToMany(mappedBy = "newFaqCode", cascade = ALL, fetch = LAZY)
     private List<FaqEntity> faqEntityList = new ArrayList<>();
 
-    @JsonIgnore
-    @OneToOne(mappedBy = "commonEntity", fetch = LAZY, cascade = ALL)
-    private TravelScheduleEntity travelScheduleEntity;
+    @Builder.Default
+    @OneToMany(mappedBy = "commonEntity", cascade = ALL, fetch = LAZY)
+    private List<TravelScheduleEntity> travelScheduleEntity = new ArrayList<>();
+
+    @Builder.Default
+    @OneToMany(mappedBy = "newFestivalCode", cascade = ALL, fetch = LAZY)
+    private List<TravelFestivalEntity> festivalEntityList = new ArrayList<>();
 
     public void addCommon(FaqEntity faqEntity) {
         faqEntity.setNewFaqCode(this);
@@ -77,6 +79,12 @@ public class CommonEntity extends NewCommonMappedClass implements Serializable {
 
     public void addSchedule(TravelScheduleEntity travelScheduleEntity) {
         travelScheduleEntity.setCommonEntity(this);
+        this.travelScheduleEntity.add(travelScheduleEntity);
+    }
+
+    public void addFestival(TravelFestivalEntity travelFestivalEntity) {
+        travelFestivalEntity.setNewFestivalCode(this);
+        this.festivalEntityList.add(travelFestivalEntity);
     }
 
     public void update(CommonEntity commonEntity) {
@@ -96,28 +104,10 @@ public class CommonEntity extends NewCommonMappedClass implements Serializable {
                 .build();
     }
 
-    public static CommonEntity toEntity(CommonDTO dto) {
-        if (dto == null) return null;
-        return CommonEntity.builder()
-                .rowNum(dto.getRowNum())
-                .idx(dto.getIdx())
-                .commonCode(dto.getCommonCode())
-                .commonName(dto.getCommonName())
-                .visible(dto.getVisible())
-                .build();
-    }
-
     public static List<CommonDTO> toDtoList(List<CommonEntity> entityList) {
         if (entityList == null) return null;
         return entityList.stream()
                 .map(CommonEntity::toDto)
-                .collect(Collectors.toList());
-    }
-
-    public static List<CommonEntity> toEntityList(List<CommonDTO> dtoList) {
-        if (dtoList == null) return null;
-        return dtoList.stream()
-                .map(CommonEntity::toEntity)
                 .collect(Collectors.toList());
     }
 }

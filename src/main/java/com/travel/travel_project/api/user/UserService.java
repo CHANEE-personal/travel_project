@@ -244,11 +244,6 @@ public class UserService {
     @Transactional
     public TravelScheduleDTO insertTravelSchedule(Long idx, TravelScheduleEntity travelScheduleEntity) {
         try {
-            System.out.println("===common===");
-            System.out.println(travelScheduleEntity.getScheduleDescription());
-            System.out.println(travelScheduleEntity.getCommonEntity());
-            System.out.println(travelScheduleEntity.getCommonEntity().getCommonCode());
-            System.out.println(oneCommon(travelScheduleEntity.getCommonEntity().getCommonCode()));
             oneCommon(travelScheduleEntity.getCommonEntity().getCommonCode()).addSchedule(travelScheduleEntity);
             oneUser(idx).addSchedule(travelScheduleEntity);
             return TravelScheduleEntity.toDto(scheduleRepository.save(travelScheduleEntity));

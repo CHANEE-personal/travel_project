@@ -1,17 +1,19 @@
 package com.travel.travel_project.api.post;
 
-import com.travel.travel_project.domain.notice.NoticeEntity;
+import com.travel.travel_project.common.SaveFile;
 import com.travel.travel_project.domain.post.PostDTO;
 import com.travel.travel_project.domain.post.PostEntity;
+import com.travel.travel_project.domain.post.image.PostImageDTO;
+import com.travel.travel_project.domain.post.image.PostImageEntity;
 import com.travel.travel_project.domain.post.reply.ReplyDTO;
 import com.travel.travel_project.domain.post.reply.ReplyEntity;
 import com.travel.travel_project.exception.TravelException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.cache.annotation.CachePut;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Map;
@@ -26,6 +28,7 @@ public class PostService {
     private final PostQueryRepository postQueryRepository;
     private final PostRepository postRepository;
     private final ReplyRepository replyRepository;
+    private final SaveFile saveFile;
 
     private PostEntity onePost(Long idx) {
         return postRepository.findById(idx)
@@ -80,6 +83,24 @@ public class PostService {
             return PostEntity.toDto(postRepository.save(postEntity));
         } catch (Exception e) {
             throw new TravelException(ERROR_POST);
+        }
+    }
+
+    /**
+     * <pre>
+     * 1. MethodName : insertPostImage
+     * 2. ClassName  : PostService.java
+     * 3. Comment    : 게시글 이미지 등록
+     * 4. 작성자      : CHO
+     * 5. 작성일      : 2022. 12. 11.
+     * </pre>
+     */
+    @Transactional
+    public List<PostImageDTO> insertPostImage(Long idx, List<MultipartFile> files, PostImageEntity postImageEntity) {
+        try {
+            return saveFile.savePostFile(onePost(idx), files, postImageEntity);
+        } catch (Exception e) {
+            throw new TravelException(ERROR_IMAGE);
         }
     }
 

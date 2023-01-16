@@ -2,8 +2,12 @@ package com.travel.travel_project.common;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.travel.travel_project.domain.common.EntityType;
-import com.travel.travel_project.domain.file.CommonImageDTO;
-import com.travel.travel_project.domain.file.CommonImageEntity;
+import com.travel.travel_project.domain.post.PostEntity;
+import com.travel.travel_project.domain.post.image.PostImageDTO;
+import com.travel.travel_project.domain.post.image.PostImageEntity;
+import com.travel.travel_project.domain.travel.image.TravelImageDTO;
+import com.travel.travel_project.domain.travel.image.TravelImageEntity;
+import com.travel.travel_project.domain.travel.TravelEntity;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -34,35 +38,35 @@ public class SaveFile {
 
     /**
      * <pre>
-     * 1. MethodName : saveFile
+     * 1. MethodName : saveTravelFile
      * 2. ClassName  : SaveFile.java
      * 3. Comment    : 다중 이미지 저장
      * 4. 작성자      : CHO
      * 5. 작성일      : 2022. 12. 11.
      * </pre>
      */
-    public List<CommonImageDTO> saveFile(List<MultipartFile> multipartFiles, CommonImageEntity commonImageEntity) throws IOException {
-        List<CommonImageEntity> commonImageEntityList = new ArrayList<>();
+    public List<TravelImageDTO> saveTravelFile(TravelEntity travelEntity, List<MultipartFile> multipartFiles, TravelImageEntity travelImageEntity) throws IOException {
+        List<TravelImageEntity> travelImageEntityList = new ArrayList<>();
         int index = 0;
         for(MultipartFile multipartFile : multipartFiles) {
             if (!multipartFile.isEmpty()) {
-                commonImageEntityList.add(saveFile(multipartFile, commonImageEntity.getEntityType(), commonImageEntity.getTypeIdx(), index));
+                travelImageEntityList.add(saveTravelFile(multipartFile, travelImageEntity.getEntityType(), travelEntity, index));
             }
             index++;
         }
-        return commonImageEntityList.stream().map(CommonImageEntity::toDto).collect(Collectors.toList());
+        return travelImageEntityList.stream().map(TravelImageEntity::toDto).collect(Collectors.toList());
     }
 
     /**
      * <pre>
-     * 1. MethodName : saveFile
+     * 1. MethodName : saveTravelFile
      * 2. ClassName  : SaveFile.java
      * 3. Comment    : 단일 이미지 저장
      * 4. 작성자      : CHO
      * 5. 작성일      : 2022. 12. 11.
      * </pre>
      */
-    public CommonImageEntity saveFile(MultipartFile multipartFile, EntityType entityType, Long idx, int index) throws IOException {
+    public TravelImageEntity saveTravelFile(MultipartFile multipartFile, EntityType entityType, TravelEntity travelEntity, int index) throws IOException {
         if (multipartFile.isEmpty()) {
             return null;
         }
@@ -75,14 +79,75 @@ public class SaveFile {
         multipartFile.transferTo(new File(saveFilePath(fileId, entityType)));
 //        getRuntime().exec("chmod -R 755 " + saveFilePath(fileId, entityType));
 
-        CommonImageEntity imageEntity = CommonImageEntity.builder()
+        TravelImageEntity imageEntity = TravelImageEntity.builder()
                 .filePath(saveFilePath(fileId, entityType))
                 .fileName(multipartFile.getOriginalFilename())
                 .fileSize(fileSize)
                 .fileMask(fileId)
                 .fileNum(index)
                 .entityType(entityType)
-                .typeIdx(idx)
+                .travelImageEntity(travelEntity)
+                .imageType(mainOrSub)
+                .visible("Y")
+                .regDate(LocalDateTime.now())
+                .build();
+
+        em.persist(imageEntity);
+
+        return imageEntity;
+    }
+
+    /**
+     * <pre>
+     * 1. MethodName : saveTravelFile
+     * 2. ClassName  : SaveFile.java
+     * 3. Comment    : 다중 이미지 저장
+     * 4. 작성자      : CHO
+     * 5. 작성일      : 2022. 12. 11.
+     * </pre>
+     */
+    public List<PostImageDTO> savePostFile(PostEntity postEntity, List<MultipartFile> multipartFiles, PostImageEntity postImageEntity) throws IOException {
+        List<PostImageEntity> postImageEntityList = new ArrayList<>();
+        int index = 0;
+        for(MultipartFile multipartFile : multipartFiles) {
+            if (!multipartFile.isEmpty()) {
+                postImageEntityList.add(savePostFile(multipartFile, postImageEntity.getEntityType(), postEntity, index));
+            }
+            index++;
+        }
+        return postImageEntityList.stream().map(PostImageEntity::toDto).collect(Collectors.toList());
+    }
+
+    /**
+     * <pre>
+     * 1. MethodName : saveTravelFile
+     * 2. ClassName  : SaveFile.java
+     * 3. Comment    : 단일 이미지 저장
+     * 4. 작성자      : CHO
+     * 5. 작성일      : 2022. 12. 11.
+     * </pre>
+     */
+    public PostImageEntity savePostFile(MultipartFile multipartFile, EntityType entityType, PostEntity postEntity, int index) throws IOException {
+        if (multipartFile.isEmpty()) {
+            return null;
+        }
+
+        String fileId = createSaveFileName(multipartFile.getOriginalFilename());
+        long fileSize = multipartFile.getSize();
+        String mainOrSub = index == 0 ? "main" : "sub" + index;
+
+        // 파일 업로드
+        multipartFile.transferTo(new File(saveFilePath(fileId, entityType)));
+//        getRuntime().exec("chmod -R 755 " + saveFilePath(fileId, entityType));
+
+        PostImageEntity imageEntity = PostImageEntity.builder()
+                .filePath(saveFilePath(fileId, entityType))
+                .fileName(multipartFile.getOriginalFilename())
+                .fileSize(fileSize)
+                .fileMask(fileId)
+                .fileNum(index)
+                .entityType(entityType)
+                .postImageEntity(postEntity)
                 .imageType(mainOrSub)
                 .visible("Y")
                 .regDate(LocalDateTime.now())
@@ -148,10 +213,10 @@ public class SaveFile {
      * 5. 작성일      : 2022. 12. 11.
      * </pre>
      */
-    public Integer maxSubCnt(CommonImageEntity exCommonImageEntity) {
+    public Integer maxSubCnt(TravelImageEntity exTravelImageEntity) {
         return queryFactory.selectFrom(commonImageEntity)
                 .select(commonImageEntity.fileNum.max())
-                .where(commonImageEntity.entityType.eq(exCommonImageEntity.getEntityType()))
+                .where(commonImageEntity.entityType.eq(exTravelImageEntity.getEntityType()))
                 .fetchFirst();
     }
 }

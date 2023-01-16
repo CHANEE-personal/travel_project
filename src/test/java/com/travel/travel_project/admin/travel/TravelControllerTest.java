@@ -1,6 +1,8 @@
 package com.travel.travel_project.admin.travel;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.travel.travel_project.domain.common.CommonDTO;
+import com.travel.travel_project.domain.common.CommonEntity;
 import com.travel.travel_project.domain.travel.TravelEntity;
 import com.travel.travel_project.domain.travel.festival.TravelFestivalEntity;
 import com.travel.travel_project.domain.travel.group.TravelGroupEntity;
@@ -62,6 +64,8 @@ class TravelControllerTest {
     private final ObjectMapper objectMapper;
     private final EntityManager em;
 
+    private CommonEntity commonEntity;
+    private CommonDTO commonDTO;
     @BeforeEach
     @EventListener(ApplicationReadyEvent.class)
     public void setup() {
@@ -69,15 +73,23 @@ class TravelControllerTest {
                 .addFilters(new CharacterEncodingFilter("UTF-8", true))
                 .alwaysDo(print())
                 .build();
+
+        commonEntity = CommonEntity.builder()
+                .commonCode(999)
+                .commonName("서울")
+                .visible("Y")
+                .build();
+
+        em.persist(commonEntity);
+
+        commonDTO = CommonEntity.toDto(commonEntity);
     }
 
     @Test
     @DisplayName("여행지 조회 테스트")
     void 여행지조회테스트() throws Exception {
         LinkedMultiValueMap<String, String> paramMap = new LinkedMultiValueMap<>();
-        paramMap.add("jpaStartPage", "1");
-        paramMap.add("size", "3");
-        mockMvc.perform(get("/api/travel/lists").queryParams(paramMap))
+        mockMvc.perform(get("/api/travel/lists").queryParams(paramMap).param("pageNum", "1").param("size", "3"))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().contentType("application/json;charset=utf-8"));
@@ -249,7 +261,7 @@ class TravelControllerTest {
     @DisplayName("여행지 그룹 등록 테스트")
     void 여행지그룹등록테스트() throws Exception {
         TravelEntity travelEntity = TravelEntity.builder()
-                .travelCode(1)
+                .newTravelCode(commonEntity)
                 .travelTitle("여행지 소개")
                 .travelDescription("여행지 소개")
                 .travelAddress("인천광역시 서구")
@@ -283,7 +295,7 @@ class TravelControllerTest {
     @DisplayName("여행지 그룹 수정 테스트")
     void 여행지그룹수정테스트() throws Exception {
         TravelEntity travelEntity = TravelEntity.builder()
-                .travelCode(1)
+                .newTravelCode(commonEntity)
                 .travelTitle("여행지 소개")
                 .travelDescription("여행지 소개")
                 .travelAddress("인천광역시 서구")
@@ -575,7 +587,7 @@ class TravelControllerTest {
         LocalDateTime dateTime = LocalDateTime.now();
 
         TravelFestivalEntity travelFestivalEntity = TravelFestivalEntity.builder()
-                .travelCode(1)
+                .newFestivalCode(commonEntity)
                 .festivalTitle("축제 제목")
                 .festivalDescription("축제 내용")
                 .festivalMonth(dateTime.getMonthValue())
@@ -584,17 +596,6 @@ class TravelControllerTest {
                 .build();
 
         em.persist(travelFestivalEntity);
-
-        TravelFestivalEntity travelFestivalEntity1 = TravelFestivalEntity.builder()
-                .travelCode(2)
-                .festivalTitle("축제 제목")
-                .festivalDescription("축제 내용")
-                .festivalMonth(dateTime.getMonthValue())
-                .festivalDay(dateTime.getDayOfMonth())
-                .festivalTime(dateTime)
-                .build();
-
-        em.persist(travelFestivalEntity1);
         em.flush();
         em.clear();
 
@@ -612,7 +613,7 @@ class TravelControllerTest {
         LocalDateTime dateTime = LocalDateTime.now();
 
         TravelFestivalEntity travelFestivalEntity = TravelFestivalEntity.builder()
-                .travelCode(1)
+                .newFestivalCode(commonEntity)
                 .festivalTitle("축제 제목")
                 .festivalDescription("축제 내용")
                 .festivalMonth(dateTime.getMonthValue())
@@ -621,18 +622,6 @@ class TravelControllerTest {
                 .build();
 
         em.persist(travelFestivalEntity);
-
-        TravelFestivalEntity travelFestivalEntity1 = TravelFestivalEntity.builder()
-                .travelCode(2)
-                .festivalTitle("축제 제목")
-                .festivalDescription("축제 내용")
-                .festivalMonth(dateTime.getMonthValue())
-                .festivalDay(dateTime.getDayOfMonth())
-                .festivalTime(dateTime)
-                .build();
-
-        em.persist(travelFestivalEntity1);
-
         em.flush();
         em.clear();
 
@@ -650,7 +639,7 @@ class TravelControllerTest {
         LocalDateTime dateTime = LocalDateTime.now();
 
         TravelFestivalEntity travelFestivalEntity = TravelFestivalEntity.builder()
-                .travelCode(1)
+                .newFestivalCode(commonEntity)
                 .festivalTitle("축제 제목")
                 .festivalDescription("축제 내용")
                 .festivalMonth(dateTime.getMonthValue())
@@ -674,7 +663,7 @@ class TravelControllerTest {
         LocalDateTime dateTime = LocalDateTime.now();
 
         TravelFestivalEntity travelFestivalEntity = TravelFestivalEntity.builder()
-                .travelCode(1)
+                .newFestivalCode(commonEntity)
                 .festivalTitle("축제 제목")
                 .festivalDescription("축제 내용")
                 .festivalMonth(dateTime.getMonthValue())
@@ -697,7 +686,7 @@ class TravelControllerTest {
         LocalDateTime dateTime = LocalDateTime.now();
 
         TravelFestivalEntity travelFestivalEntity = TravelFestivalEntity.builder()
-                .travelCode(1)
+                .newFestivalCode(commonEntity)
                 .festivalTitle("축제 제목")
                 .festivalDescription("축제 내용")
                 .festivalMonth(dateTime.getMonthValue())
@@ -709,7 +698,7 @@ class TravelControllerTest {
 
         travelFestivalEntity = TravelFestivalEntity.builder()
                 .idx(travelFestivalEntity.getIdx())
-                .travelCode(1)
+                .newFestivalCode(commonEntity)
                 .festivalTitle("축제 수정 제목")
                 .festivalDescription("축제 수정 내용")
                 .festivalMonth(dateTime.getMonthValue())
@@ -732,7 +721,7 @@ class TravelControllerTest {
         LocalDateTime dateTime = LocalDateTime.now();
 
         TravelFestivalEntity travelFestivalEntity = TravelFestivalEntity.builder()
-                .travelCode(1)
+                .newFestivalCode(commonEntity)
                 .festivalTitle("축제 제목")
                 .festivalDescription("축제 내용")
                 .festivalMonth(dateTime.getMonthValue())

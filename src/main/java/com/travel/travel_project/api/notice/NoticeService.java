@@ -1,19 +1,14 @@
 package com.travel.travel_project.api.notice;
 
-import com.travel.travel_project.domain.faq.FaqEntity;
 import com.travel.travel_project.domain.notice.NoticeDTO;
 import com.travel.travel_project.domain.notice.NoticeEntity;
 import com.travel.travel_project.exception.TravelException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.CachePut;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -49,8 +44,8 @@ public class NoticeService {
      * 1. MethodName : findOneNotice
      * 2. ClassName  : NoticeService.java
      * 3. Comment    : 공지사항 상세 조회
-     * 4. 작성자       : CHO
-     * 5. 작성일       : 2022. 11. 28.
+     * 4. 작성자      : CHO
+     * 5. 작성일      : 2022. 11. 28.
      * </pre>
      */
     @Transactional
@@ -64,8 +59,8 @@ public class NoticeService {
      * 1. MethodName : insertNotice
      * 2. ClassName  : NoticeService.java
      * 3. Comment    : 공지사항 등록
-     * 4. 작성자       : CHO
-     * 5. 작성일       : 2022. 11. 28.
+     * 4. 작성자      : CHO
+     * 5. 작성일      : 2022. 11. 28.
      * </pre>
      */
     @Transactional
@@ -82,8 +77,8 @@ public class NoticeService {
      * 1. MethodName : updateNotice
      * 2. ClassName  : NoticeService.java
      * 3. Comment    : 공지사항 수정
-     * 4. 작성자       : CHO
-     * 5. 작성일       : 2022. 11. 28.
+     * 4. 작성자      : CHO
+     * 5. 작성일      : 2022. 11. 28.
      * </pre>
      */
     @Transactional
@@ -101,8 +96,8 @@ public class NoticeService {
      * 1. MethodName : deleteNotice
      * 2. ClassName  : NoticeService.java
      * 3. Comment    : 공지사항 삭제
-     * 4. 작성자       : CHO
-     * 5. 작성일       : 2022. 11. 28.
+     * 4. 작성자      : CHO
+     * 5. 작성일      : 2022. 11. 28.
      * </pre>
      */
     @Transactional

@@ -141,7 +141,7 @@ class UserServiceTest {
     void 유저리스트BDD검색조회테스트() {
         // given
         Map<String, Object> userMap = new HashMap<>();
-        PageRequest pageRequest = PageRequest.of(1, 3);
+        PageRequest pageRequest = PageRequest.of(0, 3);
 
         List<UserDTO> userList = new ArrayList<>();
         userList.add(UserDTO.builder().idx(1L).userId("test01")
@@ -559,7 +559,6 @@ class UserServiceTest {
         userDTO = UserEntity.toDto(userEntity);
 
         TravelEntity travelEntity = TravelEntity.builder()
-                .travelCode(1)
                 .travelTitle("여행지 소개")
                 .travelDescription("여행지 소개")
                 .travelAddress("인천광역시 서구")
@@ -602,7 +601,6 @@ class UserServiceTest {
         userDTO = UserEntity.toDto(userEntity);
 
         TravelEntity travelEntity = TravelEntity.builder()
-                .travelCode(1)
                 .travelTitle("여행지 소개")
                 .travelDescription("여행지 소개")
                 .travelAddress("인천광역시 서구")
