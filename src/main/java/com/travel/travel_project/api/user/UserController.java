@@ -1,7 +1,6 @@
 package com.travel.travel_project.api.user;
 
 import com.travel.travel_project.common.Paging;
-import com.travel.travel_project.common.SearchCommon;
 import com.travel.travel_project.domain.travel.group.TravelGroupUserDTO;
 import com.travel.travel_project.domain.travel.group.TravelGroupUserEntity;
 import com.travel.travel_project.domain.travel.schedule.TravelScheduleDTO;
@@ -14,12 +13,12 @@ import io.swagger.annotations.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.HttpClientErrorException;
 
@@ -27,7 +26,6 @@ import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.net.URI;
 import java.rmi.ServerError;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -53,6 +51,7 @@ public class UserController {
      * 5. 작성일      : 2022. 10. 11.
      * </pre>
      */
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @ApiOperation(value = "유저 조회", notes = "유저를 조회한다.")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "유저 조회 성공", response = List.class),
@@ -93,25 +92,6 @@ public class UserController {
         return ok().body(jwtResponse);
     }
 
-    /**
-     * <pre>
-     * 1. MethodName : createAuthenticationToken
-     * 2. ClassName  : UserController.java
-     * 3. Comment    : 로그인 시 JWT 토큰 발급
-     * 4. 작성자       : CHO
-     * 5. 작성일       : 2022. 10. 11.
-     * </pre>
-     */
-    public ResponseEntity<?> createAuthenticationToken(@RequestBody AuthenticationRequest authenticationRequest) throws Exception {
-        // id, password 인증
-        authenticate(authenticationRequest.getUserId(), authenticationRequest.getPassword());
-
-        // 사용자 정보 조회 후 token 생성
-        String token = jwtTokenUtil.generateToken(userDetailsService.loadUserByUsername(authenticationRequest.getUserId()));
-
-        return ok(new AuthenticationResponse(token));
-    }
-
     @ApiOperation(value = "JWT 토큰 재발급", notes = "JWT 토큰을 재발급")
     @PostMapping(value = "/refresh")
     @ApiImplicitParams({
@@ -133,8 +113,8 @@ public class UserController {
      * 1. MethodName : authenticate
      * 2. ClassName  : UserController.java
      * 3. Comment    : 로그인 시 인증
-     * 4. 작성자       : CHO
-     * 5. 작성일       : 2022. 10. 11.
+     * 4. 작성자      : CHO
+     * 5. 작성일      : 2022. 10. 11.
      * </pre>
      */
     private void authenticate(String id, String password) throws Exception {
@@ -229,6 +209,7 @@ public class UserController {
      * 5. 작성일      : 2022. 12. 07.
      * </pre>
      */
+    @PreAuthorize("hasRole('ROLE_TRAVEL_USER')")
     @ApiOperation(value = "유저가 좋아하는 여행지 추가", notes = "유저가 좋아하는 여행지를 추가한다.")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "유저가 좋아하는 여행지 추가 성공", response = UserDTO.class),
@@ -252,6 +233,7 @@ public class UserController {
      * 5. 작성일      : 2022. 12. 14.
      * </pre>
      */
+    @PreAuthorize("hasRole('ROLE_TRAVEL_USER')")
     @ApiOperation(value = "유저가 작성한 여행 스케줄 리스트 조회", notes = "유저가 작성한 여행 스케줄 리스트를 조회한다.")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "유저가 작성한 여행 스케줄 리스트 조회", response = List.class),
@@ -275,6 +257,7 @@ public class UserController {
      * 5. 작성일      : 2022. 12. 14.
      * </pre>
      */
+    @PreAuthorize("hasRole('ROLE_TRAVEL_USER')")
     @ApiOperation(value = "유저가 작성한 여행 스케줄 상세 조회", notes = "유저가 작성한 여행 스케줄을 상세 조회한다.")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "유저가 작성한 여행 스케줄 상세 조회", response = TravelScheduleDTO.class),
@@ -298,6 +281,7 @@ public class UserController {
      * 5. 작성일      : 2022. 12. 13.
      * </pre>
      */
+    @PreAuthorize("hasRole('ROLE_TRAVEL_USER')")
     @ApiOperation(value = "유저 여행 스케줄 등록", notes = "유저 여행 스케줄을 등록한다.")
     @ApiResponses(value = {
             @ApiResponse(code = 201, message = "유저 여행 스케줄 등록 성공", response = TravelScheduleDTO.class),
@@ -323,6 +307,7 @@ public class UserController {
      * 5. 작성일      : 2022. 12. 13.
      * </pre>
      */
+    @PreAuthorize("hasRole('ROLE_TRAVEL_USER')")
     @ApiOperation(value = "유저 여행 스케줄 수정", notes = "유저 여행 스케줄을 수정한다.")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "유저 여행 스케줄 수정 성공", response = TravelScheduleDTO.class),
@@ -346,6 +331,7 @@ public class UserController {
      * 5. 작성일      : 2022. 11. 27.
      * </pre>
      */
+    @PreAuthorize("hasRole('ROLE_TRAVEL_USER')")
     @ApiOperation(value = "유저 여행 그룹 등록", notes = "유저 여행 그룹을 등록한다.")
     @ApiResponses(value = {
             @ApiResponse(code = 201, message = "유저 여행 그룹 등록 성공", response = TravelGroupUserDTO.class),
@@ -369,6 +355,7 @@ public class UserController {
      * 5. 작성일      : 2022. 11. 27.
      * </pre>
      */
+    @PreAuthorize("hasRole('ROLE_TRAVEL_USER')")
     @ApiOperation(value = "유저 여행 그룹 삭제", notes = "유저 여행 그룹을 삭제한다.")
     @ApiResponses(value = {
             @ApiResponse(code = 204, message = "유저 여행 그룹 삭제 성공", response = Long.class),

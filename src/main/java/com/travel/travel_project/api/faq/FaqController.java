@@ -10,6 +10,7 @@ import io.swagger.annotations.ApiResponses;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.HttpClientErrorException;
 
@@ -35,6 +36,7 @@ public class FaqController {
      * 5. 작성일      : 2022. 11. 29.
      * </pre>
      */
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_TRAVEL_USER')")
     @ApiOperation(value = "FAQ 리스트 조회", notes = "FAQ 리스트를 조회한다.")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "FAQ 리스트 조회 성공", response = Page.class),
@@ -58,6 +60,7 @@ public class FaqController {
      * 5. 작성일      : 2022. 11. 29.
      * </pre>
      */
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_TRAVEL_USER')")
     @ApiOperation(value = "FAQ 상세 조회", notes = "FAQ를 상세 조회한다.")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "FAQ 상세 조회 성공", response = FaqDTO.class),
@@ -81,6 +84,7 @@ public class FaqController {
      * 5. 작성일      : 2022. 11. 29.
      * </pre>
      */
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @ApiOperation(value = "FAQ 등록", notes = "FAQ 등록한다.")
     @ApiResponses(value = {
             @ApiResponse(code = 201, message = "FAQ 등록 성공", response = FaqDTO.class),
@@ -104,6 +108,7 @@ public class FaqController {
      * 5. 작성일      : 2022. 11. 29.
      * </pre>
      */
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @ApiOperation(value = "FAQ 수정", notes = "FAQ 수정한다.")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "FAQ 수정 성공", response = FaqDTO.class),
@@ -127,6 +132,7 @@ public class FaqController {
      * 5. 작성일      : 2022. 11. 29.
      * </pre>
      */
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @ApiOperation(value = "FAQ 삭제", notes = "FAQ 삭제한다.")
     @ApiResponses(value = {
             @ApiResponse(code = 204, message = "FAQ 삭제 성공", response = Long.class),

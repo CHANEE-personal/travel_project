@@ -186,7 +186,7 @@ public class UserService {
                     .password(passwordEncoder.encode(signUpRequest.getPassword()))
                     .name(signUpRequest.getName())
                     .email(signUpRequest.getEmail())
-                    .role(Role.ROLE_ADMIN)
+                    .role(Role.ROLE_TRAVEL_USER)
                     .visible("Y")
                     .build()));
 

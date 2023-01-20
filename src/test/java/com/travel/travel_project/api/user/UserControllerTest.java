@@ -2,9 +2,6 @@ package com.travel.travel_project.api.user;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.travel.travel_project.api.common.CommonRepository;
-import com.travel.travel_project.domain.common.CommonEntity;
-import com.travel.travel_project.domain.travel.schedule.TravelScheduleEntity;
-import com.travel.travel_project.domain.user.AuthenticationRequest;
 import com.travel.travel_project.domain.user.UserDTO;
 import com.travel.travel_project.domain.user.UserEntity;
 import com.travel.travel_project.jwt.JwtUtil;
@@ -35,7 +32,6 @@ import org.springframework.web.filter.CharacterEncodingFilter;
 import javax.persistence.EntityManager;
 import javax.transaction.Transactional;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;

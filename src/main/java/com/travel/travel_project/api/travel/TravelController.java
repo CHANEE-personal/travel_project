@@ -21,6 +21,7 @@ import io.swagger.annotations.ApiResponses;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.multipart.MultipartFile;
@@ -51,6 +52,7 @@ public class TravelController {
      * 5. 작성일      : 2022. 10. 5.
      * </pre>
      */
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_TRAVEL_USER')")
     @ApiOperation(value = "여행지 리스트 조회", notes = "여행지 리스트를 조회한다.")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "여행지 리스트 조회 성공", response = TravelDTO.class),
@@ -74,6 +76,7 @@ public class TravelController {
      * 5. 작성일      : 2022. 10. 5.
      * </pre>
      */
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_TRAVEL_USER')")
     @ApiOperation(value = "여행지 상세 조회", notes = "여행지를 상세 조회한다.")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "여행지 상세 조회 성공", response = TravelDTO.class),
@@ -97,6 +100,7 @@ public class TravelController {
      * 5. 작성일      : 2022. 10. 5.
      * </pre>
      */
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @ApiOperation(value = "여행지 등록", notes = "여행지를 등록한다.")
     @ApiResponses(value = {
             @ApiResponse(code = 201, message = "여행지 등록 성공", response = TravelDTO.class),
@@ -120,6 +124,7 @@ public class TravelController {
      * 5. 작성일      : 2022. 05. 07.
      * </pre>
      */
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @ApiOperation(value = "여행지 이미지 저장", notes = "여행지 이미지를 저장한다.")
     @ApiResponses(value = {
             @ApiResponse(code = 201, message = "여행지 이미지 등록성공", response = TravelImageDTO.class),
@@ -143,6 +148,7 @@ public class TravelController {
      * 5. 작성일       : 2022. 10. 5.
      * </pre>
      */
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @ApiOperation(value = "여행지 수정", notes = "여행지를 수정한다.")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "여행지 수정 성공", response = TravelDTO.class),
@@ -166,6 +172,7 @@ public class TravelController {
      * 5. 작성일      : 2022. 10. 5.
      * </pre>
      */
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @ApiOperation(value = "여행지 삭제", notes = "여행지를 삭제한다.")
     @ApiResponses(value = {
             @ApiResponse(code = 204, message = "여행지 삭제 성공", response = Long.class),
@@ -190,6 +197,7 @@ public class TravelController {
      * 5. 작성일      : 2022. 10. 6.
      * </pre>
      */
+    @PreAuthorize("hasRole('ROLE_TRAVEL_USER')")
     @ApiOperation(value = "여행지 좋아요", notes = "여행지를 좋아요 처리한다.")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "여행지 좋아요 성공", response = Integer.class),
@@ -213,6 +221,7 @@ public class TravelController {
      * 5. 작성일      : 2022. 10. 14.
      * </pre>
      */
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_TRAVEL_USER')")
     @ApiOperation(value = "인기 여행지 리스트 조회", notes = "인기 여행지 리스트를 조회한다.")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "인기 여행지 리스트 조회 성공", response = Map.class),
@@ -236,6 +245,7 @@ public class TravelController {
      * 5. 작성일      : 2022. 10. 30.
      * </pre>
      */
+    @PreAuthorize("hasRole('ROLE_TRAVEL_USER')")
     @ApiOperation(value = "여행지 리뷰 등록", notes = "여행지 리뷰를 등록한다.")
     @ApiResponses(value = {
             @ApiResponse(code = 201, message = "여행지 리뷰 등록", response = TravelReviewDTO.class),
@@ -259,6 +269,7 @@ public class TravelController {
      * 5. 작성일      : 2022. 11. 23.
      * </pre>
      */
+    @PreAuthorize("hasRole('ROLE_TRAVEL_USER')")
     @ApiOperation(value = "여행지 리뷰 수정", notes = "여행지 리뷰를 수정한다.")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "여행지 리뷰 수정", response = TravelReviewDTO.class),
@@ -282,6 +293,7 @@ public class TravelController {
      * 5. 작성일      : 2022. 11. 23.
      * </pre>
      */
+    @PreAuthorize("hasRole('ROLE_TRAVEL_USER')")
     @ApiOperation(value = "여행지 리뷰 삭제", notes = "여행지 리뷰를 삭제한다.")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "여행지 댓글 삭제", response = Long.class),
@@ -306,6 +318,7 @@ public class TravelController {
      * 5. 작성일      : 2022. 11. 23.
      * </pre>
      */
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_TRAVEL_USER')")
     @ApiOperation(value = "여행지 리뷰 리스트 조회", notes = "여행지 리뷰 리스트를 조회한다.")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "여행지 리뷰 리스트 조회 성공", response = List.class),
@@ -329,6 +342,7 @@ public class TravelController {
      * 5. 작성일      : 2022. 10. 28.
      * </pre>
      */
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @ApiOperation(value = "인기 여행지 선정", notes = "인기 여행지 선정한다.")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "인기 여행지 선정", response = Boolean.class),
@@ -352,6 +366,7 @@ public class TravelController {
      * 5. 작성일      : 2022. 11. 25.
      * </pre>
      */
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @ApiOperation(value = "여행 그룹 리스트 조회", notes = "여행 그룹 리스트를 조회한다.")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "여행 그룹 리스트 조회 성공", response = Page.class),
@@ -375,6 +390,7 @@ public class TravelController {
      * 5. 작성일      : 2022. 11. 25.
      * </pre>
      */
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @ApiOperation(value = "여행지 그룹 상세 조회", notes = "여행지 그룹을 상세 조회한다.")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "여행지 그룹 상세 조회 성공", response = Map.class),
@@ -398,6 +414,7 @@ public class TravelController {
      * 5. 작성일      : 2022. 11. 25.
      * </pre>
      */
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @ApiOperation(value = "여행지 그룹 등록", notes = "여행지 그룹을 등록한다.")
     @ApiResponses(value = {
             @ApiResponse(code = 201, message = "여행지 그룹 등록 성공", response = TravelGroupDTO.class),
@@ -421,6 +438,7 @@ public class TravelController {
      * 5. 작성일      : 2022. 11. 25.
      * </pre>
      */
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @ApiOperation(value = "여행지 그룹 수정", notes = "여행지 그룹을 수정한다.")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "여행지 그룹 수정 성공", response = TravelGroupDTO.class),
@@ -444,6 +462,7 @@ public class TravelController {
      * 5. 작성일      : 2022. 11. 25.
      * </pre>
      */
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @ApiOperation(value = "여행지 그룹 삭제", notes = "여행지 그룹을 삭제한다.")
     @ApiResponses(value = {
             @ApiResponse(code = 204, message = "여행지 그룹 삭제 성공", response = Long.class),
@@ -468,6 +487,7 @@ public class TravelController {
      * 5. 작성일      : 2023. 01. 04.
      * </pre>
      */
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_TRAVEL_USER')")
     @ApiOperation(value = "여행지 추천 검색어 리스트 조회", notes = "여행지 추천 검색어 리스트를 조회한다.")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "여행지 추천 검색어 리스트 조회 성공", response = Map.class),
@@ -491,6 +511,7 @@ public class TravelController {
      * 5. 작성일      : 2023. 01. 04.
      * </pre>
      */
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_TRAVEL_USER')")
     @ApiOperation(value = "여행지 추천 검색어 상세 조회", notes = "여행지 추천 검색어 상세 조회한다.")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "여행지 추천 검색어 상세 조회 성공", response = TravelRecommendDTO.class),
@@ -514,6 +535,7 @@ public class TravelController {
      * 5. 작성일      : 2023. 01. 04.
      * </pre>
      */
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @ApiOperation(value = "여행지 추천 검색어 등록", notes = "여행지 추천 검색어를 등록한다.")
     @ApiResponses(value = {
             @ApiResponse(code = 201, message = "여행지 추천 검색어 등록 성공", response = TravelRecommendDTO.class),
@@ -537,6 +559,7 @@ public class TravelController {
      * 5. 작성일      : 2023. 01. 04.
      * </pre>
      */
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @ApiOperation(value = "여행지 추천 검색어 수정", notes = "여행지 추천 검색어를 수정한다.")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "여행지 추천 검색어 수정 성공", response = TravelRecommendDTO.class),
@@ -560,6 +583,7 @@ public class TravelController {
      * 5. 작성일      : 2023. 01. 04.
      * </pre>
      */
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @ApiOperation(value = "여행지 추천 검색어 삭제", notes = "여행지 추천 검색어를 삭제한다.")
     @ApiResponses(value = {
             @ApiResponse(code = 204, message = "여행지 추천 검색어 삭제 성공", response = Long.class),
@@ -584,6 +608,7 @@ public class TravelController {
      * 5. 작성일      : 2023. 01. 07.
      * </pre>
      */
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_TRAVEL_USER')")
     @ApiOperation(value = "여행지 검색어 랭킹 조회", notes = "여행지 검색어 랭킹을 조회한다.")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "여행지 검색어 랭킹 조회 성공", response = Map.class),
@@ -609,6 +634,7 @@ public class TravelController {
      * 5. 작성일      : 2023. 01. 07.
      * </pre>
      */
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_TRAVEL_USER')")
     @ApiOperation(value = "추천 or 랭킹 검색어를 통한 여행지 조회", notes = "추천 or 랭킹 검색어를 통해 여행지를 조회한다.")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "여행지 검색 조회 성공", response = Map.class),
@@ -634,6 +660,7 @@ public class TravelController {
      * 5. 작성일      : 2023. 01. 08.
      * </pre>
      */
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_TRAVEL_USER')")
     @ApiOperation(value = "축제 리스트 조회", notes = "축제 리스트를 조회한다.")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "축제 리스트 조회 성공", response = Map.class),
@@ -659,6 +686,7 @@ public class TravelController {
      * 5. 작성일      : 2023. 01. 08.
      * </pre>
      */
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_TRAVEL_USER')")
     @ApiOperation(value = "축제 리스트 조회", notes = "축제 리스트를 조회한다.")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "축제 리스트 조회 성공", response = Map.class),
@@ -685,6 +713,7 @@ public class TravelController {
      * 5. 작성일      : 2023. 01. 08.
      * </pre>
      */
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_TRAVEL_USER')")
     @ApiOperation(value = "축제 상세 조회", notes = "축제를 상세 조회한다.")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "축제 상세 조회 성공", response = TravelFestivalDTO.class),
@@ -708,6 +737,7 @@ public class TravelController {
      * 5. 작성일      : 2023. 01. 08.
      * </pre>
      */
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @ApiOperation(value = "축제 등록", notes = "축제를 등록한다.")
     @ApiResponses(value = {
             @ApiResponse(code = 201, message = "축제 등록 성공", response = TravelFestivalDTO.class),
@@ -731,6 +761,7 @@ public class TravelController {
      * 5. 작성일      : 2023. 01. 08.
      * </pre>
      */
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @ApiOperation(value = "축제 수정", notes = "축제를 수정한다.")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "축제 수정 성공", response = TravelFestivalDTO.class),
@@ -754,6 +785,7 @@ public class TravelController {
      * 5. 작성일      : 2023. 01. 08.
      * </pre>
      */
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @ApiOperation(value = "축제 삭제", notes = "축제를 삭제한다.")
     @ApiResponses(value = {
             @ApiResponse(code = 204, message = "축제 삭제 성공", response = Long.class),
