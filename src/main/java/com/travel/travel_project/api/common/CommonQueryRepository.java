@@ -2,8 +2,10 @@ package com.travel.travel_project.api.common;
 
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import com.travel.travel_project.common.StringUtil;
 import com.travel.travel_project.domain.common.CommonDTO;
 import com.travel.travel_project.domain.common.CommonEntity;
+import com.travel.travel_project.domain.common.QCommonEntity;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -11,10 +13,9 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
-import java.util.*;
-
-import static com.travel.travel_project.common.StringUtil.getString;
-import static com.travel.travel_project.domain.common.QCommonEntity.commonEntity;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 @Repository
 @RequiredArgsConstructor
@@ -24,8 +25,8 @@ public class CommonQueryRepository {
     private final EntityManager em;
 
     private BooleanExpression searchCommonInfo(Map<String, Object> commonMap) {
-        String searchKeyword = getString(commonMap.get("searchKeyword"), "");
-        return !Objects.equals(searchKeyword, "") ? commonEntity.commonName.contains(searchKeyword) : null;
+        String searchKeyword = StringUtil.getString(commonMap.get("searchKeyword"), "");
+        return !Objects.equals(searchKeyword, "") ? QCommonEntity.commonEntity.commonName.contains(searchKeyword) : null;
     }
 
     /**
@@ -39,8 +40,8 @@ public class CommonQueryRepository {
      */
     public Page<CommonDTO> findCommonList(Map<String, Object> commonMap, PageRequest pageRequest) {
         List<CommonEntity> commonCodeList = queryFactory
-                .selectFrom(commonEntity)
-                .orderBy(commonEntity.idx.desc())
+                .selectFrom(QCommonEntity.commonEntity)
+                .orderBy(QCommonEntity.commonEntity.idx.desc())
                 .where(searchCommonInfo(commonMap))
                 .offset(pageRequest.getOffset())
                 .limit(pageRequest.getPageSize())

@@ -10,6 +10,7 @@ import io.swagger.annotations.ApiResponses;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.HttpClientErrorException;
 
@@ -34,6 +35,7 @@ public class NoticeController {
      * 5. 작성일      : 2022. 11. 28.
      * </pre>
      */
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_TRAVEL_USER')")
     @ApiOperation(value = "공지사항 리스트 조회", notes = "공지사항 리스트를 조회한다.")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "공지사항 리스트 조회 성공", response = Page.class),
@@ -57,6 +59,7 @@ public class NoticeController {
      * 5. 작성일      : 2022. 11. 28.
      * </pre>
      */
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_TRAVEL_USER')")
     @ApiOperation(value = "공지사항 상세 조회", notes = "공지사항 상세 조회한다.")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "공지사항 상세 조회 성공", response = NoticeDTO.class),
@@ -80,6 +83,7 @@ public class NoticeController {
      * 5. 작성일      : 2022. 11. 28.
      * </pre>
      */
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @ApiOperation(value = "공지사항 등록", notes = "공지사항 등록한다.")
     @ApiResponses(value = {
             @ApiResponse(code = 201, message = "공지사항 등록 성공", response = NoticeDTO.class),
@@ -103,6 +107,7 @@ public class NoticeController {
      * 5. 작성일      : 2022. 11. 28.
      * </pre>
      */
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @ApiOperation(value = "공지사항 수정", notes = "공지사항 수정한다.")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "공지사항 수정 성공", response = NoticeDTO.class),
@@ -126,6 +131,7 @@ public class NoticeController {
      * 5. 작성일      : 2022. 11. 28.
      * </pre>
      */
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @ApiOperation(value = "공지사항 삭제", notes = "공지사항 삭제한다.")
     @ApiResponses(value = {
             @ApiResponse(code = 204, message = "공지사항 삭제 성공", response = Long.class),
@@ -150,6 +156,7 @@ public class NoticeController {
      * 5. 작성일      : 2022. 11. 28.
      * </pre>
      */
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @ApiOperation(value = "공지사항 고정글 설정", notes = "공지사항을 고정글 설정한다.")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "공지사항 고정글 설정 성공", response = Boolean.class),

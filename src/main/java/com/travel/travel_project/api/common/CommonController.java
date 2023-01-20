@@ -10,6 +10,7 @@ import io.swagger.annotations.ApiResponses;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.HttpClientErrorException;
 
@@ -36,6 +37,7 @@ public class CommonController {
      * 5. 작성일      : 2022. 11. 21.
      * </pre>
      */
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @ApiOperation(value = "공통 코드 리스트 조회", notes = "공통 코드 리스트를 조회한다.")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "공통 코드 리스트 조회 성공", response = List.class),
@@ -59,6 +61,7 @@ public class CommonController {
      * 5. 작성일      : 2022. 11. 21.
      * </pre>
      */
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @ApiOperation(value = "공통 코드 상세 조회", notes = "공통 코드를 상세 조회한다.")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "공통 코드 상세 조회 성공", response = CommonDTO.class),
@@ -82,6 +85,7 @@ public class CommonController {
      * 5. 작성일      : 2022. 11. 21.
      * </pre>
      */
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @ApiOperation(value = "공통 코드 등록", notes = "공통 코드를 등록한다.")
     @ApiResponses(value = {
             @ApiResponse(code = 201, message = "공통 코드 등록 성공", response = CommonDTO.class),
@@ -105,6 +109,7 @@ public class CommonController {
      * 5. 작성일      : 2022. 11. 21.
      * </pre>
      */
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @ApiOperation(value = "공통 코드 수정", notes = "공통 코드를 수정한다.")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "공통 코드 수정 성공", response = Map.class),
@@ -128,6 +133,7 @@ public class CommonController {
      * 5. 작성일      : 2022. 11. 21.
      * </pre>
      */
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @ApiOperation(value = "공통 코드 삭제", notes = "공통 코드를 삭제한다.")
     @ApiResponses(value = {
             @ApiResponse(code = 204, message = "공통 코드 삭제 성공", response = Long.class),

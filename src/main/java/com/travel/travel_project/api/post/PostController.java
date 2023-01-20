@@ -16,6 +16,7 @@ import io.swagger.annotations.ApiResponses;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.multipart.MultipartFile;
@@ -45,6 +46,7 @@ public class PostController {
      * 5. 작성일      : 2022. 12. 12.
      * </pre>
      */
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_TRAVEL_USER')")
     @ApiOperation(value = "게시글 리스트 조회", notes = "게시글 리스트를 조회한다.")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "게시글 리스트 조회 성공", response = List.class),
@@ -68,6 +70,7 @@ public class PostController {
      * 5. 작성일      : 2022. 12. 12.
      * </pre>
      */
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_TRAVEL_USER')")
     @ApiOperation(value = "게시글 상세 조회", notes = "게시글 상세 조회한다.")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "게시글 상세 조회 성공", response = PostDTO.class),
@@ -91,6 +94,7 @@ public class PostController {
      * 5. 작성일      : 2022. 12. 12.
      * </pre>
      */
+    @PreAuthorize("hasRole('ROLE_TRAVEL_USER')")
     @ApiOperation(value = "게시글 등록", notes = "게시글 등록한다.")
     @ApiResponses(value = {
             @ApiResponse(code = 201, message = "게시글 등록 성공", response = PostDTO.class),
@@ -114,6 +118,7 @@ public class PostController {
      * 5. 작성일      : 2022. 05. 07.
      * </pre>
      */
+    @PreAuthorize("hasRole('ROLE_TRAVEL_USER')")
     @ApiOperation(value = "게시글 이미지 저장", notes = "게시글 이미지를 저장한다.")
     @ApiResponses(value = {
             @ApiResponse(code = 201, message = "게시글 이미지 등록성공", response = TravelImageDTO.class),
@@ -137,6 +142,7 @@ public class PostController {
      * 5. 작성일      : 2022. 12. 12.
      * </pre>
      */
+    @PreAuthorize("hasRole('ROLE_TRAVEL_USER')")
     @ApiOperation(value = "게시글 수정", notes = "게시글 수정한다.")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "게시글 수정 성공", response = PostDTO.class),
@@ -160,6 +166,7 @@ public class PostController {
      * 5. 작성일      : 2022. 12. 12.
      * </pre>
      */
+    @PreAuthorize("hasRole('ROLE_TRAVEL_USER')")
     @ApiOperation(value = "게시글 삭제", notes = "게시글 삭제한다.")
     @ApiResponses(value = {
             @ApiResponse(code = 204, message = "게시글 삭제 성공", response = Long.class),
@@ -184,6 +191,7 @@ public class PostController {
      * 5. 작성일      : 2022. 12. 12.
      * </pre>
      */
+    @PreAuthorize("hasRole('ROLE_TRAVEL_USER')")
     @ApiOperation(value = "게시글 댓글 등록", notes = "게시글 댓글 등록한다.")
     @ApiResponses(value = {
             @ApiResponse(code = 204, message = "게시글 댓글 등록 성공", response = Long.class),
@@ -207,6 +215,7 @@ public class PostController {
      * 5. 작성일      : 2022. 12. 12.
      * </pre>
      */
+    @PreAuthorize("hasRole('ROLE_TRAVEL_USER')")
     @ApiOperation(value = "게시글 댓글 수정", notes = "게시글 댓글 수정한다.")
     @ApiResponses(value = {
             @ApiResponse(code = 204, message = "게시글 댓글 수정 성공", response = Long.class),
@@ -230,6 +239,7 @@ public class PostController {
      * 5. 작성일      : 2022. 12. 12.
      * </pre>
      */
+    @PreAuthorize("hasRole('ROLE_TRAVEL_USER')")
     @ApiOperation(value = "게시글 댓글 삭제", notes = "게시글 댓글 삭제한다.")
     @ApiResponses(value = {
             @ApiResponse(code = 204, message = "게시글 댓글 삭제 성공", response = Long.class),
@@ -254,6 +264,7 @@ public class PostController {
      * 5. 작성일      : 2022. 12. 12.
      * </pre>
      */
+    @PreAuthorize("hasRole('ROLE_TRAVEL_USER')")
     @ApiOperation(value = "게시글 고정글 설정", notes = "인기 게시글 설정한다.")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "인기 게시글 설정 성공", response = Boolean.class),

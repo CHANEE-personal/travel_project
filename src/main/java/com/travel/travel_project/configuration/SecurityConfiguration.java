@@ -14,6 +14,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.authentication.logout.LogoutFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -28,6 +29,7 @@ import static org.springframework.security.crypto.factory.PasswordEncoderFactori
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
+    private final JwtAuthorizationFilter jwtAuthorizationFilter;
 
     /**
      * <pre>
@@ -44,21 +46,6 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         JwtAuthenticationFilter filter = new JwtAuthenticationFilter(authenticationManager());
         filter.setAuthenticationManager(authenticationManager());
         return filter;
-    }
-
-    /**
-     * <pre>
-     * 1. MethodName : jwtAuthorizationFilter
-     * 2. ClassName  : SecurityConfiguration.java
-     * 3. Comment    : 로그인 인증
-     * 4. 작성자       : CHO
-     * 5. 작성일       : 2021. 07. 07.
-     * </pre>
-     *
-     */
-    @Bean
-    public JwtAuthorizationFilter jwtAuthorizationFilter() {
-        return new JwtAuthorizationFilter();
     }
 
     @Override
@@ -98,16 +85,20 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        // 로그인 인증 관련
-        http.addFilterBefore(jwtAuthorizationFilter(), UsernamePasswordAuthenticationFilter.class);
         // JWT 토큰 유효성 관련
+        http.addFilterBefore(jwtAuthorizationFilter, LogoutFilter.class);
+
+        // 로그인 인증 관련
         http.addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
         // 그 외
         http.csrf().disable()
                 .exceptionHandling().authenticationEntryPoint(jwtAuthenticationEntryPoint)
                 .and().headers().frameOptions().sameOrigin()
                 .and().sessionManagement().sessionCreationPolicy(STATELESS)
-                .and().authorizeRequests().antMatchers("/api/jpa-user/**").permitAll()
+                .and().authorizeRequests()
+                .antMatchers("/api/").hasAnyRole("ADMIN", "TRAVEL_USER")
+                .antMatchers("/api/user/login").permitAll()
+                .antMatchers("/api/user/signUp").permitAll()
                 .anyRequest().authenticated();
     }
 

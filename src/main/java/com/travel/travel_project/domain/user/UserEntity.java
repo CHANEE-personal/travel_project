@@ -93,6 +93,14 @@ public class UserEntity extends NewCommonMappedClass {
         this.role = userEntity.role;
     }
 
+    public void updateToken(String token) {
+        this.userToken = token;
+    }
+
+    public void updateRefreshToken(String refreshToken) {
+        this.userRefreshToken = refreshToken;
+    }
+
     public void addSchedule(TravelScheduleEntity travelScheduleEntity) {
         travelScheduleEntity.setUserEntity(this);
         this.userScheduleList.add(travelScheduleEntity);
