@@ -8,6 +8,8 @@ import com.travel.travel_project.domain.travel.group.TravelGroupUserDTO;
 import com.travel.travel_project.domain.travel.group.TravelGroupUserEntity;
 import com.travel.travel_project.domain.travel.schedule.TravelScheduleDTO;
 import com.travel.travel_project.domain.travel.schedule.TravelScheduleEntity;
+import com.travel.travel_project.domain.user.LoginRequest;
+import com.travel.travel_project.domain.user.SignUpRequest;
 import com.travel.travel_project.domain.user.UserDTO;
 import com.travel.travel_project.domain.user.UserEntity;
 import lombok.RequiredArgsConstructor;
@@ -27,6 +29,7 @@ import org.springframework.context.event.EventListener;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.TestConstructor;
 import org.springframework.test.context.TestPropertySource;
 
@@ -63,6 +66,7 @@ class UserServiceTest {
     private UserService mockUserService;
     private final UserService userService;
     private final EntityManager em;
+    private final PasswordEncoder passwordEncoder;
 
     private UserEntity userEntity;
     private UserDTO userDTO;
@@ -84,6 +88,28 @@ class UserServiceTest {
     @EventListener(ApplicationReadyEvent.class)
     public void init() {
         createUser();
+    }
+
+    @Test
+    @DisplayName("관리자 로그인 처리 테스트")
+    void 관리자로그인처리테스트() {
+        // given
+        UserEntity adminUserEntity = UserEntity.builder()
+                .userId("admin05")
+                .password(passwordEncoder.encode("pass1234"))
+                .name("admin05")
+                .email("admin05@admin.com")
+                .visible("Y")
+                .role(ROLE_ADMIN)
+                .build();
+
+        em.persist(adminUserEntity);
+
+        LoginRequest loginRequest = LoginRequest.builder().userId(adminUserEntity.getUserId())
+                .password("pass1234").build();
+
+        // then
+        userService.adminLogin(loginRequest);
     }
 
     @Test
@@ -173,11 +199,14 @@ class UserServiceTest {
     @DisplayName("유저 회원가입 Mockito 테스트")
     void 유저회원가입Mockito테스트() {
         // given
-        UserEntity userEntity = UserEntity.builder()
-                .idx(1L).userId("test01")
-                .name("조찬희").password("test01")
-                .email("test01@test.com").visible("Y").build();
-        userService.insertUser(userEntity);
+        SignUpRequest signUpRequest = SignUpRequest.builder()
+                .userId("test")
+                .password("test")
+                .name("test")
+                .email("test@test.com")
+                .visible("Y")
+                .build();
+        userService.insertUser(signUpRequest);
         userDTO = UserEntity.toDto(userEntity);
 
         // when
@@ -202,11 +231,14 @@ class UserServiceTest {
     @DisplayName("유저 회원가입 BDD 테스트")
     void 유저회원가입BDD테스트() {
         // given
-        UserEntity userEntity = UserEntity.builder()
-                .idx(1L).userId("test01")
-                .name("조찬희").password("test01")
-                .email("test01@test.com").visible("Y").build();
-        userService.insertUser(userEntity);
+        SignUpRequest signUpRequest = SignUpRequest.builder()
+                .userId("test")
+                .password("test")
+                .name("test")
+                .email("test@test.com")
+                .visible("Y")
+                .build();
+        userService.insertUser(signUpRequest);
         userDTO = UserEntity.toDto(userEntity);
 
         // when
@@ -228,16 +260,15 @@ class UserServiceTest {
     @DisplayName("유저 회원수정 Mockito 테스트")
     void 유저회원수정Mockito테스트() {
         // given
-        UserEntity userEntity = UserEntity.builder()
+        SignUpRequest signUpRequest = SignUpRequest.builder()
                 .userId("test")
                 .password("test")
                 .name("test")
                 .email("test@test.com")
-                .role(ROLE_ADMIN)
                 .visible("Y")
                 .build();
 
-        Long idx = userService.insertUser(userEntity).getIdx();
+        Long idx = userService.insertUser(signUpRequest).getIdx();
 
         UserEntity newUserEntity = UserEntity.builder()
                 .idx(idx)
@@ -273,16 +304,15 @@ class UserServiceTest {
     @DisplayName("유저 회원수정 BDD 테스트")
     void 유저회원수정BDD테스트() {
         // given
-        UserEntity userEntity = UserEntity.builder()
+        SignUpRequest signUpRequest = SignUpRequest.builder()
                 .userId("test")
                 .password("test")
                 .name("test")
                 .email("test@test.com")
-                .role(ROLE_ADMIN)
                 .visible("Y")
                 .build();
 
-        Long idx = userService.insertUser(userEntity).getIdx();
+        Long idx = userService.insertUser(signUpRequest).getIdx();
 
         UserEntity newUserEntity = UserEntity.builder()
                 .idx(idx)
@@ -313,20 +343,18 @@ class UserServiceTest {
     @Test
     @DisplayName("유저 회원탈퇴 테스트")
     void 유저탈퇴테스트() {
-        UserDTO oneUser = userService.insertUser(userEntity);
-        assertThat(userService.deleteUser(oneUser.getIdx())).isEqualTo(oneUser.getIdx());
+        em.persist(userEntity);
+        userService.deleteUser(userEntity);
     }
 
     @Test
     @DisplayName("유저 회원탈퇴 Mockito 테스트")
     void 유저회원탈퇴Mockito테스트() {
-        UserDTO userDTO = userService.insertUser(userEntity);
+        em.persist(userEntity);
+        UserDTO userDTO = UserEntity.toDto(userEntity);
         // when
         when(mockUserService.findOneUser(userDTO.getIdx())).thenReturn(userDTO);
-        Long deleteIdx = userService.deleteUser(userDTO.getIdx());
-
-        // then
-        assertThat(mockUserService.findOneUser(userDTO.getIdx()).getIdx()).isEqualTo(deleteIdx);
+        userService.deleteUser(userEntity);
 
         // verify
         verify(mockUserService, times(1)).findOneUser(userDTO.getIdx());
@@ -340,13 +368,11 @@ class UserServiceTest {
     @Test
     @DisplayName("유저 회원탈퇴 BDD 테스트")
     void 유저회원탈퇴BDD테스트() {
-        UserDTO userDTO = userService.insertUser(userEntity);
+        em.persist(userEntity);
+        UserDTO userDTO = UserEntity.toDto(userEntity);
         // when
         given(mockUserService.findOneUser(userDTO.getIdx())).willReturn(userDTO);
-        Long deleteIdx = userService.deleteUser(userDTO.getIdx());
-
-        // then
-        assertThat(mockUserService.findOneUser(userDTO.getIdx()).getIdx()).isEqualTo(deleteIdx);
+        userService.deleteUser(userEntity);
 
         // verify
         then(mockUserService).should(times(1)).findOneUser(userDTO.getIdx());
@@ -360,17 +386,17 @@ class UserServiceTest {
         List<String> list = new ArrayList<>();
         list.add("1");
 
-        userEntity = UserEntity.builder()
-                .userId("cksgml159")
-                .password("test159")
-                .email("cksgml159@naver.com")
+        SignUpRequest signUpRequest = SignUpRequest.builder()
+                .userId("test")
+                .password("test")
                 .name("test")
-                .role(ROLE_TRAVEL_USER)
-                .favoriteTravelIdx(list)
+                .email("test@test.com")
                 .visible("Y")
                 .build();
 
-        UserDTO oneUser = userService.insertUser(userEntity);
+        UserDTO oneUser = userService.insertUser(signUpRequest);
+
+        userService.addFavoriteTravel(oneUser.getIdx(), 1L);
 
         JSONArray jsonArray = new JSONArray();
         jsonArray.put(oneUser.getFavoriteTravelIdx());
@@ -426,7 +452,15 @@ class UserServiceTest {
 
         em.persist(commonEntity);
 
-        UserDTO oneUser = userService.insertUser(userEntity);
+        SignUpRequest signUpRequest = SignUpRequest.builder()
+                .userId("test")
+                .password("test")
+                .name("test")
+                .email("test@test.com")
+                .visible("Y")
+                .build();
+
+        UserDTO oneUser = userService.insertUser(signUpRequest);
         // given
         TravelScheduleEntity travelScheduleEntity = TravelScheduleEntity.builder()
                 .commonEntity(commonEntity)
@@ -464,7 +498,15 @@ class UserServiceTest {
 
         em.persist(commonEntity);
 
-        UserDTO oneUser = userService.insertUser(userEntity);
+        SignUpRequest signUpRequest = SignUpRequest.builder()
+                .userId("test")
+                .password("test")
+                .name("test")
+                .email("test@test.com")
+                .visible("Y")
+                .build();
+
+        UserDTO oneUser = userService.insertUser(signUpRequest);
 
         // given
         TravelScheduleEntity travelScheduleEntity = TravelScheduleEntity.builder()
@@ -491,7 +533,15 @@ class UserServiceTest {
 
         em.persist(commonEntity);
 
-        UserDTO oneUser = userService.insertUser(userEntity);
+        SignUpRequest signUpRequest = SignUpRequest.builder()
+                .userId("test")
+                .password("test")
+                .name("test")
+                .email("test@test.com")
+                .visible("Y")
+                .build();
+
+        UserDTO oneUser = userService.insertUser(signUpRequest);
 
         // given
         TravelScheduleEntity travelScheduleEntity = TravelScheduleEntity.builder()
@@ -530,7 +580,15 @@ class UserServiceTest {
 
         em.persist(commonEntity);
 
-        UserDTO oneUser = userService.insertUser(userEntity);
+        SignUpRequest signUpRequest = SignUpRequest.builder()
+                .userId("test")
+                .password("test")
+                .name("test")
+                .email("test@test.com")
+                .visible("Y")
+                .build();
+
+        UserDTO oneUser = userService.insertUser(signUpRequest);
 
         // given
         TravelScheduleEntity travelScheduleEntity = TravelScheduleEntity.builder()
@@ -551,11 +609,14 @@ class UserServiceTest {
     void 유저여행그룹등록Mockito테스트() {
         // given
         // 유저 등록
-        UserEntity userEntity = UserEntity.builder()
-                .idx(1L).userId("test01")
-                .name("조찬희").password("test01")
-                .email("test01@test.com").visible("Y").build();
-        userService.insertUser(userEntity);
+        SignUpRequest signUpRequest = SignUpRequest.builder()
+                .userId("test")
+                .password("test")
+                .name("test")
+                .email("test@test.com")
+                .visible("Y")
+                .build();
+        userService.insertUser(signUpRequest);
         userDTO = UserEntity.toDto(userEntity);
 
         TravelEntity travelEntity = TravelEntity.builder()
@@ -593,11 +654,14 @@ class UserServiceTest {
     void 유저여행그룹삭제Mockito테스트() {
         // given
         // 유저 등록
-        UserEntity userEntity = UserEntity.builder()
-                .idx(1L).userId("test01")
-                .name("조찬희").password("test01")
-                .email("test01@test.com").visible("Y").build();
-        userService.insertUser(userEntity);
+        SignUpRequest signUpRequest = SignUpRequest.builder()
+                .userId("test")
+                .password("test")
+                .name("test")
+                .email("test@test.com")
+                .visible("Y")
+                .build();
+        userService.insertUser(signUpRequest);
         userDTO = UserEntity.toDto(userEntity);
 
         TravelEntity travelEntity = TravelEntity.builder()

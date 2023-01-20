@@ -91,7 +91,7 @@ class UserControllerTest {
         passwordEncoder = createDelegatingPasswordEncoder();
 
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken("admin04", "pass1234", getAuthorities());
-        String token = jwtUtil.doGenerateToken(authenticationToken.getName(), 1000L * 10);
+        String token = jwtUtil.doGenerateToken(authenticationToken.getName());
 
         userEntity = UserEntity.builder()
                 .userId("admin99")
@@ -300,20 +300,6 @@ class UserControllerTest {
                         .header("Authorization", "Bearer " + userEntity.getUserToken()))
                 .andDo(print())
                 .andExpect(status().isForbidden());
-    }
-
-    @Test
-    @DisplayName("JWT 토큰 발급 테스트")
-    void 토큰발급테스트() throws Exception {
-        mockMvc.perform(post("/api/user/refresh")
-                        .header("Authorization", "Bearer " + userEntity.getUserToken())
-                        .contentType(APPLICATION_JSON_VALUE)
-                        .content(objectMapper.writeValueAsString(AuthenticationRequest.builder().userId("admin01").password("pass1234").build())))
-                .andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(content().contentType("application/json;charset=utf-8"))
-                .andExpect(jsonPath("$.jwt").isNotEmpty())
-                .andExpect(jsonPath("$.token").isNotEmpty());
     }
 
     @Test

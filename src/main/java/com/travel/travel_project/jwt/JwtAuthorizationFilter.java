@@ -1,12 +1,14 @@
 package com.travel.travel_project.jwt;
 
-import com.travel.travel_project.api.user.UserService;
+import com.travel.travel_project.api.user.UserRepository;
+import com.travel.travel_project.domain.user.UserEntity;
 import com.travel.travel_project.exception.TravelException;
 import io.jsonwebtoken.ExpiredJwtException;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import javax.servlet.FilterChain;
@@ -21,10 +23,12 @@ import static javax.servlet.http.HttpServletResponse.SC_UNAUTHORIZED;
 import static org.springframework.security.core.context.SecurityContextHolder.getContext;
 
 @Slf4j
+@Component
+@RequiredArgsConstructor
 public class JwtAuthorizationFilter extends OncePerRequestFilter {
-    @Autowired private UserService userService;
-    @Autowired private JwtUtil jwtUtil;
-    @Autowired private MyUserDetailsService userDetailsService;
+    private final JwtUtil jwtUtil;
+    private final MyUserDetailsService userDetailsService;
+    private final UserRepository userRepository;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
@@ -35,17 +39,18 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
 
             // 유효한 토큰인지 검사
             if (accessToken != null) {
-                String userId = userService.findOneUserByToken(accessToken);
-                UserDetails userDetails = userDetailsService.loadUserByUsername(userId);
-
                 if (TRUE.equals(jwtUtil.validateToken(accessToken))) {
                     this.setAuthentication(accessToken);
                 } else {
                     if (refreshToken != null) {
                         boolean validateRefreshToken = jwtUtil.validateToken(refreshToken);
 
+                        UserEntity user = userRepository.findByUserRefreshToken(refreshToken)
+                                .orElseThrow(() -> new TravelException(NOT_FOUND_USER));
+                        UserDetails userDetails = userDetailsService.loadUserByUsername(user.getUserId());
+
                         if (validateRefreshToken) {
-                            String newAccessToken = jwtUtil.generateToken(userDetails);
+                            String newAccessToken = jwtUtil.doGenerateToken(userDetails.getUsername());
                             jwtUtil.setHeaderAccessToken(response, newAccessToken);
                             this.setAuthentication(newAccessToken);
                         }

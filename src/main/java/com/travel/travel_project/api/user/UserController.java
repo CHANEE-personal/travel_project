@@ -6,9 +6,7 @@ import com.travel.travel_project.domain.travel.group.TravelGroupUserDTO;
 import com.travel.travel_project.domain.travel.group.TravelGroupUserEntity;
 import com.travel.travel_project.domain.travel.schedule.TravelScheduleDTO;
 import com.travel.travel_project.domain.travel.schedule.TravelScheduleEntity;
-import com.travel.travel_project.domain.user.AuthenticationRequest;
-import com.travel.travel_project.domain.user.UserDTO;
-import com.travel.travel_project.domain.user.UserEntity;
+import com.travel.travel_project.domain.user.*;
 import com.travel.travel_project.jwt.AuthenticationResponse;
 import com.travel.travel_project.jwt.JwtUtil;
 import com.travel.travel_project.jwt.MyUserDetailsService;
@@ -45,7 +43,6 @@ public class UserController {
     private final AuthenticationManager authenticationManager;
     private final MyUserDetailsService userDetailsService;
     private final JwtUtil jwtTokenUtil;
-    private final SearchCommon searchCommon;
 
     /**
      * <pre>
@@ -89,32 +86,11 @@ public class UserController {
             @ApiResponse(code = 500, message = "서버 에러", response = ServerError.class)
     })
     @PostMapping("/login")
-    public ResponseEntity<Map<String, Object>> login(@RequestBody AuthenticationRequest authenticationRequest, HttpServletResponse response) throws Exception {
-        Map<String, Object> userMap = new HashMap<>();
-
-        UserEntity userEntity = UserEntity.builder()
-                .userId(authenticationRequest.getUserId())
-                .password(authenticationRequest.getPassword())
-                .build();
-
-        if ("Y".equals(userService.adminLogin(userEntity))) {
-            userMap.put("loginYn", "Y");
-            userMap.put("userId", userEntity.getUserId());
-            userMap.put("token", createAuthenticationToken(authenticationRequest));
-
-            // 로그인 완료 시 생성된 token 값 DB에 저장
-            UserDetails userDetails = userDetailsService.loadUserByUsername(authenticationRequest.getUserId());
-            String accessToken = jwtTokenUtil.generateToken(userDetails);
-            String refreshToken = jwtTokenUtil.generateRefreshToken(userDetails);
-            userEntity.setUserToken(accessToken);
-            userEntity.setUserRefreshToken(refreshToken);
-            jwtTokenUtil.setHeaderAccessToken(response, accessToken);
-            jwtTokenUtil.setHeaderRefreshToken(response, refreshToken);
-
-            userService.insertToken(userEntity);
-        }
-
-        return ResponseEntity.ok().body(userMap);
+    public ResponseEntity<JwtUtil.TokenInfo> login(@Valid @RequestBody LoginRequest loginRequest, HttpServletResponse response) throws Exception {
+        JwtUtil.TokenInfo jwtResponse = userService.adminLogin(loginRequest);
+        jwtTokenUtil.setHeaderAccessToken(response, jwtResponse.getAccessToken());
+        jwtTokenUtil.setHeaderRefreshToken(response, jwtResponse.getRefreshToken());
+        return ok().body(jwtResponse);
     }
 
     /**
@@ -193,8 +169,8 @@ public class UserController {
             @ApiResponse(code = 500, message = "서버 에러", response = ServerError.class)
     })
     @PostMapping
-    public ResponseEntity<UserDTO> insertUser(@Valid @RequestBody UserEntity userEntity) {
-        return ResponseEntity.created(URI.create("")).body(userService.insertUser(userEntity));
+    public ResponseEntity<UserDTO> insertUser(@Valid @RequestBody SignUpRequest signUpRequest) {
+        return ResponseEntity.created(URI.create("")).body(userService.insertUser(signUpRequest));
     }
 
     /**
@@ -216,7 +192,7 @@ public class UserController {
             @ApiResponse(code = 500, message = "서버 에러", response = ServerError.class)
     })
     @PutMapping("/{idx}")
-    public ResponseEntity<UserDTO> updateUser(@PathVariable Long idx, @Valid @RequestBody UserEntity userEntity) {
+    public ResponseEntity<UserDTO> updateUser(@PathVariable Long idx, @CurrentUser UserEntity userEntity) {
         return ResponseEntity.ok(userService.updateUser(idx, userEntity));
     }
 
@@ -238,9 +214,9 @@ public class UserController {
             @ApiResponse(code = 404, message = "존재 하지 않음", response = HttpClientErrorException.NotFound.class),
             @ApiResponse(code = 500, message = "서버 에러", response = ServerError.class)
     })
-    @DeleteMapping("/{idx}")
-    public ResponseEntity<Long> deleteUser(@PathVariable Long idx) {
-        userService.deleteUser(idx);
+    @DeleteMapping
+    public ResponseEntity<Void> deleteUser(@CurrentUser UserEntity userEntity) {
+        userService.deleteUser(userEntity);
         return ResponseEntity.noContent().build();
     }
 

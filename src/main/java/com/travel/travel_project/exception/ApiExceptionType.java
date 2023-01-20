@@ -7,6 +7,7 @@ public enum ApiExceptionType implements BaseExceptionType {
     // 로그인 관련 Type
     NO_LOGIN("NO_LOGIN", 401, "로그인 필요"),
     NO_ADMIN("NO_ADMIN", 403, "권한 없는 사용자"),
+    EXIST_USER("EXIST_USER", 200, "동일한 ID 유저 존재"),
 
     // User 관련 Type
     ERROR_USER("ERROR_USER", 500, "유저 등록 에러"),

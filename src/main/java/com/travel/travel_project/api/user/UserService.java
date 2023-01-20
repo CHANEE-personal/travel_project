@@ -10,12 +10,18 @@ import com.travel.travel_project.domain.travel.group.TravelGroupUserDTO;
 import com.travel.travel_project.domain.travel.group.TravelGroupUserEntity;
 import com.travel.travel_project.domain.travel.schedule.TravelScheduleDTO;
 import com.travel.travel_project.domain.travel.schedule.TravelScheduleEntity;
-import com.travel.travel_project.domain.user.UserDTO;
-import com.travel.travel_project.domain.user.UserEntity;
+import com.travel.travel_project.domain.user.*;
 import com.travel.travel_project.exception.TravelException;
+import com.travel.travel_project.jwt.JwtUtil;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.security.authentication.*;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,6 +30,7 @@ import java.util.Map;
 
 import static com.travel.travel_project.exception.ApiExceptionType.*;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class UserService {
@@ -34,6 +41,9 @@ public class UserService {
     private final CommonRepository commonRepository;
     private final GroupRepository groupRepository;
     private final GroupUserRepository groupUserRepository;
+    private final JwtUtil jwtUtil;
+    private final PasswordEncoder passwordEncoder;
+    private final AuthenticationManager authenticationManager;
 
     private UserEntity oneUser(Long idx) {
         return userRepository.findById(idx)
@@ -55,23 +65,46 @@ public class UserService {
                 .orElseThrow(() -> new TravelException(NOT_FOUND_TRAVEL_GROUP));
     }
 
-    @Transactional(readOnly = true)
-    public String adminLogin(UserEntity userEntity) {
-        try {
-            return userQueryRepository.adminLogin(userEntity);
-        } catch (Exception e) {
-            throw new TravelException(NOT_FOUND_USER);
+    @Transactional
+    public JwtUtil.TokenInfo adminLogin(LoginRequest loginRequest) {
+        // 패스워드 일치할 시
+        if (passwordEncoder.matches(loginRequest.getPassword(), findOneUserById(loginRequest.getUserId()).getPassword())) {
+            Authentication authentication = authenticate(loginRequest.getUserId(), loginRequest.getPassword());
+            if (authentication != null) {
+                Object principal = authentication.getPrincipal();
+                if (principal instanceof AuthenticationRequest) {
+                    AuthenticationRequest principalDetails = (AuthenticationRequest) principal;
+                    UserEntity user = principalDetails.getUserEntity();
+                    // accessToken
+                    String accessToken = jwtUtil.doGenerateToken(principalDetails.getUsername());
+                    user.updateToken(accessToken);
+                    // refreshToken
+                    String refreshToken = jwtUtil.doGenerateRefreshToken(principalDetails.getUsername());
+                    user.updateRefreshToken(refreshToken);
+
+                    return jwtUtil.getJwtTokens(accessToken, refreshToken);
+                }
+            }
         }
+        return null;
     }
 
-    @Transactional
-    public void insertToken(UserEntity paramUserEntity) {
+    private Authentication authenticate(String userId, String password) {
         try {
-            UserEntity userEntity = oneUser(paramUserEntity.getIdx());
-            userQueryRepository.insertUserToken(userEntity);
-        } catch (Exception e) {
-            throw new TravelException(ERROR_USER);
+            return authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(userId, password));
+        } catch(BadCredentialsException e) {
+            throw new BadCredentialsException("BadCredentialsException");
+        } catch(DisabledException e) {
+            throw new DisabledException("DisabledException");
+        } catch(LockedException e) {
+            throw new LockedException("LockedException");
+        } catch(UsernameNotFoundException e) {
+            throw new UsernameNotFoundException("UsernameNotFoundException");
+        } catch(AuthenticationException e) {
+            log.error(e.getMessage());
         }
+
+        return null;
     }
 
     /**
@@ -79,8 +112,8 @@ public class UserService {
      * 1. MethodName : findUserList
      * 2. ClassName  : UserService.java
      * 3. Comment    : 유저 리스트 조회
-     * 4. 작성자       : CHO
-     * 5. 작성일       : 2022. 10. 11.
+     * 4. 작성자      : CHO
+     * 5. 작성일      : 2022. 10. 11.
      * </pre>
      */
     @Transactional(readOnly = true)
@@ -93,8 +126,8 @@ public class UserService {
      * 1. MethodName : findOneUser
      * 2. ClassName  : UserService.java
      * 3. Comment    : idx 이용한 유저 조회
-     * 4. 작성자       : CHO
-     * 5. 작성일       : 2022. 10. 11.
+     * 4. 작성자      : CHO
+     * 5. 작성일      : 2022. 10. 11.
      * </pre>
      */
     @Transactional(readOnly = true)
@@ -106,14 +139,16 @@ public class UserService {
      * <pre>
      * 1. MethodName : findOneUserById
      * 2. ClassName  : UserService.java
-     * 3. Comment    : 아이디를 이용한 유저 조회
+     * 3. Comment    : 유저 상세 조회
      * 4. 작성자      : CHO
-     * 5. 작성일      : 2022. 10. 6.
+     * 5. 작성일      : 2022. 10. 11.
      * </pre>
      */
     @Transactional(readOnly = true)
-    public UserDTO findOneUserById(String userId) {
-        return userQueryRepository.findOneUserById(userId);
+    public UserDTO findOneUserById(String id) {
+        UserEntity oneUser = userRepository.findByUserId(id)
+                .orElseThrow(() -> new TravelException(NOT_FOUND_USER));
+        return UserEntity.toDto(oneUser);
     }
 
     /**
@@ -140,9 +175,21 @@ public class UserService {
      * </pre>
      */
     @Transactional
-    public UserDTO insertUser(UserEntity userEntity) {
+    public UserDTO insertUser(SignUpRequest signUpRequest) {
         try {
-            return UserEntity.toDto(userRepository.save(userEntity));
+            if (userRepository.findByUserId(signUpRequest.getUserId()).isPresent()) {
+                throw new TravelException(EXIST_USER);
+            }
+
+            return UserEntity.toDto(userRepository.save(UserEntity.builder()
+                    .userId(signUpRequest.getUserId())
+                    .password(passwordEncoder.encode(signUpRequest.getPassword()))
+                    .name(signUpRequest.getName())
+                    .email(signUpRequest.getEmail())
+                    .role(Role.ROLE_ADMIN)
+                    .visible("Y")
+                    .build()));
+
         } catch (Exception e) {
             throw new TravelException(ERROR_USER);
         }
@@ -153,8 +200,8 @@ public class UserService {
      * 1. MethodName : updateUser
      * 2. ClassName  : UserService.java
      * 3. Comment    : 유저 정보 수정
-     * 4. 작성자       : CHO
-     * 5. 작성일       : 2022. 10. 11.
+     * 4. 작성자      : CHO
+     * 5. 작성일      : 2022. 10. 11.
      * </pre>
      */
     @Transactional
@@ -172,15 +219,14 @@ public class UserService {
      * 1. MethodName : deleteUser
      * 2. ClassName  : UserService.java
      * 3. Comment    : 유저 탈퇴
-     * 4. 작성자       : CHO
-     * 5. 작성일       : 2022. 10. 11.
+     * 4. 작성자      : CHO
+     * 5. 작성일      : 2022. 10. 11.
      * </pre>
      */
     @Transactional
-    public Long deleteUser(Long idx) {
+    public void deleteUser(UserEntity userEntity) {
         try {
-            userRepository.deleteById(idx);
-            return idx;
+            userRepository.delete(userEntity);
         } catch (Exception e) {
             throw new TravelException(ERROR_DELETE_USER);
         }
