@@ -1,6 +1,6 @@
 package com.travel.api.notice;
 
-import com.travel.api.notice.domain.NoticeDTO;
+import com.travel.api.notice.domain.NoticeDto;
 import com.travel.api.notice.domain.NoticeEntity;
 import com.travel.api.notice.domain.repository.NoticeQueryRepository;
 import com.travel.api.notice.domain.repository.NoticeRepository;
@@ -38,7 +38,7 @@ public class NoticeService {
      * </pre>
      */
     @Transactional(readOnly = true)
-    public Page<NoticeDTO> findNoticeList(Map<String, Object> noticeMap, PageRequest pageRequest) {
+    public Page<NoticeDto> findNoticeList(Map<String, Object> noticeMap, PageRequest pageRequest) {
         return noticeQueryRepository.findNoticeList(noticeMap, pageRequest);
     }
 
@@ -52,7 +52,7 @@ public class NoticeService {
      * </pre>
      */
     @Transactional
-    public NoticeDTO findOneNotice(Long idx) {
+    public NoticeDto findOneNotice(Long idx) {
         oneNotice(idx).updateViewCount();
         return NoticeEntity.toDto(oneNotice(idx));
     }
@@ -67,7 +67,7 @@ public class NoticeService {
      * </pre>
      */
     @Transactional
-    public NoticeDTO insertNotice(NoticeEntity noticeEntity) {
+    public NoticeDto insertNotice(NoticeEntity noticeEntity) {
         try {
             return NoticeEntity.toDto(noticeRepository.save(noticeEntity));
         } catch (Exception e) {
@@ -85,7 +85,7 @@ public class NoticeService {
      * </pre>
      */
     @Transactional
-    public NoticeDTO updateNotice(Long idx, NoticeEntity noticeEntity) {
+    public NoticeDto updateNotice(Long idx, NoticeEntity noticeEntity) {
         try {
             oneNotice(idx).update(noticeEntity);
             return NoticeEntity.toDto(noticeEntity);

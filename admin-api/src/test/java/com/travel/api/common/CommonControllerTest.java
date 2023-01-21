@@ -68,7 +68,7 @@ class CommonControllerTest {
     @Test
     @DisplayName("공통 코드 조회 테스트")
     void 공통코드조회테스트() throws Exception {
-        mockMvc.perform(get("/api/common/lists").param("pageNum", "0").param("size", "100"))
+        mockMvc.perform(get("/api/common").param("pageNum", "0").param("size", "100"))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().contentType("application/json;charset=utf-8"))

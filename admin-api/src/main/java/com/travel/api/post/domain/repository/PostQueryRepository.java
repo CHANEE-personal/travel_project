@@ -2,7 +2,7 @@ package com.travel.api.post.domain.repository;
 
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import com.travel.api.post.domain.PostDTO;
+import com.travel.api.post.domain.PostDto;
 import com.travel.api.post.domain.PostEntity;
 import com.travel.api.post.domain.reply.QReplyEntity;
 import com.travel.api.post.domain.reply.ReplyEntity;
@@ -43,7 +43,7 @@ public class PostQueryRepository {
      * 5. 작성일      : 2022. 12.11.
      * </pre>
      */
-    public Page<PostDTO> findPostList(Map<String, Object> postMap, PageRequest pageRequest) {
+    public Page<PostDto> findPostList(Map<String, Object> postMap, PageRequest pageRequest) {
         List<PostEntity> postList = queryFactory
                 .selectFrom(postEntity)
                 .orderBy(postEntity.idx.desc())
@@ -65,7 +65,7 @@ public class PostQueryRepository {
      * 5. 작성일      : 2022. 12.11.
      * </pre>
      */
-    public PostDTO findOnePost(Long idx) {
+    public PostDto findOnePost(Long idx) {
         PostEntity onePost = Optional.ofNullable(queryFactory
                 .selectFrom(postEntity)
                 .leftJoin(postEntity.postImageList, postImageEntity1)

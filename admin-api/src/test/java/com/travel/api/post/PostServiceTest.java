@@ -1,9 +1,7 @@
 package com.travel.api.post;
 
-import com.travel.api.post.domain.PostDTO;
+import com.travel.api.post.domain.PostDto;
 import com.travel.api.post.domain.PostEntity;
-import com.travel.api.post.domain.reply.ReplyDTO;
-import com.travel.api.post.domain.reply.ReplyEntity;
 import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -52,7 +50,7 @@ class PostServiceTest {
     private final EntityManager em;
 
     private PostEntity postEntity;
-    private PostDTO postDTO;
+    private PostDto postDTO;
 
     void createPost() {
         postEntity = PostEntity.builder()
@@ -81,17 +79,17 @@ class PostServiceTest {
         Map<String, Object> postMap = new HashMap<>();
         PageRequest pageRequest = PageRequest.of(0, 3);
 
-        List<PostDTO> postList = new ArrayList<>();
+        List<PostDto> postList = new ArrayList<>();
         postList.add(postDTO);
 
-        Page<PostDTO> resultPage = new PageImpl<>(postList, pageRequest, postList.size());
+        Page<PostDto> resultPage = new PageImpl<>(postList, pageRequest, postList.size());
 
 
         // when
         when(mockPostService.findPostList(postMap, pageRequest)).thenReturn(resultPage);
-        Page<PostDTO> newPostList = mockPostService.findPostList(postMap, pageRequest);
+        Page<PostDto> newPostList = mockPostService.findPostList(postMap, pageRequest);
 
-        List<PostDTO> findPostList = newPostList.stream().collect(Collectors.toList());
+        List<PostDto> findPostList = newPostList.stream().collect(Collectors.toList());
         // then
         // 게시글 관련
         assertThat(findPostList.get(0).getIdx()).isEqualTo(postList.get(0).getIdx());
@@ -110,7 +108,7 @@ class PostServiceTest {
     @Test
     @DisplayName("게시글 상세 조회 테스트")
     void 게시글상세조회테스트() {
-        PostDTO onePost = postService.findOnePost(postDTO.getIdx());
+        PostDto onePost = postService.findOnePost(postDTO.getIdx());
 
         // 게시글
         assertThat(onePost.getPostTitle()).isEqualTo("게시글 테스트");
@@ -126,7 +124,7 @@ class PostServiceTest {
     void 게시글상세조회Mockito테스트() {
         // when
         when(mockPostService.findOnePost(postDTO.getIdx())).thenReturn(postDTO);
-        PostDTO onePost = mockPostService.findOnePost(postDTO.getIdx());
+        PostDto onePost = mockPostService.findOnePost(postDTO.getIdx());
 
         // then
         assertThat(onePost.getPostTitle()).isEqualTo("게시글 테스트");
@@ -152,11 +150,11 @@ class PostServiceTest {
                 .visible("Y")
                 .build();
 
-        PostDTO postInfo = postService.insertPost(insertEntity);
+        PostDto postInfo = postService.insertPost(insertEntity);
 
         // when
         when(mockPostService.findOnePost(postInfo.getIdx())).thenReturn(postInfo);
-        PostDTO onePost = mockPostService.findOnePost(postInfo.getIdx());
+        PostDto onePost = mockPostService.findOnePost(postInfo.getIdx());
 
         // then
         assertThat(onePost.getPostTitle()).isEqualTo("게시글 등록 테스트");
@@ -183,7 +181,7 @@ class PostServiceTest {
                 .visible("Y")
                 .build();
 
-        PostDTO postInfo = postService.insertPost(insertEntity);
+        PostDto postInfo = postService.insertPost(insertEntity);
 
         PostEntity updatePostEntity = PostEntity.builder()
                 .idx(postInfo.getIdx())
@@ -194,11 +192,11 @@ class PostServiceTest {
                 .visible("Y")
                 .build();
 
-        PostDTO updatePost = postService.updatePost(postInfo.getIdx(), updatePostEntity);
+        PostDto updatePost = postService.updatePost(postInfo.getIdx(), updatePostEntity);
 
         // when
         when(mockPostService.findOnePost(updatePost.getIdx())).thenReturn(updatePost);
-        PostDTO onePost = mockPostService.findOnePost(updatePost.getIdx());
+        PostDto onePost = mockPostService.findOnePost(updatePost.getIdx());
 
         // then
         assertThat(onePost.getPostTitle()).isEqualTo("게시글 수정 테스트");

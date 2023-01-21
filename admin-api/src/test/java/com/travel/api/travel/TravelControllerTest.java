@@ -1,7 +1,7 @@
 package com.travel.api.travel;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.travel.api.common.domain.CommonDTO;
+import com.travel.api.common.domain.CommonDto;
 import com.travel.api.common.domain.CommonEntity;
 import com.travel.api.travel.domain.TravelEntity;
 import com.travel.api.travel.domain.festival.TravelFestivalEntity;
@@ -64,7 +64,7 @@ class TravelControllerTest {
     private final EntityManager em;
 
     private CommonEntity commonEntity;
-    private CommonDTO commonDTO;
+    private CommonDto commonDTO;
 
     @BeforeEach
     @EventListener(ApplicationReadyEvent.class)
@@ -89,7 +89,7 @@ class TravelControllerTest {
     @DisplayName("여행지 조회 테스트")
     void 여행지조회테스트() throws Exception {
         LinkedMultiValueMap<String, String> paramMap = new LinkedMultiValueMap<>();
-        mockMvc.perform(get("/api/travel/lists").queryParams(paramMap).param("pageNum", "1").param("size", "3"))
+        mockMvc.perform(get("/api/travel").queryParams(paramMap).param("pageNum", "1").param("size", "3"))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().contentType("application/json;charset=utf-8"));
@@ -240,7 +240,7 @@ class TravelControllerTest {
     @Test
     @DisplayName("여행지 그룹 조회 테스트")
     void 여행지그룹조회테스트() throws Exception {
-        mockMvc.perform(get("/api/travel/lists/group").param("page", "1").param("size", "100"))
+        mockMvc.perform(get("/api/travel/group").param("page", "1").param("size", "100"))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().contentType("application/json;charset=utf-8"))

@@ -2,7 +2,7 @@ package com.travel.api.faq;
 
 import com.travel.api.common.domain.CommonEntity;
 import com.travel.api.common.domain.repository.CommonRepository;
-import com.travel.api.faq.domain.FaqDTO;
+import com.travel.api.faq.domain.FaqDto;
 import com.travel.api.faq.domain.FaqEntity;
 import com.travel.api.faq.domain.repository.FaqQueryRepository;
 import com.travel.api.faq.domain.repository.FaqRepository;
@@ -46,7 +46,7 @@ public class FaqService {
      * </pre>
      */
     @Transactional(readOnly = true)
-    public Page<FaqDTO> findFaqList(Map<String, Object> faqMap, PageRequest pageRequest) {
+    public Page<FaqDto> findFaqList(Map<String, Object> faqMap, PageRequest pageRequest) {
         return faqQueryRepository.findFaqList(faqMap, pageRequest);
     }
 
@@ -60,7 +60,7 @@ public class FaqService {
      * </pre>
      */
     @Transactional(readOnly = true)
-    public FaqDTO findOneFaq(Long idx) {
+    public FaqDto findOneFaq(Long idx) {
         return faqQueryRepository.findOneFaq(idx);
     }
 
@@ -74,7 +74,7 @@ public class FaqService {
      * </pre>
      */
     @Transactional
-    public FaqDTO insertFaq(FaqEntity faqEntity) {
+    public FaqDto insertFaq(FaqEntity faqEntity) {
         try {
             oneCommon(faqEntity.getNewFaqCode().getCommonCode()).addCommon(faqEntity);
             return FaqEntity.toDto(faqRepository.save(faqEntity));
@@ -93,7 +93,7 @@ public class FaqService {
      * </pre>
      */
     @Transactional
-    public FaqDTO updateFaq(Long idx, FaqEntity faqEntity) {
+    public FaqDto updateFaq(Long idx, FaqEntity faqEntity) {
         try {
             oneFaq(idx).update(faqEntity);
             return FaqEntity.toDto(faqEntity);

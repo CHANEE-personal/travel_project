@@ -3,10 +3,10 @@ package com.travel.common;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.travel.api.common.domain.EntityType;
 import com.travel.api.post.domain.PostEntity;
-import com.travel.api.post.domain.image.PostImageDTO;
+import com.travel.api.post.domain.image.PostImageDto;
 import com.travel.api.post.domain.image.PostImageEntity;
 import com.travel.api.travel.domain.TravelEntity;
-import com.travel.api.travel.domain.image.TravelImageDTO;
+import com.travel.api.travel.domain.image.TravelImageDto;
 import com.travel.api.travel.domain.image.TravelImageEntity;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -45,7 +45,7 @@ public class SaveFile {
      * 5. 작성일      : 2022. 12. 11.
      * </pre>
      */
-    public List<TravelImageDTO> saveTravelFile(TravelEntity travelEntity, List<MultipartFile> multipartFiles, TravelImageEntity travelImageEntity) throws IOException {
+    public List<TravelImageDto> saveTravelFile(TravelEntity travelEntity, List<MultipartFile> multipartFiles, TravelImageEntity travelImageEntity) throws IOException {
         List<TravelImageEntity> travelImageEntityList = new ArrayList<>();
         int index = 0;
         for(MultipartFile multipartFile : multipartFiles) {
@@ -106,7 +106,7 @@ public class SaveFile {
      * 5. 작성일      : 2022. 12. 11.
      * </pre>
      */
-    public List<PostImageDTO> savePostFile(PostEntity postEntity, List<MultipartFile> multipartFiles, PostImageEntity postImageEntity) throws IOException {
+    public List<PostImageDto> savePostFile(PostEntity postEntity, List<MultipartFile> multipartFiles, PostImageEntity postImageEntity) throws IOException {
         List<PostImageEntity> postImageEntityList = new ArrayList<>();
         int index = 0;
         for(MultipartFile multipartFile : multipartFiles) {

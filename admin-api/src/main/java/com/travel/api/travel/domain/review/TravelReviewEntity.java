@@ -65,9 +65,9 @@ public class TravelReviewEntity extends NewCommonMappedClass {
         this.popular = travelReviewEntity.popular;
     }
 
-    public static TravelReviewDTO toDto(TravelReviewEntity entity) {
+    public static TravelReviewDto toDto(TravelReviewEntity entity) {
         if (entity == null) return null;
-        return TravelReviewDTO.builder()
+        return TravelReviewDto.builder()
                 .idx(entity.getIdx())
                 .travelIdx(entity.newTravelEntity.getIdx())
                 .reviewTitle(entity.getReviewTitle())
@@ -83,7 +83,7 @@ public class TravelReviewEntity extends NewCommonMappedClass {
                 .build();
     }
 
-    public static List<TravelReviewDTO> toDtoList(List<TravelReviewEntity> entityList) {
+    public static List<TravelReviewDto> toDtoList(List<TravelReviewEntity> entityList) {
         if (entityList == null) return null;
         return entityList.stream()
                 .map(TravelReviewEntity::toDto)

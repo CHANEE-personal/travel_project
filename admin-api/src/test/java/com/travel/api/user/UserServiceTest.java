@@ -2,15 +2,15 @@ package com.travel.api.user;
 
 import com.travel.api.common.domain.CommonEntity;
 import com.travel.api.travel.domain.TravelEntity;
-import com.travel.api.travel.domain.group.TravelGroupDTO;
+import com.travel.api.travel.domain.group.TravelGroupDto;
 import com.travel.api.travel.domain.group.TravelGroupEntity;
-import com.travel.api.travel.domain.group.TravelGroupUserDTO;
+import com.travel.api.travel.domain.group.TravelGroupUserDto;
 import com.travel.api.travel.domain.group.TravelGroupUserEntity;
-import com.travel.api.travel.domain.schedule.TravelScheduleDTO;
+import com.travel.api.travel.domain.schedule.TravelScheduleDto;
 import com.travel.api.travel.domain.schedule.TravelScheduleEntity;
 import com.travel.api.user.domain.LoginRequest;
 import com.travel.api.user.domain.SignUpRequest;
-import com.travel.api.user.domain.UserDTO;
+import com.travel.api.user.domain.UserDto;
 import com.travel.api.user.domain.UserEntity;
 import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.BeforeEach;
@@ -66,7 +66,7 @@ class UserServiceTest {
     private final PasswordEncoder passwordEncoder;
 
     private UserEntity userEntity;
-    private UserDTO userDTO;
+    private UserDto userDTO;
 
     void createUser() {
         userEntity = UserEntity.builder()
@@ -116,7 +116,7 @@ class UserServiceTest {
         // given
         Map<String, Object> userMap = new HashMap<>();
         PageRequest pageRequest = PageRequest.of(0, 3);
-        Page<UserDTO> userList = userService.findUserList(userMap, pageRequest);
+        Page<UserDto> userList = userService.findUserList(userMap, pageRequest);
 
         // then
         assertThat(userList.getTotalElements()).isGreaterThan(0);
@@ -130,18 +130,18 @@ class UserServiceTest {
         PageRequest pageRequest = PageRequest.of(0, 3);
 
 
-        List<UserDTO> userList = new ArrayList<>();
-        userList.add(UserDTO.builder().idx(1L).userId("test01")
+        List<UserDto> userList = new ArrayList<>();
+        userList.add(UserDto.builder().idx(1L).userId("test01")
                 .adminName("관리자01").name("조찬희").password("test01")
                 .email("test01@test.com").visible("Y").build());
 
-        Page<UserDTO> resultPage = new PageImpl<>(userList, pageRequest, userList.size());
+        Page<UserDto> resultPage = new PageImpl<>(userList, pageRequest, userList.size());
 
         // when
         when(mockUserService.findUserList(userMap, pageRequest)).thenReturn(resultPage);
-        Page<UserDTO> newUserList = mockUserService.findUserList(userMap, pageRequest);
+        Page<UserDto> newUserList = mockUserService.findUserList(userMap, pageRequest);
 
-        List<UserDTO> findUserList = newUserList.stream().collect(Collectors.toList());
+        List<UserDto> findUserList = newUserList.stream().collect(Collectors.toList());
 
         // then
         assertThat(findUserList.get(0).getIdx()).isEqualTo(userList.get(0).getIdx());
@@ -166,18 +166,18 @@ class UserServiceTest {
         Map<String, Object> userMap = new HashMap<>();
         PageRequest pageRequest = PageRequest.of(0, 3);
 
-        List<UserDTO> userList = new ArrayList<>();
-        userList.add(UserDTO.builder().idx(1L).userId("test01")
+        List<UserDto> userList = new ArrayList<>();
+        userList.add(UserDto.builder().idx(1L).userId("test01")
                 .adminName("관리자01").name("조찬희").password("test01")
                 .email("test01@test.com").visible("Y").build());
 
-        Page<UserDTO> resultPage = new PageImpl<>(userList, pageRequest, userList.size());
+        Page<UserDto> resultPage = new PageImpl<>(userList, pageRequest, userList.size());
 
         // when
         given(mockUserService.findUserList(userMap, pageRequest)).willReturn(resultPage);
-        Page<UserDTO> newUserList = mockUserService.findUserList(userMap, pageRequest);
+        Page<UserDto> newUserList = mockUserService.findUserList(userMap, pageRequest);
 
-        List<UserDTO> findUserList = newUserList.stream().collect(Collectors.toList());
+        List<UserDto> findUserList = newUserList.stream().collect(Collectors.toList());
 
         // then
         assertThat(findUserList.get(0).getIdx()).isEqualTo(userList.get(0).getIdx());
@@ -208,7 +208,7 @@ class UserServiceTest {
 
         // when
         when(mockUserService.findOneUser(userEntity.getIdx())).thenReturn(userDTO);
-        UserDTO userInfo = mockUserService.findOneUser(userEntity.getIdx());
+        UserDto userInfo = mockUserService.findOneUser(userEntity.getIdx());
 
         // then
         assertThat(userInfo.getUserId()).isEqualTo("test01");
@@ -240,7 +240,7 @@ class UserServiceTest {
 
         // when
         given(mockUserService.findOneUser(userEntity.getIdx())).willReturn(userDTO);
-        UserDTO userInfo = mockUserService.findOneUser(userEntity.getIdx());
+        UserDto userInfo = mockUserService.findOneUser(userEntity.getIdx());
 
         // then
         assertThat(userInfo.getUserId()).isEqualTo("test01");
@@ -278,11 +278,11 @@ class UserServiceTest {
                 .build();
 
         userService.updateUser(idx, newUserEntity);
-        UserDTO newUserDTO = UserEntity.toDto(newUserEntity);
+        UserDto newUserDTO = UserEntity.toDto(newUserEntity);
 
         // when
         when(mockUserService.findOneUser(newUserEntity.getIdx())).thenReturn(newUserDTO);
-        UserDTO userInfo = mockUserService.findOneUser(newUserEntity.getIdx());
+        UserDto userInfo = mockUserService.findOneUser(newUserEntity.getIdx());
 
         // then
         assertThat(userInfo.getUserId()).isEqualTo("test1");
@@ -321,11 +321,11 @@ class UserServiceTest {
                 .build();
 
         userService.updateUser(idx, newUserEntity);
-        UserDTO newUserDTO = UserEntity.toDto(newUserEntity);
+        UserDto newUserDTO = UserEntity.toDto(newUserEntity);
 
         // when
         given(mockUserService.findOneUser(newUserEntity.getIdx())).willReturn(newUserDTO);
-        UserDTO userInfo = mockUserService.findOneUser(newUserEntity.getIdx());
+        UserDto userInfo = mockUserService.findOneUser(newUserEntity.getIdx());
 
         // then
         assertThat(userInfo.getUserId()).isEqualTo("test1");
@@ -348,7 +348,7 @@ class UserServiceTest {
     @DisplayName("유저 회원탈퇴 Mockito 테스트")
     void 유저회원탈퇴Mockito테스트() {
         em.persist(userEntity);
-        UserDTO userDTO = UserEntity.toDto(userEntity);
+        UserDto userDTO = UserEntity.toDto(userEntity);
         // when
         when(mockUserService.findOneUser(userDTO.getIdx())).thenReturn(userDTO);
         userService.deleteUser(userEntity);
@@ -366,7 +366,7 @@ class UserServiceTest {
     @DisplayName("유저 회원탈퇴 BDD 테스트")
     void 유저회원탈퇴BDD테스트() {
         em.persist(userEntity);
-        UserDTO userDTO = UserEntity.toDto(userEntity);
+        UserDto userDTO = UserEntity.toDto(userEntity);
         // when
         given(mockUserService.findOneUser(userDTO.getIdx())).willReturn(userDTO);
         userService.deleteUser(userEntity);
@@ -381,17 +381,17 @@ class UserServiceTest {
     @DisplayName("유저가 작성한 스케줄 리스트 조회")
     void 유저가작성한스케줄리스트조회() {
         // given
-        TravelScheduleDTO travelScheduleEntity = TravelScheduleDTO.builder()
+        TravelScheduleDto travelScheduleEntity = TravelScheduleDto.builder()
                 .scheduleDescription("스케줄 테스트")
                 .scheduleTime(LocalDateTime.now())
                 .build();
 
-        List<TravelScheduleDTO> userSchedule = new ArrayList<>();
+        List<TravelScheduleDto> userSchedule = new ArrayList<>();
         userSchedule.add(travelScheduleEntity);
 
         // when
         when(mockUserService.findUserSchedule(1L)).thenReturn(userSchedule);
-        List<TravelScheduleDTO> scheduleList = mockUserService.findUserSchedule(1L);
+        List<TravelScheduleDto> scheduleList = mockUserService.findUserSchedule(1L);
 
         // then
         assertThat(scheduleList.get(0).getScheduleDescription()).isEqualTo("스케줄 테스트");
@@ -424,7 +424,7 @@ class UserServiceTest {
                 .visible("Y")
                 .build();
 
-        UserDTO oneUser = userService.insertUser(signUpRequest);
+        UserDto oneUser = userService.insertUser(signUpRequest);
         // given
         TravelScheduleEntity travelScheduleEntity = TravelScheduleEntity.builder()
                 .commonEntity(commonEntity)
@@ -434,11 +434,11 @@ class UserServiceTest {
                 .build();
 
         em.persist(travelScheduleEntity);
-        TravelScheduleDTO travelScheduleDTO = TravelScheduleEntity.toDto(travelScheduleEntity);
+        TravelScheduleDto travelScheduleDTO = TravelScheduleEntity.toDto(travelScheduleEntity);
 
         // when
         when(mockUserService.findOneUserSchedule(travelScheduleDTO.getUserIdx(), travelScheduleDTO.getIdx())).thenReturn(travelScheduleDTO);
-        TravelScheduleDTO oneUserSchedule = mockUserService.findOneUserSchedule(travelScheduleDTO.getUserIdx(), travelScheduleDTO.getIdx());
+        TravelScheduleDto oneUserSchedule = mockUserService.findOneUserSchedule(travelScheduleDTO.getUserIdx(), travelScheduleDTO.getIdx());
 
         // then
         assertThat(oneUserSchedule.getScheduleDescription()).isEqualTo("스케줄 테스트");
@@ -486,11 +486,11 @@ class UserServiceTest {
 
         em.persist(travelGroupEntity);
 
-        TravelGroupDTO travelGroupDTO = TravelGroupEntity.toDto(travelGroupEntity);
+        TravelGroupDto travelGroupDTO = TravelGroupEntity.toDto(travelGroupEntity);
 
         TravelGroupUserEntity travelGroupUserEntity = TravelGroupUserEntity.builder().build();
 
-        TravelGroupUserDTO travelGroupUserInfo = userService.insertTravelGroupUser(userDTO.getIdx(), travelGroupDTO.getIdx(), travelGroupUserEntity);
+        TravelGroupUserDto travelGroupUserInfo = userService.insertTravelGroupUser(userDTO.getIdx(), travelGroupDTO.getIdx(), travelGroupUserEntity);
 
         // then
         assertThat(travelGroupUserInfo.getGroupIdx()).isEqualTo(travelGroupDTO.getIdx());
@@ -530,11 +530,11 @@ class UserServiceTest {
                 .groupName("서울모임").groupDescription("서울모임").visible("Y").build();
 
         em.persist(travelGroupEntity);
-        TravelGroupDTO travelGroupDTO = TravelGroupEntity.toDto(travelGroupEntity);
+        TravelGroupDto travelGroupDTO = TravelGroupEntity.toDto(travelGroupEntity);
 
         TravelGroupUserEntity travelGroupUserEntity = TravelGroupUserEntity.builder().build();
 
-        TravelGroupUserDTO travelGroupUserInfo = userService.insertTravelGroupUser(userDTO.getIdx(), travelGroupDTO.getIdx(), travelGroupUserEntity);
+        TravelGroupUserDto travelGroupUserInfo = userService.insertTravelGroupUser(userDTO.getIdx(), travelGroupDTO.getIdx(), travelGroupUserEntity);
 
         Long deleteIdx = userService.deleteTravelGroupUser(travelGroupUserInfo.getIdx());
 

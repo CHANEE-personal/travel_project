@@ -61,7 +61,7 @@ class FaqControllerTest {
     @Test
     @DisplayName("FAQ 조회 테스트")
     void FAQ조회테스트() throws Exception {
-        mockMvc.perform(get("/api/faq/lists").param("pageNum", "1").param("size", "100"))
+        mockMvc.perform(get("/api/faq").param("pageNum", "1").param("size", "100"))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().contentType("application/json;charset=utf-8"))

@@ -38,9 +38,9 @@ public class TravelRecommendEntity extends NewCommonMappedClass {
         this.recommendName = travelRecommendEntity.recommendName;
     }
 
-    public static TravelRecommendDTO toDto(TravelRecommendEntity entity) {
+    public static TravelRecommendDto toDto(TravelRecommendEntity entity) {
         if (entity == null) return null;
-        return TravelRecommendDTO.builder()
+        return TravelRecommendDto.builder()
                 .idx(entity.getIdx())
                 .recommendName(entity.getRecommendName())
                 .creator(entity.getCreator())
@@ -50,7 +50,7 @@ public class TravelRecommendEntity extends NewCommonMappedClass {
                 .build();
     }
 
-    public static List<TravelRecommendDTO> toDtoList(List<TravelRecommendEntity> entityList) {
+    public static List<TravelRecommendDto> toDtoList(List<TravelRecommendEntity> entityList) {
         if (entityList == null) return null;
         return entityList.stream()
                 .map(TravelRecommendEntity::toDto)

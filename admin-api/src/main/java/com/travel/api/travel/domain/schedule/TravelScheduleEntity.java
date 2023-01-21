@@ -57,9 +57,9 @@ public class TravelScheduleEntity extends NewCommonMappedClass {
         this.scheduleTime = travelScheduleEntity.scheduleTime;
     }
 
-    public static TravelScheduleDTO toDto(TravelScheduleEntity entity) {
+    public static TravelScheduleDto toDto(TravelScheduleEntity entity) {
         if (entity == null) return null;
-        return TravelScheduleDTO.builder()
+        return TravelScheduleDto.builder()
                 .idx(entity.getIdx())
                 .userIdx(entity.userEntity.getIdx())
                 .travelCode(entity.commonEntity.getCommonCode())
@@ -68,7 +68,7 @@ public class TravelScheduleEntity extends NewCommonMappedClass {
                 .build();
     }
 
-    public static List<TravelScheduleDTO> toDtoList(List<TravelScheduleEntity> entityList) {
+    public static List<TravelScheduleDto> toDtoList(List<TravelScheduleEntity> entityList) {
         if (entityList == null) return null;
         return entityList.stream()
                 .map(TravelScheduleEntity::toDto)

@@ -1,11 +1,11 @@
 package com.travel.api.post;
 
 import com.travel.api.common.domain.EntityType;
-import com.travel.api.post.domain.PostDTO;
+import com.travel.api.post.domain.PostDto;
 import com.travel.api.post.domain.PostEntity;
-import com.travel.api.post.domain.image.PostImageDTO;
+import com.travel.api.post.domain.image.PostImageDto;
 import com.travel.api.post.domain.image.PostImageEntity;
-import com.travel.api.travel.domain.image.TravelImageDTO;
+import com.travel.api.travel.domain.image.TravelImageDto;
 import com.travel.common.Paging;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -54,8 +54,8 @@ public class PostController {
             @ApiResponse(code = 404, message = "존재 하지 않음", response = HttpClientErrorException.NotFound.class),
             @ApiResponse(code = 500, message = "서버 에러", response = ServerError.class)
     })
-    @GetMapping(value = "/lists")
-    public ResponseEntity<Page<PostDTO>> findPostList(@RequestParam(required = false) Map<String, Object> paramMap, Paging paging) {
+    @GetMapping
+    public ResponseEntity<Page<PostDto>> findPostList(@RequestParam(required = false) Map<String, Object> paramMap, Paging paging) {
         return ResponseEntity.ok(postService.findPostList(paramMap, paging.getPageRequest(paging.getPageNum(), paging.getSize())));
     }
 
@@ -68,10 +68,10 @@ public class PostController {
      * 5. 작성일      : 2022. 12. 12.
      * </pre>
      */
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_TRAVEL_USER')")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @ApiOperation(value = "게시글 상세 조회", notes = "게시글 상세 조회한다.")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "게시글 상세 조회 성공", response = PostDTO.class),
+            @ApiResponse(code = 200, message = "게시글 상세 조회 성공", response = PostDto.class),
             @ApiResponse(code = 400, message = "잘못된 요청", response = HttpClientErrorException.BadRequest.class),
             @ApiResponse(code = 401, message = "허용되지 않는 관리자", response = HttpClientErrorException.Unauthorized.class),
             @ApiResponse(code = 403, message = "접근거부", response = HttpClientErrorException.class),
@@ -79,7 +79,7 @@ public class PostController {
             @ApiResponse(code = 500, message = "서버 에러", response = ServerError.class)
     })
     @GetMapping(value = "/{idx}")
-    public ResponseEntity<PostDTO> findOnePost(@PathVariable Long idx) {
+    public ResponseEntity<PostDto> findOnePost(@PathVariable Long idx) {
         return ResponseEntity.ok(postService.findOnePost(idx));
     }
 
@@ -95,7 +95,7 @@ public class PostController {
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @ApiOperation(value = "게시글 등록", notes = "게시글 등록한다.")
     @ApiResponses(value = {
-            @ApiResponse(code = 201, message = "게시글 등록 성공", response = PostDTO.class),
+            @ApiResponse(code = 201, message = "게시글 등록 성공", response = PostDto.class),
             @ApiResponse(code = 400, message = "잘못된 요청", response = HttpClientErrorException.BadRequest.class),
             @ApiResponse(code = 401, message = "허용되지 않는 관리자", response = HttpClientErrorException.Unauthorized.class),
             @ApiResponse(code = 403, message = "접근거부", response = HttpClientErrorException.class),
@@ -103,7 +103,7 @@ public class PostController {
             @ApiResponse(code = 500, message = "서버 에러", response = ServerError.class)
     })
     @PostMapping
-    public ResponseEntity<PostDTO> insertPost(@Valid @RequestBody PostEntity postEntity) {
+    public ResponseEntity<PostDto> insertPost(@Valid @RequestBody PostEntity postEntity) {
         return ResponseEntity.created(URI.create("")).body(postService.insertPost(postEntity));
     }
 
@@ -119,7 +119,7 @@ public class PostController {
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @ApiOperation(value = "게시글 이미지 저장", notes = "게시글 이미지를 저장한다.")
     @ApiResponses(value = {
-            @ApiResponse(code = 201, message = "게시글 이미지 등록성공", response = TravelImageDTO.class),
+            @ApiResponse(code = 201, message = "게시글 이미지 등록성공", response = TravelImageDto.class),
             @ApiResponse(code = 400, message = "잘못된 요청", response = HttpClientErrorException.BadRequest.class),
             @ApiResponse(code = 401, message = "허용되지 않는 관리자", response = HttpClientErrorException.Unauthorized.class),
             @ApiResponse(code = 403, message = "접근거부", response = HttpClientErrorException.class),
@@ -127,7 +127,7 @@ public class PostController {
             @ApiResponse(code = 500, message = "서버 에러", response = ServerError.class)
     })
     @PostMapping(value = "/{idx}/images", consumes = MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<List<PostImageDTO>> insertPostImage(@PathVariable Long idx, @RequestParam(value = "images") List<MultipartFile> fileName) {
+    public ResponseEntity<List<PostImageDto>> insertPostImage(@PathVariable Long idx, @RequestParam(value = "images") List<MultipartFile> fileName) {
         return ResponseEntity.created(URI.create("")).body(postService.insertPostImage(idx, fileName, PostImageEntity.builder().entityType(EntityType.POST).build()));
     }
 
@@ -143,7 +143,7 @@ public class PostController {
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @ApiOperation(value = "게시글 수정", notes = "게시글 수정한다.")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "게시글 수정 성공", response = PostDTO.class),
+            @ApiResponse(code = 200, message = "게시글 수정 성공", response = PostDto.class),
             @ApiResponse(code = 400, message = "잘못된 요청", response = HttpClientErrorException.BadRequest.class),
             @ApiResponse(code = 401, message = "허용되지 않는 관리자", response = HttpClientErrorException.Unauthorized.class),
             @ApiResponse(code = 403, message = "접근거부", response = HttpClientErrorException.class),
@@ -151,7 +151,7 @@ public class PostController {
             @ApiResponse(code = 500, message = "서버 에러", response = ServerError.class)
     })
     @PutMapping("/{idx}")
-    public ResponseEntity<PostDTO> updatePost(@PathVariable Long idx, @Valid @RequestBody PostEntity postEntity) {
+    public ResponseEntity<PostDto> updatePost(@PathVariable Long idx, @Valid @RequestBody PostEntity postEntity) {
         return ResponseEntity.ok(postService.updatePost(idx, postEntity));
     }
 

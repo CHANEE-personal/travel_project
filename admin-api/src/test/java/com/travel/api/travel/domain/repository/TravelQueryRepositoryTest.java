@@ -1,11 +1,11 @@
 package com.travel.api.travel.domain.repository;
 
-import com.travel.api.common.domain.CommonDTO;
+import com.travel.api.common.domain.CommonDto;
 import com.travel.api.common.domain.CommonEntity;
-import com.travel.api.travel.domain.TravelDTO;
+import com.travel.api.travel.domain.TravelDto;
 import com.travel.api.travel.domain.TravelEntity;
 import com.travel.api.travel.domain.festival.TravelFestivalEntity;
-import com.travel.api.travel.domain.group.TravelGroupDTO;
+import com.travel.api.travel.domain.group.TravelGroupDto;
 import com.travel.api.travel.domain.search.SearchEntity;
 import com.travel.exception.TravelException;
 import lombok.RequiredArgsConstructor;
@@ -59,9 +59,9 @@ class TravelQueryRepositoryTest {
     private final EntityManager em;
 
     private TravelEntity travelEntity;
-    private TravelDTO travelDTO;
+    private TravelDto travelDTO;
     private CommonEntity commonEntity;
-    private CommonDTO commonDTO;
+    private CommonDto commonDTO;
 
     void createTravel() {
         commonEntity = CommonEntity.builder()
@@ -113,7 +113,7 @@ class TravelQueryRepositoryTest {
     @Test
     @DisplayName("여행지상세조회테스트")
     void 여행지상세조회테스트() {
-        TravelDTO existTravel = travelQueryRepository.findOneTravel(1L);
+        TravelDto existTravel = travelQueryRepository.findOneTravel(1L);
         assertThat(existTravel.getIdx()).isEqualTo(1L);
         assertThat(existTravel.getTravelCode()).isEqualTo(1);
         assertThat(existTravel.getTravelTitle()).isEqualTo("서울 여행지");
@@ -132,18 +132,18 @@ class TravelQueryRepositoryTest {
 
         PageRequest pageRequest = PageRequest.of(0, 3);
 
-        List<TravelDTO> travelList = new ArrayList<>();
-        travelList.add(TravelDTO.builder().idx(1L).travelCode(1)
+        List<TravelDto> travelList = new ArrayList<>();
+        travelList.add(TravelDto.builder().idx(1L).travelCode(1)
                 .travelTitle("여행지 소개").travelDescription("여행지 소개")
                 .travelAddress("인천광역시 서구").travelZipCode("123-456").visible("Y").build());
 
-        Page<TravelDTO> resultPage = new PageImpl<>(travelList, pageRequest, travelList.size());
+        Page<TravelDto> resultPage = new PageImpl<>(travelList, pageRequest, travelList.size());
 
         // when
         when(mockTravelQueryRepository.findTravelList(travelMap, pageRequest)).thenReturn(resultPage);
-        Page<TravelDTO> newTravelList = mockTravelQueryRepository.findTravelList(travelMap, pageRequest);
+        Page<TravelDto> newTravelList = mockTravelQueryRepository.findTravelList(travelMap, pageRequest);
 
-        List<TravelDTO> findTravelList = newTravelList.stream().collect(Collectors.toList());
+        List<TravelDto> findTravelList = newTravelList.stream().collect(Collectors.toList());
 
         // then
         assertThat(findTravelList.get(0).getIdx()).isEqualTo(travelList.get(0).getIdx());
@@ -169,18 +169,18 @@ class TravelQueryRepositoryTest {
         Map<String, Object> travelMap = new HashMap<>();
         PageRequest pageRequest = PageRequest.of(0, 3);
 
-        List<TravelDTO> travelList = new ArrayList<>();
-        travelList.add(TravelDTO.builder().idx(1L).travelCode(1)
+        List<TravelDto> travelList = new ArrayList<>();
+        travelList.add(TravelDto.builder().idx(1L).travelCode(1)
                 .travelTitle("여행지 소개").travelDescription("여행지 소개")
                 .travelAddress("인천광역시 서구").travelZipCode("123-456").visible("Y").build());
 
-        Page<TravelDTO> resultPage = new PageImpl<>(travelList, pageRequest, travelList.size());
+        Page<TravelDto> resultPage = new PageImpl<>(travelList, pageRequest, travelList.size());
 
         // when
         when(mockTravelQueryRepository.findTravelList(travelMap, pageRequest)).thenReturn(resultPage);
-        Page<TravelDTO> newTravelList = mockTravelQueryRepository.findTravelList(travelMap, pageRequest);
+        Page<TravelDto> newTravelList = mockTravelQueryRepository.findTravelList(travelMap, pageRequest);
 
-        List<TravelDTO> findTravelList = newTravelList.stream().collect(Collectors.toList());
+        List<TravelDto> findTravelList = newTravelList.stream().collect(Collectors.toList());
 
         // then
         assertThat(findTravelList.get(0).getIdx()).isEqualTo(travelList.get(0).getIdx());
@@ -205,18 +205,18 @@ class TravelQueryRepositoryTest {
         Map<String, Object> travelMap = new HashMap<>();
         PageRequest pageRequest = PageRequest.of(0, 3);
 
-        List<TravelDTO> travelList = new ArrayList<>();
-        travelList.add(TravelDTO.builder().idx(1L).travelCode(1)
+        List<TravelDto> travelList = new ArrayList<>();
+        travelList.add(TravelDto.builder().idx(1L).travelCode(1)
                 .travelTitle("여행지 소개").travelDescription("여행지 소개")
                 .travelAddress("인천광역시 서구").travelZipCode("123-456").visible("Y").build());
 
-        Page<TravelDTO> resultPage = new PageImpl<>(travelList, pageRequest, travelList.size());
+        Page<TravelDto> resultPage = new PageImpl<>(travelList, pageRequest, travelList.size());
 
         // when
         given(mockTravelQueryRepository.findTravelList(travelMap, pageRequest)).willReturn(resultPage);
-        Page<TravelDTO> newTravelList = mockTravelQueryRepository.findTravelList(travelMap, pageRequest);
+        Page<TravelDto> newTravelList = mockTravelQueryRepository.findTravelList(travelMap, pageRequest);
 
-        List<TravelDTO> findTravelList = newTravelList.stream().collect(Collectors.toList());
+        List<TravelDto> findTravelList = newTravelList.stream().collect(Collectors.toList());
 
         // then
         assertThat(findTravelList.get(0).getIdx()).isEqualTo(travelList.get(0).getIdx());
@@ -247,7 +247,7 @@ class TravelQueryRepositoryTest {
 
         // when
         when(mockTravelQueryRepository.findOneTravel(1L)).thenReturn(travelDTO);
-        TravelDTO newTravelInfo = mockTravelQueryRepository.findOneTravel(1L);
+        TravelDto newTravelInfo = mockTravelQueryRepository.findOneTravel(1L);
 
         // then
         assertThat(newTravelInfo.getIdx()).isEqualTo(travelEntity.getIdx());
@@ -280,7 +280,7 @@ class TravelQueryRepositoryTest {
 
         // when
         when(mockTravelQueryRepository.findOneTravel(1L)).thenReturn(travelDTO);
-        TravelDTO newTravelInfo = mockTravelQueryRepository.findOneTravel(1L);
+        TravelDto newTravelInfo = mockTravelQueryRepository.findOneTravel(1L);
 
         // then
         assertThat(newTravelInfo.getIdx()).isEqualTo(travelEntity.getIdx());
@@ -306,7 +306,7 @@ class TravelQueryRepositoryTest {
         travelDTO = travelQueryRepository.findOnePrevTravel(travelDTO.getIdx());
 
         when(mockTravelQueryRepository.findOnePrevTravel(travelDTO.getIdx())).thenReturn(travelDTO);
-        TravelDTO travelInfo = mockTravelQueryRepository.findOnePrevTravel(travelDTO.getIdx());
+        TravelDto travelInfo = mockTravelQueryRepository.findOnePrevTravel(travelDTO.getIdx());
 
         // then
         assertThat(travelInfo.getIdx()).isEqualTo(1L);
@@ -330,7 +330,7 @@ class TravelQueryRepositoryTest {
         travelDTO = travelQueryRepository.findOnePrevTravel(travelDTO.getIdx());
 
         given(mockTravelQueryRepository.findOnePrevTravel(travelDTO.getIdx())).willReturn(travelDTO);
-        TravelDTO travelInfo = mockTravelQueryRepository.findOnePrevTravel(travelDTO.getIdx());
+        TravelDto travelInfo = mockTravelQueryRepository.findOnePrevTravel(travelDTO.getIdx());
 
         // then
         assertThat(travelInfo.getIdx()).isEqualTo(1L);
@@ -351,7 +351,7 @@ class TravelQueryRepositoryTest {
         travelDTO = travelQueryRepository.findOneNextTravel(travelEntity.getIdx());
 
         when(mockTravelQueryRepository.findOneNextTravel(travelEntity.getIdx())).thenReturn(travelDTO);
-        TravelDTO travelInfo = mockTravelQueryRepository.findOneNextTravel(travelEntity.getIdx());
+        TravelDto travelInfo = mockTravelQueryRepository.findOneNextTravel(travelEntity.getIdx());
 
         // then
         assertThat(travelInfo.getIdx()).isEqualTo(1L);
@@ -449,7 +449,7 @@ class TravelQueryRepositoryTest {
 
         // when
         when(mockTravelQueryRepository.findOneTravel(travelEntity.getIdx())).thenReturn(travelDTO);
-        TravelDTO travelInfo = mockTravelQueryRepository.findOneTravel(travelEntity.getIdx());
+        TravelDto travelInfo = mockTravelQueryRepository.findOneTravel(travelEntity.getIdx());
 
         // then
         assertThat(travelInfo.getPopular()).isTrue();
@@ -483,7 +483,7 @@ class TravelQueryRepositoryTest {
 
         // when
         given(mockTravelQueryRepository.findOneTravel(travelEntity.getIdx())).willReturn(travelDTO);
-        TravelDTO travelInfo = mockTravelQueryRepository.findOneTravel(travelEntity.getIdx());
+        TravelDto travelInfo = mockTravelQueryRepository.findOneTravel(travelEntity.getIdx());
 
         // then
         assertThat(travelInfo.getPopular()).isTrue();
@@ -501,17 +501,17 @@ class TravelQueryRepositoryTest {
         Map<String, Object> groupMap = new HashMap<>();
         PageRequest pageRequest = PageRequest.of(0, 3);
 
-        List<TravelGroupDTO> travelGroupList = new ArrayList<>();
-        travelGroupList.add(TravelGroupDTO.builder().travelIdx(1L).groupName("서울모임")
+        List<TravelGroupDto> travelGroupList = new ArrayList<>();
+        travelGroupList.add(TravelGroupDto.builder().travelIdx(1L).groupName("서울모임")
                 .groupDescription("서울모임").visible("Y").build());
 
-        Page<TravelGroupDTO> resultPage = new PageImpl<>(travelGroupList, pageRequest, travelGroupList.size());
+        Page<TravelGroupDto> resultPage = new PageImpl<>(travelGroupList, pageRequest, travelGroupList.size());
 
         // when
         when(mockTravelQueryRepository.findTravelGroupList(groupMap, pageRequest)).thenReturn(resultPage);
-        Page<TravelGroupDTO> newTravelGroupList = mockTravelQueryRepository.findTravelGroupList(groupMap, pageRequest);
+        Page<TravelGroupDto> newTravelGroupList = mockTravelQueryRepository.findTravelGroupList(groupMap, pageRequest);
 
-        List<TravelGroupDTO> findTravelGroupList = newTravelGroupList.stream().collect(Collectors.toList());
+        List<TravelGroupDto> findTravelGroupList = newTravelGroupList.stream().collect(Collectors.toList());
         // then
         assertThat(findTravelGroupList.get(0).getIdx()).isEqualTo(travelGroupList.get(0).getIdx());
         assertThat(findTravelGroupList.get(0).getTravelIdx()).isEqualTo(travelGroupList.get(0).getTravelIdx());
@@ -531,12 +531,12 @@ class TravelQueryRepositoryTest {
     @DisplayName("여행지 그룹 상세 Mockito 테스트")
     void 여행지그룹상세Mockito테스트() {
         // given
-        TravelGroupDTO travelGroupDTO = TravelGroupDTO.builder()
+        TravelGroupDto travelGroupDTO = TravelGroupDto.builder()
                 .idx(1L).travelIdx(1L).groupName("서울모임").groupDescription("서울모임").visible("Y").build();
 
         // when
         given(mockTravelQueryRepository.findOneTravelGroup(1L)).willReturn(travelGroupDTO);
-        TravelGroupDTO newTravelGroupDTO = mockTravelQueryRepository.findOneTravelGroup(1L);
+        TravelGroupDto newTravelGroupDTO = mockTravelQueryRepository.findOneTravelGroup(1L);
 
         // then
         assertThat(newTravelGroupDTO.getIdx()).isEqualTo(1L);

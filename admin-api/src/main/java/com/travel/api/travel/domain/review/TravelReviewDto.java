@@ -1,6 +1,6 @@
 package com.travel.api.travel.domain.review;
 
-import com.travel.api.common.domain.NewCommonDTO;
+import com.travel.api.common.domain.NewCommonDto;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.*;
@@ -16,7 +16,7 @@ import javax.validation.constraints.NotNull;
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @ApiModel
-public class TravelReviewDTO extends NewCommonDTO {
+public class TravelReviewDto extends NewCommonDto {
 
     @ApiModelProperty(required = true, value = "idx", hidden = true, example = "1")
     private Long idx;

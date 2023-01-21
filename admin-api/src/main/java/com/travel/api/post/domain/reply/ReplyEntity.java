@@ -74,9 +74,9 @@ public class ReplyEntity extends NewCommonMappedClass {
         this.children.add(this);
     }
 
-    public static ReplyDTO toDto(ReplyEntity entity) {
+    public static ReplyDto toDto(ReplyEntity entity) {
         if (entity == null) return null;
-        return ReplyDTO.builder()
+        return ReplyDto.builder()
                 .idx(entity.getIdx())
                 .commentTitle(entity.getCommentTitle())
                 .commentDescription(entity.getCommentDescription())
@@ -85,7 +85,7 @@ public class ReplyEntity extends NewCommonMappedClass {
                 .build();
     }
 
-    public static List<ReplyDTO> toDtoList(List<ReplyEntity> entityList) {
+    public static List<ReplyDto> toDtoList(List<ReplyEntity> entityList) {
         if (entityList == null) return null;
         return entityList.stream()
                 .map(ReplyEntity::toDto)

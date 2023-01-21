@@ -67,8 +67,8 @@ public class NoticeEntity extends NewCommonMappedClass {
         this.topFixed = noticeEntity.topFixed;
     }
 
-    public static NoticeDTO toDto(NoticeEntity entity) {
-        return NoticeDTO.builder()
+    public static NoticeDto toDto(NoticeEntity entity) {
+        return NoticeDto.builder()
                 .idx(entity.getIdx())
                 .title(entity.getTitle())
                 .description(entity.getDescription())
@@ -79,7 +79,7 @@ public class NoticeEntity extends NewCommonMappedClass {
 
     }
 
-    public static List<NoticeDTO> toDtoList(List<NoticeEntity> entityList) {
+    public static List<NoticeDto> toDtoList(List<NoticeEntity> entityList) {
         if (entityList == null) return null;
         return entityList.stream()
                 .map(NoticeEntity::toDto)

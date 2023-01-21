@@ -1,12 +1,10 @@
 package com.travel.api.user.domain.repository;
 
-import com.travel.api.user.domain.UserDTO;
+import com.travel.api.user.domain.UserDto;
 import com.travel.api.user.domain.UserEntity;
 import com.vladmihalcea.hibernate.type.json.JsonStringType;
 import lombok.RequiredArgsConstructor;
 import org.hibernate.annotations.TypeDef;
-import org.json.JSONArray;
-import org.json.JSONException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
@@ -58,7 +56,7 @@ class UserQueryRepositoryTest {
     private final EntityManager em;
 
     private UserEntity userEntity;
-    private UserDTO userDTO;
+    private UserDto userDTO;
 
     void createUser() {
         userEntity = UserEntity.builder()
@@ -84,7 +82,7 @@ class UserQueryRepositoryTest {
         // given
         Map<String, Object> userMap = new HashMap<>();
         PageRequest pageRequest = PageRequest.of(0, 3);
-        Page<UserDTO> userList = userQueryRepository.findUserList(userMap, pageRequest);
+        Page<UserDto> userList = userQueryRepository.findUserList(userMap, pageRequest);
 
         // then
         assertThat(userList.getTotalElements()).isGreaterThan(0);
@@ -98,18 +96,18 @@ class UserQueryRepositoryTest {
         PageRequest pageRequest = PageRequest.of(0, 3);
 
 
-        List<UserDTO> userList = new ArrayList<>();
-        userList.add(UserDTO.builder().idx(1L).userId("test01")
+        List<UserDto> userList = new ArrayList<>();
+        userList.add(UserDto.builder().idx(1L).userId("test01")
                 .adminName("관리자01").name("조찬희").password("test01")
                 .email("test01@test.com").visible("Y").build());
 
-        Page<UserDTO> resultPage = new PageImpl<>(userList, pageRequest, userList.size());
+        Page<UserDto> resultPage = new PageImpl<>(userList, pageRequest, userList.size());
 
         // when
         when(mockUserQueryRepository.findUserList(userMap, pageRequest)).thenReturn(resultPage);
-        Page<UserDTO> newUserList = mockUserQueryRepository.findUserList(userMap, pageRequest);
+        Page<UserDto> newUserList = mockUserQueryRepository.findUserList(userMap, pageRequest);
 
-        List<UserDTO> findUserList = newUserList.stream().collect(Collectors.toList());
+        List<UserDto> findUserList = newUserList.stream().collect(Collectors.toList());
 
         // then
         assertThat(findUserList.get(0).getIdx()).isEqualTo(userList.get(0).getIdx());
@@ -134,18 +132,18 @@ class UserQueryRepositoryTest {
         Map<String, Object> userMap = new HashMap<>();
         PageRequest pageRequest = PageRequest.of(0, 3);
 
-        List<UserDTO> userList = new ArrayList<>();
-        userList.add(UserDTO.builder().idx(1L).userId("test01")
+        List<UserDto> userList = new ArrayList<>();
+        userList.add(UserDto.builder().idx(1L).userId("test01")
                 .adminName("관리자01").name("조찬희").password("test01")
                 .email("test01@test.com").visible("Y").build());
 
-        Page<UserDTO> resultPage = new PageImpl<>(userList, pageRequest, userList.size());
+        Page<UserDto> resultPage = new PageImpl<>(userList, pageRequest, userList.size());
 
         // when
         given(mockUserQueryRepository.findUserList(userMap, pageRequest)).willReturn(resultPage);
-        Page<UserDTO> newUserList = mockUserQueryRepository.findUserList(userMap, pageRequest);
+        Page<UserDto> newUserList = mockUserQueryRepository.findUserList(userMap, pageRequest);
 
-        List<UserDTO> findUserList = newUserList.stream().collect(Collectors.toList());
+        List<UserDto> findUserList = newUserList.stream().collect(Collectors.toList());
 
         // then
         assertThat(findUserList.get(0).getIdx()).isEqualTo(userList.get(0).getIdx());

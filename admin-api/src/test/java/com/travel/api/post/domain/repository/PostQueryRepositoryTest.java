@@ -1,6 +1,6 @@
 package com.travel.api.post.domain.repository;
 
-import com.travel.api.post.domain.PostDTO;
+import com.travel.api.post.domain.PostDto;
 import com.travel.api.post.domain.PostEntity;
 import com.travel.api.post.domain.reply.ReplyEntity;
 import lombok.RequiredArgsConstructor;
@@ -51,7 +51,7 @@ class PostQueryRepositoryTest {
     private final EntityManager em;
 
     private PostEntity postEntity;
-    private PostDTO postDTO;
+    private PostDto postDTO;
     private ReplyEntity replyEntity;
 
 
@@ -101,17 +101,17 @@ class PostQueryRepositoryTest {
         Map<String, Object> postMap = new HashMap<>();
         PageRequest pageRequest = PageRequest.of(0, 3);
 
-        List<PostDTO> postList = new ArrayList<>();
+        List<PostDto> postList = new ArrayList<>();
         postList.add(postDTO);
 
-        Page<PostDTO> resultPage = new PageImpl<>(postList, pageRequest, postList.size());
+        Page<PostDto> resultPage = new PageImpl<>(postList, pageRequest, postList.size());
 
 
         // when
         when(mockPostRepository.findPostList(postMap, pageRequest)).thenReturn(resultPage);
-        Page<PostDTO> newPostList = mockPostRepository.findPostList(postMap, pageRequest);
+        Page<PostDto> newPostList = mockPostRepository.findPostList(postMap, pageRequest);
 
-        List<PostDTO> findPostList = newPostList.stream().collect(Collectors.toList());
+        List<PostDto> findPostList = newPostList.stream().collect(Collectors.toList());
         // then
         // 게시글 관련
         assertThat(findPostList.get(0).getIdx()).isEqualTo(postList.get(0).getIdx());
@@ -140,7 +140,7 @@ class PostQueryRepositoryTest {
     void 게시글상세조회Mockito테스트() {
         // when
         when(mockPostRepository.findOnePost(postDTO.getIdx())).thenReturn(postDTO);
-        PostDTO onePost = mockPostRepository.findOnePost(postDTO.getIdx());
+        PostDto onePost = mockPostRepository.findOnePost(postDTO.getIdx());
 
         // then
         assertThat(onePost.getPostTitle()).isEqualTo("게시글 테스트");

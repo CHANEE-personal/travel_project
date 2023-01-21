@@ -1,6 +1,6 @@
 package com.travel.api.travel.domain.recommend;
 
-import com.travel.api.common.domain.NewCommonDTO;
+import com.travel.api.common.domain.NewCommonDto;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.*;
@@ -18,7 +18,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @ApiModel
-public class TravelRecommendDTO extends NewCommonDTO {
+public class TravelRecommendDto extends NewCommonDto {
 
     @ApiModelProperty(required = true, value = "idx", hidden = true, example = "1")
     private Long idx;

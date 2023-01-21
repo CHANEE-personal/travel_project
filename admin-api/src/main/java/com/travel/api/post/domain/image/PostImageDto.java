@@ -21,7 +21,7 @@ import static com.fasterxml.jackson.annotation.JsonFormat.Shape.STRING;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @ApiModel
-public class PostImageDTO {
+public class PostImageDto {
 
     @ApiModelProperty(value = "파일 IDX", required = true, hidden = true, example = "1")
     private Long idx;

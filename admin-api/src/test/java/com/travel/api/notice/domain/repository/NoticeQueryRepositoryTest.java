@@ -1,6 +1,6 @@
 package com.travel.api.notice.domain.repository;
 
-import com.travel.api.notice.domain.NoticeDTO;
+import com.travel.api.notice.domain.NoticeDto;
 
 import com.travel.api.notice.domain.NoticeEntity;
 import lombok.RequiredArgsConstructor;
@@ -21,7 +21,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.test.context.TestConstructor;
 import org.springframework.test.context.TestPropertySource;
 
-import javax.persistence.EntityManager;
 import javax.transaction.Transactional;
 
 import java.util.ArrayList;
@@ -49,7 +48,7 @@ class NoticeQueryRepositoryTest {
     private NoticeQueryRepository mockNoticeQueryRepository;
 
     private NoticeEntity noticeEntity;
-    private NoticeDTO noticeDTO;
+    private NoticeDto noticeDTO;
 
     void createNotice() {
         noticeEntity = NoticeEntity.builder()
@@ -74,16 +73,16 @@ class NoticeQueryRepositoryTest {
         Map<String, Object> noticeMap = new HashMap<>();
         PageRequest pageRequest = PageRequest.of(0, 3);
 
-        List<NoticeDTO> noticeList = new ArrayList<>();
+        List<NoticeDto> noticeList = new ArrayList<>();
         noticeList.add(noticeDTO);
 
-        Page<NoticeDTO> resultPage = new PageImpl<>(noticeList, pageRequest, noticeList.size());
+        Page<NoticeDto> resultPage = new PageImpl<>(noticeList, pageRequest, noticeList.size());
 
         // when
         when(mockNoticeQueryRepository.findNoticeList(noticeMap, pageRequest)).thenReturn(resultPage);
-        Page<NoticeDTO> newNoticeList = mockNoticeQueryRepository.findNoticeList(noticeMap, pageRequest);
+        Page<NoticeDto> newNoticeList = mockNoticeQueryRepository.findNoticeList(noticeMap, pageRequest);
 
-        List<NoticeDTO> findNoticeList = newNoticeList.stream().collect(Collectors.toList());
+        List<NoticeDto> findNoticeList = newNoticeList.stream().collect(Collectors.toList());
 
         // then
         assertThat(findNoticeList.get(0).getIdx()).isEqualTo(noticeList.get(0).getIdx());

@@ -2,17 +2,17 @@ package com.travel.api.travel.domain.repository;
 
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import com.travel.api.travel.domain.TravelDTO;
+import com.travel.api.travel.domain.TravelDto;
 import com.travel.api.travel.domain.TravelEntity;
-import com.travel.api.travel.domain.festival.TravelFestivalDTO;
+import com.travel.api.travel.domain.festival.TravelFestivalDto;
 import com.travel.api.travel.domain.festival.TravelFestivalEntity;
-import com.travel.api.travel.domain.group.TravelGroupDTO;
+import com.travel.api.travel.domain.group.TravelGroupDto;
 import com.travel.api.travel.domain.group.TravelGroupEntity;
 import com.travel.api.travel.domain.recommend.QTravelRecommendEntity;
-import com.travel.api.travel.domain.recommend.TravelRecommendDTO;
+import com.travel.api.travel.domain.recommend.TravelRecommendDto;
 import com.travel.api.travel.domain.recommend.TravelRecommendEntity;
 import com.travel.api.travel.domain.search.QSearchEntity;
-import com.travel.api.travel.domain.search.SearchDTO;
+import com.travel.api.travel.domain.search.SearchDto;
 import com.travel.api.travel.domain.search.SearchEntity;
 import com.travel.exception.TravelException;
 import lombok.RequiredArgsConstructor;
@@ -84,7 +84,7 @@ public class TravelQueryRepository {
      * 5. 작성일      : 2022. 10. 05.
      * </pre>
      */
-    public Page<TravelDTO> findTravelList(Map<String, Object> travelMap, PageRequest pageRequest) {
+    public Page<TravelDto> findTravelList(Map<String, Object> travelMap, PageRequest pageRequest) {
         List<TravelEntity> travelList = queryFactory
                 .selectFrom(travelEntity)
                 .orderBy(travelEntity.idx.desc())
@@ -108,7 +108,7 @@ public class TravelQueryRepository {
      * 5. 작성일      : 2022. 10. 05.
      * </pre>
      */
-    public TravelDTO findOneTravel(Long idx) {
+    public TravelDto findOneTravel(Long idx) {
         // 조회 수 증가
         viewTravel(idx);
 
@@ -133,7 +133,7 @@ public class TravelQueryRepository {
      * 5. 작성일      : 2022. 10. 05.
      * </pre>
      */
-    public TravelDTO findOnePrevTravel(Long idx) {
+    public TravelDto findOnePrevTravel(Long idx) {
         TravelEntity findOnePrevTravel = Optional.ofNullable(queryFactory
                 .selectFrom(travelEntity)
                 .orderBy(travelEntity.idx.desc())
@@ -152,7 +152,7 @@ public class TravelQueryRepository {
      * 5. 작성일      : 2022. 10. 05.
      * </pre>
      */
-    public TravelDTO findOneNextTravel(Long idx) {
+    public TravelDto findOneNextTravel(Long idx) {
         TravelEntity findOneNextTravel = Optional.ofNullable(queryFactory
                 .selectFrom(travelEntity)
                 .orderBy(travelEntity.idx.asc())
@@ -240,7 +240,7 @@ public class TravelQueryRepository {
      * 5. 작성일      : 2022. 10. 14.
      * </pre>
      */
-    public Page<TravelDTO> popularityTravel(Map<String, Object> travelMap, PageRequest pageRequest) {
+    public Page<TravelDto> popularityTravel(Map<String, Object> travelMap, PageRequest pageRequest) {
         List<TravelEntity> travelList = queryFactory
                 .selectFrom(travelEntity)
                 .orderBy(travelEntity.favoriteCount.desc())
@@ -278,7 +278,7 @@ public class TravelQueryRepository {
      * 5. 작성일      : 2022. 11. 25.
      * </pre>
      */
-    public Page<TravelGroupDTO> findTravelGroupList(Map<String, Object> groupMap, PageRequest pageRequest) {
+    public Page<TravelGroupDto> findTravelGroupList(Map<String, Object> groupMap, PageRequest pageRequest) {
         List<TravelGroupEntity> travelGroupList = queryFactory
                 .selectFrom(travelGroupEntity)
                 .orderBy(travelGroupEntity.idx.desc())
@@ -298,7 +298,7 @@ public class TravelQueryRepository {
      * 5. 작성일      : 2022. 11. 25.
      * </pre>
      */
-    public TravelGroupDTO findOneTravelGroup(Long idx) {
+    public TravelGroupDto findOneTravelGroup(Long idx) {
         TravelGroupEntity travelGroup = Optional.ofNullable(queryFactory
                 .selectFrom(travelGroupEntity)
                 .where(travelGroupEntity.idx.eq(idx))
@@ -316,7 +316,7 @@ public class TravelQueryRepository {
      * 5. 작성일      : 2023. 01. 04.
      * </pre>
      */
-    public Page<TravelRecommendDTO> findTravelRecommendList(Map<String, Object> recommendMap, PageRequest pageRequest) {
+    public Page<TravelRecommendDto> findTravelRecommendList(Map<String, Object> recommendMap, PageRequest pageRequest) {
         List<TravelRecommendEntity> recommendList = queryFactory
                 .selectFrom(QTravelRecommendEntity.travelRecommendEntity)
                 .orderBy(QTravelRecommendEntity.travelRecommendEntity.idx.desc())
@@ -335,7 +335,7 @@ public class TravelQueryRepository {
      * 5. 작성일      : 2023. 01. 07.
      * </pre>
      */
-    public List<SearchDTO> rankingTravelKeyword() {
+    public List<SearchDto> rankingTravelKeyword() {
         List<SearchEntity> keywordList = queryFactory
                 .select(fields(SearchEntity.class,
                         QSearchEntity.searchEntity.searchKeyword,
@@ -359,7 +359,7 @@ public class TravelQueryRepository {
      * 5. 작성일      : 2023. 01. 07.
      * </pre>
      */
-    public List<TravelDTO> findTravelKeyword(String searchKeyword) {
+    public List<TravelDto> findTravelKeyword(String searchKeyword) {
         List<TravelEntity> searchTravel = queryFactory
                 .selectFrom(travelEntity)
                 .innerJoin(travelEntity.newTravelCode, commonEntity)
@@ -380,7 +380,7 @@ public class TravelQueryRepository {
      * 5. 작성일      : 2023. 01. 08.
      * </pre>
      */
-    public List<TravelFestivalDTO> findTravelFestivalGroup(Integer month) {
+    public List<TravelFestivalDto> findTravelFestivalGroup(Integer month) {
         List<TravelFestivalEntity> travelGroup = queryFactory
                 .select(fields(TravelFestivalEntity.class,
                         travelFestivalEntity.festivalMonth,
@@ -404,7 +404,7 @@ public class TravelQueryRepository {
      * 5. 작성일      : 2023. 01. 08.
      * </pre>
      */
-    public List<TravelFestivalDTO> findTravelFestivalList(TravelFestivalEntity existTravelFestivalEntity) {
+    public List<TravelFestivalDto> findTravelFestivalList(TravelFestivalEntity existTravelFestivalEntity) {
         List<TravelFestivalEntity> festivalList = queryFactory
                 .selectFrom(travelFestivalEntity)
                 .orderBy(travelFestivalEntity.idx.desc())

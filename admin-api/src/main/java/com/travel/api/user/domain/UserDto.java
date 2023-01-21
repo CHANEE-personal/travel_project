@@ -1,7 +1,7 @@
 package com.travel.api.user.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.travel.api.common.domain.NewCommonDTO;
+import com.travel.api.common.domain.NewCommonDto;
 import com.vladmihalcea.hibernate.type.json.JsonStringType;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -24,7 +24,7 @@ import java.util.List;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @TypeDef(name = "json", typeClass = JsonStringType.class)
 @ApiModel
-public class UserDTO extends NewCommonDTO {
+public class UserDto extends NewCommonDto {
     @ApiModelProperty(required = true, value = "rowNum", hidden = true, example = "1")
     private Integer rowNum;
 

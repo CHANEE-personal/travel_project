@@ -1,8 +1,8 @@
 package com.travel.api.user;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.travel.api.common.domain.repository.CommonRepository;
-import com.travel.api.user.domain.UserDto;
+import com.travel.api.user.domain.Role;
+import com.travel.api.user.domain.UserDTO;
 import com.travel.api.user.domain.UserEntity;
 import com.travel.jwt.JwtUtil;
 import lombok.RequiredArgsConstructor;
@@ -36,7 +36,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import static com.travel.api.user.domain.Role.ROLE_ADMIN;
 import static com.travel.common.StringUtil.getString;
 import static org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase.Replace.NONE;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
@@ -49,6 +48,7 @@ import static org.springframework.restdocs.payload.JsonFieldType.STRING;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.security.crypto.factory.PasswordEncoderFactories.createDelegatingPasswordEncoder;
+import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.context.TestConstructor.AutowireMode.ALL;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -71,13 +71,13 @@ class UserControllerTest {
     private final JwtUtil jwtUtil;
 
     private UserEntity userEntity;
-    private UserDto userDTO;
+    private UserDTO userDTO;
     private MockMvc mockMvc;
     protected PasswordEncoder passwordEncoder;
 
     Collection<? extends GrantedAuthority> getAuthorities() {
         List<SimpleGrantedAuthority> authorities = new ArrayList<>();
-        authorities.add(new SimpleGrantedAuthority("ROLE_ADMIN"));
+        authorities.add(new SimpleGrantedAuthority("ROLE_TRAVEL_USER"));
         return authorities;
     }
 
@@ -89,11 +89,11 @@ class UserControllerTest {
         String token = jwtUtil.doGenerateToken(authenticationToken.getName());
 
         userEntity = UserEntity.builder()
-                .userId("admin99")
+                .userId("user99")
                 .password("pass1234")
                 .name("test")
                 .email("test@test.com")
-                .role(ROLE_ADMIN)
+                .role(Role.ROLE_TRAVEL_USER)
                 .userToken(token)
                 .visible("Y")
                 .build();
@@ -108,7 +108,7 @@ class UserControllerTest {
     public void setup(RestDocumentationContextProvider restDocumentationContextProvider) {
         this.mockMvc = webAppContextSetup(wac)
                 .addFilter(new CharacterEncodingFilter("UTF-8", true))
-//                .apply(springSecurity())
+                .apply(springSecurity())
                 .apply(documentationConfiguration(restDocumentationContextProvider))
                 .alwaysDo(print())
                 .build();
@@ -117,29 +117,7 @@ class UserControllerTest {
     }
 
     @Test
-    @WithMockUser(roles = "ADMIN")
-    @DisplayName("유저 조회 테스트")
-    void 유저조회() throws Exception {
-        mockMvc.perform(get("/api/user").param("page", "1").param("size", "100")
-                        .header("Authorization", "Bearer " + userEntity.getUserToken()))
-                .andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(content().contentType("application/json;charset=utf-8"));
-    }
-
-    @Test
-    @Disabled
-    @WithMockUser(roles = "USER")
-    @DisplayName("유저 조회 권한 테스트")
-    void 유저조회권한테스트() throws Exception {
-        mockMvc.perform(get("/api/user").param("page", "1").param("size", "100")
-                        .header("Authorization", "Bearer " + userEntity.getUserToken()))
-                .andDo(print())
-                .andExpect(status().isForbidden());
-    }
-
-    @Test
-    @WithMockUser(roles = "USER")
+    @WithMockUser(roles = "TRAVEL_USER")
     @DisplayName("로그인 테스트")
     void 로그인테스트() throws Exception {
         mockMvc.perform(post("/api/user/login")
@@ -155,7 +133,7 @@ class UserControllerTest {
     }
 
     @Test
-    @WithMockUser(roles = "ADMIN")
+    @WithMockUser(roles = "TRAVEL_USER")
     @DisplayName("유저 회원가입 테스트")
     void 회원가입테스트() throws Exception {
         UserEntity newAdminUserEntity = UserEntity.builder()
@@ -163,7 +141,7 @@ class UserControllerTest {
                 .password("test")
                 .name("test")
                 .email("test@test.com")
-                .role(ROLE_ADMIN)
+                .role(Role.ROLE_TRAVEL_USER)
                 .visible("Y")
                 .build();
 
@@ -216,7 +194,7 @@ class UserControllerTest {
     }
 
     @Test
-    @WithMockUser(roles = "ADMIN")
+    @WithMockUser(roles = "TRAVEL_USER")
     @DisplayName("유저 회원수정 테스트")
     void 회원수정테스트() throws Exception {
         UserEntity updateAdminUserEntity = UserEntity.builder()
@@ -275,7 +253,7 @@ class UserControllerTest {
     }
 
     @Test
-    @WithMockUser(roles = "ADMIN")
+    @WithMockUser(roles = "TRAVEL_USER")
     @DisplayName("유저 회원탈퇴 테스트")
     void 회원탈퇴테스트() throws Exception {
         mockMvc.perform(delete("/api/user/{idx}", userEntity.getIdx())
@@ -295,6 +273,30 @@ class UserControllerTest {
                         .header("Authorization", "Bearer " + userEntity.getUserToken()))
                 .andDo(print())
                 .andExpect(status().isForbidden());
+    }
+
+    @Test
+    @DisplayName("유저가 좋아하는 여행지 추가 테스트")
+    void 유저가좋아하는여행지추가테스트() throws Exception {
+        List<String> favoriteIdxList = new ArrayList<>();
+        favoriteIdxList.add("1");
+        favoriteIdxList.add("2");
+
+        mockMvc.perform(put("/api/user/1/favorite-travel")
+                        .param("favoriteIdx", "2"))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(content().contentType("application/json;charset=utf-8"))
+                .andExpect(jsonPath("$.favoriteTravelIdx").value(favoriteIdxList));
+
+        favoriteIdxList.add("3");
+
+        mockMvc.perform(put("/api/user/1/favorite-travel")
+                        .param("favoriteIdx", "3"))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(content().contentType("application/json;charset=utf-8"))
+                .andExpect(jsonPath("$.favoriteTravelIdx").value(favoriteIdxList));
     }
 
     @Test

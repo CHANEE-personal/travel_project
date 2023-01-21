@@ -1,8 +1,8 @@
 package com.travel.api.user;
 
-import com.travel.api.travel.domain.group.TravelGroupUserDTO;
+import com.travel.api.travel.domain.group.TravelGroupUserDto;
 import com.travel.api.travel.domain.group.TravelGroupUserEntity;
-import com.travel.api.travel.domain.schedule.TravelScheduleDTO;
+import com.travel.api.travel.domain.schedule.TravelScheduleDto;
 import com.travel.api.user.domain.*;
 import com.travel.common.Paging;
 import com.travel.jwt.AuthenticationResponse;
@@ -60,7 +60,7 @@ public class UserController {
             @ApiResponse(code = 500, message = "서버 에러", response = ServerError.class)
     })
     @GetMapping
-    public ResponseEntity<Page<UserDTO>> findUserList(@RequestParam(required = false) Map<String, Object> paramMap, Paging paging) {
+    public ResponseEntity<Page<UserDto>> findUserList(@RequestParam(required = false) Map<String, Object> paramMap, Paging paging) {
         return ResponseEntity.ok(userService.findUserList(paramMap, paging.getPageRequest(paging.getPageNum(), paging.getSize())));
     }
 
@@ -139,7 +139,7 @@ public class UserController {
      */
     @ApiOperation(value = "유저 회원가입 처리", notes = "유저 회원가입을 처리한다.")
     @ApiResponses(value = {
-            @ApiResponse(code = 201, message = "회원가입 성공", response = UserDTO.class),
+            @ApiResponse(code = 201, message = "회원가입 성공", response = UserDto.class),
             @ApiResponse(code = 400, message = "잘못된 요청", response = HttpClientErrorException.BadRequest.class),
             @ApiResponse(code = 401, message = "허용되지 않는 관리자", response = HttpClientErrorException.Unauthorized.class),
             @ApiResponse(code = 403, message = "접근거부", response = HttpClientErrorException.class),
@@ -147,7 +147,7 @@ public class UserController {
             @ApiResponse(code = 500, message = "서버 에러", response = ServerError.class)
     })
     @PostMapping
-    public ResponseEntity<UserDTO> insertUser(@Valid @RequestBody SignUpRequest signUpRequest) {
+    public ResponseEntity<UserDto> insertUser(@Valid @RequestBody SignUpRequest signUpRequest) {
         return ResponseEntity.created(URI.create("")).body(userService.insertUser(signUpRequest));
     }
 
@@ -162,7 +162,7 @@ public class UserController {
      */
     @ApiOperation(value = "유저 정보 수정 처리", notes = "유저 정보 수정 처리한다.")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "유저 정보 수정 성공", response = UserDTO.class),
+            @ApiResponse(code = 200, message = "유저 정보 수정 성공", response = UserDto.class),
             @ApiResponse(code = 400, message = "잘못된 요청", response = HttpClientErrorException.BadRequest.class),
             @ApiResponse(code = 401, message = "허용되지 않는 관리자", response = HttpClientErrorException.Unauthorized.class),
             @ApiResponse(code = 403, message = "접근거부", response = HttpClientErrorException.class),
@@ -170,7 +170,7 @@ public class UserController {
             @ApiResponse(code = 500, message = "서버 에러", response = ServerError.class)
     })
     @PutMapping("/{idx}")
-    public ResponseEntity<UserDTO> updateUser(@PathVariable Long idx, @CurrentUser UserEntity userEntity) {
+    public ResponseEntity<UserDto> updateUser(@PathVariable Long idx, @CurrentUser UserEntity userEntity) {
         return ResponseEntity.ok(userService.updateUser(idx, userEntity));
     }
 
@@ -218,7 +218,7 @@ public class UserController {
             @ApiResponse(code = 500, message = "서버 에러", response = ServerError.class)
     })
     @GetMapping("/{idx}/schedule")
-    public ResponseEntity<List<TravelScheduleDTO>> findUserSchedule(@PathVariable Long idx) {
+    public ResponseEntity<List<TravelScheduleDto>> findUserSchedule(@PathVariable Long idx) {
         return ResponseEntity.ok(userService.findUserSchedule(idx));
     }
 
@@ -234,7 +234,7 @@ public class UserController {
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @ApiOperation(value = "유저가 작성한 여행 스케줄 상세 조회", notes = "유저가 작성한 여행 스케줄을 상세 조회한다.")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "유저가 작성한 여행 스케줄 상세 조회", response = TravelScheduleDTO.class),
+            @ApiResponse(code = 200, message = "유저가 작성한 여행 스케줄 상세 조회", response = TravelScheduleDto.class),
             @ApiResponse(code = 400, message = "잘못된 요청", response = HttpClientErrorException.BadRequest.class),
             @ApiResponse(code = 401, message = "허용되지 않는 관리자", response = HttpClientErrorException.Unauthorized.class),
             @ApiResponse(code = 403, message = "접근거부", response = HttpClientErrorException.class),
@@ -242,7 +242,7 @@ public class UserController {
             @ApiResponse(code = 500, message = "서버 에러", response = ServerError.class)
     })
     @GetMapping("/{idx}/schedule/{scheduleIdx}")
-    public ResponseEntity<TravelScheduleDTO> findOneUserSchedule(@PathVariable Long idx, @PathVariable Long scheduleIdx) {
+    public ResponseEntity<TravelScheduleDto> findOneUserSchedule(@PathVariable Long idx, @PathVariable Long scheduleIdx) {
         return ResponseEntity.ok(userService.findOneUserSchedule(idx, scheduleIdx));
     }
 
@@ -258,7 +258,7 @@ public class UserController {
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @ApiOperation(value = "유저 여행 그룹 등록", notes = "유저 여행 그룹을 등록한다.")
     @ApiResponses(value = {
-            @ApiResponse(code = 201, message = "유저 여행 그룹 등록 성공", response = TravelGroupUserDTO.class),
+            @ApiResponse(code = 201, message = "유저 여행 그룹 등록 성공", response = TravelGroupUserDto.class),
             @ApiResponse(code = 400, message = "잘못된 요청", response = HttpClientErrorException.BadRequest.class),
             @ApiResponse(code = 401, message = "허용되지 않는 관리자", response = HttpClientErrorException.Unauthorized.class),
             @ApiResponse(code = 403, message = "접근거부", response = HttpClientErrorException.class),
@@ -266,7 +266,7 @@ public class UserController {
             @ApiResponse(code = 500, message = "서버 에러", response = ServerError.class)
     })
     @PostMapping("/{idx}/group_user/{groupIdx}")
-    public ResponseEntity<TravelGroupUserDTO> insertTravelGroupUser(@PathVariable Long idx, @PathVariable Long groupIdx, @Valid @RequestBody TravelGroupUserEntity travelGroupUserEntity) {
+    public ResponseEntity<TravelGroupUserDto> insertTravelGroupUser(@PathVariable Long idx, @PathVariable Long groupIdx, @Valid @RequestBody TravelGroupUserEntity travelGroupUserEntity) {
         return ResponseEntity.created(URI.create("")).body(userService.insertTravelGroupUser(idx, groupIdx, travelGroupUserEntity));
     }
 

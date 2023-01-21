@@ -1,6 +1,6 @@
 package com.travel.api.common.domain.repository;
 
-import com.travel.api.common.domain.CommonDTO;
+import com.travel.api.common.domain.CommonDto;
 import com.travel.api.common.domain.CommonEntity;
 import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.BeforeEach;
@@ -47,7 +47,7 @@ class CommonQueryRepositoryTest {
     private final CommonQueryRepository commonQueryRepository;
 
     private CommonEntity commonEntity;
-    private CommonDTO commonDTO;
+    private CommonDto commonDTO;
 
     void createCommonCode() {
         commonEntity = CommonEntity.builder()
@@ -68,7 +68,7 @@ class CommonQueryRepositoryTest {
     void 공통코드리스트조회테스트() {
         Map<String, Object> commonMap = new HashMap<>();
         PageRequest pageRequest = PageRequest.of(0, 3);
-        Page<CommonDTO> commonList = commonQueryRepository.findCommonList(commonMap, pageRequest);
+        Page<CommonDto> commonList = commonQueryRepository.findCommonList(commonMap, pageRequest);
 
         assertThat(commonList.getTotalElements()).isGreaterThan(0);
     }
@@ -82,21 +82,21 @@ class CommonQueryRepositoryTest {
 
         PageRequest pageRequest = PageRequest.of(0, 3);
 
-        List<CommonDTO> commonList = new ArrayList<>();
-        commonList.add(CommonDTO.builder().idx(1L).commonCode(1).commonName("서울").visible("Y").build());
+        List<CommonDto> commonList = new ArrayList<>();
+        commonList.add(CommonDto.builder().idx(1L).commonCode(1).commonName("서울").visible("Y").build());
 
-        Page<CommonDTO> resultPage = new PageImpl<>(commonList, pageRequest, commonList.size());
+        Page<CommonDto> resultPage = new PageImpl<>(commonList, pageRequest, commonList.size());
 
         // when
         when(mockCommonQueryRepository.findCommonList(commonMap, pageRequest)).thenReturn(resultPage);
-        Page<CommonDTO> newCommonList = mockCommonQueryRepository.findCommonList(commonMap, pageRequest);
+        Page<CommonDto> newCommonList = mockCommonQueryRepository.findCommonList(commonMap, pageRequest);
 
-        List<CommonDTO> commonDTOList = newCommonList.stream().collect(Collectors.toList());
+        List<CommonDto> commonDtoList = newCommonList.stream().collect(Collectors.toList());
 
         // then
-        assertThat(commonDTOList.get(0).getIdx()).isEqualTo(commonList.get(0).getIdx());
-        assertThat(commonDTOList.get(0).getCommonCode()).isEqualTo(commonList.get(0).getCommonCode());
-        assertThat(commonDTOList.get(0).getCommonName()).isEqualTo(commonList.get(0).getCommonName());
+        assertThat(commonDtoList.get(0).getIdx()).isEqualTo(commonList.get(0).getIdx());
+        assertThat(commonDtoList.get(0).getCommonCode()).isEqualTo(commonList.get(0).getCommonCode());
+        assertThat(commonDtoList.get(0).getCommonName()).isEqualTo(commonList.get(0).getCommonName());
 
         // verify
         verify(mockCommonQueryRepository, times(1)).findCommonList(commonMap, pageRequest);

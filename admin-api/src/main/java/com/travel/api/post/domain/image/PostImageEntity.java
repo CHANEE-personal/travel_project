@@ -76,9 +76,9 @@ public class PostImageEntity {
     @JoinColumn(name = "type_idx", referencedColumnName = "idx", nullable = false)
     private PostEntity postImageEntity;
 
-    public static PostImageDTO toDto(PostImageEntity entity) {
+    public static PostImageDto toDto(PostImageEntity entity) {
         if (entity == null) return null;
-        return PostImageDTO.builder()
+        return PostImageDto.builder()
                 .idx(entity.getIdx())
                 .entityType(entity.getEntityType())
                 .fileMask(entity.getFileMask())
@@ -92,7 +92,7 @@ public class PostImageEntity {
                 .build();
     }
 
-    public static List<PostImageDTO> toDtoList(List<PostImageEntity> entityList) {
+    public static List<PostImageDto> toDtoList(List<PostImageEntity> entityList) {
         if (entityList == null) return null;
         return entityList.stream()
                 .map(PostImageEntity::toDto)

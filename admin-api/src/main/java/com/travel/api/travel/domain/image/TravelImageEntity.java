@@ -76,9 +76,9 @@ public class TravelImageEntity {
     @JoinColumn(name = "type_idx", referencedColumnName = "idx", nullable = false)
     private TravelEntity newTravelImageEntity;
 
-    public static TravelImageDTO toDto(TravelImageEntity entity) {
+    public static TravelImageDto toDto(TravelImageEntity entity) {
         if (entity == null) return null;
-        return TravelImageDTO.builder()
+        return TravelImageDto.builder()
                 .idx(entity.getIdx())
                 .entityType(entity.getEntityType())
                 .fileMask(entity.getFileMask())
@@ -92,7 +92,7 @@ public class TravelImageEntity {
                 .build();
     }
 
-    public static List<TravelImageDTO> toDtoList(List<TravelImageEntity> entityList) {
+    public static List<TravelImageDto> toDtoList(List<TravelImageEntity> entityList) {
         if (entityList == null) return null;
         return entityList.stream()
                 .map(TravelImageEntity::toDto)

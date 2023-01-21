@@ -2,7 +2,7 @@ package com.travel.api.faq.domain.repository;
 
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import com.travel.api.faq.domain.FaqDTO;
+import com.travel.api.faq.domain.FaqDto;
 import com.travel.api.faq.domain.FaqEntity;
 import com.travel.exception.TravelException;
 import lombok.RequiredArgsConstructor;
@@ -40,7 +40,7 @@ public class FaqQueryRepository {
      * 5. 작성일      : 2022. 11. 29.
      * </pre>
      */
-    public Page<FaqDTO> findFaqList(Map<String, Object> faqMap, PageRequest pageRequest) {
+    public Page<FaqDto> findFaqList(Map<String, Object> faqMap, PageRequest pageRequest) {
         List<FaqEntity> faqList = queryFactory.selectFrom(faqEntity)
                 .orderBy(faqEntity.idx.desc())
                 .innerJoin(faqEntity.newFaqCode, commonEntity)
@@ -62,7 +62,7 @@ public class FaqQueryRepository {
      * 5. 작성일      : 2022. 11. 29.
      * </pre>
      */
-    public FaqDTO findOneFaq(Long idx) {
+    public FaqDto findOneFaq(Long idx) {
         FaqEntity oneFaq = Optional.ofNullable(queryFactory
                 .selectFrom(faqEntity)
                 .innerJoin(faqEntity.newFaqCode, commonEntity)

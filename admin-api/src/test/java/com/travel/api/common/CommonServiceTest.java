@@ -1,6 +1,6 @@
 package com.travel.api.common;
 
-import com.travel.api.common.domain.CommonDTO;
+import com.travel.api.common.domain.CommonDto;
 import com.travel.api.common.domain.CommonEntity;
 import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.BeforeEach;
@@ -47,7 +47,7 @@ class CommonServiceTest {
     private final EntityManager em;
 
     private CommonEntity commonEntity;
-    private CommonDTO commonDTO;
+    private CommonDto commonDTO;
 
     void createCommon() {
         commonEntity = CommonEntity.builder()
@@ -76,21 +76,21 @@ class CommonServiceTest {
 
         PageRequest pageRequest = PageRequest.of(0, 3);
 
-        List<CommonDTO> commonList = new ArrayList<>();
-        commonList.add(CommonDTO.builder().idx(1L).commonCode(1).commonName("서울").visible("Y").build());
+        List<CommonDto> commonList = new ArrayList<>();
+        commonList.add(CommonDto.builder().idx(1L).commonCode(1).commonName("서울").visible("Y").build());
 
-        Page<CommonDTO> resultPage = new PageImpl<>(commonList, pageRequest, commonList.size());
+        Page<CommonDto> resultPage = new PageImpl<>(commonList, pageRequest, commonList.size());
 
         // when
         when(mockCommonService.findCommonList(commonMap, pageRequest)).thenReturn(resultPage);
-        Page<CommonDTO> newCommonList = mockCommonService.findCommonList(commonMap, pageRequest);
+        Page<CommonDto> newCommonList = mockCommonService.findCommonList(commonMap, pageRequest);
 
-        List<CommonDTO> commonDTOList = newCommonList.stream().collect(Collectors.toList());
+        List<CommonDto> commonDtoList = newCommonList.stream().collect(Collectors.toList());
 
         // then
-        assertThat(commonDTOList.get(0).getIdx()).isEqualTo(commonList.get(0).getIdx());
-        assertThat(commonDTOList.get(0).getCommonCode()).isEqualTo(commonList.get(0).getCommonCode());
-        assertThat(commonDTOList.get(0).getCommonName()).isEqualTo(commonList.get(0).getCommonName());
+        assertThat(commonDtoList.get(0).getIdx()).isEqualTo(commonList.get(0).getIdx());
+        assertThat(commonDtoList.get(0).getCommonCode()).isEqualTo(commonList.get(0).getCommonCode());
+        assertThat(commonDtoList.get(0).getCommonName()).isEqualTo(commonList.get(0).getCommonName());
 
         // verify
         verify(mockCommonService, times(1)).findCommonList(commonMap, pageRequest);
@@ -105,63 +105,63 @@ class CommonServiceTest {
     @DisplayName("공통 코드 상세 조회 Mockito 테스트")
     void 공통코드상세조회Mockito테스트() {
         // given
-        CommonDTO newCommonDTO = commonService.insertCommonCode(commonEntity);
+        CommonDto newCommonDto = commonService.insertCommonCode(commonEntity);
 
         // when
-        when(mockCommonService.findOneCommon(newCommonDTO.getIdx())).thenReturn(newCommonDTO);
-        CommonDTO commonInfo = mockCommonService.findOneCommon(newCommonDTO.getIdx());
+        when(mockCommonService.findOneCommon(newCommonDto.getIdx())).thenReturn(newCommonDto);
+        CommonDto commonInfo = mockCommonService.findOneCommon(newCommonDto.getIdx());
 
         // then
-        assertThat(commonInfo.getCommonCode()).isEqualTo(newCommonDTO.getCommonCode());
-        assertThat(commonInfo.getCommonName()).isEqualTo(newCommonDTO.getCommonName());
+        assertThat(commonInfo.getCommonCode()).isEqualTo(newCommonDto.getCommonCode());
+        assertThat(commonInfo.getCommonName()).isEqualTo(newCommonDto.getCommonName());
 
         // verify
-        verify(mockCommonService, times(1)).findOneCommon(newCommonDTO.getIdx());
-        verify(mockCommonService, atLeastOnce()).findOneCommon(newCommonDTO.getIdx());
+        verify(mockCommonService, times(1)).findOneCommon(newCommonDto.getIdx());
+        verify(mockCommonService, atLeastOnce()).findOneCommon(newCommonDto.getIdx());
         verifyNoMoreInteractions(mockCommonService);
 
         InOrder inOrder = inOrder(mockCommonService);
-        inOrder.verify(mockCommonService).findOneCommon(newCommonDTO.getIdx());
+        inOrder.verify(mockCommonService).findOneCommon(newCommonDto.getIdx());
     }
 
     @Test
     @DisplayName("공통 코드 등록 Mockito 테스트")
     void 공통코드등록Mockito테스트() {
         // given
-        CommonDTO newCommonDTO = commonService.insertCommonCode(commonEntity);
+        CommonDto newCommonDto = commonService.insertCommonCode(commonEntity);
 
         // when
-        when(mockCommonService.findOneCommon(newCommonDTO.getIdx())).thenReturn(newCommonDTO);
-        CommonDTO commonInfo = mockCommonService.findOneCommon(newCommonDTO.getIdx());
+        when(mockCommonService.findOneCommon(newCommonDto.getIdx())).thenReturn(newCommonDto);
+        CommonDto commonInfo = mockCommonService.findOneCommon(newCommonDto.getIdx());
 
         // then
-        assertThat(commonInfo.getCommonCode()).isEqualTo(newCommonDTO.getCommonCode());
-        assertThat(commonInfo.getCommonName()).isEqualTo(newCommonDTO.getCommonName());
+        assertThat(commonInfo.getCommonCode()).isEqualTo(newCommonDto.getCommonCode());
+        assertThat(commonInfo.getCommonName()).isEqualTo(newCommonDto.getCommonName());
 
         // verify
-        verify(mockCommonService, times(1)).findOneCommon(newCommonDTO.getIdx());
-        verify(mockCommonService, atLeastOnce()).findOneCommon(newCommonDTO.getIdx());
+        verify(mockCommonService, times(1)).findOneCommon(newCommonDto.getIdx());
+        verify(mockCommonService, atLeastOnce()).findOneCommon(newCommonDto.getIdx());
         verifyNoMoreInteractions(mockCommonService);
 
         InOrder inOrder = inOrder(mockCommonService);
-        inOrder.verify(mockCommonService).findOneCommon(newCommonDTO.getIdx());
+        inOrder.verify(mockCommonService).findOneCommon(newCommonDto.getIdx());
     }
 
     @Test
     @DisplayName("공통 코드 수정 Mockito 테스트")
     void 공통코드수정Mockito테스트() {
         // given
-        CommonDTO commonDTO = commonService.insertCommonCode(commonEntity);
+        CommonDto commonDTO = commonService.insertCommonCode(commonEntity);
         CommonEntity newCommonEntity = CommonEntity.builder()
                 .idx(commonDTO.getIdx())
                 .commonCode(2).commonName("인천").visible("Y").build();
         commonService.updateCommonCode(commonDTO.getIdx(), newCommonEntity);
 
-        CommonDTO newCommonInfo = CommonEntity.toDto(newCommonEntity);
+        CommonDto newCommonInfo = CommonEntity.toDto(newCommonEntity);
 
         // when
         when(mockCommonService.findOneCommon(newCommonInfo.getIdx())).thenReturn(newCommonInfo);
-        CommonDTO commonInfo = mockCommonService.findOneCommon(newCommonInfo.getIdx());
+        CommonDto commonInfo = mockCommonService.findOneCommon(newCommonInfo.getIdx());
 
         // then
         assertThat(commonInfo.getIdx()).isEqualTo(newCommonInfo.getIdx());

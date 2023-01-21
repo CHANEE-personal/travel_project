@@ -3,11 +3,11 @@ package com.travel.api.user;
 import com.travel.api.common.domain.CommonEntity;
 import com.travel.api.common.domain.repository.CommonRepository;
 import com.travel.api.travel.domain.group.TravelGroupEntity;
-import com.travel.api.travel.domain.group.TravelGroupUserDTO;
+import com.travel.api.travel.domain.group.TravelGroupUserDto;
 import com.travel.api.travel.domain.group.TravelGroupUserEntity;
 import com.travel.api.travel.domain.group.repository.GroupRepository;
 import com.travel.api.travel.domain.group.repository.GroupUserRepository;
-import com.travel.api.travel.domain.schedule.TravelScheduleDTO;
+import com.travel.api.travel.domain.schedule.TravelScheduleDto;
 import com.travel.api.user.domain.*;
 import com.travel.api.user.domain.repository.UserQueryRepository;
 import com.travel.api.user.domain.repository.UserRepository;
@@ -111,7 +111,7 @@ public class UserService {
      * </pre>
      */
     @Transactional(readOnly = true)
-    public Page<UserDTO> findUserList(Map<String, Object> userMap, PageRequest pageRequest) {
+    public Page<UserDto> findUserList(Map<String, Object> userMap, PageRequest pageRequest) {
         return userQueryRepository.findUserList(userMap, pageRequest);
     }
 
@@ -125,7 +125,7 @@ public class UserService {
      * </pre>
      */
     @Transactional(readOnly = true)
-    public UserDTO findOneUser(Long idx) {
+    public UserDto findOneUser(Long idx) {
         return UserEntity.toDto(oneUser(idx));
     }
 
@@ -139,7 +139,7 @@ public class UserService {
      * </pre>
      */
     @Transactional(readOnly = true)
-    public UserDTO findOneUserById(String id) {
+    public UserDto findOneUserById(String id) {
         UserEntity oneUser = userRepository.findByUserId(id)
                 .orElseThrow(() -> new TravelException(NOT_FOUND_USER));
         return UserEntity.toDto(oneUser);
@@ -169,7 +169,7 @@ public class UserService {
      * </pre>
      */
     @Transactional
-    public UserDTO insertUser(SignUpRequest signUpRequest) {
+    public UserDto insertUser(SignUpRequest signUpRequest) {
         try {
             if (userRepository.findByUserId(signUpRequest.getUserId()).isPresent()) {
                 throw new TravelException(EXIST_USER);
@@ -199,7 +199,7 @@ public class UserService {
      * </pre>
      */
     @Transactional
-    public UserDTO updateUser(Long idx, UserEntity userEntity) {
+    public UserDto updateUser(Long idx, UserEntity userEntity) {
         try {
             oneUser(idx).update(userEntity);
             return UserEntity.toDto(userEntity);
@@ -236,7 +236,7 @@ public class UserService {
      * </pre>
      */
     @Transactional(readOnly = true)
-    public List<TravelScheduleDTO> findUserSchedule(Long userIdx) {
+    public List<TravelScheduleDto> findUserSchedule(Long userIdx) {
         return userQueryRepository.findUserSchedule(userIdx);
     }
 
@@ -250,7 +250,7 @@ public class UserService {
      * </pre>
      */
     @Transactional(readOnly = true)
-    public TravelScheduleDTO findOneUserSchedule(Long userIdx, Long scheduleIdx) {
+    public TravelScheduleDto findOneUserSchedule(Long userIdx, Long scheduleIdx) {
         return userQueryRepository.findOneUserSchedule(userIdx, scheduleIdx);
     }
 
@@ -264,7 +264,7 @@ public class UserService {
      * </pre>
      */
     @Transactional
-    public TravelGroupUserDTO insertTravelGroupUser(Long idx, Long groupIdx, TravelGroupUserEntity travelGroupUserEntity) {
+    public TravelGroupUserDto insertTravelGroupUser(Long idx, Long groupIdx, TravelGroupUserEntity travelGroupUserEntity) {
         try {
             oneGroup(groupIdx).addGroup(travelGroupUserEntity);
             oneUser(idx).addGroup(travelGroupUserEntity);

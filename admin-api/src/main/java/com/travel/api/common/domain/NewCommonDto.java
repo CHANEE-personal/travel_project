@@ -17,7 +17,7 @@ import static com.fasterxml.jackson.annotation.JsonFormat.Shape.STRING;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @ApiModel
-public class NewCommonDTO {
+public class NewCommonDto {
 
     @ApiModelProperty(required = true, value = "등록자", hidden = true)
     private Long creator;

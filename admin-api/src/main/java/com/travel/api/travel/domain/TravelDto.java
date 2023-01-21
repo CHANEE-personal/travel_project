@@ -1,8 +1,8 @@
 package com.travel.api.travel.domain;
 
-import com.travel.api.common.domain.NewCommonDTO;
-import com.travel.api.travel.domain.image.TravelImageDTO;
-import com.travel.api.travel.domain.review.TravelReviewDTO;
+import com.travel.api.common.domain.NewCommonDto;
+import com.travel.api.travel.domain.image.TravelImageDto;
+import com.travel.api.travel.domain.review.TravelReviewDto;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.*;
@@ -19,7 +19,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @ApiModel
-public class TravelDTO extends NewCommonDTO {
+public class TravelDto extends NewCommonDto {
 
     @ApiModelProperty(required = true, value = "idx", hidden = true, example = "1")
     private Long idx;
@@ -57,8 +57,8 @@ public class TravelDTO extends NewCommonDTO {
     private Boolean popular;
 
     @ApiModelProperty(value = "travelReviewList", hidden = true)
-    private List<TravelReviewDTO> reviewList = new ArrayList<>();
+    private List<TravelReviewDto> reviewList = new ArrayList<>();
 
     @ApiModelProperty(value = "travelImageList", hidden = true)
-    private List<TravelImageDTO> imageList = new ArrayList<>();
+    private List<TravelImageDto> imageList = new ArrayList<>();
 }

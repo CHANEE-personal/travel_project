@@ -92,9 +92,9 @@ public class PostEntity extends NewCommonMappedClass {
         this.popular = postEntity.popular;
     }
 
-    public static PostDTO toDto(PostEntity entity) {
+    public static PostDto toDto(PostEntity entity) {
         if (entity == null) return null;
-        return PostDTO.builder()
+        return PostDto.builder()
                 .idx(entity.getIdx())
                 .postTitle(entity.getPostTitle())
                 .postDescription(entity.getPostDescription())
@@ -106,7 +106,7 @@ public class PostEntity extends NewCommonMappedClass {
                 .build();
     }
 
-    public static List<PostDTO> toDtoList(List<PostEntity> entityList) {
+    public static List<PostDto> toDtoList(List<PostEntity> entityList) {
         if (entityList == null) return null;
         return entityList.stream()
                 .map(PostEntity::toDto)

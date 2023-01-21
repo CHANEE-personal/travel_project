@@ -1,20 +1,16 @@
 package com.travel.api.user.domain.repository;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import com.travel.api.travel.domain.schedule.TravelScheduleDTO;
+import com.travel.api.travel.domain.schedule.TravelScheduleDto;
 import com.travel.api.travel.domain.schedule.TravelScheduleEntity;
-import com.travel.api.user.domain.UserDTO;
+import com.travel.api.user.domain.UserDto;
 import com.travel.api.user.domain.UserEntity;
 import com.travel.exception.TravelException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Repository;
-
-import javax.persistence.EntityManager;
 
 import java.util.Collections;
 import java.util.List;
@@ -41,7 +37,7 @@ public class UserQueryRepository {
      * 5. 작성일       : 2022. 10. 9.
      * </pre>
      */
-    public Page<UserDTO> findUserList(Map<String, Object> userMap, PageRequest pageRequest) {
+    public Page<UserDto> findUserList(Map<String, Object> userMap, PageRequest pageRequest) {
         List<UserEntity> findUserList = queryFactory
                 .selectFrom(userEntity)
                 .offset(pageRequest.getOffset())
@@ -80,7 +76,7 @@ public class UserQueryRepository {
      * 5. 작성일      : 2022. 12. 14.
      * </pre>
      */
-    public List<TravelScheduleDTO> findUserSchedule(Long userIdx) {
+    public List<TravelScheduleDto> findUserSchedule(Long userIdx) {
         List<TravelScheduleEntity> userSchedule = queryFactory
                 .selectFrom(travelScheduleEntity)
                 .where(travelScheduleEntity.userEntity.idx.eq(userIdx))
@@ -98,7 +94,7 @@ public class UserQueryRepository {
      * 5. 작성일      : 2022. 12. 14.
      * </pre>
      */
-    public TravelScheduleDTO findOneUserSchedule(Long userIdx, Long scheduleIdx) {
+    public TravelScheduleDto findOneUserSchedule(Long userIdx, Long scheduleIdx) {
         TravelScheduleEntity oneSchedule = Optional.ofNullable(queryFactory
                 .selectFrom(travelScheduleEntity)
                 .where(travelScheduleEntity.userEntity.idx.eq(userIdx).and(travelScheduleEntity.idx.eq(scheduleIdx)))

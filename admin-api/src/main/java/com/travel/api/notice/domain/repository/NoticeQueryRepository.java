@@ -3,7 +3,7 @@ package com.travel.api.notice.domain.repository;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
-import com.travel.api.notice.domain.NoticeDTO;
+import com.travel.api.notice.domain.NoticeDto;
 import com.travel.api.notice.domain.NoticeEntity;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -38,7 +38,7 @@ public class NoticeQueryRepository {
      * 5. 작성일      : 2022. 11. 28.
      * </pre>
      */
-    public Page<NoticeDTO> findNoticeList(Map<String, Object> noticeMap, PageRequest pageRequest) {
+    public Page<NoticeDto> findNoticeList(Map<String, Object> noticeMap, PageRequest pageRequest) {
         List<NoticeEntity> noticeList = queryFactory
                 .selectFrom(noticeEntity)
                 .orderBy(noticeEntity.idx.desc())

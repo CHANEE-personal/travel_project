@@ -1,6 +1,6 @@
 package com.travel.api.notice;
 
-import com.travel.api.notice.domain.NoticeDTO;
+import com.travel.api.notice.domain.NoticeDto;
 import com.travel.api.notice.domain.NoticeEntity;
 import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.BeforeEach;
@@ -47,7 +47,7 @@ class NoticeServiceTest {
     private final EntityManager em;
 
     private NoticeEntity noticeEntity;
-    private NoticeDTO noticeDTO;
+    private NoticeDto noticeDTO;
 
     void createNotice() {
         noticeEntity = NoticeEntity.builder()
@@ -73,16 +73,16 @@ class NoticeServiceTest {
         Map<String, Object> noticeMap = new HashMap<>();
         PageRequest pageRequest = PageRequest.of(0, 3);
 
-        List<NoticeDTO> noticeList = new ArrayList<>();
+        List<NoticeDto> noticeList = new ArrayList<>();
         noticeList.add(noticeDTO);
 
-        Page<NoticeDTO> resultPage = new PageImpl<>(noticeList, pageRequest, noticeList.size());
+        Page<NoticeDto> resultPage = new PageImpl<>(noticeList, pageRequest, noticeList.size());
 
         // when
         when(mockNoticeService.findNoticeList(noticeMap, pageRequest)).thenReturn(resultPage);
-        Page<NoticeDTO> newNoticeList = mockNoticeService.findNoticeList(noticeMap, pageRequest);
+        Page<NoticeDto> newNoticeList = mockNoticeService.findNoticeList(noticeMap, pageRequest);
 
-        List<NoticeDTO> findNoticeList = newNoticeList.stream().collect(Collectors.toList());
+        List<NoticeDto> findNoticeList = newNoticeList.stream().collect(Collectors.toList());
         // then
         assertThat(findNoticeList.get(0).getIdx()).isEqualTo(noticeList.get(0).getIdx());
         assertThat(findNoticeList.get(0).getTitle()).isEqualTo(noticeList.get(0).getTitle());
@@ -100,14 +100,14 @@ class NoticeServiceTest {
     @Test
     @DisplayName("공지사항 상세 조회 Mockito 테스트")
     void 공지사항상세조회Mockito테스트() {
-        NoticeDTO newNotice = noticeService.insertNotice(noticeEntity);
+        NoticeDto newNotice = noticeService.insertNotice(noticeEntity);
 
         // 조회 수 관련 테스트
-        NoticeDTO oneNotice = noticeService.findOneNotice(newNotice.getIdx());
+        NoticeDto oneNotice = noticeService.findOneNotice(newNotice.getIdx());
         assertThat(newNotice.getViewCount() + 1).isEqualTo(oneNotice.getViewCount());
         // when
         when(mockNoticeService.findOneNotice(noticeDTO.getIdx())).thenReturn(noticeDTO);
-        NoticeDTO noticeInfo = mockNoticeService.findOneNotice(noticeDTO.getIdx());
+        NoticeDto noticeInfo = mockNoticeService.findOneNotice(noticeDTO.getIdx());
 
         // then
         assertThat(noticeInfo.getIdx()).isEqualTo(noticeDTO.getIdx());
@@ -126,11 +126,11 @@ class NoticeServiceTest {
     @Test
     @DisplayName("공지사항 등록 Mockito 테스트")
     void 공지사항등록Mockito테스트() {
-        NoticeDTO noticeInfo = noticeService.insertNotice(noticeEntity);
+        NoticeDto noticeInfo = noticeService.insertNotice(noticeEntity);
 
         // when
         when(mockNoticeService.findOneNotice(noticeInfo.getIdx())).thenReturn(noticeInfo);
-        NoticeDTO newNoticeDTO = mockNoticeService.findOneNotice(noticeInfo.getIdx());
+        NoticeDto newNoticeDTO = mockNoticeService.findOneNotice(noticeInfo.getIdx());
 
         // then
         assertThat(newNoticeDTO.getIdx()).isEqualTo(noticeInfo.getIdx());
@@ -157,7 +157,7 @@ class NoticeServiceTest {
                 .visible("Y")
                 .build();
 
-        NoticeDTO newNoticeDTO = noticeService.insertNotice(noticeEntity);
+        NoticeDto newNoticeDTO = noticeService.insertNotice(noticeEntity);
 
         NoticeEntity updateNoticeEntity = NoticeEntity.builder()
                 .idx(newNoticeDTO.getIdx())
@@ -167,11 +167,11 @@ class NoticeServiceTest {
                 .visible("Y")
                 .build();
 
-        NoticeDTO updateNoticeDTO = noticeService.updateNotice(newNoticeDTO.getIdx(), updateNoticeEntity);
+        NoticeDto updateNoticeDTO = noticeService.updateNotice(newNoticeDTO.getIdx(), updateNoticeEntity);
 
         // when
         when(mockNoticeService.findOneNotice(updateNoticeDTO.getIdx())).thenReturn(updateNoticeDTO);
-        NoticeDTO noticeInfo = mockNoticeService.findOneNotice(updateNoticeDTO.getIdx());
+        NoticeDto noticeInfo = mockNoticeService.findOneNotice(updateNoticeDTO.getIdx());
 
         // then
         assertThat(noticeInfo.getIdx()).isEqualTo(updateNoticeDTO.getIdx());
@@ -213,7 +213,7 @@ class NoticeServiceTest {
     @Test
     @DisplayName("공지사항 고정글 테스트")
     void 공지사항고정글테스트() {
-        NoticeDTO oneNotice = noticeService.insertNotice(noticeEntity);
+        NoticeDto oneNotice = noticeService.insertNotice(noticeEntity);
         Boolean trueFixed = noticeService.toggleTopFixed(oneNotice.getIdx());
         em.flush();
         em.clear();

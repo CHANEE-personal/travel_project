@@ -111,9 +111,9 @@ public class UserEntity extends NewCommonMappedClass {
         this.userList.add(travelGroupUserEntity);
     }
 
-    public static UserDTO toDto(UserEntity entity) {
+    public static UserDto toDto(UserEntity entity) {
         if (entity == null) return null;
-        return UserDTO.builder()
+        return UserDto.builder()
                 .idx(entity.getIdx())
                 .userId(entity.getUserId())
                 .password(entity.getPassword())
@@ -131,7 +131,7 @@ public class UserEntity extends NewCommonMappedClass {
                 .build();
     }
 
-    public static UserEntity toEntity(UserDTO dto) {
+    public static UserEntity toEntity(UserDto dto) {
         if (dto == null) return null;
         return UserEntity.builder()
                 .idx(dto.getIdx())
@@ -150,14 +150,14 @@ public class UserEntity extends NewCommonMappedClass {
                 .build();
     }
 
-    public static List<UserDTO> toDtoList(List<UserEntity> entityList) {
+    public static List<UserDto> toDtoList(List<UserEntity> entityList) {
         if (entityList == null) return null;
         return entityList.stream()
                 .map(UserEntity::toDto)
                 .collect(Collectors.toList());
     }
 
-    public List<UserEntity> toEntityList(List<UserDTO> dtoList) {
+    public List<UserEntity> toEntityList(List<UserDto> dtoList) {
         if (dtoList == null) return null;
         return dtoList.stream()
                 .map(UserEntity::toEntity)

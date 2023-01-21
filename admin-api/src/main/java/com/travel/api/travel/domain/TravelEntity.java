@@ -125,9 +125,9 @@ public class TravelEntity extends NewCommonMappedClass {
         this.favoriteCount++;
     }
 
-    public static TravelDTO toDto(TravelEntity entity) {
+    public static TravelDto toDto(TravelEntity entity) {
         if (entity == null) return null;
-        return TravelDTO.builder()
+        return TravelDto.builder()
                 .idx(entity.getIdx())
                 .travelTitle(entity.getTravelTitle())
                 .travelDescription(entity.getTravelDescription())
@@ -146,7 +146,7 @@ public class TravelEntity extends NewCommonMappedClass {
                 .build();
     }
 
-    public static List<TravelDTO> toDtoList(List<TravelEntity> entityList) {
+    public static List<TravelDto> toDtoList(List<TravelEntity> entityList) {
         if (entityList == null) return null;
         return entityList.stream()
                 .map(TravelEntity::toDto)

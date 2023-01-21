@@ -69,9 +69,9 @@ public class TravelFestivalEntity extends NewCommonMappedClass {
         this.festivalTime = travelFestivalEntity.festivalTime;
     }
 
-    public static TravelFestivalDTO toDto(TravelFestivalEntity entity) {
+    public static TravelFestivalDto toDto(TravelFestivalEntity entity) {
         if (entity == null) return null;
-        return TravelFestivalDTO.builder()
+        return TravelFestivalDto.builder()
                 .idx(entity.getIdx())
                 .festivalTitle(entity.getFestivalTitle())
                 .festivalDescription(entity.getFestivalDescription())
@@ -85,7 +85,7 @@ public class TravelFestivalEntity extends NewCommonMappedClass {
                 .build();
     }
 
-    public static List<TravelFestivalDTO> toDtoList(List<TravelFestivalEntity> entityList) {
+    public static List<TravelFestivalDto> toDtoList(List<TravelFestivalEntity> entityList) {
         if (entityList == null) return null;
         return entityList.stream()
                 .map(TravelFestivalEntity::toDto)

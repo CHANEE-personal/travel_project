@@ -64,9 +64,9 @@ public class TravelGroupEntity extends NewCommonMappedClass {
         this.visible = travelGroupEntity.visible;
     }
 
-    public static TravelGroupDTO toDto(TravelGroupEntity entity) {
+    public static TravelGroupDto toDto(TravelGroupEntity entity) {
         if (entity == null) return null;
-        return TravelGroupDTO.builder()
+        return TravelGroupDto.builder()
                 .idx(entity.getIdx())
                 .travelIdx(entity.getTravelEntity().getIdx())
                 .groupName(entity.getGroupName())
@@ -79,7 +79,7 @@ public class TravelGroupEntity extends NewCommonMappedClass {
                 .build();
     }
 
-    public static List<TravelGroupDTO> toDtoList(List<TravelGroupEntity> entityList) {
+    public static List<TravelGroupDto> toDtoList(List<TravelGroupEntity> entityList) {
         if (entityList == null) return null;
         return entityList.stream()
                 .map(TravelGroupEntity::toDto)

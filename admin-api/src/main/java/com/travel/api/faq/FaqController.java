@@ -1,6 +1,6 @@
 package com.travel.api.faq;
 
-import com.travel.api.faq.domain.FaqDTO;
+import com.travel.api.faq.domain.FaqDto;
 import com.travel.api.faq.domain.FaqEntity;
 import com.travel.common.Paging;
 import io.swagger.annotations.Api;
@@ -46,8 +46,8 @@ public class FaqController {
             @ApiResponse(code = 404, message = "존재 하지 않음", response = HttpClientErrorException.NotFound.class),
             @ApiResponse(code = 500, message = "서버 에러", response = ServerError.class)
     })
-    @GetMapping(value = "/lists")
-    public ResponseEntity<Page<FaqDTO>> findFaqList(@RequestParam(required = false) Map<String, Object> paramMap, Paging paging) {
+    @GetMapping
+    public ResponseEntity<Page<FaqDto>> findFaqList(@RequestParam(required = false) Map<String, Object> paramMap, Paging paging) {
         return ResponseEntity.ok(faqService.findFaqList(paramMap, paging.getPageRequest(paging.getPageNum(), paging.getSize())));
     }
 
@@ -63,7 +63,7 @@ public class FaqController {
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_TRAVEL_USER')")
     @ApiOperation(value = "FAQ 상세 조회", notes = "FAQ를 상세 조회한다.")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "FAQ 상세 조회 성공", response = FaqDTO.class),
+            @ApiResponse(code = 200, message = "FAQ 상세 조회 성공", response = FaqDto.class),
             @ApiResponse(code = 400, message = "잘못된 요청", response = HttpClientErrorException.BadRequest.class),
             @ApiResponse(code = 401, message = "허용되지 않는 관리자", response = HttpClientErrorException.Unauthorized.class),
             @ApiResponse(code = 403, message = "접근거부", response = HttpClientErrorException.class),
@@ -71,7 +71,7 @@ public class FaqController {
             @ApiResponse(code = 500, message = "서버 에러", response = ServerError.class)
     })
     @GetMapping("/{idx}")
-    public ResponseEntity<FaqDTO> findOneFaq(@PathVariable Long idx) {
+    public ResponseEntity<FaqDto> findOneFaq(@PathVariable Long idx) {
         return ResponseEntity.ok(faqService.findOneFaq(idx));
     }
 
@@ -87,7 +87,7 @@ public class FaqController {
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @ApiOperation(value = "FAQ 등록", notes = "FAQ 등록한다.")
     @ApiResponses(value = {
-            @ApiResponse(code = 201, message = "FAQ 등록 성공", response = FaqDTO.class),
+            @ApiResponse(code = 201, message = "FAQ 등록 성공", response = FaqDto.class),
             @ApiResponse(code = 400, message = "잘못된 요청", response = HttpClientErrorException.BadRequest.class),
             @ApiResponse(code = 401, message = "허용되지 않는 관리자", response = HttpClientErrorException.Unauthorized.class),
             @ApiResponse(code = 403, message = "접근거부", response = HttpClientErrorException.class),
@@ -95,7 +95,7 @@ public class FaqController {
             @ApiResponse(code = 500, message = "서버 에러", response = ServerError.class)
     })
     @PostMapping
-    public ResponseEntity<FaqDTO> insertFaq(@Valid @RequestBody FaqEntity faqEntity) {
+    public ResponseEntity<FaqDto> insertFaq(@Valid @RequestBody FaqEntity faqEntity) {
         return ResponseEntity.created(URI.create("")).body(faqService.insertFaq(faqEntity));
     }
 
@@ -111,7 +111,7 @@ public class FaqController {
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @ApiOperation(value = "FAQ 수정", notes = "FAQ 수정한다.")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "FAQ 수정 성공", response = FaqDTO.class),
+            @ApiResponse(code = 200, message = "FAQ 수정 성공", response = FaqDto.class),
             @ApiResponse(code = 400, message = "잘못된 요청", response = HttpClientErrorException.BadRequest.class),
             @ApiResponse(code = 401, message = "허용되지 않는 관리자", response = HttpClientErrorException.Unauthorized.class),
             @ApiResponse(code = 403, message = "접근거부", response = HttpClientErrorException.class),
@@ -119,7 +119,7 @@ public class FaqController {
             @ApiResponse(code = 500, message = "서버 에러", response = ServerError.class)
     })
     @PutMapping("/{idx}")
-    public ResponseEntity<FaqDTO> updateFaq(@PathVariable Long idx, @Valid @RequestBody FaqEntity faqEntity) {
+    public ResponseEntity<FaqDto> updateFaq(@PathVariable Long idx, @Valid @RequestBody FaqEntity faqEntity) {
         return ResponseEntity.ok(faqService.updateFaq(idx, faqEntity));
     }
 

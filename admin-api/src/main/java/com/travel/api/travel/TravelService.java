@@ -2,25 +2,25 @@ package com.travel.api.travel;
 
 import com.travel.api.common.domain.CommonEntity;
 import com.travel.api.common.domain.repository.CommonRepository;
-import com.travel.api.travel.domain.TravelDTO;
+import com.travel.api.travel.domain.TravelDto;
 import com.travel.api.travel.domain.TravelEntity;
-import com.travel.api.travel.domain.festival.TravelFestivalDTO;
+import com.travel.api.travel.domain.festival.TravelFestivalDto;
 import com.travel.api.travel.domain.festival.TravelFestivalEntity;
 import com.travel.api.travel.domain.festival.repository.FestivalRepository;
-import com.travel.api.travel.domain.group.TravelGroupDTO;
+import com.travel.api.travel.domain.group.TravelGroupDto;
 import com.travel.api.travel.domain.group.TravelGroupEntity;
 import com.travel.api.travel.domain.group.repository.GroupRepository;
-import com.travel.api.travel.domain.image.TravelImageDTO;
+import com.travel.api.travel.domain.image.TravelImageDto;
 import com.travel.api.travel.domain.image.TravelImageEntity;
-import com.travel.api.travel.domain.recommend.TravelRecommendDTO;
+import com.travel.api.travel.domain.recommend.TravelRecommendDto;
 import com.travel.api.travel.domain.recommend.TravelRecommendEntity;
 import com.travel.api.travel.domain.recommend.repository.RecommendRepository;
 import com.travel.api.travel.domain.repository.TravelQueryRepository;
 import com.travel.api.travel.domain.repository.TravelRepository;
-import com.travel.api.travel.domain.review.TravelReviewDTO;
+import com.travel.api.travel.domain.review.TravelReviewDto;
 import com.travel.api.travel.domain.review.TravelReviewEntity;
 import com.travel.api.travel.domain.review.repository.ReviewRepository;
-import com.travel.api.travel.domain.search.SearchDTO;
+import com.travel.api.travel.domain.search.SearchDto;
 import com.travel.common.SaveFile;
 import com.travel.exception.TravelException;
 import lombok.RequiredArgsConstructor;
@@ -90,7 +90,7 @@ public class TravelService {
      * </pre>
      */
     @Transactional(readOnly = true)
-    public Page<TravelDTO> findTravelList(Map<String, Object> travelMap, PageRequest pageRequest) {
+    public Page<TravelDto> findTravelList(Map<String, Object> travelMap, PageRequest pageRequest) {
         return travelQueryRepository.findTravelList(travelMap, pageRequest);
     }
 
@@ -104,7 +104,7 @@ public class TravelService {
      * </pre>
      */
     @Transactional
-    public TravelDTO findOneTravel(Long idx) {
+    public TravelDto findOneTravel(Long idx) {
         return travelQueryRepository.findOneTravel(idx);
     }
 
@@ -118,7 +118,7 @@ public class TravelService {
      * </pre>
      */
     @Transactional
-    public TravelDTO insertTravel(TravelEntity travelEntity) {
+    public TravelDto insertTravel(TravelEntity travelEntity) {
         try {
             oneCommon(travelEntity.getNewTravelCode().getCommonCode()).addTravel(travelEntity);
             return TravelEntity.toDto(travelRepository.save(travelEntity));
@@ -137,7 +137,7 @@ public class TravelService {
      * </pre>
      */
     @Transactional
-    public List<TravelImageDTO> insertTravelImage(Long idx, List<MultipartFile> files, TravelImageEntity travelImageEntity) {
+    public List<TravelImageDto> insertTravelImage(Long idx, List<MultipartFile> files, TravelImageEntity travelImageEntity) {
         try {
             return saveFile.saveTravelFile(oneTravel(idx), files, travelImageEntity);
         } catch (Exception e) {
@@ -155,7 +155,7 @@ public class TravelService {
      * </pre>
      */
     @Transactional
-    public TravelDTO updateTravel(Long idx, TravelEntity travelEntity) {
+    public TravelDto updateTravel(Long idx, TravelEntity travelEntity) {
         try {
             oneTravel(idx).update(travelEntity);
             return TravelEntity.toDto(travelEntity);
@@ -193,7 +193,7 @@ public class TravelService {
      * </pre>
      */
     @Transactional(readOnly = true)
-    public Page<TravelDTO> popularityTravel(Map<String, Object> travelMap, PageRequest pageRequest) {
+    public Page<TravelDto> popularityTravel(Map<String, Object> travelMap, PageRequest pageRequest) {
         return travelQueryRepository.popularityTravel(travelMap, pageRequest);
     }
 
@@ -207,7 +207,7 @@ public class TravelService {
      * </pre>
      */
     @Transactional
-    public TravelReviewDTO reviewTravel(Long idx, TravelReviewEntity travelReviewEntity) {
+    public TravelReviewDto reviewTravel(Long idx, TravelReviewEntity travelReviewEntity) {
         try {
             oneTravel(idx).addReview(travelReviewEntity);
             return TravelReviewEntity.toDto(reviewRepository.save(travelReviewEntity));
@@ -226,7 +226,7 @@ public class TravelService {
      * </pre>
      */
     @Transactional
-    public TravelReviewDTO updateReviewTravel(Long idx, TravelReviewEntity travelReviewEntity) {
+    public TravelReviewDto updateReviewTravel(Long idx, TravelReviewEntity travelReviewEntity) {
         try {
             oneReview(idx).update(travelReviewEntity);
             return TravelReviewEntity.toDto(travelReviewEntity);
@@ -264,7 +264,7 @@ public class TravelService {
      * </pre>
      */
     @Transactional(readOnly = true)
-    public List<TravelReviewDTO> travelReviewList(Long idx) {
+    public List<TravelReviewDto> travelReviewList(Long idx) {
         return TravelReviewEntity.toDtoList(reviewRepository.findByNewTravelEntityIdx(idx));
     }
 
@@ -278,7 +278,7 @@ public class TravelService {
      * </pre>
      */
     @Transactional
-    public TravelReviewDTO detailTravelReview(Long idx) {
+    public TravelReviewDto detailTravelReview(Long idx) {
         return TravelReviewEntity.toDto(oneReview(idx));
     }
 
@@ -315,7 +315,7 @@ public class TravelService {
      * </pre>
      */
     @Transactional(readOnly = true)
-    public Page<TravelGroupDTO> findTravelGroupList(Map<String, Object> groupMap, PageRequest pageRequest) {
+    public Page<TravelGroupDto> findTravelGroupList(Map<String, Object> groupMap, PageRequest pageRequest) {
         return travelQueryRepository.findTravelGroupList(groupMap, pageRequest);
     }
 
@@ -329,7 +329,7 @@ public class TravelService {
      * </pre>
      */
     @Transactional(readOnly = true)
-    public TravelGroupDTO findOneTravelGroup(Long idx) {
+    public TravelGroupDto findOneTravelGroup(Long idx) {
         return travelQueryRepository.findOneTravelGroup(idx);
     }
 
@@ -343,7 +343,7 @@ public class TravelService {
      * </pre>
      */
     @Transactional
-    public TravelGroupDTO insertTravelGroup(Long idx, TravelGroupEntity travelGroupEntity) {
+    public TravelGroupDto insertTravelGroup(Long idx, TravelGroupEntity travelGroupEntity) {
         try {
             oneTravel(idx).addGroup(travelGroupEntity);
             return TravelGroupEntity.toDto(groupRepository.save(travelGroupEntity));
@@ -362,7 +362,7 @@ public class TravelService {
      * </pre>
      */
     @Transactional
-    public TravelGroupDTO updateTravelGroup(Long groupIdx, TravelGroupEntity travelGroupEntity) {
+    public TravelGroupDto updateTravelGroup(Long groupIdx, TravelGroupEntity travelGroupEntity) {
         try {
             oneGroup(groupIdx).update(travelGroupEntity);
             return TravelGroupEntity.toDto(travelGroupEntity);
@@ -400,7 +400,7 @@ public class TravelService {
      * </pre>
      */
     @Transactional(readOnly = true)
-    public Page<TravelRecommendDTO> findTravelRecommendList(Map<String, Object> recommendMap, PageRequest pageRequest) {
+    public Page<TravelRecommendDto> findTravelRecommendList(Map<String, Object> recommendMap, PageRequest pageRequest) {
         return travelQueryRepository.findTravelRecommendList(recommendMap, pageRequest);
     }
 
@@ -414,7 +414,7 @@ public class TravelService {
      * </pre>
      */
     @Transactional(readOnly = true)
-    public TravelRecommendDTO findOneTravelRecommend(Long idx) {
+    public TravelRecommendDto findOneTravelRecommend(Long idx) {
         return TravelRecommendEntity.toDto(oneRecommend(idx));
     }
 
@@ -428,7 +428,7 @@ public class TravelService {
      * </pre>
      */
     @Transactional
-    public TravelRecommendDTO insertTravelRecommend(TravelRecommendEntity travelRecommendEntity) {
+    public TravelRecommendDto insertTravelRecommend(TravelRecommendEntity travelRecommendEntity) {
         try {
             return TravelRecommendEntity.toDto(recommendRepository.save(travelRecommendEntity));
         } catch (Exception e) {
@@ -446,7 +446,7 @@ public class TravelService {
      * </pre>
      */
     @Transactional
-    public TravelRecommendDTO updateTravelRecommend(Long idx, TravelRecommendEntity travelRecommendEntity) {
+    public TravelRecommendDto updateTravelRecommend(Long idx, TravelRecommendEntity travelRecommendEntity) {
         try {
             oneRecommend(idx).update(travelRecommendEntity);
             return TravelRecommendEntity.toDto(travelRecommendEntity);
@@ -484,7 +484,7 @@ public class TravelService {
      * </pre>
      */
     @Transactional(readOnly = true)
-    public List<SearchDTO> rankingTravelKeyword() {
+    public List<SearchDto> rankingTravelKeyword() {
         return travelQueryRepository.rankingTravelKeyword();
     }
 
@@ -498,7 +498,7 @@ public class TravelService {
      * </pre>
      */
     @Transactional(readOnly = true)
-    public List<TravelFestivalDTO> findTravelFestivalGroup(Integer month) {
+    public List<TravelFestivalDto> findTravelFestivalGroup(Integer month) {
         return travelQueryRepository.findTravelFestivalGroup(month);
     }
 
@@ -512,7 +512,7 @@ public class TravelService {
      * </pre>
      */
     @Transactional(readOnly = true)
-    public List<TravelFestivalDTO> findTravelFestivalList(TravelFestivalEntity travelFestivalEntity) {
+    public List<TravelFestivalDto> findTravelFestivalList(TravelFestivalEntity travelFestivalEntity) {
         return travelQueryRepository.findTravelFestivalList(travelFestivalEntity);
     }
 
@@ -526,7 +526,7 @@ public class TravelService {
      * </pre>
      */
     @Transactional(readOnly = true)
-    public TravelFestivalDTO findOneTravelFestival(Long idx) {
+    public TravelFestivalDto findOneTravelFestival(Long idx) {
         return TravelFestivalEntity.toDto(oneFestival(idx));
     }
 
@@ -540,7 +540,7 @@ public class TravelService {
      * </pre>
      */
     @Transactional
-    public TravelFestivalDTO insertTravelFestival(TravelFestivalEntity travelFestivalEntity) {
+    public TravelFestivalDto insertTravelFestival(TravelFestivalEntity travelFestivalEntity) {
         try {
             oneCommon(travelFestivalEntity.getNewFestivalCode().getCommonCode()).addFestival(travelFestivalEntity);
             return TravelFestivalEntity.toDto(festivalRepository.save(travelFestivalEntity));
@@ -559,7 +559,7 @@ public class TravelService {
      * </pre>
      */
     @Transactional
-    public TravelFestivalDTO updateTravelFestival(Long idx, TravelFestivalEntity travelFestivalEntity) {
+    public TravelFestivalDto updateTravelFestival(Long idx, TravelFestivalEntity travelFestivalEntity) {
         try {
             oneFestival(idx).update(travelFestivalEntity);
             return TravelFestivalEntity.toDto(travelFestivalEntity);

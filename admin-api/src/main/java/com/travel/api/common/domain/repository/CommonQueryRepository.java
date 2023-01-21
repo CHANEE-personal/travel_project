@@ -2,7 +2,7 @@ package com.travel.api.common.domain.repository;
 
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import com.travel.api.common.domain.CommonDTO;
+import com.travel.api.common.domain.CommonDto;
 import com.travel.api.common.domain.CommonEntity;
 import com.travel.api.common.domain.QCommonEntity;
 import com.travel.common.StringUtil;
@@ -36,7 +36,7 @@ public class CommonQueryRepository {
      * 5. 작성일      : 2022. 11. 21.
      * </pre>
      */
-    public Page<CommonDTO> findCommonList(Map<String, Object> commonMap, PageRequest pageRequest) {
+    public Page<CommonDto> findCommonList(Map<String, Object> commonMap, PageRequest pageRequest) {
         List<CommonEntity> commonCodeList = queryFactory
                 .selectFrom(QCommonEntity.commonEntity)
                 .orderBy(QCommonEntity.commonEntity.idx.desc())

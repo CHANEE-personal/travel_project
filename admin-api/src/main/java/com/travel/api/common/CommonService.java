@@ -1,6 +1,6 @@
 package com.travel.api.common;
 
-import com.travel.api.common.domain.CommonDTO;
+import com.travel.api.common.domain.CommonDto;
 import com.travel.api.common.domain.CommonEntity;
 import com.travel.api.common.domain.repository.CommonQueryRepository;
 import com.travel.api.common.domain.repository.CommonRepository;
@@ -37,7 +37,7 @@ public class CommonService {
      * </pre>
      */
     @Transactional(readOnly = true)
-    public Page<CommonDTO> findCommonList(Map<String, Object> commonMap, PageRequest pageRequest) {
+    public Page<CommonDto> findCommonList(Map<String, Object> commonMap, PageRequest pageRequest) {
         return commonQueryRepository.findCommonList(commonMap, pageRequest);
     }
 
@@ -51,7 +51,7 @@ public class CommonService {
      * </pre>
      */
     @Transactional(readOnly = true)
-    public CommonDTO findOneCommon(Long idx) {
+    public CommonDto findOneCommon(Long idx) {
         return CommonEntity.toDto(oneCommon(idx));
     }
 
@@ -65,7 +65,7 @@ public class CommonService {
      * </pre>
      */
     @Transactional
-    public CommonDTO insertCommonCode(CommonEntity commonEntity) {
+    public CommonDto insertCommonCode(CommonEntity commonEntity) {
         try {
             return CommonEntity.toDto(commonRepository.save(commonEntity));
         } catch (Exception e) {
@@ -83,7 +83,7 @@ public class CommonService {
      * </pre>
      */
     @Transactional
-    public CommonDTO updateCommonCode(Long idx, CommonEntity commonEntity) {
+    public CommonDto updateCommonCode(Long idx, CommonEntity commonEntity) {
         try {
             oneCommon(idx).update(commonEntity);
             return CommonEntity.toDto(commonEntity);

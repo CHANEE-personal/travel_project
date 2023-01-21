@@ -33,9 +33,9 @@ public class SearchEntity extends NewCommonMappedClass {
     @NotEmpty(message = "검색 키워드는 필수입니다.")
     private String searchKeyword;
 
-    public static SearchDTO toDto(SearchEntity entity) {
+    public static SearchDto toDto(SearchEntity entity) {
         if (entity == null) return null;
-        return SearchDTO.builder()
+        return SearchDto.builder()
                 .idx(entity.getIdx())
                 .searchKeyword(entity.getSearchKeyword())
                 .creator(entity.getCreator())
@@ -45,7 +45,7 @@ public class SearchEntity extends NewCommonMappedClass {
                 .build();
     }
 
-    public static List<SearchDTO> toDtoList(List<SearchEntity> entityList) {
+    public static List<SearchDto> toDtoList(List<SearchEntity> entityList) {
         if (entityList == null) return null;
         return entityList.stream()
                 .map(SearchEntity::toDto)

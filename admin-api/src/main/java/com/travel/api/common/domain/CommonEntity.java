@@ -90,9 +90,9 @@ public class CommonEntity extends NewCommonMappedClass implements Serializable {
         this.visible = commonEntity.visible;
     }
 
-    public static CommonDTO toDto(CommonEntity entity) {
+    public static CommonDto toDto(CommonEntity entity) {
         if (entity == null) return null;
-        return CommonDTO.builder()
+        return CommonDto.builder()
                 .idx(entity.getIdx())
                 .commonCode(entity.getCommonCode())
                 .commonName(entity.getCommonName())
@@ -100,7 +100,7 @@ public class CommonEntity extends NewCommonMappedClass implements Serializable {
                 .build();
     }
 
-    public static List<CommonDTO> toDtoList(List<CommonEntity> entityList) {
+    public static List<CommonDto> toDtoList(List<CommonEntity> entityList) {
         if (entityList == null) return null;
         return entityList.stream()
                 .map(CommonEntity::toDto)

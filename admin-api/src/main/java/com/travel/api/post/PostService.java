@@ -1,10 +1,9 @@
 package com.travel.api.post;
 
-import com.travel.api.post.domain.PostDTO;
+import com.travel.api.post.domain.PostDto;
 import com.travel.api.post.domain.PostEntity;
-import com.travel.api.post.domain.image.PostImageDTO;
+import com.travel.api.post.domain.image.PostImageDto;
 import com.travel.api.post.domain.image.PostImageEntity;
-import com.travel.api.post.domain.reply.ReplyEntity;
 import com.travel.api.post.domain.repository.PostQueryRepository;
 import com.travel.api.post.domain.repository.PostRepository;
 import com.travel.api.post.domain.repository.ReplyRepository;
@@ -48,7 +47,7 @@ public class PostService {
      * </pre>
      */
     @Transactional(readOnly = true)
-    public Page<PostDTO> findPostList(Map<String, Object> postMap, PageRequest pageRequest) {
+    public Page<PostDto> findPostList(Map<String, Object> postMap, PageRequest pageRequest) {
         return postQueryRepository.findPostList(postMap, pageRequest);
     }
 
@@ -62,7 +61,7 @@ public class PostService {
      * </pre>
      */
     @Transactional(readOnly = true)
-    public PostDTO findOnePost(Long idx) {
+    public PostDto findOnePost(Long idx) {
         return postQueryRepository.findOnePost(idx);
     }
 
@@ -76,7 +75,7 @@ public class PostService {
      * </pre>
      */
     @Transactional
-    public PostDTO insertPost(PostEntity postEntity) {
+    public PostDto insertPost(PostEntity postEntity) {
         try {
             return PostEntity.toDto(postRepository.save(postEntity));
         } catch (Exception e) {
@@ -94,7 +93,7 @@ public class PostService {
      * </pre>
      */
     @Transactional
-    public List<PostImageDTO> insertPostImage(Long idx, List<MultipartFile> files, PostImageEntity postImageEntity) {
+    public List<PostImageDto> insertPostImage(Long idx, List<MultipartFile> files, PostImageEntity postImageEntity) {
         try {
             return saveFile.savePostFile(onePost(idx), files, postImageEntity);
         } catch (Exception e) {
@@ -112,7 +111,7 @@ public class PostService {
      * </pre>
      */
     @Transactional
-    public PostDTO updatePost(Long idx, PostEntity postEntity) {
+    public PostDto updatePost(Long idx, PostEntity postEntity) {
         try {
             onePost(idx).update(postEntity);
             return PostEntity.toDto(postEntity);

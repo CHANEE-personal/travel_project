@@ -1,6 +1,6 @@
 package com.travel.api.notice;
 
-import com.travel.api.notice.domain.NoticeDTO;
+import com.travel.api.notice.domain.NoticeDto;
 import com.travel.api.notice.domain.NoticeEntity;
 import com.travel.common.Paging;
 import io.swagger.annotations.Api;
@@ -45,8 +45,8 @@ public class NoticeController {
             @ApiResponse(code = 404, message = "존재 하지 않음", response = HttpClientErrorException.NotFound.class),
             @ApiResponse(code = 500, message = "서버 에러", response = ServerError.class)
     })
-    @GetMapping(value = "/lists")
-    public ResponseEntity<Page<NoticeDTO>> findNoticeList(@RequestParam(required = false) Map<String, Object> paramMap, Paging paging) {
+    @GetMapping
+    public ResponseEntity<Page<NoticeDto>> findNoticeList(@RequestParam(required = false) Map<String, Object> paramMap, Paging paging) {
         return ResponseEntity.ok(noticeService.findNoticeList(paramMap, paging.getPageRequest(paging.getPageNum(), paging.getSize())));
     }
 
@@ -59,10 +59,10 @@ public class NoticeController {
      * 5. 작성일      : 2022. 11. 28.
      * </pre>
      */
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_TRAVEL_USER')")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @ApiOperation(value = "공지사항 상세 조회", notes = "공지사항 상세 조회한다.")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "공지사항 상세 조회 성공", response = NoticeDTO.class),
+            @ApiResponse(code = 200, message = "공지사항 상세 조회 성공", response = NoticeDto.class),
             @ApiResponse(code = 400, message = "잘못된 요청", response = HttpClientErrorException.BadRequest.class),
             @ApiResponse(code = 401, message = "허용되지 않는 관리자", response = HttpClientErrorException.Unauthorized.class),
             @ApiResponse(code = 403, message = "접근거부", response = HttpClientErrorException.class),
@@ -70,7 +70,7 @@ public class NoticeController {
             @ApiResponse(code = 500, message = "서버 에러", response = ServerError.class)
     })
     @GetMapping(value = "/{idx}")
-    public ResponseEntity<NoticeDTO> findOneNotice(@PathVariable Long idx) {
+    public ResponseEntity<NoticeDto> findOneNotice(@PathVariable Long idx) {
         return ResponseEntity.ok(noticeService.findOneNotice(idx));
     }
 
@@ -86,7 +86,7 @@ public class NoticeController {
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @ApiOperation(value = "공지사항 등록", notes = "공지사항 등록한다.")
     @ApiResponses(value = {
-            @ApiResponse(code = 201, message = "공지사항 등록 성공", response = NoticeDTO.class),
+            @ApiResponse(code = 201, message = "공지사항 등록 성공", response = NoticeDto.class),
             @ApiResponse(code = 400, message = "잘못된 요청", response = HttpClientErrorException.BadRequest.class),
             @ApiResponse(code = 401, message = "허용되지 않는 관리자", response = HttpClientErrorException.Unauthorized.class),
             @ApiResponse(code = 403, message = "접근거부", response = HttpClientErrorException.class),
@@ -94,7 +94,7 @@ public class NoticeController {
             @ApiResponse(code = 500, message = "서버 에러", response = ServerError.class)
     })
     @PostMapping
-    public ResponseEntity<NoticeDTO> insertNotice(@Valid @RequestBody NoticeEntity noticeEntity) {
+    public ResponseEntity<NoticeDto> insertNotice(@Valid @RequestBody NoticeEntity noticeEntity) {
         return ResponseEntity.created(URI.create("")).body(noticeService.insertNotice(noticeEntity));
     }
 
@@ -110,7 +110,7 @@ public class NoticeController {
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @ApiOperation(value = "공지사항 수정", notes = "공지사항 수정한다.")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "공지사항 수정 성공", response = NoticeDTO.class),
+            @ApiResponse(code = 200, message = "공지사항 수정 성공", response = NoticeDto.class),
             @ApiResponse(code = 400, message = "잘못된 요청", response = HttpClientErrorException.BadRequest.class),
             @ApiResponse(code = 401, message = "허용되지 않는 관리자", response = HttpClientErrorException.Unauthorized.class),
             @ApiResponse(code = 403, message = "접근거부", response = HttpClientErrorException.class),
@@ -118,7 +118,7 @@ public class NoticeController {
             @ApiResponse(code = 500, message = "서버 에러", response = ServerError.class)
     })
     @PutMapping("/{idx}")
-    public ResponseEntity<NoticeDTO> updateNotice(@PathVariable Long idx, @Valid @RequestBody NoticeEntity noticeEntity) {
+    public ResponseEntity<NoticeDto> updateNotice(@PathVariable Long idx, @Valid @RequestBody NoticeEntity noticeEntity) {
         return ResponseEntity.ok(noticeService.updateNotice(idx, noticeEntity));
     }
 

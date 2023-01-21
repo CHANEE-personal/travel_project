@@ -1,6 +1,6 @@
 package com.travel.api.faq.domain.repository;
 
-import com.travel.api.faq.domain.FaqDTO;
+import com.travel.api.faq.domain.FaqDto;
 import com.travel.api.faq.domain.FaqEntity;
 import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.BeforeEach;
@@ -49,7 +49,7 @@ class FaqQueryRepositoryTest {
     private final EntityManager em;
 
     private FaqEntity faqEntity;
-    private FaqDTO faqDTO;
+    private FaqDto faqDTO;
 
     void createFaq() {
         faqEntity = FaqEntity.builder()
@@ -71,7 +71,7 @@ class FaqQueryRepositoryTest {
     void FAQ리스트조회테스트() {
         Map<String, Object> faqMap = new HashMap<>();
         PageRequest pageRequest = PageRequest.of(0, 3);
-        Page<FaqDTO> faqList = faqQueryRepository.findFaqList(faqMap, pageRequest);
+        Page<FaqDto> faqList = faqQueryRepository.findFaqList(faqMap, pageRequest);
 
         assertThat(faqList.getTotalElements()).isGreaterThan(0);
     }
@@ -83,16 +83,16 @@ class FaqQueryRepositoryTest {
 
         PageRequest pageRequest = PageRequest.of(0, 3);
 
-        List<FaqDTO> faqList = new ArrayList<>();
+        List<FaqDto> faqList = new ArrayList<>();
         faqList.add(faqDTO);
 
-        Page<FaqDTO> resultPage = new PageImpl<>(faqList, pageRequest, faqList.size());
+        Page<FaqDto> resultPage = new PageImpl<>(faqList, pageRequest, faqList.size());
 
         // when
         when(mockFaqQueryRepository.findFaqList(faqMap, pageRequest)).thenReturn(resultPage);
-        Page<FaqDTO> newFaqList = mockFaqQueryRepository.findFaqList(faqMap, pageRequest);
+        Page<FaqDto> newFaqList = mockFaqQueryRepository.findFaqList(faqMap, pageRequest);
 
-        List<FaqDTO> findFaqList = newFaqList.stream().collect(Collectors.toList());
+        List<FaqDto> findFaqList = newFaqList.stream().collect(Collectors.toList());
 
         // then
         assertThat(findFaqList.get(0).getIdx()).isEqualTo(faqList.get(0).getIdx());
@@ -114,7 +114,7 @@ class FaqQueryRepositoryTest {
     void FAQ상세조회Mockito테스트() {
         // when
         when(mockFaqQueryRepository.findOneFaq(faqEntity.getIdx())).thenReturn(faqDTO);
-        FaqDTO faqInfo = mockFaqQueryRepository.findOneFaq(faqEntity.getIdx());
+        FaqDto faqInfo = mockFaqQueryRepository.findOneFaq(faqEntity.getIdx());
 
         // then
         assertThat(faqInfo.getIdx()).isEqualTo(faqEntity.getIdx());

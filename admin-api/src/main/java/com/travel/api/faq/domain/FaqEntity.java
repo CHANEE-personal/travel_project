@@ -63,9 +63,9 @@ public class FaqEntity {
         this.visible = faqEntity.visible;
     }
 
-    public static FaqDTO toDto(FaqEntity entity) {
+    public static FaqDto toDto(FaqEntity entity) {
         if (entity == null) return null;
-        return FaqDTO.builder()
+        return FaqDto.builder()
                 .idx(entity.getIdx())
                 .title(entity.getTitle())
                 .description(entity.getDescription())
@@ -74,7 +74,7 @@ public class FaqEntity {
                 .build();
     }
 
-    public static List<FaqDTO> toDtoList(List<FaqEntity> entityList) {
+    public static List<FaqDto> toDtoList(List<FaqEntity> entityList) {
         if (entityList == null) return null;
         return entityList.stream()
                 .map(FaqEntity::toDto)

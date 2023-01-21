@@ -36,16 +36,16 @@ public class TravelGroupUserEntity {
     @JoinColumn(name = "group_idx", nullable = false)
     private TravelGroupEntity travelGroupEntity;
 
-    public static TravelGroupUserDTO toDto(TravelGroupUserEntity entity) {
+    public static TravelGroupUserDto toDto(TravelGroupUserEntity entity) {
         if (entity == null) return null;
-        return TravelGroupUserDTO.builder()
+        return TravelGroupUserDto.builder()
                 .idx(entity.getIdx())
                 .userIdx(entity.userEntity.getIdx())
                 .groupIdx(entity.travelGroupEntity.getIdx())
                 .build();
     }
 
-    public static List<TravelGroupUserDTO> toDtoList(List<TravelGroupUserEntity> entityList) {
+    public static List<TravelGroupUserDto> toDtoList(List<TravelGroupUserEntity> entityList) {
         if (entityList == null) return null;
         return entityList.stream()
                 .map(TravelGroupUserEntity::toDto)
