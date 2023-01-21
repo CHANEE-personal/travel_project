@@ -7,9 +7,6 @@ import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.ComponentScans;
 
-@ComponentScans({
-        @ComponentScan(basePackages = "com.travel")
-})
 @SpringBootApplication(scanBasePackages = "com")
 @EnableCaching
 public class TravelProjectApplication extends SpringBootServletInitializer {
