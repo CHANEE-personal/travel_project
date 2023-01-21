@@ -1,1 +1,3 @@
 rootProject.name = 'travel_project'
+include 'admin-api'
+include 'front-api'
