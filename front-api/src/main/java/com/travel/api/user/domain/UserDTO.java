@@ -16,12 +16,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Getter
-@Setter
 @SuperBuilder
 @EqualsAndHashCode(of = "idx", callSuper = false)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor
-@JsonIgnoreProperties(ignoreUnknown = true)
 @TypeDef(name = "json", typeClass = JsonStringType.class)
 @ApiModel
 public class UserDTO extends NewCommonDTO {

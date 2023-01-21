@@ -8,10 +8,8 @@ import lombok.experimental.SuperBuilder;
 import javax.validation.constraints.NotNull;
 
 @Getter
-@Setter
 @SuperBuilder
 @EqualsAndHashCode(of = "idx", callSuper = false)
-@AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @ApiModel
 public class TravelGroupUserDto {

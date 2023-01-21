@@ -29,14 +29,14 @@ public class SwaggerConfiguration {
      * 1. MethodName : apiInfo
      * 2. ClassName  : swaggerConfiguration.java
      * 3. Comment    : swagger api 정보
-     * 4. 작성자       : CHO
-     * 5. 작성일       : 2021. 02. 09.
+     * 4. 작성자      : CHO
+     * 5. 작성일      : 2021. 02. 09.
      * </pre>
      */
     private ApiInfo apiInfo() {
         return new ApiInfoBuilder()
-                .title("Travel API")
-                .description("Travel API")
+                .title("Travel Front API")
+                .description("Travel Front API")
                 .build();
     }
 
@@ -45,8 +45,8 @@ public class SwaggerConfiguration {
      * 1. MethodName : commonApi
      * 2. ClassName  : swaggerConfiguration.java
      * 3. Comment    : swagger api 경로 설정
-     * 4. 작성자       : CHO
-     * 5. 작성일       : 2021. 02. 09.
+     * 4. 작성자      : CHO
+     * 5. 작성일      : 2021. 02. 09.
      * </pre>
      */
     @Bean
@@ -67,8 +67,8 @@ public class SwaggerConfiguration {
      * 1. MethodName : apiKey
      * 2. ClassName  : swaggerConfiguration.java
      * 3. Comment    : swagger api key 설정
-     * 4. 작성자       : CHO
-     * 5. 작성일       : 2021. 02. 09.
+     * 4. 작성자      : CHO
+     * 5. 작성일      : 2021. 02. 09.
      * </pre>
      */
     private ApiKey apikey() {

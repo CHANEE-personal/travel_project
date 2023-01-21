@@ -33,8 +33,8 @@ public class UserQueryRepository {
      * 1. MethodName : findUsersList
      * 2. ClassName  : UserRepository.java
      * 3. Comment    : 관리자 > 유저 리스트 조회
-     * 4. 작성자       : CHO
-     * 5. 작성일       : 2022. 10. 9.
+     * 4. 작성자      : CHO
+     * 5. 작성일      : 2022. 10. 9.
      * </pre>
      */
     public Page<UserDto> findUserList(Map<String, Object> userMap, PageRequest pageRequest) {

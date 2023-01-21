@@ -5,6 +5,7 @@ import com.travel.api.common.domain.EntityType;
 import com.travel.api.post.domain.PostEntity;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.DynamicUpdate;
 import org.springframework.format.annotation.DateTimeFormat;
 
@@ -19,11 +20,10 @@ import static javax.persistence.FetchType.LAZY;
 @Entity
 @Getter
 @Setter
-@Builder
+@SuperBuilder
 @EqualsAndHashCode(of = "idx", callSuper = false)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @DynamicUpdate
-@AllArgsConstructor
 @Table(name = "post_image")
 public class PostImageEntity {
 

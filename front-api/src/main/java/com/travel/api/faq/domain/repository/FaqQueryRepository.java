@@ -49,7 +49,6 @@ public class FaqQueryRepository {
                 .limit(pageRequest.getPageSize())
                 .fetch();
 
-        assert faqList != null;
         return new PageImpl<>(toDtoList(faqList), pageRequest, faqList.size());
     }
 

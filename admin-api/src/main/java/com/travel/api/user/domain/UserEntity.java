@@ -1,6 +1,5 @@
 package com.travel.api.user.domain;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.travel.api.common.domain.NewCommonMappedClass;
 import com.travel.api.travel.domain.group.TravelGroupUserEntity;
 import com.travel.api.travel.domain.schedule.TravelScheduleEntity;
@@ -29,13 +28,9 @@ import static javax.persistence.GenerationType.IDENTITY;
 @EqualsAndHashCode(of = "idx", callSuper = false)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @DynamicUpdate
-@AllArgsConstructor
-@JsonIgnoreProperties(ignoreUnknown = true)
 @TypeDef(name = "json", typeClass = JsonStringType.class)
 @Table(name = "travel_user")
 public class UserEntity extends NewCommonMappedClass {
-    @Transient
-    private Integer rowNum;
 
     @Id
     @GeneratedValue(strategy = IDENTITY)
@@ -131,36 +126,10 @@ public class UserEntity extends NewCommonMappedClass {
                 .build();
     }
 
-    public static UserEntity toEntity(UserDto dto) {
-        if (dto == null) return null;
-        return UserEntity.builder()
-                .idx(dto.getIdx())
-                .userId(dto.getUserId())
-                .password(dto.getPassword())
-                .name(dto.getName())
-                .email(dto.getEmail())
-                .visible(dto.getVisible())
-                .userToken(dto.getUserToken())
-                .userRefreshToken(dto.getUserRefreshToken())
-                .role(dto.getRole())
-                .creator(dto.getCreator())
-                .createTime(dto.getCreateTime())
-                .updater(dto.getUpdater())
-                .updateTime(dto.getUpdateTime())
-                .build();
-    }
-
     public static List<UserDto> toDtoList(List<UserEntity> entityList) {
         if (entityList == null) return null;
         return entityList.stream()
                 .map(UserEntity::toDto)
-                .collect(Collectors.toList());
-    }
-
-    public List<UserEntity> toEntityList(List<UserDto> dtoList) {
-        if (dtoList == null) return null;
-        return dtoList.stream()
-                .map(UserEntity::toEntity)
                 .collect(Collectors.toList());
     }
 }

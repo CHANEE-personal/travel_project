@@ -9,11 +9,9 @@ import lombok.experimental.SuperBuilder;
 import javax.validation.constraints.NotEmpty;
 
 @Getter
-@Setter
 @SuperBuilder
 @EqualsAndHashCode(of = "idx", callSuper = false)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor
 @ApiModel(value = "공지사항 관련 변수")
 public class NoticeDTO extends NewCommonDTO {
 

@@ -20,7 +20,6 @@ import static javax.persistence.GenerationType.IDENTITY;
 @Setter
 @SuperBuilder
 @EqualsAndHashCode(of = "idx", callSuper = false)
-@AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @DynamicUpdate
 @Table(name = "tv_group_mst")

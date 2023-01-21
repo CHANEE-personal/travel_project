@@ -1,6 +1,5 @@
 package com.travel.api.faq.domain;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.travel.api.common.domain.CommonEntity;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
@@ -20,8 +19,6 @@ import static javax.persistence.GenerationType.IDENTITY;
 @Setter
 @SuperBuilder
 @EqualsAndHashCode(of = "idx", callSuper = false)
-@AllArgsConstructor
-@JsonIgnoreProperties(ignoreUnknown = true)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @DynamicUpdate
 @Table(name = "travel_faq")
@@ -51,11 +48,6 @@ public class FaqEntity {
     @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "faq_code", referencedColumnName = "common_code")
     private CommonEntity newFaqCode;
-
-    // 조회 수 증가
-    public void updateViewCount() {
-        this.viewCount++;
-    }
 
     public void update(FaqEntity faqEntity) {
         this.title = faqEntity.title;

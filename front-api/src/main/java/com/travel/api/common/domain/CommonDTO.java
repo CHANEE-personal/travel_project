@@ -8,10 +8,8 @@ import lombok.experimental.SuperBuilder;
 import javax.validation.constraints.NotEmpty;
 
 @Getter
-@Setter
 @SuperBuilder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor
 @ApiModel
 public class CommonDTO extends NewCommonDTO {
 

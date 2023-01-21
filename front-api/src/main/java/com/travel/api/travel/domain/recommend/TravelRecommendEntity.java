@@ -16,11 +16,9 @@ import static javax.persistence.GenerationType.IDENTITY;
 
 @Entity
 @Getter
-@Setter
 @SuperBuilder
 @EqualsAndHashCode(of = "idx", callSuper = false)
-@AllArgsConstructor
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @DynamicUpdate
 @Table(name = "travel_recommend")
 public class TravelRecommendEntity extends NewCommonMappedClass {

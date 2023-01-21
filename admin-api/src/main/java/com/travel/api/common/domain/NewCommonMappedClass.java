@@ -16,10 +16,8 @@ import javax.persistence.MappedSuperclass;
 import java.time.LocalDateTime;
 
 @Getter
-@Setter
 @SuperBuilder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor
 @MappedSuperclass
 @EntityListeners(value = AuditingEntityListener.class)
 public abstract class NewCommonMappedClass {

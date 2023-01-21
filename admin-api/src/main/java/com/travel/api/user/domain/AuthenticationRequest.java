@@ -12,7 +12,6 @@ import java.util.List;
 
 @Data
 @NoArgsConstructor
-@AllArgsConstructor
 public class AuthenticationRequest implements UserDetails {
 
     private UserEntity userEntity;

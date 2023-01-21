@@ -15,11 +15,9 @@ import java.time.LocalDateTime;
 import static com.fasterxml.jackson.annotation.JsonFormat.Shape.STRING;
 
 @Getter
-@Setter
 @SuperBuilder
 @EqualsAndHashCode(of = "idx", callSuper = false)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor
 @ApiModel
 public class PostImageDto {
 

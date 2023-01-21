@@ -9,10 +9,8 @@ import lombok.experimental.SuperBuilder;
 import javax.validation.constraints.NotEmpty;
 
 @Getter
-@Setter
 @SuperBuilder
 @EqualsAndHashCode(of = "idx", callSuper = false)
-@AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @ApiModel
 public class SearchDTO extends NewCommonDTO {

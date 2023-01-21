@@ -29,8 +29,8 @@ public class WebConfiguration implements WebMvcConfigurer {
      * 1. MethodName : addCorsMappings
      * 2. ClassName  : WebConfiguration.java
      * 3. Comment    : Cors 처리
-     * 4. 작성자       : CHO
-     * 5. 작성일       : 2022. 01. 15.
+     * 4. 작성자      : CHO
+     * 5. 작성일      : 2022. 01. 15.
      * </pre>
      */
     @Override
@@ -53,8 +53,8 @@ public class WebConfiguration implements WebMvcConfigurer {
      * 1. MethodName : methodValidationPostProcessor
      * 2. ClassName  : WebConfiguration.java
      * 3. Comment    : method parameter or return validation check
-     * 4. 작성자       : CHO
-     * 5. 작성일       : 2022. 01. 15.
+     * 4. 작성자      : CHO
+     * 5. 작성일      : 2022. 01. 15.
      * </pre>
      */
     @Bean
@@ -67,8 +67,8 @@ public class WebConfiguration implements WebMvcConfigurer {
      * 1. MethodName : getMessageCodesResolver
      * 2. ClassName  : WebConfiguration.java
      * 3. Comment    : DefaultMessageCodesResolver Format
-     * 4. 작성자       : CHO
-     * 5. 작성일       : 2022. 01. 15.
+     * 4. 작성자      : CHO
+     * 5. 작성일      : 2022. 01. 15.
      * </pre>
      */
     @Override
@@ -83,8 +83,8 @@ public class WebConfiguration implements WebMvcConfigurer {
      * 1. MethodName : messageSource
      * 2. ClassName  : WebConfiguration.java
      * 3. Comment    : validation Message path 설정
-     * 4. 작성자       : CHO
-     * 5. 작성일       : 2022. 01. 15.
+     * 4. 작성자      : CHO
+     * 5. 작성일      : 2022. 01. 15.
      * </pre>
      */
     @Bean
@@ -100,8 +100,8 @@ public class WebConfiguration implements WebMvcConfigurer {
      * 1. MethodName : getValidator
      * 2. ClassName  : WebConfiguration.java
      * 3. Comment    : DTO or Entity validation Message expression
-     * 4. 작성자       : CHO
-     * 5. 작성일       : 2022. 01. 15.
+     * 4. 작성자      : CHO
+     * 5. 작성일      : 2022. 01. 15.
      * </pre>
      */
     @Bean

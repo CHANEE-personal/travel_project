@@ -12,7 +12,6 @@ import javax.validation.constraints.NotEmpty;
 @Setter
 @SuperBuilder
 @EqualsAndHashCode(of = "idx", callSuper = false)
-@AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @ApiModel
 public class SearchDto extends NewCommonDto {

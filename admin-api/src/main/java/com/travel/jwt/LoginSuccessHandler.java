@@ -17,6 +17,7 @@ import static org.springframework.http.HttpStatus.ACCEPTED;
 @Component
 @RequiredArgsConstructor
 public class LoginSuccessHandler implements AuthenticationSuccessHandler {
+
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException {
         response.setStatus(requireNonNull(ACCEPTED).value());

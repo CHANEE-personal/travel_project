@@ -13,11 +13,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Getter
-@Setter
 @SuperBuilder
 @EqualsAndHashCode(of = "idx", callSuper = false)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor
 @ApiModel(value = "게시글 관련 변수")
 public class PostDTO extends NewCommonDTO {
 

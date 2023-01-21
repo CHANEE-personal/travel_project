@@ -47,7 +47,6 @@ public class NoticeQueryRepository {
                 .limit(pageRequest.getPageSize())
                 .fetch();
 
-        assert noticeList != null;
         return new PageImpl<>(NoticeEntity.toDtoList(noticeList), pageRequest, noticeList.size());
     }
 }

@@ -306,43 +306,4 @@ public class UserService {
             throw new TravelException(ERROR_DELETE_TRAVEL_SCHEDULE);
         }
     }
-
-    /**
-     * <pre>
-     * 1. MethodName : insertTravelGroupUser
-     * 2. ClassName  : TravelService.java
-     * 3. Comment    : 유저 여행 그룹 등록
-     * 4. 작성자      : CHO
-     * 5. 작성일      : 2022. 11. 27.
-     * </pre>
-     */
-    @Transactional
-    public TravelGroupUserDTO insertTravelGroupUser(Long idx, Long groupIdx, TravelGroupUserEntity travelGroupUserEntity) {
-        try {
-            oneGroup(groupIdx).addGroup(travelGroupUserEntity);
-            oneUser(idx).addGroup(travelGroupUserEntity);
-            return TravelGroupUserEntity.toDto(groupUserRepository.save(travelGroupUserEntity));
-        } catch (Exception e) {
-            throw new TravelException(ERROR_TRAVEL_GROUP_UESR);
-        }
-    }
-
-    /**
-     * <pre>
-     * 1. MethodName : deleteTravelGroupUser
-     * 2. ClassName  : TravelService.java
-     * 3. Comment    : 유저 여행 그룹 삭제
-     * 4. 작성자      : CHO
-     * 5. 작성일      : 2022. 11. 27.
-     * </pre>
-     */
-    @Transactional
-    public Long deleteTravelGroupUser(Long idx) {
-        try {
-            groupUserRepository.findById(idx);
-            return idx;
-        } catch (Exception e) {
-            throw new TravelException(ERROR_DELETE_TRAVEL_GROUP_USER);
-        }
-    }
 }

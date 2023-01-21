@@ -22,13 +22,10 @@ import static javax.persistence.GenerationType.IDENTITY;
 
 @Entity
 @Getter
-@Setter
 @SuperBuilder
 @EqualsAndHashCode(of = "idx", callSuper = false)
-@AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @DynamicUpdate
-@JsonIgnoreProperties(ignoreUnknown = true)
 @Table(name = "travel_post")
 public class PostEntity extends NewCommonMappedClass {
 
@@ -75,9 +72,9 @@ public class PostEntity extends NewCommonMappedClass {
         this.popular = !popular;
     }
 
-    public void addPostImage(PostImageEntity commonImageEntity) {
-        commonImageEntity.setPostImageEntity(this);
-        this.postImageList.add(commonImageEntity);
+    public void addPostImage(PostImageEntity postImageEntity) {
+        postImageEntity.setPostImageEntity(this);
+        this.postImageList.add(postImageEntity);
     }
 
     public void addReplyList(ReplyEntity reply) {
@@ -102,7 +99,7 @@ public class PostEntity extends NewCommonMappedClass {
                 .viewCount(entity.getViewCount())
                 .favoriteCount(entity.getFavoriteCount())
                 .postReplyList(ReplyEntity.toDtoList(entity.getReplyEntityList()))
-//                .postImageList(CommonImageEntity.toDtoList(entity.getPostImageList()))
+                .postImageList(PostImageEntity.toDtoList(entity.getPostImageList()))
                 .build();
     }
 

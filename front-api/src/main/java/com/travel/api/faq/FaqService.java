@@ -10,7 +10,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Map;
 
-
 @Service
 @RequiredArgsConstructor
 public class FaqService {

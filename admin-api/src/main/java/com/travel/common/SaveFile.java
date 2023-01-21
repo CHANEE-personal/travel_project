@@ -50,6 +50,7 @@ public class SaveFile {
         int index = 0;
         for(MultipartFile multipartFile : multipartFiles) {
             if (!multipartFile.isEmpty()) {
+                travelEntity.addImage(travelImageEntity);
                 travelImageEntityList.add(saveTravelFile(multipartFile, travelImageEntity.getEntityType(), travelEntity, index));
             }
             index++;
@@ -86,7 +87,6 @@ public class SaveFile {
                 .fileMask(fileId)
                 .fileNum(index)
                 .entityType(entityType)
-                .newTravelImageEntity(travelEntity)
                 .imageType(mainOrSub)
                 .visible("Y")
                 .regDate(LocalDateTime.now())
@@ -111,6 +111,7 @@ public class SaveFile {
         int index = 0;
         for(MultipartFile multipartFile : multipartFiles) {
             if (!multipartFile.isEmpty()) {
+                postEntity.addPostImage(postImageEntity);
                 postImageEntityList.add(savePostFile(multipartFile, postImageEntity.getEntityType(), postEntity, index));
             }
             index++;

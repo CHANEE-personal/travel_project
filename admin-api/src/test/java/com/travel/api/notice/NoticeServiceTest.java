@@ -102,25 +102,22 @@ class NoticeServiceTest {
     void 공지사항상세조회Mockito테스트() {
         NoticeDto newNotice = noticeService.insertNotice(noticeEntity);
 
-        // 조회 수 관련 테스트
-        NoticeDto oneNotice = noticeService.findOneNotice(newNotice.getIdx());
-        assertThat(newNotice.getViewCount() + 1).isEqualTo(oneNotice.getViewCount());
         // when
-        when(mockNoticeService.findOneNotice(noticeDTO.getIdx())).thenReturn(noticeDTO);
-        NoticeDto noticeInfo = mockNoticeService.findOneNotice(noticeDTO.getIdx());
+        when(mockNoticeService.findOneNotice(newNotice.getIdx())).thenReturn(newNotice);
+        NoticeDto noticeInfo = mockNoticeService.findOneNotice(newNotice.getIdx());
 
         // then
-        assertThat(noticeInfo.getIdx()).isEqualTo(noticeDTO.getIdx());
-        assertThat(noticeInfo.getTitle()).isEqualTo(noticeDTO.getTitle());
-        assertThat(noticeInfo.getDescription()).isEqualTo(noticeDTO.getDescription());
+        assertThat(noticeInfo.getIdx()).isEqualTo(newNotice.getIdx());
+        assertThat(noticeInfo.getTitle()).isEqualTo(newNotice.getTitle());
+        assertThat(noticeInfo.getDescription()).isEqualTo(newNotice.getDescription());
 
         // verify
-        verify(mockNoticeService, times(1)).findOneNotice(noticeDTO.getIdx());
-        verify(mockNoticeService, atLeastOnce()).findOneNotice(noticeDTO.getIdx());
+        verify(mockNoticeService, times(1)).findOneNotice(newNotice.getIdx());
+        verify(mockNoticeService, atLeastOnce()).findOneNotice(newNotice.getIdx());
         verifyNoMoreInteractions(mockNoticeService);
 
         InOrder inOrder = inOrder(mockNoticeService);
-        inOrder.verify(mockNoticeService).findOneNotice(noticeDTO.getIdx());
+        inOrder.verify(mockNoticeService).findOneNotice(newNotice.getIdx());
     }
 
     @Test

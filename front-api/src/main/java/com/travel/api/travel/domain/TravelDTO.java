@@ -13,10 +13,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Getter
-@Setter
 @SuperBuilder
 @EqualsAndHashCode(of = "idx", callSuper = false)
-@AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @ApiModel
 public class TravelDTO extends NewCommonDTO {

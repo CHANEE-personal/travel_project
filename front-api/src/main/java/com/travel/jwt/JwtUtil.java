@@ -96,36 +96,6 @@ public class JwtUtil implements Serializable {
 
     /**
      * <pre>
-     * 1. MethodName : isTokenExpired
-     * 2. ClassName  : JwtUtil.java
-     * 3. Comment    : 만료된 토큰인지 체크
-     * 4. 작성자       : CHO
-     * 5. 작성일       : 2021. 07. 07.
-     * </pre>
-     */
-    public Boolean isTokenExpired(String token) {
-        try {
-            return extractAllClaims(token).getExpiration().before(new Date());
-        } catch (ExpiredJwtException e) {
-            return false;
-        }
-    }
-
-    /**
-     * <pre>
-     * 1. MethodName : generateToken
-     * 2. ClassName  : JwtUtil.java
-     * 3. Comment    : 토큰 발급
-     * 4. 작성자       : CHO
-     * 5. 작성일       : 2021. 07. 07.
-     * </pre>
-     */
-    public String generateToken(UserDetails userDetails) {
-        return doGenerateToken(userDetails.getUsername());
-    }
-
-    /**
-     * <pre>
      * 1. MethodName : generateRefreshToken
      * 2. ClassName  : JwtUtil.java
      * 3. Comment    : 리프레시 토큰 재발급

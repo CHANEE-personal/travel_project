@@ -16,10 +16,8 @@ import static javax.persistence.GenerationType.IDENTITY;
 
 @Entity
 @Getter
-@Setter
 @SuperBuilder
 @EqualsAndHashCode(of = "idx", callSuper = false)
-@AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @DynamicUpdate
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -49,11 +47,6 @@ public class NoticeEntity extends NewCommonMappedClass {
 
     @Column(name = "top_fixed")
     private Boolean topFixed;
-
-    // 조회 수 증가
-    public void updateViewCount() {
-        this.viewCount++;
-    }
 
     // 고정글 수정
     public void toggleTopFixed(Boolean topFixed) {

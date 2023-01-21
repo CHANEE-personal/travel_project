@@ -16,7 +16,6 @@ import java.util.Optional;
 
 import static com.travel.exception.ApiExceptionType.*;
 
-
 @Service
 @RequiredArgsConstructor
 public class NoticeService {
@@ -53,7 +52,6 @@ public class NoticeService {
      */
     @Transactional
     public NoticeDto findOneNotice(Long idx) {
-        oneNotice(idx).updateViewCount();
         return NoticeEntity.toDto(oneNotice(idx));
     }
 

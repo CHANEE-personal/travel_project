@@ -16,7 +16,6 @@ import java.util.List;
 @Setter
 @SuperBuilder
 @EqualsAndHashCode(of = "idx", callSuper = false)
-@AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @ApiModel
 public class TravelDto extends NewCommonDto {

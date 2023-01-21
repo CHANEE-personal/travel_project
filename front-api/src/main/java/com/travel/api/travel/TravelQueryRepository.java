@@ -1,4 +1,4 @@
-package com.travel.api.travel.domain.repository;
+package com.travel.api.travel;
 
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -18,11 +18,15 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.*;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 
 import static com.querydsl.core.types.Projections.fields;
 import static com.travel.api.common.domain.QCommonEntity.commonEntity;
@@ -38,6 +42,7 @@ import static java.util.Collections.emptyList;
 
 @Repository
 @RequiredArgsConstructor
+@Transactional
 public class TravelQueryRepository {
 
     private final JPAQueryFactory queryFactory;

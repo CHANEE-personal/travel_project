@@ -15,8 +15,6 @@ import com.travel.api.travel.domain.image.TravelImageEntity;
 import com.travel.api.travel.domain.recommend.TravelRecommendDto;
 import com.travel.api.travel.domain.recommend.TravelRecommendEntity;
 import com.travel.api.travel.domain.recommend.repository.RecommendRepository;
-import com.travel.api.travel.domain.repository.TravelQueryRepository;
-import com.travel.api.travel.domain.repository.TravelRepository;
 import com.travel.api.travel.domain.review.TravelReviewDto;
 import com.travel.api.travel.domain.review.TravelReviewEntity;
 import com.travel.api.travel.domain.review.repository.ReviewRepository;

@@ -27,7 +27,6 @@ import static javax.persistence.GenerationType.IDENTITY;
 @EqualsAndHashCode(of = "idx", callSuper = false)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @DynamicUpdate
-@AllArgsConstructor
 @Table(name = "tv_cmm_code")
 public class CommonEntity extends NewCommonMappedClass implements Serializable {
 
@@ -63,16 +62,6 @@ public class CommonEntity extends NewCommonMappedClass implements Serializable {
     @Builder.Default
     @OneToMany(mappedBy = "newFestivalCode", cascade = ALL, fetch = LAZY)
     private List<TravelFestivalEntity> festivalEntityList = new ArrayList<>();
-
-    public void addCommon(FaqEntity faqEntity) {
-        faqEntity.setNewFaqCode(this);
-        this.faqEntityList.add(faqEntity);
-    }
-
-    public void addTravel(TravelEntity travelEntity) {
-        travelEntity.setNewTravelCode(this);
-        this.adminTravelEntityList.add(travelEntity);
-    }
 
     public void addSchedule(TravelScheduleEntity travelScheduleEntity) {
         travelScheduleEntity.setCommonEntity(this);

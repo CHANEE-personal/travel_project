@@ -12,10 +12,8 @@ import java.time.LocalDateTime;
 import static com.fasterxml.jackson.annotation.JsonFormat.Shape.STRING;
 
 @Getter
-@Setter
 @SuperBuilder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor
 @ApiModel
 public class NewCommonDTO {
 

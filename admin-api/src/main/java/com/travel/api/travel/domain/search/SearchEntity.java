@@ -20,7 +20,6 @@ import static javax.persistence.GenerationType.IDENTITY;
 @EqualsAndHashCode(of = "idx", callSuper = false)
 @NoArgsConstructor
 @DynamicUpdate
-@AllArgsConstructor
 @Table(name = "travel_search")
 public class SearchEntity extends NewCommonMappedClass {
 

@@ -26,7 +26,6 @@ import static javax.persistence.GenerationType.IDENTITY;
 @Setter
 @SuperBuilder
 @EqualsAndHashCode(of = "idx", callSuper = false)
-@AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @DynamicUpdate
 @Table(name = "tv_info_mst")
@@ -103,18 +102,9 @@ public class TravelEntity extends NewCommonMappedClass {
         this.travelReviewEntityList.add(travelReviewEntity);
     }
 
-    public void addGroup(TravelGroupEntity travelGroupEntity) {
-        travelGroupEntity.setTravelEntity(this);
-        this.travelGroupEntityList.add(travelGroupEntity);
-    }
-
     public void addImage(TravelImageEntity travelImageEntity) {
         travelImageEntity.setNewTravelImageEntity(this);
         this.travelImageEntityList.add(travelImageEntity);
-    }
-
-    public void togglePopular(Boolean popular) {
-        this.popular = !popular;
     }
 
     public void updateViewCount() {

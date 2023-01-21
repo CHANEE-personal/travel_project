@@ -14,13 +14,11 @@ import java.util.stream.Collectors;
 import static javax.persistence.GenerationType.IDENTITY;
 
 @Getter
-@Setter
 @Entity
 @SuperBuilder
 @EqualsAndHashCode(of = "idx", callSuper = false)
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @DynamicUpdate
-@AllArgsConstructor
 @Table(name = "travel_search")
 public class SearchEntity extends NewCommonMappedClass {
 

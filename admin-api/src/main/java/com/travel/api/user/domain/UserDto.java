@@ -1,6 +1,5 @@
 package com.travel.api.user.domain;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.travel.api.common.domain.NewCommonDto;
 import com.vladmihalcea.hibernate.type.json.JsonStringType;
 import io.swagger.annotations.ApiModel;
@@ -16,17 +15,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Getter
-@Setter
 @SuperBuilder
 @EqualsAndHashCode(of = "idx", callSuper = false)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor
-@JsonIgnoreProperties(ignoreUnknown = true)
 @TypeDef(name = "json", typeClass = JsonStringType.class)
 @ApiModel
 public class UserDto extends NewCommonDto {
-    @ApiModelProperty(required = true, value = "rowNum", hidden = true, example = "1")
-    private Integer rowNum;
 
     @ApiModelProperty(required = true, value = "user Seq", hidden = true, example = "1")
     private Long idx;

@@ -41,7 +41,7 @@ public class FaqController {
             @ApiResponse(code = 404, message = "존재 하지 않음", response = HttpClientErrorException.NotFound.class),
             @ApiResponse(code = 500, message = "서버 에러", response = ServerError.class)
     })
-    @GetMapping(value = "/lists")
+    @GetMapping
     public ResponseEntity<Page<FaqDTO>> findFaqList(@RequestParam(required = false) Map<String, Object> paramMap, Paging paging) {
         return ResponseEntity.ok(faqService.findFaqList(paramMap, paging.getPageRequest(paging.getPageNum(), paging.getSize())));
     }
@@ -55,7 +55,7 @@ public class FaqController {
      * 5. 작성일      : 2022. 11. 29.
      * </pre>
      */
-    @ApiOperation(value = "FAQ 상세 조회", notes = "FAQ를 상세 조회한다.")
+    @ApiOperation(value = "FAQ 상세 조회", notes = "FAQ 상세 조회한다.")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "FAQ 상세 조회 성공", response = FaqDTO.class),
             @ApiResponse(code = 400, message = "잘못된 요청", response = HttpClientErrorException.BadRequest.class),

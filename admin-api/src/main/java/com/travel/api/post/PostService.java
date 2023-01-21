@@ -29,7 +29,6 @@ public class PostService {
 
     private final PostQueryRepository postQueryRepository;
     private final PostRepository postRepository;
-    private final ReplyRepository replyRepository;
     private final SaveFile saveFile;
 
     private PostEntity onePost(Long idx) {

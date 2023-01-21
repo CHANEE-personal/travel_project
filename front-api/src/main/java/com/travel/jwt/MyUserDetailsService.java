@@ -14,7 +14,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import static com.travel.exception.ApiExceptionType.NOT_FOUND_USER;
 
-
 @Slf4j
 @Service
 @RequiredArgsConstructor

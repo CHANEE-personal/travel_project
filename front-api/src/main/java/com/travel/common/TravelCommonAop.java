@@ -22,7 +22,7 @@ public class TravelCommonAop {
      * 5. 작성일       : 2022. 05. 14.
      * </pre>
      */
-    @Pointcut("execution(* com.travel.travel_project.api..*.*(..))")
+    @Pointcut("execution(* com.travel.api..*.*(..))")
     private void cut() { /* TODO document why this method is empty */ }
 
     /**
@@ -76,7 +76,7 @@ public class TravelCommonAop {
         return signature.getMethod();
     }
 
-    @Around("execution(* com.travel.travel_project.api..*.*(..))")
+    @Around("execution(* com.travel.api..*.*(..))")
     public Object execute(ProceedingJoinPoint joinPoint) throws Throwable {
         long start = System.currentTimeMillis();
         System.out.println("START: " + joinPoint.toString());
@@ -86,7 +86,7 @@ public class TravelCommonAop {
         } finally {
             long finish = System.currentTimeMillis();
             long timeMs = finish - start;
-            System.out.println("END: " + joinPoint.toString() + " " + timeMs+"ms");
+            System.out.println("END: " + joinPoint + " " + timeMs+"ms");
         }
     }
 }

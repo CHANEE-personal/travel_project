@@ -21,12 +21,12 @@ import javax.validation.ConstraintViolationException;
 
 import static java.util.Locale.KOREA;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
-import static org.springframework.http.HttpStatus.OK;
 
 @Slf4j
 @RequiredArgsConstructor
 @RestControllerAdvice
 public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
+
     private final MessageSource messageSource;
 
     @Getter

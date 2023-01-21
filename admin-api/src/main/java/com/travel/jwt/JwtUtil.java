@@ -63,23 +63,6 @@ public class JwtUtil implements Serializable {
         return hmacShaKeyFor(secretKey.getBytes(UTF_8));
     }
 
-    /**
-     * <pre>
-     * 1. MethodName : extractAllClaims
-     * 2. ClassName  : JwtUtil.java
-     * 3. Comment    : JWT 토큰이 유효한 토큰인지 검사한 후, 토큰에 담긴 Payload 값을 가져온다
-     * 4. 작성자       : CHO
-     * 5. 작성일       : 2021. 07. 07.
-     * </pre>
-     */
-    public Claims extractAllClaims(String token) throws ExpiredJwtException {
-        return parserBuilder()
-                .setSigningKey(getSigningKey(SECRET_KEY))
-                .build()
-                .parseClaimsJws(token)
-                .getBody();
-    }
-
     public String resolveAccessToken(HttpServletRequest request) {
         if (request.getHeader("Authorization") != null && !Objects.equals(request.getHeader("Authorization"), "")) {
             return request.getHeader("Authorization").substring(7);
@@ -96,41 +79,11 @@ public class JwtUtil implements Serializable {
 
     /**
      * <pre>
-     * 1. MethodName : isTokenExpired
-     * 2. ClassName  : JwtUtil.java
-     * 3. Comment    : 만료된 토큰인지 체크
-     * 4. 작성자       : CHO
-     * 5. 작성일       : 2021. 07. 07.
-     * </pre>
-     */
-    public Boolean isTokenExpired(String token) {
-        try {
-            return extractAllClaims(token).getExpiration().before(new Date());
-        } catch (ExpiredJwtException e) {
-            return false;
-        }
-    }
-
-    /**
-     * <pre>
-     * 1. MethodName : generateToken
-     * 2. ClassName  : JwtUtil.java
-     * 3. Comment    : 토큰 발급
-     * 4. 작성자       : CHO
-     * 5. 작성일       : 2021. 07. 07.
-     * </pre>
-     */
-    public String generateToken(UserDetails userDetails) {
-        return doGenerateToken(userDetails.getUsername());
-    }
-
-    /**
-     * <pre>
      * 1. MethodName : generateRefreshToken
      * 2. ClassName  : JwtUtil.java
      * 3. Comment    : 리프레시 토큰 재발급
-     * 4. 작성자       : CHO
-     * 5. 작성일       : 2021. 07. 07.
+     * 4. 작성자      : CHO
+     * 5. 작성일      : 2021. 07. 07.
      * </pre>
      */
     public String generateRefreshToken(UserDetails userDetails) {
@@ -173,8 +126,8 @@ public class JwtUtil implements Serializable {
      * 1. MethodName : validateToken
      * 2. ClassName  : JwtUtil.java
      * 3. Comment    : JWT 토큰 검증
-     * 4. 작성자       : CHO
-     * 5. 작성일       : 2021. 07. 07.
+     * 4. 작성자      : CHO
+     * 5. 작성일      : 2021. 07. 07.
      * </pre>
      */
     public Boolean validateToken(String token) {

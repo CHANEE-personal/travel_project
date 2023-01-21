@@ -1,8 +1,8 @@
 package com.travel.common;
 
+import com.travel.api.user.domain.AuthenticationRequest;
 import org.springframework.data.domain.AuditorAware;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.User;
 
 import java.util.Optional;
 
@@ -18,7 +18,11 @@ public class LoginUserAuditorAware implements AuditorAware<String> {
             return empty();
         }
 
-        User user = (User) authentication.getPrincipal();
-        return ofNullable(user.getUsername());
+        Object principal = authentication.getPrincipal();
+        if (principal instanceof AuthenticationRequest) {
+            AuthenticationRequest principalDetails = (AuthenticationRequest) principal;
+            return ofNullable(principalDetails.getUsername());
+        }
+        return Optional.empty();
     }
 }

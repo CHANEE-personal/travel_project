@@ -49,7 +49,6 @@ public class PostQueryRepository {
                 .limit(pageRequest.getPageSize())
                 .fetch();
 
-        assert postList != null;
         return new PageImpl<>(PostEntity.toDtoList(postList), pageRequest, postList.size());
     }
 

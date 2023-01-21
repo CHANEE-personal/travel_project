@@ -1,6 +1,5 @@
 package com.travel.api.user.domain;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.travel.api.common.domain.NewCommonMappedClass;
 import com.travel.api.travel.domain.group.TravelGroupUserEntity;
 import com.travel.api.travel.domain.schedule.TravelScheduleEntity;
@@ -28,8 +27,6 @@ import static javax.persistence.GenerationType.IDENTITY;
 @EqualsAndHashCode(of = "idx", callSuper = false)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @DynamicUpdate
-@AllArgsConstructor
-@JsonIgnoreProperties(ignoreUnknown = true)
 @TypeDef(name = "json", typeClass = JsonStringType.class)
 @Table(name = "travel_user")
 public class UserEntity extends NewCommonMappedClass {

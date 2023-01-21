@@ -27,7 +27,6 @@ import static javax.persistence.GenerationType.IDENTITY;
 @EqualsAndHashCode(of = "idx", callSuper = false)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @DynamicUpdate
-@AllArgsConstructor
 @Table(name = "tv_cmm_code")
 public class CommonEntity extends NewCommonMappedClass implements Serializable {
 

@@ -26,7 +26,6 @@ import static javax.persistence.GenerationType.IDENTITY;
 @Setter
 @SuperBuilder
 @EqualsAndHashCode(of = "idx", callSuper = false)
-@AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @DynamicUpdate
 @Table(name = "tv_info_mst")
@@ -115,14 +114,6 @@ public class TravelEntity extends NewCommonMappedClass {
 
     public void togglePopular(Boolean popular) {
         this.popular = !popular;
-    }
-
-    public void updateViewCount() {
-        this.viewCount++;
-    }
-
-    public void updateFavoriteCount() {
-        this.favoriteCount++;
     }
 
     public static TravelDto toDto(TravelEntity entity) {

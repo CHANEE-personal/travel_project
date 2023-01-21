@@ -30,72 +30,10 @@ import static com.travel.api.common.domain.EntityType.TRAVEL;
 @RequiredArgsConstructor
 public class SaveFile {
 
-    private final JPAQueryFactory queryFactory;
     private final EntityManager em;
 
     @Value("${image.uploadPath}")
     private String fileDirPath;
-
-    /**
-     * <pre>
-     * 1. MethodName : saveTravelFile
-     * 2. ClassName  : SaveFile.java
-     * 3. Comment    : 다중 이미지 저장
-     * 4. 작성자      : CHO
-     * 5. 작성일      : 2022. 12. 11.
-     * </pre>
-     */
-    public List<TravelImageDTO> saveTravelFile(TravelEntity travelEntity, List<MultipartFile> multipartFiles, TravelImageEntity travelImageEntity) throws IOException {
-        List<TravelImageEntity> travelImageEntityList = new ArrayList<>();
-        int index = 0;
-        for(MultipartFile multipartFile : multipartFiles) {
-            if (!multipartFile.isEmpty()) {
-                travelImageEntityList.add(saveTravelFile(multipartFile, travelImageEntity.getEntityType(), travelEntity, index));
-            }
-            index++;
-        }
-        return travelImageEntityList.stream().map(TravelImageEntity::toDto).collect(Collectors.toList());
-    }
-
-    /**
-     * <pre>
-     * 1. MethodName : saveTravelFile
-     * 2. ClassName  : SaveFile.java
-     * 3. Comment    : 단일 이미지 저장
-     * 4. 작성자      : CHO
-     * 5. 작성일      : 2022. 12. 11.
-     * </pre>
-     */
-    public TravelImageEntity saveTravelFile(MultipartFile multipartFile, EntityType entityType, TravelEntity travelEntity, int index) throws IOException {
-        if (multipartFile.isEmpty()) {
-            return null;
-        }
-
-        String fileId = createSaveFileName(multipartFile.getOriginalFilename());
-        long fileSize = multipartFile.getSize();
-        String mainOrSub = index == 0 ? "main" : "sub" + index;
-
-        // 파일 업로드
-        multipartFile.transferTo(new File(saveFilePath(fileId, entityType)));
-//        getRuntime().exec("chmod -R 755 " + saveFilePath(fileId, entityType));
-
-        TravelImageEntity imageEntity = TravelImageEntity.builder()
-                .filePath(saveFilePath(fileId, entityType))
-                .fileName(multipartFile.getOriginalFilename())
-                .fileSize(fileSize)
-                .fileMask(fileId)
-                .fileNum(index)
-                .entityType(entityType)
-                .newTravelImageEntity(travelEntity)
-                .imageType(mainOrSub)
-                .visible("Y")
-                .regDate(LocalDateTime.now())
-                .build();
-
-        em.persist(imageEntity);
-
-        return imageEntity;
-    }
 
     /**
      * <pre>
@@ -111,6 +49,7 @@ public class SaveFile {
         int index = 0;
         for(MultipartFile multipartFile : multipartFiles) {
             if (!multipartFile.isEmpty()) {
+                postEntity.addPostImage(postImageEntity);
                 postImageEntityList.add(savePostFile(multipartFile, postImageEntity.getEntityType(), postEntity, index));
             }
             index++;
@@ -147,7 +86,6 @@ public class SaveFile {
                 .fileMask(fileId)
                 .fileNum(index)
                 .entityType(entityType)
-                .postImageEntity(postEntity)
                 .imageType(mainOrSub)
                 .visible("Y")
                 .regDate(LocalDateTime.now())

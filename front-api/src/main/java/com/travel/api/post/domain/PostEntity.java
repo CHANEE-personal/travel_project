@@ -1,6 +1,5 @@
 package com.travel.api.post.domain;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.travel.api.common.domain.NewCommonMappedClass;
 import com.travel.api.post.domain.image.PostImageEntity;
 import com.travel.api.post.domain.reply.ReplyEntity;
@@ -25,10 +24,8 @@ import static javax.persistence.GenerationType.IDENTITY;
 @Setter
 @SuperBuilder
 @EqualsAndHashCode(of = "idx", callSuper = false)
-@AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @DynamicUpdate
-@JsonIgnoreProperties(ignoreUnknown = true)
 @Table(name = "travel_post")
 public class PostEntity extends NewCommonMappedClass {
 

@@ -28,6 +28,7 @@ import static org.springframework.security.crypto.factory.PasswordEncoderFactori
 @RequiredArgsConstructor
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
+
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
     private final JwtAuthorizationFilter jwtAuthorizationFilter;
 
@@ -36,8 +37,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
      * 1. MethodName : jwtAuthenticationFilter
      * 2. ClassName  : SecurityConfiguration.java
      * 3. Comment    : jwt 인증 Filter
-     * 4. 작성자       : CHO
-     * 5. 작성일       : 2021. 07. 07.
+     * 4. 작성자      : CHO
+     * 5. 작성일      : 2021. 07. 07.
      * </pre>
      *
      */
@@ -59,8 +60,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
      * 1. MethodName : authenticationManagerBean
      * 2. ClassName  : SecurityConfiguration.java
      * 3. Comment    : authenticationManager Bean 등록
-     * 4. 작성자       : CHO
-     * 5. 작성일       : 2021. 07. 07.
+     * 4. 작성자      : CHO
+     * 5. 작성일      : 2021. 07. 07.
      * </pre>
      */
     @Bean(name = AUTHENTICATION_MANAGER)
@@ -74,8 +75,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
      * 1. MethodName : passwordEncoder
      * 2. ClassName  : SecurityConfiguration.java
      * 3. Comment    : 암호화에 필요한 passwordEncoder Bean 등록
-     * 4. 작성자       : CHO
-     * 5. 작성일       : 2021. 07. 07.
+     * 4. 작성자      : CHO
+     * 5. 작성일      : 2021. 07. 07.
      * </pre>
      */
     @Bean

@@ -46,7 +46,6 @@ public class PostController {
      * 5. 작성일      : 2022. 12. 12.
      * </pre>
      */
-    @PreAuthorize("hasRole('ROLE_TRAVEL_USER')")
     @ApiOperation(value = "게시글 리스트 조회", notes = "게시글 리스트를 조회한다.")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "게시글 리스트 조회 성공", response = List.class),
@@ -70,7 +69,7 @@ public class PostController {
      * 5. 작성일      : 2022. 12. 12.
      * </pre>
      */
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_TRAVEL_USER')")
+    @PreAuthorize("hasRole('ROLE_TRAVEL_USER')")
     @ApiOperation(value = "게시글 상세 조회", notes = "게시글 상세 조회한다.")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "게시글 상세 조회 성공", response = PostDTO.class),

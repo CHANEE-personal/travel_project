@@ -15,10 +15,8 @@ import java.time.LocalDateTime;
 import static com.fasterxml.jackson.annotation.JsonFormat.Shape.STRING;
 
 @Getter
-@Setter
 @SuperBuilder
 @EqualsAndHashCode(of = "idx", callSuper = false)
-@AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @ApiModel
 public class TravelFestivalDto extends NewCommonDto {

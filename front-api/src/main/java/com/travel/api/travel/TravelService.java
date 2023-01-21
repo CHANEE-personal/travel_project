@@ -8,8 +8,6 @@ import com.travel.api.travel.domain.festival.repository.FestivalRepository;
 import com.travel.api.travel.domain.recommend.TravelRecommendDTO;
 import com.travel.api.travel.domain.recommend.TravelRecommendEntity;
 import com.travel.api.travel.domain.recommend.repository.RecommendRepository;
-import com.travel.api.travel.domain.repository.TravelQueryRepository;
-import com.travel.api.travel.domain.repository.TravelRepository;
 import com.travel.api.travel.domain.review.TravelReviewDTO;
 import com.travel.api.travel.domain.review.TravelReviewEntity;
 import com.travel.api.travel.domain.review.repository.ReviewRepository;

@@ -1,6 +1,5 @@
 package com.travel.api.notice.domain;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.travel.api.common.domain.NewCommonMappedClass;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
@@ -15,13 +14,10 @@ import static javax.persistence.GenerationType.IDENTITY;
 
 @Entity
 @Getter
-@Setter
 @SuperBuilder
 @EqualsAndHashCode(of = "idx", callSuper = false)
-@AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @DynamicUpdate
-@JsonIgnoreProperties(ignoreUnknown = true)
 @Table(name = "travel_notice")
 public class NoticeEntity extends NewCommonMappedClass {
 
@@ -63,7 +59,6 @@ public class NoticeEntity extends NewCommonMappedClass {
                 .visible(entity.getVisible())
                 .viewCount(entity.getViewCount())
                 .build();
-
     }
 
     public static List<NoticeDTO> toDtoList(List<NoticeEntity> entityList) {

@@ -17,7 +17,6 @@ import java.util.Map;
 
 import static com.travel.exception.ApiExceptionType.*;
 
-
 @Service
 @RequiredArgsConstructor
 public class FaqService {

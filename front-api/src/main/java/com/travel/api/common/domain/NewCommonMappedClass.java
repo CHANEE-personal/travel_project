@@ -19,7 +19,6 @@ import java.time.LocalDateTime;
 @Setter
 @SuperBuilder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor
 @MappedSuperclass
 @EntityListeners(value = AuditingEntityListener.class)
 public abstract class NewCommonMappedClass {
