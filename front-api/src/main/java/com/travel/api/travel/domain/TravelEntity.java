@@ -99,11 +99,6 @@ public class TravelEntity extends NewCommonMappedClass {
         this.travelReviewEntityList.add(travelReviewEntity);
     }
 
-    public void addImage(TravelImageEntity travelImageEntity) {
-        travelImageEntity.setNewTravelImageEntity(this);
-        this.travelImageEntityList.add(travelImageEntity);
-    }
-
     public void updateViewCount() {
         this.viewCount++;
     }

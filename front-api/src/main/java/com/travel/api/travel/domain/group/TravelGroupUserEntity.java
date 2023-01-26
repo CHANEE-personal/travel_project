@@ -2,7 +2,6 @@ package com.travel.api.travel.domain.group;
 
 import com.travel.api.user.domain.UserEntity;
 import lombok.*;
-import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.DynamicUpdate;
 
 import javax.persistence.*;

@@ -73,11 +73,6 @@ public class CommonEntity extends NewCommonMappedClass implements Serializable {
         this.adminTravelEntityList.add(travelEntity);
     }
 
-    public void addSchedule(TravelScheduleEntity travelScheduleEntity) {
-        travelScheduleEntity.setCommonEntity(this);
-        this.travelScheduleEntity.add(travelScheduleEntity);
-    }
-
     public void addFestival(TravelFestivalEntity travelFestivalEntity) {
         travelFestivalEntity.setNewFestivalCode(this);
         this.festivalEntityList.add(travelFestivalEntity);

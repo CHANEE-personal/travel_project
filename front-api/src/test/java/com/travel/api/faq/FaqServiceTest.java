@@ -44,6 +44,7 @@ import static org.springframework.test.context.TestConstructor.AutowireMode.ALL;
 @DisplayName("FAQ Service Test")
 class FaqServiceTest {
     @Mock private FaqService mockFaqService;
+    private final FaqService faqService;
 
     private FaqEntity faqEntity;
     private FaqDTO faqDTO;
