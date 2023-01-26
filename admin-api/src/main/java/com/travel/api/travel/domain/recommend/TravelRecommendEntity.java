@@ -2,7 +2,6 @@ package com.travel.api.travel.domain.recommend;
 
 import com.travel.api.common.domain.NewCommonMappedClass;
 import lombok.*;
-import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.Type;
 
@@ -16,9 +15,10 @@ import static javax.persistence.GenerationType.IDENTITY;
 
 @Entity
 @Getter
-@SuperBuilder
+@Builder
 @EqualsAndHashCode(of = "idx", callSuper = false)
 @NoArgsConstructor
+@AllArgsConstructor
 @DynamicUpdate
 @Table(name = "travel_recommend")
 public class TravelRecommendEntity extends NewCommonMappedClass {
@@ -41,10 +41,6 @@ public class TravelRecommendEntity extends NewCommonMappedClass {
         return TravelRecommendDto.builder()
                 .idx(entity.getIdx())
                 .recommendName(entity.getRecommendName())
-                .creator(entity.getCreator())
-                .createTime(entity.getCreateTime())
-                .updater(entity.getUpdater())
-                .updateTime(entity.getUpdateTime())
                 .build();
     }
 

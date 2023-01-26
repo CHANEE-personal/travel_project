@@ -2,10 +2,11 @@ package com.travel.api.travel.domain.image;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.travel.api.common.domain.EntityType;
+import com.travel.api.post.domain.PostDTO;
+import com.travel.api.travel.domain.TravelDTO;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.*;
-import lombok.experimental.SuperBuilder;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.EnumType;
@@ -15,17 +16,18 @@ import java.time.LocalDateTime;
 import static com.fasterxml.jackson.annotation.JsonFormat.Shape.STRING;
 
 @Getter
-@SuperBuilder
+@Builder
 @EqualsAndHashCode(of = "idx", callSuper = false)
+@AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @ApiModel
 public class TravelImageDTO {
 
-    @ApiModelProperty(value = "파일 IDX", required = true, hidden = true, example = "1")
+    @ApiModelProperty(required = true, value = "idx", hidden = true, example = "1")
     private Long idx;
 
     @ApiModelProperty(value = "분야 IDX", required = true, hidden = true, example = "1")
-    private Long typeIdx;
+    private TravelDTO newTravelDTO;
 
     @Enumerated(EnumType.STRING)
     @ApiModelProperty(value = "분야명", required = true, hidden = true)

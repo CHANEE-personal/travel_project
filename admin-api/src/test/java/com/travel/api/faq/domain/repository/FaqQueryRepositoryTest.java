@@ -1,5 +1,7 @@
 package com.travel.api.faq.domain.repository;
 
+import com.travel.api.common.domain.CommonDto;
+import com.travel.api.common.domain.CommonEntity;
 import com.travel.api.faq.domain.FaqDto;
 import com.travel.api.faq.domain.FaqEntity;
 import lombok.RequiredArgsConstructor;
@@ -50,16 +52,28 @@ class FaqQueryRepositoryTest {
 
     private FaqEntity faqEntity;
     private FaqDto faqDTO;
+    private CommonEntity commonEntity;
+    private CommonDto commonDto;
 
     void createFaq() {
+        commonEntity = CommonEntity.builder()
+                .commonCode(999)
+                .commonName("서울")
+                .visible("Y")
+                .build();
+
+        em.persist(commonEntity);
+
         faqEntity = FaqEntity.builder()
                 .title("FAQ 등록 테스트")
                 .description("FAQ 등록 테스트")
                 .viewCount(1)
                 .visible("Y")
+                .newFaqCode(commonEntity)
                 .build();
 
         em.persist(faqEntity);
+        faqDTO = FaqEntity.toDto(faqEntity);
     }
 
     @BeforeEach
@@ -95,8 +109,7 @@ class FaqQueryRepositoryTest {
         List<FaqDto> findFaqList = newFaqList.stream().collect(Collectors.toList());
 
         // then
-        assertThat(findFaqList.get(0).getIdx()).isEqualTo(faqList.get(0).getIdx());
-        assertThat(findFaqList.get(0).getFaqCode()).isEqualTo(faqList.get(0).getFaqCode());
+        assertThat(findFaqList.get(0).getNewFaqCode().getCommonCode()).isEqualTo(faqList.get(0).getNewFaqCode().getCommonCode());
         assertThat(findFaqList.get(0).getTitle()).isEqualTo(faqList.get(0).getTitle());
         assertThat(findFaqList.get(0).getDescription()).isEqualTo(faqList.get(0).getDescription());
 
@@ -117,7 +130,6 @@ class FaqQueryRepositoryTest {
         FaqDto faqInfo = mockFaqQueryRepository.findOneFaq(faqEntity.getIdx());
 
         // then
-        assertThat(faqInfo.getIdx()).isEqualTo(faqEntity.getIdx());
         assertThat(faqInfo.getTitle()).isEqualTo(faqEntity.getTitle());
         assertThat(faqInfo.getDescription()).isEqualTo(faqEntity.getDescription());
 

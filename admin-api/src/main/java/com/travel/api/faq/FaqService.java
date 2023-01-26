@@ -60,7 +60,8 @@ public class FaqService {
      */
     @Transactional(readOnly = true)
     public FaqDto findOneFaq(Long idx) {
-        return faqQueryRepository.findOneFaq(idx);
+        return FaqEntity.toDto(faqRepository.findByIdx(idx)
+                .orElseThrow(() -> new TravelException(NOT_FOUND_FAQ)));
     }
 
     /**

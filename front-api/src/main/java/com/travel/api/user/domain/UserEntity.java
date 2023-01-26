@@ -5,7 +5,6 @@ import com.travel.api.travel.domain.group.TravelGroupUserEntity;
 import com.travel.api.travel.domain.schedule.TravelScheduleEntity;
 import com.vladmihalcea.hibernate.type.json.JsonStringType;
 import lombok.*;
-import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
@@ -23,15 +22,14 @@ import static javax.persistence.GenerationType.IDENTITY;
 @Entity
 @Getter
 @Setter
-@SuperBuilder
+@Builder
 @EqualsAndHashCode(of = "idx", callSuper = false)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
 @DynamicUpdate
 @TypeDef(name = "json", typeClass = JsonStringType.class)
 @Table(name = "travel_user")
 public class UserEntity extends NewCommonMappedClass {
-    @Transient
-    private Integer rowNum;
 
     @Id
     @GeneratedValue(strategy = IDENTITY)
@@ -120,29 +118,6 @@ public class UserEntity extends NewCommonMappedClass {
                 .userRefreshToken(entity.getUserRefreshToken())
                 .favoriteTravelIdx(entity.getFavoriteTravelIdx())
                 .role(entity.getRole())
-                .creator(entity.getCreator())
-                .createTime(entity.getCreateTime())
-                .updater(entity.getUpdater())
-                .updateTime(entity.getUpdateTime())
-                .build();
-    }
-
-    public static UserEntity toEntity(UserDTO dto) {
-        if (dto == null) return null;
-        return UserEntity.builder()
-                .idx(dto.getIdx())
-                .userId(dto.getUserId())
-                .password(dto.getPassword())
-                .name(dto.getName())
-                .email(dto.getEmail())
-                .visible(dto.getVisible())
-                .userToken(dto.getUserToken())
-                .userRefreshToken(dto.getUserRefreshToken())
-                .role(dto.getRole())
-                .creator(dto.getCreator())
-                .createTime(dto.getCreateTime())
-                .updater(dto.getUpdater())
-                .updateTime(dto.getUpdateTime())
                 .build();
     }
 
@@ -150,13 +125,6 @@ public class UserEntity extends NewCommonMappedClass {
         if (entityList == null) return null;
         return entityList.stream()
                 .map(UserEntity::toDto)
-                .collect(Collectors.toList());
-    }
-
-    public List<UserEntity> toEntityList(List<UserDTO> dtoList) {
-        if (dtoList == null) return null;
-        return dtoList.stream()
-                .map(UserEntity::toEntity)
                 .collect(Collectors.toList());
     }
 }

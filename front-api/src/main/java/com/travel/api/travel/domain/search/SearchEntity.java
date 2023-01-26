@@ -2,7 +2,6 @@ package com.travel.api.travel.domain.search;
 
 import com.travel.api.common.domain.NewCommonMappedClass;
 import lombok.*;
-import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.DynamicUpdate;
 
 import javax.persistence.*;
@@ -15,9 +14,10 @@ import static javax.persistence.GenerationType.IDENTITY;
 
 @Getter
 @Entity
-@SuperBuilder
+@Builder
 @EqualsAndHashCode(of = "idx", callSuper = false)
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor
+@AllArgsConstructor
 @DynamicUpdate
 @Table(name = "travel_search")
 public class SearchEntity extends NewCommonMappedClass {
@@ -36,10 +36,6 @@ public class SearchEntity extends NewCommonMappedClass {
         return SearchDTO.builder()
                 .idx(entity.getIdx())
                 .searchKeyword(entity.getSearchKeyword())
-                .creator(entity.getCreator())
-                .createTime(entity.getCreateTime())
-                .updater(entity.getUpdater())
-                .updateTime(entity.getUpdateTime())
                 .build();
     }
 

@@ -1,12 +1,10 @@
 package com.travel.api.user.domain;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.travel.api.common.domain.NewCommonDTO;
 import com.vladmihalcea.hibernate.type.json.JsonStringType;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.*;
-import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
 import org.springframework.lang.Nullable;
@@ -16,14 +14,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Getter
-@SuperBuilder
+@Builder
 @EqualsAndHashCode(of = "idx", callSuper = false)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
 @TypeDef(name = "json", typeClass = JsonStringType.class)
 @ApiModel
 public class UserDTO extends NewCommonDTO {
-    @ApiModelProperty(required = true, value = "rowNum", hidden = true, example = "1")
-    private Integer rowNum;
 
     @ApiModelProperty(required = true, value = "user Seq", hidden = true, example = "1")
     private Long idx;

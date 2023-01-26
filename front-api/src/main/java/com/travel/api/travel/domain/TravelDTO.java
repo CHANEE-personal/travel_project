@@ -1,21 +1,22 @@
 package com.travel.api.travel.domain;
 
+import com.travel.api.common.domain.CommonDTO;
 import com.travel.api.common.domain.NewCommonDTO;
 import com.travel.api.travel.domain.image.TravelImageDTO;
 import com.travel.api.travel.domain.review.TravelReviewDTO;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.*;
-import lombok.experimental.SuperBuilder;
 
 import javax.validation.constraints.NotEmpty;
 import java.util.ArrayList;
 import java.util.List;
 
 @Getter
-@SuperBuilder
+@Builder
 @EqualsAndHashCode(of = "idx", callSuper = false)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
 @ApiModel
 public class TravelDTO extends NewCommonDTO {
 
@@ -32,7 +33,7 @@ public class TravelDTO extends NewCommonDTO {
 
     @NotEmpty(message = "여행지 코드 입력은 필수입니다.")
     @ApiModelProperty(required = true, value = "여행지 코드((ex)1(서울))")
-    private Integer travelCode;
+    private CommonDTO newTravelCode;
 
     @NotEmpty(message = "여행지 주소 입력은 필수입니다.")
     @ApiModelProperty(required = true, value = "여행지 상세 주소((ex)인천 광역시 서구...)")

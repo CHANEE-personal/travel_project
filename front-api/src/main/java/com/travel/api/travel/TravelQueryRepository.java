@@ -50,7 +50,7 @@ public class TravelQueryRepository {
 
     private BooleanExpression searchTravelCode(Map<String, Object> travelMap) {
         return getInt(travelMap.get("searchCode"), 0) != 0 ?
-                travelEntity.travelCode.eq(getInt(travelMap.get("searchCode"), 0)) :
+                travelEntity.newTravelCode.commonCode.eq(getInt(travelMap.get("searchCode"), 0)) :
                 null;
     }
 
@@ -68,7 +68,7 @@ public class TravelQueryRepository {
     private BooleanExpression searchTravelDate(Map<String, Object> travelMap) {
         LocalDateTime startDateTime = travelMap.get("searchStartTime") != null ? (LocalDateTime) travelMap.get("searchStartTime") : now().minusDays(now().getDayOfMonth() - 1).atStartOfDay();
         LocalDateTime endDateTime = travelMap.get("searchEndTime") != null ? (LocalDateTime) travelMap.get("searchStartTime") : of(now().minusDays(now().getDayOfMonth()).plusMonths(1), LocalTime.of(23, 59, 59));
-        return travelEntity.createTime.goe(startDateTime).and(travelEntity.createTime.loe(endDateTime));
+        return travelEntity.createdAt.goe(startDateTime).and(travelEntity.createdAt.loe(endDateTime));
     }
 
     private BooleanExpression searchTravelFestival(Integer month, Integer day) {

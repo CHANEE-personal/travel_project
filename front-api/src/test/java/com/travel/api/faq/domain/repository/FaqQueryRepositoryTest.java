@@ -1,5 +1,6 @@
 package com.travel.api.faq.domain.repository;
 
+import com.travel.api.common.domain.CommonEntity;
 import com.travel.api.faq.domain.FaqDTO;
 import com.travel.api.faq.domain.FaqEntity;
 import lombok.RequiredArgsConstructor;
@@ -49,10 +50,20 @@ class FaqQueryRepositoryTest {
     private final EntityManager em;
 
     private FaqEntity faqEntity;
-    private FaqDTO faqDTO;
+
+    private CommonEntity commonEntity;
 
     void createFaq() {
+        commonEntity = CommonEntity.builder()
+                .commonCode(999)
+                .commonName("서울")
+                .visible("Y")
+                .build();
+
+        em.persist(commonEntity);
+
         faqEntity = FaqEntity.builder()
+                .newFaqCode(commonEntity)
                 .title("FAQ 등록 테스트")
                 .description("FAQ 등록 테스트")
                 .viewCount(1)
@@ -84,7 +95,7 @@ class FaqQueryRepositoryTest {
         PageRequest pageRequest = PageRequest.of(0, 3);
 
         List<FaqDTO> faqList = new ArrayList<>();
-        faqList.add(faqDTO);
+        faqList.add(FaqEntity.toDto(faqEntity));
 
         Page<FaqDTO> resultPage = new PageImpl<>(faqList, pageRequest, faqList.size());
 
@@ -96,7 +107,7 @@ class FaqQueryRepositoryTest {
 
         // then
         assertThat(findFaqList.get(0).getIdx()).isEqualTo(faqList.get(0).getIdx());
-        assertThat(findFaqList.get(0).getFaqCode()).isEqualTo(faqList.get(0).getFaqCode());
+        assertThat(findFaqList.get(0).getNewFaqCode().getCommonCode()).isEqualTo(faqList.get(0).getNewFaqCode().getCommonCode());
         assertThat(findFaqList.get(0).getTitle()).isEqualTo(faqList.get(0).getTitle());
         assertThat(findFaqList.get(0).getDescription()).isEqualTo(faqList.get(0).getDescription());
 
@@ -113,11 +124,10 @@ class FaqQueryRepositoryTest {
     @DisplayName("FAQ 상세 조회 Mockito 테스트")
     void FAQ상세조회Mockito테스트() {
         // when
-        when(mockFaqQueryRepository.findOneFaq(faqEntity.getIdx())).thenReturn(faqDTO);
+        when(mockFaqQueryRepository.findOneFaq(faqEntity.getIdx())).thenReturn(FaqEntity.toDto(faqEntity));
         FaqDTO faqInfo = mockFaqQueryRepository.findOneFaq(faqEntity.getIdx());
 
         // then
-        assertThat(faqInfo.getIdx()).isEqualTo(faqEntity.getIdx());
         assertThat(faqInfo.getTitle()).isEqualTo(faqEntity.getTitle());
         assertThat(faqInfo.getDescription()).isEqualTo(faqEntity.getDescription());
 

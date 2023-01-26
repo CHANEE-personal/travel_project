@@ -4,7 +4,6 @@ import com.travel.api.common.domain.CommonEntity;
 import com.travel.api.common.domain.NewCommonMappedClass;
 import com.travel.api.user.domain.UserEntity;
 import lombok.*;
-import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.DynamicUpdate;
 import org.springframework.format.annotation.DateTimeFormat;
 
@@ -20,9 +19,10 @@ import static javax.persistence.GenerationType.IDENTITY;
 @Entity
 @Getter
 @Setter
-@SuperBuilder
+@Builder
 @EqualsAndHashCode(of = "idx", callSuper = false)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
 @DynamicUpdate
 @Table(name = "travel_schedule")
 public class TravelScheduleEntity extends NewCommonMappedClass {
@@ -59,8 +59,8 @@ public class TravelScheduleEntity extends NewCommonMappedClass {
         if (entity == null) return null;
         return TravelScheduleDTO.builder()
                 .idx(entity.getIdx())
-                .userIdx(entity.userEntity.getIdx())
-                .travelCode(entity.commonEntity.getCommonCode())
+                .userDTO(UserEntity.toDto(entity.userEntity))
+                .newTravelCode(CommonEntity.toDto(entity.commonEntity))
                 .scheduleDescription(entity.getScheduleDescription())
                 .scheduleTime(entity.getScheduleTime())
                 .build();

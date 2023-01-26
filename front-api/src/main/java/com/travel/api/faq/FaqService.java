@@ -1,7 +1,10 @@
 package com.travel.api.faq;
 
 import com.travel.api.faq.domain.FaqDTO;
+import com.travel.api.faq.domain.FaqEntity;
 import com.travel.api.faq.domain.repository.FaqQueryRepository;
+import com.travel.api.faq.domain.repository.FaqRepository;
+import com.travel.exception.TravelException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -10,11 +13,14 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Map;
 
+import static com.travel.exception.ApiExceptionType.NOT_FOUND_FAQ;
+
 @Service
 @RequiredArgsConstructor
 public class FaqService {
 
     private final FaqQueryRepository faqQueryRepository;
+    private final FaqRepository faqRepository;
 
     /**
      * <pre>
@@ -41,6 +47,12 @@ public class FaqService {
      */
     @Transactional(readOnly = true)
     public FaqDTO findOneFaq(Long idx) {
-        return faqQueryRepository.findOneFaq(idx);
+        FaqEntity faqEntity = faqRepository.findByIdx(idx)
+                .orElseThrow(() -> new TravelException(NOT_FOUND_FAQ));
+
+        // 조회 수 증가
+        faqEntity.updateViewCount();
+
+        return FaqEntity.toDto(faqEntity);
     }
 }

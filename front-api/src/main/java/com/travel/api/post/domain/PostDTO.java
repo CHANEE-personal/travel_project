@@ -1,21 +1,22 @@
 package com.travel.api.post.domain;
 
 import com.travel.api.common.domain.NewCommonDTO;
+import com.travel.api.post.domain.image.PostImageDTO;
 import com.travel.api.post.domain.reply.ReplyDTO;
 import com.travel.api.travel.domain.image.TravelImageDTO;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.*;
-import lombok.experimental.SuperBuilder;
 
 import javax.validation.constraints.NotEmpty;
 import java.util.ArrayList;
 import java.util.List;
 
 @Getter
-@SuperBuilder
+@Builder
 @EqualsAndHashCode(of = "idx", callSuper = false)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
 @ApiModel(value = "게시글 관련 변수")
 public class PostDTO extends NewCommonDTO {
 
@@ -43,7 +44,7 @@ public class PostDTO extends NewCommonDTO {
     private Boolean popular;
 
     @ApiModelProperty(value = "postImageList", hidden = true)
-    private List<TravelImageDTO> postImageList = new ArrayList<>();
+    private List<PostImageDTO> postImageList = new ArrayList<>();
 
     @ApiModelProperty(value = "postReplyList", hidden = true)
     private List<ReplyDTO> postReplyList = new ArrayList<>();

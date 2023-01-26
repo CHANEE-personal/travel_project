@@ -16,9 +16,10 @@ import static javax.persistence.GenerationType.IDENTITY;
 @Getter
 @Setter
 @Entity
-@SuperBuilder
+@Builder
 @EqualsAndHashCode(of = "idx", callSuper = false)
 @NoArgsConstructor
+@AllArgsConstructor
 @DynamicUpdate
 @Table(name = "travel_search")
 public class SearchEntity extends NewCommonMappedClass {
@@ -37,10 +38,6 @@ public class SearchEntity extends NewCommonMappedClass {
         return SearchDto.builder()
                 .idx(entity.getIdx())
                 .searchKeyword(entity.getSearchKeyword())
-                .creator(entity.getCreator())
-                .createTime(entity.getCreateTime())
-                .updater(entity.getUpdater())
-                .updateTime(entity.getUpdateTime())
                 .build();
     }
 

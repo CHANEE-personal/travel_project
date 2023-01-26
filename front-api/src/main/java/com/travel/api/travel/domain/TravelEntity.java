@@ -6,7 +6,6 @@ import com.travel.api.travel.domain.group.TravelGroupEntity;
 import com.travel.api.travel.domain.image.TravelImageEntity;
 import com.travel.api.travel.domain.review.TravelReviewEntity;
 import lombok.*;
-import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.Where;
@@ -24,9 +23,10 @@ import static javax.persistence.GenerationType.IDENTITY;
 @Entity
 @Getter
 @Setter
-@SuperBuilder
+@Builder
 @EqualsAndHashCode(of = "idx", callSuper = false)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
 @DynamicUpdate
 @Table(name = "tv_info_mst")
 public class TravelEntity extends NewCommonMappedClass {
@@ -44,9 +44,6 @@ public class TravelEntity extends NewCommonMappedClass {
     @Lob
     @NotEmpty(message = "여행지 상세 내용 입력은 필수입니다.")
     private String travelDescription;
-
-    @Column(name = "travel_code", insertable = false, updatable = false)
-    private Integer travelCode;
 
     @Column(name = "travel_address")
     @NotEmpty(message = "여행지 주소 입력은 필수입니다.")
@@ -102,11 +99,6 @@ public class TravelEntity extends NewCommonMappedClass {
         this.travelReviewEntityList.add(travelReviewEntity);
     }
 
-    public void addImage(TravelImageEntity travelImageEntity) {
-        travelImageEntity.setNewTravelImageEntity(this);
-        this.travelImageEntityList.add(travelImageEntity);
-    }
-
     public void updateViewCount() {
         this.viewCount++;
     }
@@ -119,6 +111,7 @@ public class TravelEntity extends NewCommonMappedClass {
         if (entity == null) return null;
         return TravelDTO.builder()
                 .idx(entity.getIdx())
+                .newTravelCode(CommonEntity.toDto(entity.newTravelCode))
                 .travelTitle(entity.getTravelTitle())
                 .travelDescription(entity.getTravelDescription())
                 .travelAddress(entity.getTravelAddress())
@@ -127,12 +120,7 @@ public class TravelEntity extends NewCommonMappedClass {
                 .viewCount(entity.getViewCount())
                 .visible(entity.getVisible())
                 .popular(entity.getPopular())
-                .creator(entity.getCreator())
-                .createTime(entity.getCreateTime())
-                .updater(entity.getUpdater())
-                .updateTime(entity.getUpdateTime())
                 .imageList(TravelImageEntity.toDtoList(entity.getTravelImageEntityList()))
-                .reviewList(TravelReviewEntity.toDtoList(entity.getTravelReviewEntityList()))
                 .build();
     }
 

@@ -18,9 +18,10 @@ import static javax.persistence.GenerationType.IDENTITY;
 @Entity
 @Getter
 @Setter
-@SuperBuilder
+@Builder
 @EqualsAndHashCode(of = "idx", callSuper = false)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
 @DynamicUpdate
 @Table(name = "tv_group_mst")
 public class TravelGroupEntity extends NewCommonMappedClass {
@@ -70,10 +71,6 @@ public class TravelGroupEntity extends NewCommonMappedClass {
                 .groupName(entity.getGroupName())
                 .groupDescription(entity.getGroupDescription())
                 .visible(entity.getVisible())
-                .creator(entity.getCreator())
-                .createTime(entity.getCreateTime())
-                .updater(entity.getUpdater())
-                .updateTime(entity.getUpdateTime())
                 .build();
     }
 

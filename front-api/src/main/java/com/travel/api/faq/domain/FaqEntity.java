@@ -2,7 +2,6 @@ package com.travel.api.faq.domain;
 
 import com.travel.api.common.domain.CommonEntity;
 import lombok.*;
-import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.DynamicUpdate;
 
 import javax.persistence.*;
@@ -16,9 +15,10 @@ import static javax.persistence.GenerationType.IDENTITY;
 
 @Entity
 @Getter
-@SuperBuilder
+@Builder
 @EqualsAndHashCode(of = "idx", callSuper = false)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
 @DynamicUpdate
 @Table(name = "travel_faq")
 public class FaqEntity {
@@ -38,7 +38,7 @@ public class FaqEntity {
     private String description;
 
     @Column(name = "view_count")
-    private Integer viewCount;
+    private int viewCount;
 
     @Column(name = "visible")
     @NotEmpty(message = "공지사항 노출 여부 선택은 필수입니다.")
@@ -64,6 +64,7 @@ public class FaqEntity {
         return FaqDTO.builder()
                 .idx(entity.getIdx())
                 .title(entity.getTitle())
+                .newFaqCode(CommonEntity.toDto(entity.newFaqCode))
                 .description(entity.getDescription())
                 .viewCount(entity.getViewCount())
                 .visible(entity.getVisible())

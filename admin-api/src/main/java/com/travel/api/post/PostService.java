@@ -6,7 +6,6 @@ import com.travel.api.post.domain.image.PostImageDto;
 import com.travel.api.post.domain.image.PostImageEntity;
 import com.travel.api.post.domain.repository.PostQueryRepository;
 import com.travel.api.post.domain.repository.PostRepository;
-import com.travel.api.post.domain.repository.ReplyRepository;
 import com.travel.common.SaveFile;
 import com.travel.exception.TravelException;
 import lombok.RequiredArgsConstructor;
@@ -21,7 +20,6 @@ import java.util.Map;
 import java.util.Optional;
 
 import static com.travel.exception.ApiExceptionType.*;
-
 
 @Service
 @RequiredArgsConstructor

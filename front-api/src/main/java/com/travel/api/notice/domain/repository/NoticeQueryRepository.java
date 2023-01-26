@@ -11,7 +11,6 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Repository;
 
-import javax.persistence.EntityManager;
 import java.util.*;
 
 import static com.travel.api.notice.domain.QNoticeEntity.noticeEntity;

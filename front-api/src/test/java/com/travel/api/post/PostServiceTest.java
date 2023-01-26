@@ -77,7 +77,7 @@ class PostServiceTest {
                 .visible("Y")
                 .build();
 
-        replyDTO = postService.insertReply(postDTO.getIdx(), replyEntity);
+        replyDTO = postService.insertReply(postEntity.getIdx(), replyEntity);
 
         replyEntity2 = ReplyEntity.builder()
                 .commentTitle("대댓글 테스트")
@@ -87,7 +87,7 @@ class PostServiceTest {
                 .parent(replyEntity)
                 .build();
 
-        postService.insertReply(postDTO.getIdx(), replyEntity2);
+        postService.insertReply(postEntity.getIdx(), replyEntity2);
     }
 
     @BeforeEach
@@ -132,7 +132,7 @@ class PostServiceTest {
     @Test
     @DisplayName("게시글 상세 조회 테스트")
     void 게시글상세조회테스트() {
-        PostDTO onePost = postService.findOnePost(postDTO.getIdx());
+        PostDTO onePost = postService.findOnePost(postEntity.getIdx());
 
         // 게시글
         assertThat(onePost.getPostTitle()).isEqualTo("게시글 테스트");
@@ -197,18 +197,8 @@ class PostServiceTest {
     @DisplayName("게시글 수정 Mockito 테스트")
     void 게시글수정Mockito테스트() {
         // given
-        PostEntity insertEntity = PostEntity.builder()
-                .postTitle("게시글 등록 테스트")
-                .postDescription("게시글 등록 테스트")
-                .viewCount(0)
-                .favoriteCount(0)
-                .visible("Y")
-                .build();
-
-        PostDTO postInfo = postService.insertPost(insertEntity);
-
         PostEntity updatePostEntity = PostEntity.builder()
-                .idx(postInfo.getIdx())
+                .idx(postEntity.getIdx())
                 .postTitle("게시글 수정 테스트")
                 .postDescription("게시글 수정 테스트")
                 .viewCount(0)
@@ -216,7 +206,7 @@ class PostServiceTest {
                 .visible("Y")
                 .build();
 
-        PostDTO updatePost = postService.updatePost(postInfo.getIdx(), updatePostEntity);
+        PostDTO updatePost = postService.updatePost(postEntity.getIdx(), updatePostEntity);
 
         // when
         when(mockPostService.findOnePost(updatePost.getIdx())).thenReturn(updatePost);
@@ -239,8 +229,8 @@ class PostServiceTest {
     @DisplayName("게시글 삭제 Mockito 테스트")
     void 게시글삭제Mockito테스트() {
         // when
-        when(mockPostService.findOnePost(postDTO.getIdx())).thenReturn(postDTO);
-        Long deleteIdx = postService.deletePost(postDTO.getIdx());
+        when(mockPostService.findOnePost(postEntity.getIdx())).thenReturn(postDTO);
+        Long deleteIdx = postService.deletePost(postEntity.getIdx());
 
         // then
         assertThat(mockPostService.findOnePost(postDTO.getIdx()).getIdx()).isEqualTo(deleteIdx);

@@ -98,7 +98,7 @@ class FaqServiceTest {
 
         // then
         assertThat(findFaqList.get(0).getIdx()).isEqualTo(faqList.get(0).getIdx());
-        assertThat(findFaqList.get(0).getFaqCode()).isEqualTo(faqList.get(0).getFaqCode());
+        assertThat(findFaqList.get(0).getNewFaqCode().getCommonCode()).isEqualTo(faqList.get(0).getNewFaqCode().getCommonCode());
         assertThat(findFaqList.get(0).getTitle()).isEqualTo(faqList.get(0).getTitle());
         assertThat(findFaqList.get(0).getDescription()).isEqualTo(faqList.get(0).getDescription());
 
@@ -144,7 +144,7 @@ class FaqServiceTest {
 
         // then
         assertThat(newFaqInfo.getIdx()).isEqualTo(newFaqInfo.getIdx());
-        assertThat(newFaqInfo.getFaqCode()).isEqualTo(newFaqInfo.getFaqCode());
+        assertThat(newFaqInfo.getNewFaqCode().getCommonCode()).isEqualTo(newFaqInfo.getNewFaqCode().getCommonCode());
         assertThat(newFaqInfo.getTitle()).isEqualTo(newFaqInfo.getTitle());
         assertThat(newFaqInfo.getDescription()).isEqualTo(newFaqInfo.getDescription());
 

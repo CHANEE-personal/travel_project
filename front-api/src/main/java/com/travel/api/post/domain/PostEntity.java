@@ -4,7 +4,6 @@ import com.travel.api.common.domain.NewCommonMappedClass;
 import com.travel.api.post.domain.image.PostImageEntity;
 import com.travel.api.post.domain.reply.ReplyEntity;
 import lombok.*;
-import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.Where;
@@ -22,9 +21,10 @@ import static javax.persistence.GenerationType.IDENTITY;
 @Entity
 @Getter
 @Setter
-@SuperBuilder
+@Builder
 @EqualsAndHashCode(of = "idx", callSuper = false)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
 @DynamicUpdate
 @Table(name = "travel_post")
 public class PostEntity extends NewCommonMappedClass {
@@ -94,7 +94,7 @@ public class PostEntity extends NewCommonMappedClass {
                 .viewCount(entity.getViewCount())
                 .favoriteCount(entity.getFavoriteCount())
                 .postReplyList(ReplyEntity.toDtoList(entity.getReplyEntityList()))
-//                .postImageList(CommonImageEntity.toDtoList(entity.getPostImageList()))
+                .postImageList(PostImageEntity.toDtoList(entity.getPostImageList()))
                 .build();
     }
 

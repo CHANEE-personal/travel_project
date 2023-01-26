@@ -2,6 +2,7 @@ package com.travel.api.post.domain.image;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.travel.api.common.domain.EntityType;
+import com.travel.api.post.domain.PostDto;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.*;
@@ -15,9 +16,10 @@ import java.time.LocalDateTime;
 import static com.fasterxml.jackson.annotation.JsonFormat.Shape.STRING;
 
 @Getter
-@SuperBuilder
+@Builder
 @EqualsAndHashCode(of = "idx", callSuper = false)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
 @ApiModel
 public class PostImageDto {
 
@@ -25,7 +27,7 @@ public class PostImageDto {
     private Long idx;
 
     @ApiModelProperty(value = "분야 IDX", required = true, hidden = true, example = "1")
-    private Long typeIdx;
+    private PostDto newPostDto;
 
     @Enumerated(EnumType.STRING)
     @ApiModelProperty(value = "분야명", required = true, hidden = true)

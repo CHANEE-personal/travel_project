@@ -3,7 +3,6 @@ package com.travel.api.travel.domain.festival;
 import com.travel.api.common.domain.CommonEntity;
 import com.travel.api.common.domain.NewCommonMappedClass;
 import lombok.*;
-import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.DynamicUpdate;
 import org.springframework.format.annotation.DateTimeFormat;
 
@@ -19,8 +18,9 @@ import static javax.persistence.GenerationType.IDENTITY;
 
 @Entity
 @Getter
-@SuperBuilder
+@Builder
 @EqualsAndHashCode(of = "idx", callSuper = false)
+@AllArgsConstructor
 @NoArgsConstructor
 @DynamicUpdate
 @Table(name = "travel_festival")
@@ -70,15 +70,12 @@ public class TravelFestivalEntity extends NewCommonMappedClass {
         if (entity == null) return null;
         return TravelFestivalDTO.builder()
                 .idx(entity.getIdx())
+                .travelCode(CommonEntity.toDto(entity.newFestivalCode))
                 .festivalTitle(entity.getFestivalTitle())
                 .festivalDescription(entity.getFestivalDescription())
                 .festivalMonth(entity.getFestivalMonth())
                 .festivalDay(entity.getFestivalDay())
                 .festivalTime(entity.getFestivalTime())
-                .creator(entity.getCreator())
-                .createTime(entity.getCreateTime())
-                .updater(entity.getUpdater())
-                .updateTime(entity.getUpdateTime())
                 .build();
     }
 

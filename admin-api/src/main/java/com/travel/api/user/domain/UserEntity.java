@@ -5,7 +5,6 @@ import com.travel.api.travel.domain.group.TravelGroupUserEntity;
 import com.travel.api.travel.domain.schedule.TravelScheduleEntity;
 import com.vladmihalcea.hibernate.type.json.JsonStringType;
 import lombok.*;
-import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
@@ -24,9 +23,10 @@ import static javax.persistence.GenerationType.IDENTITY;
 @Entity
 @Getter
 @Setter
-@SuperBuilder
+@Builder
 @EqualsAndHashCode(of = "idx", callSuper = false)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
 @DynamicUpdate
 @TypeDef(name = "json", typeClass = JsonStringType.class)
 @Table(name = "travel_user")
@@ -96,11 +96,6 @@ public class UserEntity extends NewCommonMappedClass {
         this.userRefreshToken = refreshToken;
     }
 
-    public void addSchedule(TravelScheduleEntity travelScheduleEntity) {
-        travelScheduleEntity.setUserEntity(this);
-        this.userScheduleList.add(travelScheduleEntity);
-    }
-
     public void addGroup(TravelGroupUserEntity travelGroupUserEntity) {
         travelGroupUserEntity.setUserEntity(this);
         this.userList.add(travelGroupUserEntity);
@@ -119,10 +114,6 @@ public class UserEntity extends NewCommonMappedClass {
                 .userRefreshToken(entity.getUserRefreshToken())
                 .favoriteTravelIdx(entity.getFavoriteTravelIdx())
                 .role(entity.getRole())
-                .creator(entity.getCreator())
-                .createTime(entity.getCreateTime())
-                .updater(entity.getUpdater())
-                .updateTime(entity.getUpdateTime())
                 .build();
     }
 

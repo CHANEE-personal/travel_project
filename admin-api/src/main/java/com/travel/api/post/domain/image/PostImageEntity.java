@@ -20,9 +20,10 @@ import static javax.persistence.FetchType.LAZY;
 @Entity
 @Getter
 @Setter
-@SuperBuilder
+@Builder
 @EqualsAndHashCode(of = "idx", callSuper = false)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
 @DynamicUpdate
 @Table(name = "post_image")
 public class PostImageEntity {
@@ -74,12 +75,13 @@ public class PostImageEntity {
 
     @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "type_idx", referencedColumnName = "idx", nullable = false)
-    private PostEntity postImageEntity;
+    private PostEntity newPostImageEntity;
 
     public static PostImageDto toDto(PostImageEntity entity) {
         if (entity == null) return null;
         return PostImageDto.builder()
                 .idx(entity.getIdx())
+                .newPostDto(PostEntity.toDto(entity.newPostImageEntity))
                 .entityType(entity.getEntityType())
                 .fileMask(entity.getFileMask())
                 .fileSize(entity.getFileSize())

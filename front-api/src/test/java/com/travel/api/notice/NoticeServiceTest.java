@@ -57,6 +57,8 @@ class NoticeServiceTest {
                 .visible("Y").viewCount(1)
                 .build();
 
+        em.persist(noticeEntity);
+
         noticeDTO = NoticeEntity.toDto(noticeEntity);
     }
 
@@ -101,11 +103,10 @@ class NoticeServiceTest {
     @DisplayName("공지사항 상세 조회 Mockito 테스트")
     void 공지사항상세조회Mockito테스트() {
         em.persist(noticeEntity);
-        NoticeDTO newNotice = NoticeEntity.toDto(noticeEntity);
 
         // 조회 수 관련 테스트
-        NoticeDTO oneNotice = noticeService.findOneNotice(newNotice.getIdx());
-        assertThat(newNotice.getViewCount() + 1).isEqualTo(oneNotice.getViewCount());
+        NoticeDTO oneNotice = noticeService.findOneNotice(noticeEntity.getIdx());
+        assertThat(noticeEntity.getViewCount() + 1).isEqualTo(oneNotice.getViewCount());
         // when
         when(mockNoticeService.findOneNotice(noticeDTO.getIdx())).thenReturn(noticeDTO);
         NoticeDTO noticeInfo = mockNoticeService.findOneNotice(noticeDTO.getIdx());

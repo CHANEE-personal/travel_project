@@ -21,6 +21,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.test.context.TestConstructor;
 import org.springframework.test.context.TestPropertySource;
 
+import javax.persistence.EntityManager;
 import javax.transaction.Transactional;
 
 import java.util.ArrayList;
@@ -50,12 +51,16 @@ class NoticeQueryRepositoryTest {
     private NoticeEntity noticeEntity;
     private NoticeDto noticeDTO;
 
+    private final EntityManager em;
+
     void createNotice() {
         noticeEntity = NoticeEntity.builder()
                 .title("공지사항 등록 테스트")
                 .description("공지사항 등록 테스트")
                 .visible("Y").viewCount(1)
                 .build();
+
+        em.persist(noticeEntity);
 
         noticeDTO = NoticeEntity.toDto(noticeEntity);
     }

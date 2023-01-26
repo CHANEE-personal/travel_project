@@ -1,10 +1,8 @@
 package com.travel.api.post.domain.reply;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.travel.api.common.domain.NewCommonMappedClass;
 import com.travel.api.post.domain.PostEntity;
 import lombok.*;
-import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.DynamicUpdate;
 
 import javax.persistence.*;
@@ -19,11 +17,11 @@ import static javax.persistence.GenerationType.IDENTITY;
 @Entity
 @Getter
 @Setter
-@SuperBuilder
+@Builder
 @EqualsAndHashCode(of = "idx", callSuper = false)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
 @DynamicUpdate
-@JsonIgnoreProperties(ignoreUnknown = true)
 @Table(name = "travel_post_comment")
 public class ReplyEntity extends NewCommonMappedClass {
 
