@@ -5,7 +5,6 @@ import com.travel.api.travel.domain.TravelEntity;
 import com.travel.api.travel.domain.festival.TravelFestivalEntity;
 import com.travel.api.travel.domain.schedule.TravelScheduleEntity;
 import lombok.*;
-import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.DynamicUpdate;
 
 import javax.persistence.*;
@@ -23,9 +22,10 @@ import static javax.persistence.GenerationType.IDENTITY;
 @Getter
 @Setter
 @Entity
-@SuperBuilder
+@Builder
 @EqualsAndHashCode(of = "idx", callSuper = false)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
 @DynamicUpdate
 @Table(name = "tv_cmm_code")
 public class CommonEntity extends NewCommonMappedClass implements Serializable {

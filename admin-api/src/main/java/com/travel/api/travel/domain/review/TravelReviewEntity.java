@@ -18,9 +18,10 @@ import static javax.persistence.GenerationType.IDENTITY;
 @Entity
 @Getter
 @Setter
-@SuperBuilder
+@Builder
 @EqualsAndHashCode(of = "idx", callSuper = false)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
 @DynamicUpdate
 @Table(name = "travel_review")
 public class TravelReviewEntity extends NewCommonMappedClass {
@@ -68,17 +69,13 @@ public class TravelReviewEntity extends NewCommonMappedClass {
         if (entity == null) return null;
         return TravelReviewDto.builder()
                 .idx(entity.getIdx())
-                .travelIdx(entity.newTravelEntity.getIdx())
+                .travelDTO(TravelEntity.toDto(entity.newTravelEntity))
                 .reviewTitle(entity.getReviewTitle())
                 .reviewDescription(entity.getReviewDescription())
                 .favoriteCount(entity.getFavoriteCount())
                 .viewCount(entity.getViewCount())
                 .visible(entity.getVisible())
                 .popular(entity.getPopular())
-                .creator(entity.getCreator())
-                .createTime(entity.getCreateTime())
-                .updater(entity.getUpdater())
-                .updateTime(entity.getUpdateTime())
                 .build();
     }
 

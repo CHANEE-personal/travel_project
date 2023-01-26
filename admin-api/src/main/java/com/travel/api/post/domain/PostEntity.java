@@ -22,9 +22,10 @@ import static javax.persistence.GenerationType.IDENTITY;
 
 @Entity
 @Getter
-@SuperBuilder
+@Builder
 @EqualsAndHashCode(of = "idx", callSuper = false)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
 @DynamicUpdate
 @Table(name = "travel_post")
 public class PostEntity extends NewCommonMappedClass {
@@ -64,7 +65,7 @@ public class PostEntity extends NewCommonMappedClass {
     @Builder.Default
     @BatchSize(size = 100)
     @Where(clause = "type_name = 'post'")
-    @OneToMany(mappedBy = "postImageEntity", fetch = LAZY, cascade = CascadeType.REMOVE, orphanRemoval = true)
+    @OneToMany(mappedBy = "newPostImageEntity", fetch = LAZY, cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<PostImageEntity> postImageList = new ArrayList<>();
 
     // 고정글 수정
@@ -73,7 +74,7 @@ public class PostEntity extends NewCommonMappedClass {
     }
 
     public void addPostImage(PostImageEntity postImageEntity) {
-        postImageEntity.setPostImageEntity(this);
+        postImageEntity.setNewPostImageEntity(this);
         this.postImageList.add(postImageEntity);
     }
 

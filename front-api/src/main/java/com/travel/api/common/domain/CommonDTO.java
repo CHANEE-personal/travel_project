@@ -3,12 +3,12 @@ package com.travel.api.common.domain;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.*;
-import lombok.experimental.SuperBuilder;
 
 import javax.validation.constraints.NotEmpty;
 
 @Getter
-@SuperBuilder
+@Builder
+@AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @ApiModel
 public class CommonDTO extends NewCommonDTO {

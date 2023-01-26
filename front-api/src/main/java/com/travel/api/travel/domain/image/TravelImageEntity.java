@@ -5,7 +5,6 @@ import com.travel.api.common.domain.EntityType;
 import com.travel.api.travel.domain.TravelEntity;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.*;
-import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.DynamicUpdate;
 import org.springframework.format.annotation.DateTimeFormat;
 
@@ -20,9 +19,10 @@ import static javax.persistence.FetchType.LAZY;
 @Entity
 @Getter
 @Setter
-@SuperBuilder
+@Builder
 @EqualsAndHashCode(of = "idx", callSuper = false)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
 @DynamicUpdate
 @Table(name = "travel_image")
 public class TravelImageEntity {
@@ -81,6 +81,7 @@ public class TravelImageEntity {
         return TravelImageDTO.builder()
                 .idx(entity.getIdx())
                 .entityType(entity.getEntityType())
+                .newTravelDTO(TravelEntity.toDto(entity.newTravelImageEntity))
                 .fileMask(entity.getFileMask())
                 .fileSize(entity.getFileSize())
                 .fileName(entity.getFileName())

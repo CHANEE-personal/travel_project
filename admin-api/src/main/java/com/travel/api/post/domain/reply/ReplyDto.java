@@ -8,13 +8,12 @@ import lombok.experimental.SuperBuilder;
 import javax.validation.constraints.NotEmpty;
 
 @Getter
-@SuperBuilder
+@Builder
 @EqualsAndHashCode(of = "idx", callSuper = false)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
 @ApiModel(value = "댓글 관련 변수")
 public class ReplyDto {
-    @ApiModelProperty(required = true, value = "rowNum", hidden = true, example = "1")
-    private Integer rowNum;
 
     @ApiModelProperty(required = true, value = "idx", hidden = true, example = "1")
     private Long idx;

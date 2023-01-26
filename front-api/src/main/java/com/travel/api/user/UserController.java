@@ -1,7 +1,5 @@
 package com.travel.api.user;
 
-import com.travel.api.travel.domain.group.TravelGroupUserDTO;
-import com.travel.api.travel.domain.group.TravelGroupUserEntity;
 import com.travel.api.travel.domain.schedule.TravelScheduleDTO;
 import com.travel.api.travel.domain.schedule.TravelScheduleEntity;
 import com.travel.api.user.domain.*;

@@ -148,7 +148,7 @@ public class SaveFile {
                 .fileMask(fileId)
                 .fileNum(index)
                 .entityType(entityType)
-                .postImageEntity(postEntity)
+                .newPostImageEntity(postEntity)
                 .imageType(mainOrSub)
                 .visible("Y")
                 .regDate(LocalDateTime.now())

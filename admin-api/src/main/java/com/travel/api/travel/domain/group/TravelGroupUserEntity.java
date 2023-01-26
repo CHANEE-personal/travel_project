@@ -2,7 +2,6 @@ package com.travel.api.travel.domain.group;
 
 import com.travel.api.user.domain.UserEntity;
 import lombok.*;
-import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.DynamicUpdate;
 
 import javax.persistence.*;
@@ -15,9 +14,10 @@ import static javax.persistence.GenerationType.IDENTITY;
 @Entity
 @Getter
 @Setter
-@SuperBuilder
+@Builder
 @EqualsAndHashCode(of = "idx", callSuper = false)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
 @DynamicUpdate
 @Table(name = "tv_group_user")
 public class TravelGroupUserEntity {
@@ -39,8 +39,8 @@ public class TravelGroupUserEntity {
         if (entity == null) return null;
         return TravelGroupUserDto.builder()
                 .idx(entity.getIdx())
-                .userIdx(entity.userEntity.getIdx())
-                .groupIdx(entity.travelGroupEntity.getIdx())
+                .userDto(UserEntity.toDto(entity.userEntity))
+                .groupDto(TravelGroupEntity.toDto(entity.travelGroupEntity))
                 .build();
     }
 

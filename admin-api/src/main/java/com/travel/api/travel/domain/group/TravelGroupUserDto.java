@@ -1,5 +1,6 @@
 package com.travel.api.travel.domain.group;
 
+import com.travel.api.user.domain.UserDto;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.*;
@@ -8,9 +9,10 @@ import lombok.experimental.SuperBuilder;
 import javax.validation.constraints.NotNull;
 
 @Getter
-@SuperBuilder
+@Builder
 @EqualsAndHashCode(of = "idx", callSuper = false)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
 @ApiModel
 public class TravelGroupUserDto {
 
@@ -19,9 +21,9 @@ public class TravelGroupUserDto {
 
     @NotNull(message = "유저 idx 입력은 필수입니다.")
     @ApiModelProperty(required = true, value = "유저 idx((ex)1)")
-    private Long userIdx;
+    private UserDto userDto;
 
     @NotNull(message = "그룹 idx 입력은 필수입니다.")
     @ApiModelProperty(required = true, value = "그룹 idx((ex)1)")
-    private Long groupIdx;
+    private TravelGroupDto groupDto;
 }

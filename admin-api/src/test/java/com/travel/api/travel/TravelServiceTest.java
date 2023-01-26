@@ -134,7 +134,7 @@ class TravelServiceTest {
         PageRequest pageRequest = PageRequest.of(0, 3);
 
         List<TravelDto> travelList = new ArrayList<>();
-        travelList.add(TravelDto.builder().idx(1L).travelCode(1)
+        travelList.add(TravelDto.builder().idx(1L).newTravelCode(commonDTO)
                 .travelTitle("여행지 소개").travelDescription("여행지 소개")
                 .travelAddress("인천광역시 서구").travelZipCode("123-456").visible("Y").build());
 
@@ -148,7 +148,7 @@ class TravelServiceTest {
 
         // then
         assertThat(findTravelList.get(0).getIdx()).isEqualTo(travelList.get(0).getIdx());
-        assertThat(findTravelList.get(0).getTravelCode()).isEqualTo(travelList.get(0).getTravelCode());
+        assertThat(findTravelList.get(0).getNewTravelCode().getCommonCode()).isEqualTo(travelList.get(0).getNewTravelCode().getCommonCode());
         assertThat(findTravelList.get(0).getTravelTitle()).isEqualTo(travelList.get(0).getTravelTitle());
         assertThat(findTravelList.get(0).getTravelDescription()).isEqualTo(travelList.get(0).getTravelDescription());
         assertThat(findTravelList.get(0).getTravelAddress()).isEqualTo(travelList.get(0).getTravelAddress());
@@ -171,7 +171,7 @@ class TravelServiceTest {
         PageRequest pageRequest = PageRequest.of(0, 3);
 
         List<TravelDto> travelList = new ArrayList<>();
-        travelList.add(TravelDto.builder().idx(1L).travelCode(1)
+        travelList.add(TravelDto.builder().idx(1L).newTravelCode(commonDTO)
                 .travelTitle("여행지 소개").travelDescription("여행지 소개")
                 .travelAddress("인천광역시 서구").travelZipCode("123-456").visible("Y").build());
 
@@ -185,7 +185,7 @@ class TravelServiceTest {
 
         // then
         assertThat(findTravelList.get(0).getIdx()).isEqualTo(travelList.get(0).getIdx());
-        assertThat(findTravelList.get(0).getTravelCode()).isEqualTo(travelList.get(0).getTravelCode());
+        assertThat(findTravelList.get(0).getNewTravelCode().getCommonCode()).isEqualTo(travelList.get(0).getNewTravelCode().getCommonCode());
         assertThat(findTravelList.get(0).getTravelTitle()).isEqualTo(travelList.get(0).getTravelTitle());
         assertThat(findTravelList.get(0).getTravelDescription()).isEqualTo(travelList.get(0).getTravelDescription());
         assertThat(findTravelList.get(0).getTravelAddress()).isEqualTo(travelList.get(0).getTravelAddress());
@@ -207,7 +207,7 @@ class TravelServiceTest {
         PageRequest pageRequest = PageRequest.of(0, 3);
 
         List<TravelDto> travelList = new ArrayList<>();
-        travelList.add(TravelDto.builder().idx(1L).travelCode(1)
+        travelList.add(TravelDto.builder().idx(1L).newTravelCode(commonDTO)
                 .travelTitle("여행지 소개").travelDescription("여행지 소개")
                 .travelAddress("인천광역시 서구").travelZipCode("123-456").visible("Y").build());
 
@@ -221,7 +221,7 @@ class TravelServiceTest {
 
         // then
         assertThat(findTravelList.get(0).getIdx()).isEqualTo(travelList.get(0).getIdx());
-        assertThat(findTravelList.get(0).getTravelCode()).isEqualTo(travelList.get(0).getTravelCode());
+        assertThat(findTravelList.get(0).getNewTravelCode().getCommonCode()).isEqualTo(travelList.get(0).getNewTravelCode().getCommonCode());
         assertThat(findTravelList.get(0).getTravelTitle()).isEqualTo(travelList.get(0).getTravelTitle());
         assertThat(findTravelList.get(0).getTravelDescription()).isEqualTo(travelList.get(0).getTravelDescription());
         assertThat(findTravelList.get(0).getTravelAddress()).isEqualTo(travelList.get(0).getTravelAddress());
@@ -239,7 +239,7 @@ class TravelServiceTest {
     void 여행지상세조회테스트() {
         TravelDto existTravel = travelService.findOneTravel(1L);
         assertThat(existTravel.getIdx()).isEqualTo(1L);
-        assertThat(existTravel.getTravelCode()).isEqualTo(1);
+        assertThat(existTravel.getNewTravelCode().getCommonCode()).isEqualTo(1);
         assertThat(existTravel.getTravelTitle()).isEqualTo("서울 여행지");
 
         assertThatThrownBy(() -> travelService.findOneTravel(3L))
@@ -262,7 +262,7 @@ class TravelServiceTest {
 
         // then
         assertThat(newAdminTravel.getIdx()).isEqualTo(travelDTO.getIdx());
-        assertThat(newAdminTravel.getTravelCode()).isEqualTo(travelDTO.getTravelCode());
+        assertThat(newAdminTravel.getNewTravelCode().getCommonCode()).isEqualTo(travelDTO.getNewTravelCode().getCommonCode());
         assertThat(newAdminTravel.getTravelTitle()).isEqualTo(travelDTO.getTravelTitle());
         assertThat(newAdminTravel.getTravelDescription()).isEqualTo(travelDTO.getTravelDescription());
         assertThat(newAdminTravel.getTravelAddress()).isEqualTo(travelDTO.getTravelAddress());
@@ -283,7 +283,7 @@ class TravelServiceTest {
         // given
         travelDTO = TravelDto.builder()
                 .idx(1L)
-                .travelCode(1)
+                .newTravelCode(commonDTO)
                 .travelTitle("여행지 테스트").travelDescription("여행지 테스트")
                 .travelAddress("인천광역시 서구").travelZipCode("123-456").visible("Y")
                 .build();
@@ -294,7 +294,7 @@ class TravelServiceTest {
 
         // then
         assertThat(newAdminTravel.getIdx()).isEqualTo(travelDTO.getIdx());
-        assertThat(newAdminTravel.getTravelCode()).isEqualTo(travelDTO.getTravelCode());
+        assertThat(newAdminTravel.getNewTravelCode().getCommonCode()).isEqualTo(travelDTO.getNewTravelCode().getCommonCode());
         assertThat(newAdminTravel.getTravelTitle()).isEqualTo(travelDTO.getTravelTitle());
         assertThat(newAdminTravel.getTravelDescription()).isEqualTo(travelDTO.getTravelDescription());
         assertThat(newAdminTravel.getTravelAddress()).isEqualTo(travelDTO.getTravelAddress());
@@ -416,6 +416,7 @@ class TravelServiceTest {
 
         TravelEntity newAdminTravelEntity = TravelEntity.builder()
                 .idx(adminTravelDTO.getIdx())
+                .newTravelCode(commonEntity)
                 .travelTitle("여행지 수정 테스트").travelDescription("여행지 수정 테스트").favoriteCount(0).viewCount(0)
                 .travelAddress("서울특별시 강남구").travelZipCode("123-456")
                 .visible("Y").build();
@@ -430,7 +431,7 @@ class TravelServiceTest {
 
         // then
         assertThat(travelInfo.getIdx()).isEqualTo(newAdminTravelDTO.getIdx());
-        assertThat(travelInfo.getTravelCode()).isEqualTo(newAdminTravelDTO.getTravelCode());
+        assertThat(travelInfo.getNewTravelCode().getCommonCode()).isEqualTo(newAdminTravelDTO.getNewTravelCode().getCommonCode());
         assertThat(travelInfo.getTravelTitle()).isEqualTo(newAdminTravelDTO.getTravelTitle());
 
         // verify
@@ -471,7 +472,7 @@ class TravelServiceTest {
 
         // then
         assertThat(travelInfo.getIdx()).isEqualTo(newAdminTravelDTO.getIdx());
-        assertThat(travelInfo.getTravelCode()).isEqualTo(newAdminTravelDTO.getTravelCode());
+        assertThat(travelInfo.getNewTravelCode().getCommonCode()).isEqualTo(newAdminTravelDTO.getNewTravelCode().getCommonCode());
         assertThat(travelInfo.getTravelTitle()).isEqualTo(newAdminTravelDTO.getTravelTitle());
 
         // verify
@@ -610,7 +611,7 @@ class TravelServiceTest {
         reviewList.add(travelReviewDTO);
 
         travelDTO = TravelDto.builder()
-                .travelCode(1)
+                .newTravelCode(commonDTO)
                 .travelTitle("여행지 테스트").travelDescription("여행지 테스트").favoriteCount(1).viewCount(0)
                 .travelAddress("인천광역시 서구").travelZipCode("123-456").visible("Y").popular(false)
                 .reviewList(reviewList)
@@ -667,7 +668,7 @@ class TravelServiceTest {
         reviewList.add(travelReviewDTO);
 
         travelDTO = TravelDto.builder()
-                .travelCode(1)
+                .newTravelCode(commonDTO)
                 .travelTitle("여행지 테스트").travelDescription("여행지 테스트").favoriteCount(1).viewCount(0)
                 .travelAddress("인천광역시 서구").travelZipCode("123-456").visible("Y").popular(false)
                 .reviewList(reviewList)
@@ -753,7 +754,7 @@ class TravelServiceTest {
         List<TravelReviewDto> reviewList = travelService.travelReviewList(travelInfo.getIdx());
 
         travelDTO = TravelDto.builder()
-                .travelCode(1)
+                .newTravelCode(commonDTO)
                 .travelTitle("여행지 테스트").travelDescription("여행지 테스트").favoriteCount(1).viewCount(0)
                 .travelAddress("인천광역시 서구").travelZipCode("123-456").visible("Y").popular(false)
                 .reviewList(reviewList)
@@ -763,7 +764,7 @@ class TravelServiceTest {
         when(mockTravelService.travelReviewList(travelInfo.getIdx())).thenReturn(reviewList);
 
         // then
-        assertThat(mockTravelService.travelReviewList(travelInfo.getIdx()).get(0).getTravelIdx()).isEqualTo(travelInfo.getIdx());
+        assertThat(mockTravelService.travelReviewList(travelInfo.getIdx()).get(0).getTravelDTO().getIdx()).isEqualTo(travelInfo.getIdx());
         assertThat(mockTravelService.travelReviewList(travelInfo.getIdx()).get(0).getReviewTitle()).isEqualTo("리뷰등록테스트");
         assertThat(mockTravelService.travelReviewList(travelInfo.getIdx()).get(0).getReviewDescription()).isEqualTo("리뷰등록테스트");
     }
@@ -790,7 +791,7 @@ class TravelServiceTest {
         TravelReviewDto travelReviewInfo = mockTravelService.detailTravelReview(travelReviewDTO.getIdx());
 
         // then
-        assertThat(travelReviewDTO.getTravelIdx()).isEqualTo(travelInfo.getIdx());
+        assertThat(travelReviewDTO.getTravelDTO().getIdx()).isEqualTo(travelInfo.getIdx());
         assertThat(travelReviewInfo.getReviewTitle()).isEqualTo("리뷰등록테스트");
         assertThat(travelReviewInfo.getReviewDescription()).isEqualTo("리뷰등록테스트");
 

@@ -10,11 +10,12 @@ import javax.validation.constraints.NotEmpty;
 
 @Getter
 @Setter
-@SuperBuilder
+@Builder
 @EqualsAndHashCode(of = "idx", callSuper = false)
+@AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @ApiModel
-public class SearchDto extends NewCommonDto {
+public class SearchDto  {
 
     @ApiModelProperty(required = true, value = "idx", hidden = true, example = "1")
     private Long idx;

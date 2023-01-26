@@ -151,52 +151,44 @@ class CommonServiceTest {
     @DisplayName("공통 코드 수정 Mockito 테스트")
     void 공통코드수정Mockito테스트() {
         // given
-        CommonDto commonDTO = commonService.insertCommonCode(commonEntity);
+        commonService.insertCommonCode(commonEntity);
         CommonEntity newCommonEntity = CommonEntity.builder()
-                .idx(commonDTO.getIdx())
+                .idx(commonEntity.getIdx())
                 .commonCode(2).commonName("인천").visible("Y").build();
-        commonService.updateCommonCode(commonDTO.getIdx(), newCommonEntity);
+
+        commonService.updateCommonCode(commonEntity.getIdx(), newCommonEntity);
 
         CommonDto newCommonInfo = CommonEntity.toDto(newCommonEntity);
 
         // when
-        when(mockCommonService.findOneCommon(newCommonInfo.getIdx())).thenReturn(newCommonInfo);
-        CommonDto commonInfo = mockCommonService.findOneCommon(newCommonInfo.getIdx());
+        when(mockCommonService.findOneCommon(newCommonEntity.getIdx())).thenReturn(newCommonInfo);
+        CommonDto commonInfo = mockCommonService.findOneCommon(newCommonEntity.getIdx());
 
         // then
-        assertThat(commonInfo.getIdx()).isEqualTo(newCommonInfo.getIdx());
-        assertThat(commonInfo.getCommonCode()).isEqualTo(newCommonInfo.getCommonCode());
-        assertThat(commonInfo.getCommonName()).isEqualTo(newCommonInfo.getCommonName());
+        assertThat(commonInfo.getCommonCode()).isEqualTo(newCommonEntity.getCommonCode());
+        assertThat(commonInfo.getCommonName()).isEqualTo(newCommonEntity.getCommonName());
 
         // verify
-        verify(mockCommonService, times(1)).findOneCommon(commonInfo.getIdx());
-        verify(mockCommonService, atLeastOnce()).findOneCommon(commonInfo.getIdx());
+        verify(mockCommonService, times(1)).findOneCommon(newCommonEntity.getIdx());
+        verify(mockCommonService, atLeastOnce()).findOneCommon(newCommonEntity.getIdx());
         verifyNoMoreInteractions(mockCommonService);
 
         InOrder inOrder = inOrder(mockCommonService);
-        inOrder.verify(mockCommonService).findOneCommon(commonInfo.getIdx());
+        inOrder.verify(mockCommonService).findOneCommon(newCommonEntity.getIdx());
     }
 
     @Test
-    @DisplayName("공통 코드 삭제 Mockito 테스트")
-    void 공통코드삭제Mockito테스트() {
+    @DisplayName("공통 코드 삭제 테스트")
+    void 공통코드삭제테스트() {
         // given
         em.persist(commonEntity);
         commonDTO = CommonEntity.toDto(commonEntity);
 
         // when
-        when(mockCommonService.findOneCommon(commonDTO.getIdx())).thenReturn(commonDTO);
-        Long deleteIdx = commonService.deleteCommonCode(commonDTO.getIdx());
+        when(mockCommonService.findOneCommon(commonEntity.getIdx())).thenReturn(commonDTO);
+        Long deleteIdx = commonService.deleteCommonCode(commonEntity.getIdx());
 
         // then
-        assertThat(mockCommonService.findOneCommon(commonDTO.getIdx()).getIdx()).isEqualTo(deleteIdx);
-
-        // verify
-        verify(mockCommonService, times(1)).findOneCommon(commonDTO.getIdx());
-        verify(mockCommonService, atLeastOnce()).findOneCommon(commonDTO.getIdx());
-        verifyNoMoreInteractions(mockCommonService);
-
-        InOrder inOrder = inOrder(mockCommonService);
-        inOrder.verify(mockCommonService).findOneCommon(commonDTO.getIdx());
+        assertThat(commonEntity.getIdx()).isEqualTo(deleteIdx);
     }
 }

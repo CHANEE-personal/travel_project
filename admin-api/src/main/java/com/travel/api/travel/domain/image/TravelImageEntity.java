@@ -20,9 +20,10 @@ import static javax.persistence.FetchType.LAZY;
 @Entity
 @Getter
 @Setter
-@SuperBuilder
+@Builder
 @EqualsAndHashCode(of = "idx", callSuper = false)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
 @DynamicUpdate
 @Table(name = "travel_image")
 public class TravelImageEntity {
@@ -80,6 +81,7 @@ public class TravelImageEntity {
         if (entity == null) return null;
         return TravelImageDto.builder()
                 .idx(entity.getIdx())
+                .newTravelDto(TravelEntity.toDto(entity.newTravelImageEntity))
                 .entityType(entity.getEntityType())
                 .fileMask(entity.getFileMask())
                 .fileSize(entity.getFileSize())

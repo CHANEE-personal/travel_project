@@ -9,11 +9,12 @@ import lombok.experimental.SuperBuilder;
 import javax.validation.constraints.NotEmpty;
 
 @Getter
-@SuperBuilder
+@Builder
 @EqualsAndHashCode(of = "idx", callSuper = false)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
 @ApiModel(value = "공지사항 관련 변수")
-public class NoticeDto extends NewCommonDto {
+public class NoticeDto  {
 
     @ApiModelProperty(required = true, value = "idx", hidden = true)
     private Long idx;
@@ -27,7 +28,7 @@ public class NoticeDto extends NewCommonDto {
     private String description;
 
     @ApiModelProperty(required = true, value = "viewCount")
-    private Integer viewCount;
+    private int viewCount;
 
     @NotEmpty(message = "공지사항 노출 여부 선택은 필수입니다.")
     @ApiModelProperty(required = true, value = "visible")

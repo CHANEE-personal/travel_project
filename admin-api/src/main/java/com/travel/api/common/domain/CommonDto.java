@@ -3,15 +3,15 @@ package com.travel.api.common.domain;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.*;
-import lombok.experimental.SuperBuilder;
 
 import javax.validation.constraints.NotEmpty;
 
 @Getter
-@SuperBuilder
+@Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
 @ApiModel
-public class CommonDto extends NewCommonDto {
+public class CommonDto  {
 
     @ApiModelProperty(required = true, value = "idx", hidden = true, example = "1")
     private Long idx;

@@ -1,6 +1,7 @@
 package com.travel.api.travel.domain.review;
 
 import com.travel.api.common.domain.NewCommonDto;
+import com.travel.api.travel.domain.TravelDto;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.*;
@@ -10,18 +11,19 @@ import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
 @Getter
-@SuperBuilder
+@Builder
 @EqualsAndHashCode(of = "idx", callSuper = false)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
 @ApiModel
-public class TravelReviewDto extends NewCommonDto {
+public class TravelReviewDto  {
 
     @ApiModelProperty(required = true, value = "idx", hidden = true, example = "1")
     private Long idx;
 
-    @NotNull(message = "여행지 코드 입력은 필수입니다.")
+    @NotNull(message = "여행지 입력은 필수입니다.")
     @ApiModelProperty(required = true, value = "여행지 idx((ex)1)")
-    private Long travelIdx;
+    private TravelDto travelDTO;
 
     @NotEmpty(message = "여행지 리뷰 제목은 필수입니다.")
     @ApiModelProperty(required = true, value = "여행지 리뷰 제목((ex)이 여행지는...)")

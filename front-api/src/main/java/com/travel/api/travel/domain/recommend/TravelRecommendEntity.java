@@ -16,9 +16,10 @@ import static javax.persistence.GenerationType.IDENTITY;
 
 @Entity
 @Getter
-@SuperBuilder
+@Builder
 @EqualsAndHashCode(of = "idx", callSuper = false)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
 @DynamicUpdate
 @Table(name = "travel_recommend")
 public class TravelRecommendEntity extends NewCommonMappedClass {
@@ -41,10 +42,6 @@ public class TravelRecommendEntity extends NewCommonMappedClass {
         return TravelRecommendDTO.builder()
                 .idx(entity.getIdx())
                 .recommendName(entity.getRecommendName())
-                .creator(entity.getCreator())
-                .createTime(entity.getCreateTime())
-                .updater(entity.getUpdater())
-                .updateTime(entity.getUpdateTime())
                 .build();
     }
 

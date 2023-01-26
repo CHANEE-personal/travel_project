@@ -2,7 +2,6 @@ package com.travel.api.common.domain;
 
 import io.swagger.annotations.ApiModelProperty;
 import lombok.*;
-import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.data.annotation.CreatedBy;
@@ -16,7 +15,6 @@ import javax.persistence.MappedSuperclass;
 import java.time.LocalDateTime;
 
 @Getter
-@SuperBuilder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @MappedSuperclass
 @EntityListeners(value = AuditingEntityListener.class)
@@ -24,23 +22,21 @@ public abstract class NewCommonMappedClass {
 
     @CreatedBy
     @Column(name = "creator", updatable = false)
-    @ApiModelProperty(required = true, value = "등록자")
-    private Long creator;
+    private String createdBy;
 
     @LastModifiedBy
     @Column(name = "updater")
-    @ApiModelProperty(required = true, value = "수정자")
-    private Long updater;
+    private String modifiedBy;
 
     @CreationTimestamp
     @Column(name = "create_time", updatable = false)
     @ApiModelProperty(required = true, value = "등록 일자")
     @DateTimeFormat(pattern = "yyyy-MM-dd")
-    private LocalDateTime createTime;
+    private LocalDateTime createdAt;
 
     @UpdateTimestamp
     @Column(name = "update_time")
     @ApiModelProperty(required = true, value = "수정 일자")
     @DateTimeFormat(pattern = "yyyy-MM-dd")
-    private LocalDateTime updateTime;
+    private LocalDateTime modifiedAt;
 }

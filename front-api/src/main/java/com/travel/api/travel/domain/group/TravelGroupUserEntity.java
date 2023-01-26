@@ -14,9 +14,10 @@ import static javax.persistence.GenerationType.IDENTITY;
 @Entity
 @Getter
 @Setter
-@SuperBuilder
+@Builder
 @EqualsAndHashCode(of = "idx", callSuper = false)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
 @DynamicUpdate
 @Table(name = "tv_group_user")
 public class TravelGroupUserEntity {
@@ -38,8 +39,8 @@ public class TravelGroupUserEntity {
         if (entity == null) return null;
         return TravelGroupUserDTO.builder()
                 .idx(entity.getIdx())
-                .userIdx(entity.userEntity.getIdx())
-                .groupIdx(entity.travelGroupEntity.getIdx())
+                .userDTO(UserEntity.toDto(entity.userEntity))
+                .groupDTO(TravelGroupEntity.toDto(entity.travelGroupEntity))
                 .build();
     }
 

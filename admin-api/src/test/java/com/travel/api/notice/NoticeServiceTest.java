@@ -54,8 +54,10 @@ class NoticeServiceTest {
                 .title("공지사항 등록 테스트")
                 .description("공지사항 등록 테스트")
                 .topFixed(false)
-                .visible("Y").viewCount(1)
+                .visible("Y")
                 .build();
+
+        em.persist(noticeEntity);
 
         noticeDTO = NoticeEntity.toDto(noticeEntity);
     }

@@ -2,7 +2,6 @@ package com.travel.api.notice.domain;
 
 import com.travel.api.common.domain.NewCommonMappedClass;
 import lombok.*;
-import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.DynamicUpdate;
 
 import javax.persistence.*;
@@ -14,9 +13,10 @@ import static javax.persistence.GenerationType.IDENTITY;
 
 @Entity
 @Getter
-@SuperBuilder
+@Builder
 @EqualsAndHashCode(of = "idx", callSuper = false)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
 @DynamicUpdate
 @Table(name = "travel_notice")
 public class NoticeEntity extends NewCommonMappedClass {
@@ -36,7 +36,7 @@ public class NoticeEntity extends NewCommonMappedClass {
     private String description;
 
     @Column(name = "view_count")
-    private Integer viewCount;
+    private int viewCount;
 
     @Column(name = "visible")
     @NotEmpty(message = "공지사항 노출 여부 선택은 필수입니다.")

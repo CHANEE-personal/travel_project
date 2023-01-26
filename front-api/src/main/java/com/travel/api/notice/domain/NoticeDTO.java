@@ -4,14 +4,14 @@ import com.travel.api.common.domain.NewCommonDTO;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.*;
-import lombok.experimental.SuperBuilder;
 
 import javax.validation.constraints.NotEmpty;
 
 @Getter
-@SuperBuilder
+@Builder
 @EqualsAndHashCode(of = "idx", callSuper = false)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
 @ApiModel(value = "공지사항 관련 변수")
 public class NoticeDTO extends NewCommonDTO {
 
@@ -27,7 +27,7 @@ public class NoticeDTO extends NewCommonDTO {
     private String description;
 
     @ApiModelProperty(required = true, value = "viewCount")
-    private Integer viewCount;
+    private int viewCount;
 
     @NotEmpty(message = "공지사항 노출 여부 선택은 필수입니다.")
     @ApiModelProperty(required = true, value = "visible")

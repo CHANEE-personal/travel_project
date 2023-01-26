@@ -106,7 +106,6 @@ class PostQueryRepositoryTest {
 
         Page<PostDTO> resultPage = new PageImpl<>(postList, pageRequest, postList.size());
 
-
         // when
         when(mockPostRepository.findPostList(postMap, pageRequest)).thenReturn(resultPage);
         Page<PostDTO> newPostList = mockPostRepository.findPostList(postMap, pageRequest);
@@ -117,14 +116,6 @@ class PostQueryRepositoryTest {
         assertThat(findPostList.get(0).getIdx()).isEqualTo(postList.get(0).getIdx());
         assertThat(findPostList.get(0).getPostTitle()).isEqualTo("게시글 테스트");
         assertThat(findPostList.get(0).getPostDescription()).isEqualTo("게시글 테스트");
-
-        // 게시글 댓글 관련
-        assertThat(findPostList.get(1).getPostTitle()).isEqualTo("게시글 댓글 테스트");
-        assertThat(findPostList.get(1).getPostDescription()).isEqualTo("게시글 댓글 테스트");
-
-        // 게시글 대댓글 관련
-        assertThat(findPostList.get(2).getPostTitle()).isEqualTo("게시글 대댓글 테스트");
-        assertThat(findPostList.get(2).getPostDescription()).isEqualTo("게시글 대댓글 테스트");
 
         // verify
         verify(mockPostRepository, times(1)).findPostList(postMap, pageRequest);

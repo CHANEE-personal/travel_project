@@ -98,7 +98,7 @@ class UserQueryRepositoryTest {
 
         List<UserDto> userList = new ArrayList<>();
         userList.add(UserDto.builder().idx(1L).userId("test01")
-                .adminName("관리자01").name("조찬희").password("test01")
+                .name("조찬희").password("test01")
                 .email("test01@test.com").visible("Y").build());
 
         Page<UserDto> resultPage = new PageImpl<>(userList, pageRequest, userList.size());
@@ -112,7 +112,6 @@ class UserQueryRepositoryTest {
         // then
         assertThat(findUserList.get(0).getIdx()).isEqualTo(userList.get(0).getIdx());
         assertThat(findUserList.get(0).getUserId()).isEqualTo(userList.get(0).getUserId());
-        assertThat(findUserList.get(0).getAdminName()).isEqualTo(userList.get(0).getAdminName());
         assertThat(findUserList.get(0).getName()).isEqualTo(userList.get(0).getName());
         assertThat(findUserList.get(0).getEmail()).isEqualTo(userList.get(0).getEmail());
 
@@ -134,7 +133,7 @@ class UserQueryRepositoryTest {
 
         List<UserDto> userList = new ArrayList<>();
         userList.add(UserDto.builder().idx(1L).userId("test01")
-                .adminName("관리자01").name("조찬희").password("test01")
+                .name("조찬희").password("test01")
                 .email("test01@test.com").visible("Y").build());
 
         Page<UserDto> resultPage = new PageImpl<>(userList, pageRequest, userList.size());
@@ -148,7 +147,6 @@ class UserQueryRepositoryTest {
         // then
         assertThat(findUserList.get(0).getIdx()).isEqualTo(userList.get(0).getIdx());
         assertThat(findUserList.get(0).getUserId()).isEqualTo(userList.get(0).getUserId());
-        assertThat(findUserList.get(0).getAdminName()).isEqualTo(userList.get(0).getAdminName());
         assertThat(findUserList.get(0).getName()).isEqualTo(userList.get(0).getName());
         assertThat(findUserList.get(0).getEmail()).isEqualTo(userList.get(0).getEmail());
 

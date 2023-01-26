@@ -4,14 +4,14 @@ import com.travel.api.common.domain.NewCommonDTO;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.*;
-import lombok.experimental.SuperBuilder;
 
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
 @Getter
-@SuperBuilder
+@Builder
 @EqualsAndHashCode(of = "idx", callSuper = false)
+@AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @ApiModel
 public class TravelGroupDTO extends NewCommonDTO {

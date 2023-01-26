@@ -3,13 +3,13 @@ package com.travel.api.post.domain.image;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.travel.api.common.domain.EntityType;
 import com.travel.api.post.domain.PostEntity;
-import io.swagger.annotations.ApiModelProperty;
 import lombok.*;
-import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.DynamicUpdate;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -20,9 +20,10 @@ import static javax.persistence.FetchType.LAZY;
 @Entity
 @Getter
 @Setter
-@SuperBuilder
+@Builder
 @EqualsAndHashCode(of = "idx", callSuper = false)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
 @DynamicUpdate
 @Table(name = "post_image")
 public class PostImageEntity {
@@ -30,46 +31,43 @@ public class PostImageEntity {
     @Id
     @GeneratedValue
     @Column(name = "idx")
-    @ApiModelProperty(value = "파일 IDX", required = true, hidden = true)
     private Long idx;
 
     @Column(name = "type_name")
     @Enumerated(EnumType.STRING)
-    @ApiModelProperty(value = "분야명", required = true, hidden = true)
     private EntityType entityType;
 
     @Column(name = "file_num")
-    @ApiModelProperty(value = "파일 Number", required = true, hidden = true)
+    @NotNull(message = "fileNum 필수입니다.")
     private Integer fileNum;
 
     @Column(name = "file_name")
-    @ApiModelProperty(required = true, value = "파일명", hidden = true)
+    @NotEmpty(message = "파일명은 필수입니다.")
     private String fileName;
 
     @Column(name = "file_size")
-    @ApiModelProperty(value = "파일SIZE", hidden = true)
+    @NotNull(message = "fileSize 필수입니다.")
     private Long fileSize;
 
     @Column(name = "file_mask")
-    @ApiModelProperty(value = "파일MASK", hidden = true)
+    @NotEmpty(message = "fileMask 필수입니다.")
     private String fileMask;
 
     @Column(name = "file_path")
-    @ApiModelProperty(value = "파일경로", hidden = true)
+    @NotEmpty(message = "filePath 필수입니다.")
     private String filePath;
 
     @Column(name = "image_type")
-    @ApiModelProperty(value = "메인 이미지 구분", hidden = true)
+    @NotEmpty(message = "imageType 필수입니다.")
     private String imageType;
 
     @Column(name = "visible")
-    @ApiModelProperty(value = "사용 여부", hidden = true)
+    @NotEmpty(message = "visible 필수입니다.")
     private String visible;
 
     @Column(name = "reg_date", insertable = false, updatable = false)
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     @JsonFormat(shape = STRING, pattern = "yyyy-MM-dd", timezone = "Asia/Seoul")
-    @ApiModelProperty(value = "등록일자", hidden = true)
     private LocalDateTime regDate;
 
     @ManyToOne(fetch = LAZY)
@@ -81,6 +79,7 @@ public class PostImageEntity {
         return PostImageDTO.builder()
                 .idx(entity.getIdx())
                 .entityType(entity.getEntityType())
+                .newPostDTO(PostEntity.toDto(entity.postImageEntity))
                 .fileMask(entity.getFileMask())
                 .fileSize(entity.getFileSize())
                 .fileName(entity.getFileName())

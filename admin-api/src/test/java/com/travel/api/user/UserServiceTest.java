@@ -132,7 +132,7 @@ class UserServiceTest {
 
         List<UserDto> userList = new ArrayList<>();
         userList.add(UserDto.builder().idx(1L).userId("test01")
-                .adminName("관리자01").name("조찬희").password("test01")
+                .name("조찬희").password("test01")
                 .email("test01@test.com").visible("Y").build());
 
         Page<UserDto> resultPage = new PageImpl<>(userList, pageRequest, userList.size());
@@ -146,7 +146,6 @@ class UserServiceTest {
         // then
         assertThat(findUserList.get(0).getIdx()).isEqualTo(userList.get(0).getIdx());
         assertThat(findUserList.get(0).getUserId()).isEqualTo(userList.get(0).getUserId());
-        assertThat(findUserList.get(0).getAdminName()).isEqualTo(userList.get(0).getAdminName());
         assertThat(findUserList.get(0).getName()).isEqualTo(userList.get(0).getName());
         assertThat(findUserList.get(0).getEmail()).isEqualTo(userList.get(0).getEmail());
 
@@ -168,7 +167,7 @@ class UserServiceTest {
 
         List<UserDto> userList = new ArrayList<>();
         userList.add(UserDto.builder().idx(1L).userId("test01")
-                .adminName("관리자01").name("조찬희").password("test01")
+                .name("조찬희").password("test01")
                 .email("test01@test.com").visible("Y").build());
 
         Page<UserDto> resultPage = new PageImpl<>(userList, pageRequest, userList.size());
@@ -182,7 +181,6 @@ class UserServiceTest {
         // then
         assertThat(findUserList.get(0).getIdx()).isEqualTo(userList.get(0).getIdx());
         assertThat(findUserList.get(0).getUserId()).isEqualTo(userList.get(0).getUserId());
-        assertThat(findUserList.get(0).getAdminName()).isEqualTo(userList.get(0).getAdminName());
         assertThat(findUserList.get(0).getName()).isEqualTo(userList.get(0).getName());
         assertThat(findUserList.get(0).getEmail()).isEqualTo(userList.get(0).getEmail());
 
@@ -413,19 +411,19 @@ class UserServiceTest {
         TravelScheduleDto travelScheduleDTO = TravelScheduleEntity.toDto(travelScheduleEntity);
 
         // when
-        when(mockUserService.findOneUserSchedule(travelScheduleDTO.getUserIdx(), travelScheduleDTO.getIdx())).thenReturn(travelScheduleDTO);
-        TravelScheduleDto oneUserSchedule = mockUserService.findOneUserSchedule(travelScheduleDTO.getUserIdx(), travelScheduleDTO.getIdx());
+        when(mockUserService.findOneUserSchedule(travelScheduleDTO.getUserDTO().getIdx(), travelScheduleDTO.getIdx())).thenReturn(travelScheduleDTO);
+        TravelScheduleDto oneUserSchedule = mockUserService.findOneUserSchedule(travelScheduleDTO.getUserDTO().getIdx(), travelScheduleDTO.getIdx());
 
         // then
         assertThat(oneUserSchedule.getScheduleDescription()).isEqualTo("스케줄 테스트");
 
         // verify
-        verify(mockUserService, times(1)).findOneUserSchedule(travelScheduleDTO.getUserIdx(), travelScheduleDTO.getIdx());
-        verify(mockUserService, atLeastOnce()).findOneUserSchedule(travelScheduleDTO.getUserIdx(), travelScheduleDTO.getIdx());
+        verify(mockUserService, times(1)).findOneUserSchedule(travelScheduleDTO.getUserDTO().getIdx(), travelScheduleDTO.getIdx());
+        verify(mockUserService, atLeastOnce()).findOneUserSchedule(travelScheduleDTO.getUserDTO().getIdx(), travelScheduleDTO.getIdx());
         verifyNoMoreInteractions(mockUserService);
 
         InOrder inOrder = inOrder(mockUserService);
-        inOrder.verify(mockUserService).findOneUserSchedule(travelScheduleDTO.getUserIdx(), travelScheduleDTO.getIdx());
+        inOrder.verify(mockUserService).findOneUserSchedule(travelScheduleDTO.getUserDTO().getIdx(), travelScheduleDTO.getIdx());
     }
 
     @Test
@@ -477,8 +475,8 @@ class UserServiceTest {
         TravelGroupUserDto travelGroupUserInfo = userService.insertTravelGroupUser(insertUser.getIdx(), travelGroupDTO.getIdx(), travelGroupUserEntity);
 
         // then
-        assertThat(travelGroupUserInfo.getGroupIdx()).isEqualTo(travelGroupDTO.getIdx());
-        assertThat(travelGroupUserInfo.getUserIdx()).isEqualTo(insertUser.getIdx());
+        assertThat(travelGroupUserInfo.getGroupDto().getIdx()).isEqualTo(travelGroupDTO.getIdx());
+        assertThat(travelGroupUserInfo.getUserDto().getIdx()).isEqualTo(insertUser.getIdx());
     }
 
     @Test
