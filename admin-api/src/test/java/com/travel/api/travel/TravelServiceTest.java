@@ -248,6 +248,12 @@ class TravelServiceTest {
     }
 
     @Test
+    @DisplayName("이전여행지조회테스트")
+    void 이전여행지조회테스트() {
+        travelService.findPrevOneTravel(3L);
+    }
+
+    @Test
     @DisplayName("여행지소개상세Mockito테스트")
     void 여행지소개상세Mockito테스트() {
         // given

@@ -90,6 +90,44 @@ public class TravelService {
 
     /**
      * <pre>
+     * 1. MethodName : findPrevOneTravel
+     * 2. ClassName  : TravelService.java
+     * 3. Comment    : 이전 여행지 소개 상세 조회
+     * 4. 작성자      : CHO
+     * 5. 작성일      : 2022. 10. 5.
+     * </pre>
+     */
+    @Transactional
+    public TravelDTO findPrevOneTravel(Long idx) {
+        TravelEntity oneTravel = travelRepository.findPrevByIdx(idx)
+                .orElseThrow(() -> new TravelException(NOT_FOUND_TRAVEL));
+
+        // 조회 수 증가
+        oneTravel.updateViewCount();
+        return TravelEntity.toDto(oneTravel);
+    }
+
+    /**
+     * <pre>
+     * 1. MethodName : findNextOneTravel
+     * 2. ClassName  : TravelService.java
+     * 3. Comment    : 다음 소개 상세 조회
+     * 4. 작성자      : CHO
+     * 5. 작성일      : 2022. 10. 5.
+     * </pre>
+     */
+    @Transactional
+    public TravelDTO findNextOneTravel(Long idx) {
+        TravelEntity oneTravel = travelRepository.findNextByIdx(idx)
+                .orElseThrow(() -> new TravelException(NOT_FOUND_TRAVEL));
+
+        // 조회 수 증가
+        oneTravel.updateViewCount();
+        return TravelEntity.toDto(oneTravel);
+    }
+
+    /**
+     * <pre>
      * 1. MethodName : favoriteTravel
      * 2. ClassName  : TravelService.java
      * 3. Comment    : 여행지 좋아요

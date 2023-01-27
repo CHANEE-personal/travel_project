@@ -110,6 +110,36 @@ public class TravelService {
 
     /**
      * <pre>
+     * 1. MethodName : findPrevOneTravel
+     * 2. ClassName  : TravelService.java
+     * 3. Comment    : 이전 여행지 소개 상세 조회
+     * 4. 작성자      : CHO
+     * 5. 작성일      : 2022. 10. 5.
+     * </pre>
+     */
+    @Transactional
+    public TravelDto findPrevOneTravel(Long idx) {
+        return TravelEntity.toDto(travelRepository.findPrevByIdx(idx)
+                .orElseThrow(() -> new TravelException(NOT_FOUND_TRAVEL)));
+    }
+
+    /**
+     * <pre>
+     * 1. MethodName : findNextOneTravel
+     * 2. ClassName  : TravelService.java
+     * 3. Comment    : 다음 여행지 소개 상세 조회
+     * 4. 작성자      : CHO
+     * 5. 작성일      : 2022. 10. 5.
+     * </pre>
+     */
+    @Transactional
+    public TravelDto findNextOneTravel(Long idx) {
+        return TravelEntity.toDto(travelRepository.findNextByIdx(idx)
+                .orElseThrow(() -> new TravelException(NOT_FOUND_TRAVEL)));
+    }
+
+    /**
+     * <pre>
      * 1. MethodName : insertTravel
      * 2. ClassName  : TravelService.java
      * 3. Comment    : 여행지 등록
