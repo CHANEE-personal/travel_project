@@ -20,6 +20,7 @@ import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -345,7 +346,7 @@ public class TravelController {
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @ApiOperation(value = "여행 그룹 리스트 조회", notes = "여행 그룹 리스트를 조회한다.")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "여행 그룹 리스트 조회 성공", response = Page.class),
+            @ApiResponse(code = 200, message = "여행 그룹 리스트 조회 성공", response = List.class),
             @ApiResponse(code = 400, message = "잘못된 요청", response = HttpClientErrorException.BadRequest.class),
             @ApiResponse(code = 401, message = "허용되지 않는 관리자", response = HttpClientErrorException.Unauthorized.class),
             @ApiResponse(code = 403, message = "접근거부", response = HttpClientErrorException.class),
@@ -353,7 +354,7 @@ public class TravelController {
             @ApiResponse(code = 500, message = "서버 에러", response = ServerError.class)
     })
     @GetMapping("/group")
-    public ResponseEntity<Page<TravelGroupDto>> findTravelGroupList(@RequestParam Map<String, Object> paramMap, Paging paging) {
+    public ResponseEntity<List<TravelGroupDto>> findTravelGroupList(@RequestParam Map<String, Object> paramMap, Paging paging) {
         return ResponseEntity.ok(travelService.findTravelGroupList(paramMap, paging.getPageRequest(paging.getPageNum(), paging.getSize())));
     }
 
@@ -466,7 +467,7 @@ public class TravelController {
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @ApiOperation(value = "여행지 추천 검색어 리스트 조회", notes = "여행지 추천 검색어 리스트를 조회한다.")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "여행지 추천 검색어 리스트 조회 성공", response = Map.class),
+            @ApiResponse(code = 200, message = "여행지 추천 검색어 리스트 조회 성공", response = List.class),
             @ApiResponse(code = 400, message = "잘못된 요청", response = HttpClientErrorException.BadRequest.class),
             @ApiResponse(code = 401, message = "허용되지 않는 관리자", response = HttpClientErrorException.Unauthorized.class),
             @ApiResponse(code = 403, message = "접근거부", response = HttpClientErrorException.class),
@@ -474,7 +475,7 @@ public class TravelController {
             @ApiResponse(code = 500, message = "서버 에러", response = ServerError.class)
     })
     @GetMapping(value = "/recommend")
-    public ResponseEntity<Page<TravelRecommendDto>> findTravelRecommendList(@RequestParam Map<String, Object> paramMap, Paging paging) {
+    public ResponseEntity<List<TravelRecommendDto>> findTravelRecommendList(@RequestParam Map<String, Object> paramMap, Paging paging) {
         return ResponseEntity.ok().body(travelService.findTravelRecommendList(paramMap, paging.getPageRequest(paging.getPageNum(), paging.getSize())));
     }
 

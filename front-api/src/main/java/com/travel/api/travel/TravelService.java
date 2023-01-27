@@ -21,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import static com.travel.exception.ApiExceptionType.*;
 
@@ -79,7 +80,12 @@ public class TravelService {
      */
     @Transactional
     public TravelDTO findOneTravel(Long idx) {
-        return travelQueryRepository.findOneTravel(idx);
+        TravelEntity oneTravel = travelRepository.findByIdx(idx)
+                .orElseThrow(() -> new TravelException(NOT_FOUND_TRAVEL));
+
+        // 조회 수 증가
+        oneTravel.updateViewCount();
+        return TravelEntity.toDto(oneTravel);
     }
 
     /**
@@ -210,8 +216,10 @@ public class TravelService {
      * </pre>
      */
     @Transactional(readOnly = true)
-    public Page<TravelRecommendDTO> findTravelRecommendList(Map<String, Object> recommendMap, PageRequest pageRequest) {
-        return travelQueryRepository.findTravelRecommendList(recommendMap, pageRequest);
+    public List<TravelRecommendDTO> findTravelRecommendList(Map<String, Object> recommendMap, PageRequest pageRequest) {
+        return recommendRepository.findAll(pageRequest).stream()
+                .map(TravelRecommendEntity::toDto)
+                .collect(Collectors.toList());
     }
 
     /**

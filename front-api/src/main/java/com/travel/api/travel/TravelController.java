@@ -25,7 +25,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-
 @RestController
 @RequestMapping("/front/travel")
 @Api(tags = "여행 소개 관련 API")
@@ -235,7 +234,7 @@ public class TravelController {
      */
     @ApiOperation(value = "여행지 추천 검색어 리스트 조회", notes = "여행지 추천 검색어 리스트를 조회한다.")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "여행지 추천 검색어 리스트 조회 성공", response = Map.class),
+            @ApiResponse(code = 200, message = "여행지 추천 검색어 리스트 조회 성공", response = List.class),
             @ApiResponse(code = 400, message = "잘못된 요청", response = HttpClientErrorException.BadRequest.class),
             @ApiResponse(code = 401, message = "허용되지 않는 관리자", response = HttpClientErrorException.Unauthorized.class),
             @ApiResponse(code = 403, message = "접근거부", response = HttpClientErrorException.class),
@@ -243,7 +242,7 @@ public class TravelController {
             @ApiResponse(code = 500, message = "서버 에러", response = ServerError.class)
     })
     @GetMapping(value = "/recommend")
-    public ResponseEntity<Page<TravelRecommendDTO>> findTravelRecommendList(@RequestParam Map<String, Object> paramMap, Paging paging) {
+    public ResponseEntity<List<TravelRecommendDTO>> findTravelRecommendList(@RequestParam Map<String, Object> paramMap, Paging paging) {
         return ResponseEntity.ok().body(travelService.findTravelRecommendList(paramMap, paging.getPageRequest(paging.getPageNum(), paging.getSize())));
     }
 

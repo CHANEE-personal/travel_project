@@ -60,7 +60,7 @@ public class FaqController {
      * 5. 작성일      : 2022. 11. 29.
      * </pre>
      */
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_TRAVEL_USER')")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @ApiOperation(value = "FAQ 상세 조회", notes = "FAQ를 상세 조회한다.")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "FAQ 상세 조회 성공", response = FaqDto.class),
