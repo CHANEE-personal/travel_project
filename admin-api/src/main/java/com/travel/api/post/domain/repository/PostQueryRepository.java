@@ -4,7 +4,6 @@ import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.travel.api.post.domain.PostDto;
 import com.travel.api.post.domain.PostEntity;
-import com.travel.api.post.domain.image.QPostImageEntity;
 import com.travel.api.post.domain.reply.QReplyEntity;
 import com.travel.api.post.domain.reply.ReplyEntity;
 import com.travel.exception.TravelException;
@@ -21,7 +20,6 @@ import static com.travel.api.post.domain.QPostEntity.postEntity;
 import static com.travel.api.post.domain.image.QPostImageEntity.postImageEntity;
 import static com.travel.common.StringUtil.getString;
 import static com.travel.exception.ApiExceptionType.NOT_FOUND_POST;
-
 
 @Repository
 @RequiredArgsConstructor

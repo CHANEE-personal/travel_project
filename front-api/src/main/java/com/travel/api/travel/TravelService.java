@@ -21,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import static com.travel.exception.ApiExceptionType.*;
 
@@ -79,7 +80,50 @@ public class TravelService {
      */
     @Transactional
     public TravelDTO findOneTravel(Long idx) {
-        return travelQueryRepository.findOneTravel(idx);
+        TravelEntity oneTravel = travelRepository.findByIdx(idx)
+                .orElseThrow(() -> new TravelException(NOT_FOUND_TRAVEL));
+
+        // 조회 수 증가
+        oneTravel.updateViewCount();
+        return TravelEntity.toDto(oneTravel);
+    }
+
+    /**
+     * <pre>
+     * 1. MethodName : findPrevOneTravel
+     * 2. ClassName  : TravelService.java
+     * 3. Comment    : 이전 여행지 소개 상세 조회
+     * 4. 작성자      : CHO
+     * 5. 작성일      : 2022. 10. 5.
+     * </pre>
+     */
+    @Transactional
+    public TravelDTO findPrevOneTravel(Long idx) {
+        TravelEntity oneTravel = travelRepository.findPrevByIdx(idx)
+                .orElseThrow(() -> new TravelException(NOT_FOUND_TRAVEL));
+
+        // 조회 수 증가
+        oneTravel.updateViewCount();
+        return TravelEntity.toDto(oneTravel);
+    }
+
+    /**
+     * <pre>
+     * 1. MethodName : findNextOneTravel
+     * 2. ClassName  : TravelService.java
+     * 3. Comment    : 다음 소개 상세 조회
+     * 4. 작성자      : CHO
+     * 5. 작성일      : 2022. 10. 5.
+     * </pre>
+     */
+    @Transactional
+    public TravelDTO findNextOneTravel(Long idx) {
+        TravelEntity oneTravel = travelRepository.findNextByIdx(idx)
+                .orElseThrow(() -> new TravelException(NOT_FOUND_TRAVEL));
+
+        // 조회 수 증가
+        oneTravel.updateViewCount();
+        return TravelEntity.toDto(oneTravel);
     }
 
     /**
@@ -210,8 +254,10 @@ public class TravelService {
      * </pre>
      */
     @Transactional(readOnly = true)
-    public Page<TravelRecommendDTO> findTravelRecommendList(Map<String, Object> recommendMap, PageRequest pageRequest) {
-        return travelQueryRepository.findTravelRecommendList(recommendMap, pageRequest);
+    public List<TravelRecommendDTO> findTravelRecommendList(Map<String, Object> recommendMap, PageRequest pageRequest) {
+        return recommendRepository.findAll(pageRequest).stream()
+                .map(TravelRecommendEntity::toDto)
+                .collect(Collectors.toList());
     }
 
     /**

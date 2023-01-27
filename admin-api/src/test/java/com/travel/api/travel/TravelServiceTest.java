@@ -30,6 +30,7 @@ import org.springframework.context.event.EventListener;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.test.context.TestConstructor;
 import org.springframework.test.context.TestPropertySource;
 
@@ -244,6 +245,12 @@ class TravelServiceTest {
 
         assertThatThrownBy(() -> travelService.findOneTravel(3L))
                 .isInstanceOf(TravelException.class).hasMessage("여행 상세 없음");
+    }
+
+    @Test
+    @DisplayName("이전여행지조회테스트")
+    void 이전여행지조회테스트() {
+        travelService.findPrevOneTravel(3L);
     }
 
     @Test
@@ -809,24 +816,22 @@ class TravelServiceTest {
     void 여행지그룹리스트Mockito조회테스트() {
         // given
         Map<String, Object> groupMap = new HashMap<>();
-        PageRequest pageRequest = PageRequest.of(0, 3);
+        PageRequest pageRequest = PageRequest.of(0, 3, Sort.by("idx").descending());
 
         List<TravelGroupDto> travelGroupList = new ArrayList<>();
         travelGroupList.add(TravelGroupDto.builder().travelIdx(1L).groupName("서울모임")
                 .groupDescription("서울모임").visible("Y").build());
 
-        Page<TravelGroupDto> resultPage = new PageImpl<>(travelGroupList, pageRequest, travelGroupList.size());
-
+        travelService.findTravelGroupList(groupMap, pageRequest);
         // when
-        when(mockTravelService.findTravelGroupList(groupMap, pageRequest)).thenReturn(resultPage);
-        Page<TravelGroupDto> newTravelGroupList = mockTravelService.findTravelGroupList(groupMap, pageRequest);
+        when(mockTravelService.findTravelGroupList(groupMap, pageRequest)).thenReturn(travelGroupList);
+        List<TravelGroupDto> newTravelGroupList = mockTravelService.findTravelGroupList(groupMap, pageRequest);
 
-        List<TravelGroupDto> findTravelGroupList = newTravelGroupList.stream().collect(Collectors.toList());
         // then
-        assertThat(findTravelGroupList.get(0).getIdx()).isEqualTo(travelGroupList.get(0).getIdx());
-        assertThat(findTravelGroupList.get(0).getTravelIdx()).isEqualTo(travelGroupList.get(0).getTravelIdx());
-        assertThat(findTravelGroupList.get(0).getGroupName()).isEqualTo(travelGroupList.get(0).getGroupName());
-        assertThat(findTravelGroupList.get(0).getGroupDescription()).isEqualTo(travelGroupList.get(0).getGroupDescription());
+        assertThat(newTravelGroupList.get(0).getIdx()).isEqualTo(travelGroupList.get(0).getIdx());
+        assertThat(newTravelGroupList.get(0).getTravelIdx()).isEqualTo(travelGroupList.get(0).getTravelIdx());
+        assertThat(newTravelGroupList.get(0).getGroupName()).isEqualTo(travelGroupList.get(0).getGroupName());
+        assertThat(newTravelGroupList.get(0).getGroupDescription()).isEqualTo(travelGroupList.get(0).getGroupDescription());
 
         // verify
         verify(mockTravelService, times(1)).findTravelGroupList(groupMap, pageRequest);

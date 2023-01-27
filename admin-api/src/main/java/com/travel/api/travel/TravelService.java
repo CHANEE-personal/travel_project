@@ -31,6 +31,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static com.travel.exception.ApiExceptionType.*;
 
@@ -103,7 +104,38 @@ public class TravelService {
      */
     @Transactional
     public TravelDto findOneTravel(Long idx) {
-        return travelQueryRepository.findOneTravel(idx);
+        return TravelEntity.toDto(travelRepository.findByIdx(idx)
+                .orElseThrow(() -> new TravelException(NOT_FOUND_TRAVEL)));
+    }
+
+    /**
+     * <pre>
+     * 1. MethodName : findPrevOneTravel
+     * 2. ClassName  : TravelService.java
+     * 3. Comment    : 이전 여행지 소개 상세 조회
+     * 4. 작성자      : CHO
+     * 5. 작성일      : 2022. 10. 5.
+     * </pre>
+     */
+    @Transactional
+    public TravelDto findPrevOneTravel(Long idx) {
+        return TravelEntity.toDto(travelRepository.findPrevByIdx(idx)
+                .orElseThrow(() -> new TravelException(NOT_FOUND_TRAVEL)));
+    }
+
+    /**
+     * <pre>
+     * 1. MethodName : findNextOneTravel
+     * 2. ClassName  : TravelService.java
+     * 3. Comment    : 다음 여행지 소개 상세 조회
+     * 4. 작성자      : CHO
+     * 5. 작성일      : 2022. 10. 5.
+     * </pre>
+     */
+    @Transactional
+    public TravelDto findNextOneTravel(Long idx) {
+        return TravelEntity.toDto(travelRepository.findNextByIdx(idx)
+                .orElseThrow(() -> new TravelException(NOT_FOUND_TRAVEL)));
     }
 
     /**
@@ -313,8 +345,10 @@ public class TravelService {
      * </pre>
      */
     @Transactional(readOnly = true)
-    public Page<TravelGroupDto> findTravelGroupList(Map<String, Object> groupMap, PageRequest pageRequest) {
-        return travelQueryRepository.findTravelGroupList(groupMap, pageRequest);
+    public List<TravelGroupDto> findTravelGroupList(Map<String, Object> groupMap, PageRequest pageRequest) {
+        return groupRepository.findAll(pageRequest).stream()
+                .map(TravelGroupEntity::toDto)
+                .collect(Collectors.toList());
     }
 
     /**
@@ -328,7 +362,7 @@ public class TravelService {
      */
     @Transactional(readOnly = true)
     public TravelGroupDto findOneTravelGroup(Long idx) {
-        return travelQueryRepository.findOneTravelGroup(idx);
+        return TravelGroupEntity.toDto(oneGroup(idx));
     }
 
     /**
@@ -398,8 +432,10 @@ public class TravelService {
      * </pre>
      */
     @Transactional(readOnly = true)
-    public Page<TravelRecommendDto> findTravelRecommendList(Map<String, Object> recommendMap, PageRequest pageRequest) {
-        return travelQueryRepository.findTravelRecommendList(recommendMap, pageRequest);
+    public List<TravelRecommendDto> findTravelRecommendList(Map<String, Object> recommendMap, PageRequest pageRequest) {
+        return recommendRepository.findAll(pageRequest)
+                .stream().map(TravelRecommendEntity::toDto)
+                .collect(Collectors.toList());
     }
 
     /**
@@ -511,7 +547,8 @@ public class TravelService {
      */
     @Transactional(readOnly = true)
     public List<TravelFestivalDto> findTravelFestivalList(TravelFestivalEntity travelFestivalEntity) {
-        return travelQueryRepository.findTravelFestivalList(travelFestivalEntity);
+        return festivalRepository.findFestivalList(travelFestivalEntity.getFestivalMonth(), travelFestivalEntity.getFestivalDay())
+                .stream().map(TravelFestivalEntity::toDto).collect(Collectors.toList());
     }
 
     /**

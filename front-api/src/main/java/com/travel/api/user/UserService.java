@@ -3,8 +3,6 @@ package com.travel.api.user;
 import com.travel.api.common.domain.CommonEntity;
 import com.travel.api.common.domain.repository.CommonRepository;
 import com.travel.api.travel.domain.group.TravelGroupEntity;
-import com.travel.api.travel.domain.group.TravelGroupUserDTO;
-import com.travel.api.travel.domain.group.TravelGroupUserEntity;
 import com.travel.api.travel.domain.group.repository.GroupRepository;
 import com.travel.api.travel.domain.group.repository.GroupUserRepository;
 import com.travel.api.travel.domain.schedule.TravelScheduleDTO;
@@ -26,6 +24,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static com.travel.exception.ApiExceptionType.*;
 
@@ -91,15 +90,15 @@ public class UserService {
     private Authentication authenticate(String userId, String password) {
         try {
             return authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(userId, password));
-        } catch(BadCredentialsException e) {
+        } catch (BadCredentialsException e) {
             throw new BadCredentialsException("BadCredentialsException");
-        } catch(DisabledException e) {
+        } catch (DisabledException e) {
             throw new DisabledException("DisabledException");
-        } catch(LockedException e) {
+        } catch (LockedException e) {
             throw new LockedException("LockedException");
-        } catch(UsernameNotFoundException e) {
+        } catch (UsernameNotFoundException e) {
             throw new UsernameNotFoundException("UsernameNotFoundException");
-        } catch(AuthenticationException e) {
+        } catch (AuthenticationException e) {
             log.error(e.getMessage());
         }
 
@@ -232,7 +231,9 @@ public class UserService {
      */
     @Transactional(readOnly = true)
     public List<TravelScheduleDTO> findUserSchedule(Long userIdx) {
-        return userQueryRepository.findUserSchedule(userIdx);
+        return scheduleRepository.findUserSchedule(userIdx)
+                .stream().map(TravelScheduleEntity::toDto)
+                .collect(Collectors.toList());
     }
 
     /**
@@ -246,7 +247,8 @@ public class UserService {
      */
     @Transactional(readOnly = true)
     public TravelScheduleDTO findOneUserSchedule(Long userIdx, Long scheduleIdx) {
-        return userQueryRepository.findOneUserSchedule(userIdx, scheduleIdx);
+        return TravelScheduleEntity.toDto(scheduleRepository.findOneUserSchedule(userIdx, scheduleIdx)
+                .orElseThrow(() -> new TravelException(NOT_FOUND_SCHEDULE)));
     }
 
     /**

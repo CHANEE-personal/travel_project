@@ -60,7 +60,7 @@ public class UserController {
             @ApiResponse(code = 500, message = "서버 에러", response = ServerError.class)
     })
     @GetMapping
-    public ResponseEntity<Page<UserDto>> findUserList(@RequestParam(required = false) Map<String, Object> paramMap, Paging paging) {
+    public ResponseEntity<List<UserDto>> findUserList(@RequestParam(required = false) Map<String, Object> paramMap, Paging paging) {
         return ResponseEntity.ok(userService.findUserList(paramMap, paging.getPageRequest(paging.getPageNum(), paging.getSize())));
     }
 

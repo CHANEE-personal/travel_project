@@ -8,6 +8,8 @@ import com.travel.api.travel.domain.group.TravelGroupUserEntity;
 import com.travel.api.travel.domain.group.repository.GroupRepository;
 import com.travel.api.travel.domain.group.repository.GroupUserRepository;
 import com.travel.api.travel.domain.schedule.TravelScheduleDto;
+import com.travel.api.travel.domain.schedule.TravelScheduleEntity;
+import com.travel.api.travel.domain.schedule.repository.ScheduleRepository;
 import com.travel.api.user.domain.*;
 import com.travel.api.user.domain.repository.UserQueryRepository;
 import com.travel.api.user.domain.repository.UserRepository;
@@ -15,7 +17,6 @@ import com.travel.exception.TravelException;
 import com.travel.jwt.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.security.authentication.*;
 import org.springframework.security.core.Authentication;
@@ -27,6 +28,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import static com.travel.exception.ApiExceptionType.*;
 
@@ -35,11 +37,11 @@ import static com.travel.exception.ApiExceptionType.*;
 @RequiredArgsConstructor
 public class UserService {
 
-    private final UserQueryRepository userQueryRepository;
     private final UserRepository userRepository;
     private final CommonRepository commonRepository;
     private final GroupRepository groupRepository;
     private final GroupUserRepository groupUserRepository;
+    private final ScheduleRepository scheduleRepository;
     private final JwtUtil jwtUtil;
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
@@ -86,15 +88,15 @@ public class UserService {
     private Authentication authenticate(String userId, String password) {
         try {
             return authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(userId, password));
-        } catch(BadCredentialsException e) {
+        } catch (BadCredentialsException e) {
             throw new BadCredentialsException("BadCredentialsException");
-        } catch(DisabledException e) {
+        } catch (DisabledException e) {
             throw new DisabledException("DisabledException");
-        } catch(LockedException e) {
+        } catch (LockedException e) {
             throw new LockedException("LockedException");
-        } catch(UsernameNotFoundException e) {
+        } catch (UsernameNotFoundException e) {
             throw new UsernameNotFoundException("UsernameNotFoundException");
-        } catch(AuthenticationException e) {
+        } catch (AuthenticationException e) {
             log.error(e.getMessage());
         }
 
@@ -111,8 +113,9 @@ public class UserService {
      * </pre>
      */
     @Transactional(readOnly = true)
-    public Page<UserDto> findUserList(Map<String, Object> userMap, PageRequest pageRequest) {
-        return userQueryRepository.findUserList(userMap, pageRequest);
+    public List<UserDto> findUserList(Map<String, Object> userMap, PageRequest pageRequest) {
+        return userRepository.findAll(pageRequest).stream()
+                .map(UserEntity::toDto).collect(Collectors.toList());
     }
 
     /**
@@ -143,20 +146,6 @@ public class UserService {
         UserEntity oneUser = userRepository.findByUserId(id)
                 .orElseThrow(() -> new TravelException(NOT_FOUND_USER));
         return UserEntity.toDto(oneUser);
-    }
-
-    /**
-     * <pre>
-     * 1. MethodName : findOneUserByToken
-     * 2. ClassName  : UserService.java
-     * 3. Comment    : 아이디를 이용한 유저 조회
-     * 4. 작성자       : CHO
-     * 5. 작성일       : 2022. 10. 6.
-     * </pre>
-     */
-    @Transactional(readOnly = true)
-    public String findOneUserByToken(String token) {
-        return userQueryRepository.findOneUserByToken(token);
     }
 
     /**
@@ -237,7 +226,8 @@ public class UserService {
      */
     @Transactional(readOnly = true)
     public List<TravelScheduleDto> findUserSchedule(Long userIdx) {
-        return userQueryRepository.findUserSchedule(userIdx);
+        return scheduleRepository.findUserSchedule(userIdx)
+                .stream().map(TravelScheduleEntity::toDto).collect(Collectors.toList());
     }
 
     /**
@@ -251,7 +241,8 @@ public class UserService {
      */
     @Transactional(readOnly = true)
     public TravelScheduleDto findOneUserSchedule(Long userIdx, Long scheduleIdx) {
-        return userQueryRepository.findOneUserSchedule(userIdx, scheduleIdx);
+        return TravelScheduleEntity.toDto(scheduleRepository.findOneUserSchedule(userIdx, scheduleIdx)
+                .orElseThrow(() -> new TravelException(NOT_FOUND_SCHEDULE)));
     }
 
     /**

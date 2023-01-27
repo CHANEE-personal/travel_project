@@ -116,10 +116,10 @@ class UserServiceTest {
         // given
         Map<String, Object> userMap = new HashMap<>();
         PageRequest pageRequest = PageRequest.of(0, 3);
-        Page<UserDto> userList = userService.findUserList(userMap, pageRequest);
+        List<UserDto> userList = userService.findUserList(userMap, pageRequest);
 
         // then
-        assertThat(userList.getTotalElements()).isGreaterThan(0);
+        assertThat(userList.size()).isGreaterThan(0);
     }
 
     @Test
@@ -129,25 +129,22 @@ class UserServiceTest {
         Map<String, Object> userMap = new HashMap<>();
         PageRequest pageRequest = PageRequest.of(0, 3);
 
-
         List<UserDto> userList = new ArrayList<>();
         userList.add(UserDto.builder().idx(1L).userId("test01")
                 .name("조찬희").password("test01")
                 .email("test01@test.com").visible("Y").build());
 
-        Page<UserDto> resultPage = new PageImpl<>(userList, pageRequest, userList.size());
+//        Page<UserDto> resultPage = new PageImpl<>(userList, pageRequest, userList.size());
 
         // when
-        when(mockUserService.findUserList(userMap, pageRequest)).thenReturn(resultPage);
-        Page<UserDto> newUserList = mockUserService.findUserList(userMap, pageRequest);
-
-        List<UserDto> findUserList = newUserList.stream().collect(Collectors.toList());
+        when(mockUserService.findUserList(userMap, pageRequest)).thenReturn(userList);
+        List<UserDto> newUserList = mockUserService.findUserList(userMap, pageRequest);
 
         // then
-        assertThat(findUserList.get(0).getIdx()).isEqualTo(userList.get(0).getIdx());
-        assertThat(findUserList.get(0).getUserId()).isEqualTo(userList.get(0).getUserId());
-        assertThat(findUserList.get(0).getName()).isEqualTo(userList.get(0).getName());
-        assertThat(findUserList.get(0).getEmail()).isEqualTo(userList.get(0).getEmail());
+        assertThat(newUserList.get(0).getIdx()).isEqualTo(userList.get(0).getIdx());
+        assertThat(newUserList.get(0).getUserId()).isEqualTo(userList.get(0).getUserId());
+        assertThat(newUserList.get(0).getName()).isEqualTo(userList.get(0).getName());
+        assertThat(newUserList.get(0).getEmail()).isEqualTo(userList.get(0).getEmail());
 
         // verify
         verify(mockUserService, times(1)).findUserList(userMap, pageRequest);
@@ -165,24 +162,23 @@ class UserServiceTest {
         Map<String, Object> userMap = new HashMap<>();
         PageRequest pageRequest = PageRequest.of(0, 3);
 
+
         List<UserDto> userList = new ArrayList<>();
         userList.add(UserDto.builder().idx(1L).userId("test01")
                 .name("조찬희").password("test01")
                 .email("test01@test.com").visible("Y").build());
 
-        Page<UserDto> resultPage = new PageImpl<>(userList, pageRequest, userList.size());
+//        Page<UserDto> resultPage = new PageImpl<>(userList, pageRequest, userList.size());
 
         // when
-        given(mockUserService.findUserList(userMap, pageRequest)).willReturn(resultPage);
-        Page<UserDto> newUserList = mockUserService.findUserList(userMap, pageRequest);
-
-        List<UserDto> findUserList = newUserList.stream().collect(Collectors.toList());
+        given(mockUserService.findUserList(userMap, pageRequest)).willReturn(userList);
+        List<UserDto> newUserList = mockUserService.findUserList(userMap, pageRequest);
 
         // then
-        assertThat(findUserList.get(0).getIdx()).isEqualTo(userList.get(0).getIdx());
-        assertThat(findUserList.get(0).getUserId()).isEqualTo(userList.get(0).getUserId());
-        assertThat(findUserList.get(0).getName()).isEqualTo(userList.get(0).getName());
-        assertThat(findUserList.get(0).getEmail()).isEqualTo(userList.get(0).getEmail());
+        assertThat(newUserList.get(0).getIdx()).isEqualTo(userList.get(0).getIdx());
+        assertThat(newUserList.get(0).getUserId()).isEqualTo(userList.get(0).getUserId());
+        assertThat(newUserList.get(0).getName()).isEqualTo(userList.get(0).getName());
+        assertThat(newUserList.get(0).getEmail()).isEqualTo(userList.get(0).getEmail());
 
         // verify
         then(mockUserService).should(times(1)).findUserList(userMap, pageRequest);
@@ -351,6 +347,8 @@ class UserServiceTest {
 
         List<TravelScheduleDto> userSchedule = new ArrayList<>();
         userSchedule.add(travelScheduleEntity);
+
+        userService.findUserSchedule(1L);
 
         // when
         when(mockUserService.findUserSchedule(1L)).thenReturn(userSchedule);
