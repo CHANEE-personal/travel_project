@@ -4,7 +4,6 @@ import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.travel.api.common.domain.CommonDto;
 import com.travel.api.common.domain.CommonEntity;
-import com.travel.api.common.domain.QCommonEntity;
 import com.travel.common.StringUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -16,6 +15,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+import static com.travel.api.common.domain.QCommonEntity.commonEntity;
+
 @Repository
 @RequiredArgsConstructor
 public class CommonQueryRepository {
@@ -24,7 +25,7 @@ public class CommonQueryRepository {
 
     private BooleanExpression searchCommonInfo(Map<String, Object> commonMap) {
         String searchKeyword = StringUtil.getString(commonMap.get("searchKeyword"), "");
-        return !Objects.equals(searchKeyword, "") ? QCommonEntity.commonEntity.commonName.contains(searchKeyword) : null;
+        return !Objects.equals(searchKeyword, "") ? commonEntity.commonName.contains(searchKeyword) : null;
     }
 
     /**
@@ -38,8 +39,8 @@ public class CommonQueryRepository {
      */
     public Page<CommonDto> findCommonList(Map<String, Object> commonMap, PageRequest pageRequest) {
         List<CommonEntity> commonCodeList = queryFactory
-                .selectFrom(QCommonEntity.commonEntity)
-                .orderBy(QCommonEntity.commonEntity.idx.desc())
+                .selectFrom(commonEntity)
+                .orderBy(commonEntity.idx.desc())
                 .where(searchCommonInfo(commonMap))
                 .offset(pageRequest.getOffset())
                 .limit(pageRequest.getPageSize())

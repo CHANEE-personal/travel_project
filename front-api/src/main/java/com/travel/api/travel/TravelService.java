@@ -5,6 +5,9 @@ import com.travel.api.travel.domain.TravelEntity;
 import com.travel.api.travel.domain.festival.TravelFestivalDTO;
 import com.travel.api.travel.domain.festival.TravelFestivalEntity;
 import com.travel.api.travel.domain.festival.repository.FestivalRepository;
+import com.travel.api.travel.domain.group.TravelGroupDTO;
+import com.travel.api.travel.domain.group.TravelGroupEntity;
+import com.travel.api.travel.domain.group.repository.GroupRepository;
 import com.travel.api.travel.domain.recommend.TravelRecommendDTO;
 import com.travel.api.travel.domain.recommend.TravelRecommendEntity;
 import com.travel.api.travel.domain.recommend.repository.RecommendRepository;
@@ -12,6 +15,7 @@ import com.travel.api.travel.domain.review.TravelReviewDTO;
 import com.travel.api.travel.domain.review.TravelReviewEntity;
 import com.travel.api.travel.domain.review.repository.ReviewRepository;
 import com.travel.api.travel.domain.search.SearchDTO;
+import com.travel.api.user.domain.repository.UserRepository;
 import com.travel.exception.TravelException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -34,6 +38,8 @@ public class TravelService {
     private final RecommendRepository recommendRepository;
     private final FestivalRepository festivalRepository;
     private final ReviewRepository reviewRepository;
+    private final GroupRepository groupRepository;
+    private final UserRepository userRepository;
 
     private TravelEntity oneTravel(Long idx) {
         return travelRepository.findById(idx)
@@ -246,6 +252,22 @@ public class TravelService {
 
     /**
      * <pre>
+     * 1. MethodName : findTravelGroupList
+     * 2. ClassName  : TravelService.java
+     * 3. Comment    : 여행지 그룹 리스트 조회
+     * 4. 작성자      : CHO
+     * 5. 작성일      : 2022. 11. 23.
+     * </pre>
+     */
+    @Transactional(readOnly = true)
+    public List<TravelGroupDTO> findTravelGroupList(PageRequest pageRequest) {
+        return groupRepository.findAll(pageRequest)
+                .stream().map(TravelGroupEntity::toDto)
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * <pre>
      * 1. MethodName : findTravelRecommendList
      * 2. ClassName  : TravelService.java
      * 3. Comment    : 여행지 추천 검색어 리스트 조회
@@ -327,7 +349,8 @@ public class TravelService {
      */
     @Transactional(readOnly = true)
     public List<TravelFestivalDTO> findTravelFestivalList(TravelFestivalEntity travelFestivalEntity) {
-        return travelQueryRepository.findTravelFestivalList(travelFestivalEntity);
+        return festivalRepository.findFestivalList(travelFestivalEntity.getFestivalMonth(), travelFestivalEntity.getFestivalDay())
+                .stream().map(TravelFestivalEntity::toDto).collect(Collectors.toList());
     }
 
     /**
