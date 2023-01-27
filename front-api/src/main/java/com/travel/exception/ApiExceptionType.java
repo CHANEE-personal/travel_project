@@ -41,6 +41,8 @@ public enum ApiExceptionType implements BaseExceptionType {
     NOT_FOUND_TRAVEL_LIST("NOT_FOUND_TRAVEL_LIST", 404, "여행 소개 리스트 없음"),
     NOT_FOUND_TRAVEL_GROUP_LIST("NOT_FOUND_TRAVEL_GROUP_LIST", 404, "여행 그룹 리스트 없음"),
     NOT_FOUND_TRAVEL_GROUP("NOT_FOUND_TRAVEL_GROUP", 404, "여행 그룹 상세 없음"),
+    ERROR_TRAVEL_GROUP("ERROR_TRAVEL_GROUP", 500, "여행 그룹 가입 에러"),
+    ERROR_DELETE_GROUP("ERROR_DELETE_GROUP", 500, "여행 그룹 탈퇴 에러"),
     NOT_FOUND_SCHEDULE_LIST("NOT_FOUND_SCHEDULE_LIST", 404, "스케줄 리스트 없음"),
     NOT_FOUND_SCHEDULE("NOT_FOUND_SCHEDULE", 200, "스케줄 상세 없음"),
     ERROR_TRAVEL_SCHEDULE("ERROR_TRAVEL_SCHEDULE", 500, "유저 여행 스케줄 등록 에러"),
