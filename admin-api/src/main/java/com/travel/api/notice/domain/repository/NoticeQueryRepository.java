@@ -16,7 +16,6 @@ import java.util.*;
 import static com.travel.api.notice.domain.QNoticeEntity.noticeEntity;
 import static com.travel.common.StringUtil.getString;
 
-
 @Repository
 @RequiredArgsConstructor
 public class NoticeQueryRepository {

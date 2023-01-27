@@ -260,20 +260,6 @@ public class TravelQueryRepository {
 
     /**
      * <pre>
-     * 1. MethodName : findTravelGroupCount
-     * 2. ClassName  : TravelRepository.java
-     * 3. Comment    : 여행지 그룹 리스트 갯수 조회
-     * 4. 작성자      : CHO
-     * 5. 작성일      : 2022. 11. 25.
-     * </pre>
-     */
-    public Integer findTravelGroupCount(Map<String, Object> groupMap) {
-        return queryFactory.selectFrom(travelGroupEntity)
-                .fetch().size();
-    }
-
-    /**
-     * <pre>
      * 1. MethodName : findTravelGroupList
      * 2. ClassName  : TravelRepository.java
      * 3. Comment    : 여행지 그룹 리스트 조회

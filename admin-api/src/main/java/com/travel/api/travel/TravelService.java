@@ -547,7 +547,8 @@ public class TravelService {
      */
     @Transactional(readOnly = true)
     public List<TravelFestivalDto> findTravelFestivalList(TravelFestivalEntity travelFestivalEntity) {
-        return travelQueryRepository.findTravelFestivalList(travelFestivalEntity);
+        return festivalRepository.findFestivalList(travelFestivalEntity.getFestivalMonth(), travelFestivalEntity.getFestivalDay())
+                .stream().map(TravelFestivalEntity::toDto).collect(Collectors.toList());
     }
 
     /**
