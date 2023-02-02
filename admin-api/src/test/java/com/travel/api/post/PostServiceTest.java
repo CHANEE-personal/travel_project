@@ -1,26 +1,23 @@
 package com.travel.api.post;
 
+import com.travel.api.AdminCommonServiceTest;
 import com.travel.api.post.domain.PostDto;
 import com.travel.api.post.domain.PostEntity;
 import lombok.RequiredArgsConstructor;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.context.event.EventListener;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.test.context.TestConstructor;
 import org.springframework.test.context.TestPropertySource;
 
-import javax.persistence.EntityManager;
 import javax.transaction.Transactional;
 
 import java.util.ArrayList;
@@ -42,35 +39,11 @@ import static org.springframework.test.context.TestConstructor.AutowireMode.ALL;
 @AutoConfigureTestDatabase(replace = NONE)
 @ExtendWith(MockitoExtension.class)
 @DisplayName("게시글 Service Test")
-class PostServiceTest {
+class PostServiceTest extends AdminCommonServiceTest {
 
     @Mock
     private PostService mockPostService;
     private final PostService postService;
-    private final EntityManager em;
-
-    private PostEntity postEntity;
-    private PostDto postDTO;
-
-    void createPost() {
-        postEntity = PostEntity.builder()
-                .postTitle("게시글 테스트")
-                .postDescription("게시글 테스트")
-                .popular(false)
-                .viewCount(0)
-                .favoriteCount(0)
-                .visible("Y")
-                .build();
-
-        em.persist(postEntity);
-        postDTO = PostEntity.toDto(postEntity);
-    }
-
-    @BeforeEach
-    @EventListener(ApplicationReadyEvent.class)
-    public void init() {
-        createPost();
-    }
 
     @Test
     @DisplayName("게시글 리스트 조회 Mockito 테스트")
