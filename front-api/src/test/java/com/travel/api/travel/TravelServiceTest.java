@@ -1,5 +1,6 @@
 package com.travel.api.travel;
 
+import com.travel.api.FrontCommonServiceTest;
 import com.travel.api.common.domain.CommonDTO;
 import com.travel.api.common.domain.CommonEntity;
 import com.travel.api.travel.domain.TravelDTO;
@@ -54,48 +55,11 @@ import static org.springframework.test.context.TestConstructor.AutowireMode.ALL;
 @RequiredArgsConstructor
 @AutoConfigureTestDatabase(replace = NONE)
 @DisplayName("여행지 Service Test")
-class TravelServiceTest {
+class TravelServiceTest extends FrontCommonServiceTest {
     @Mock
     private TravelService mockTravelService;
     private final TravelService travelService;
     private final EntityManager em;
-
-    private TravelEntity travelEntity;
-    private TravelDTO travelDTO;
-    private CommonEntity commonEntity;
-    private CommonDTO commonDTO;
-
-    void createTravel() {
-        commonEntity = CommonEntity.builder()
-                .commonCode(999)
-                .commonName("서울")
-                .visible("Y")
-                .build();
-
-        em.persist(commonEntity);
-
-        commonDTO = CommonEntity.toDto(commonEntity);
-
-        travelEntity = TravelEntity.builder()
-                .newTravelCode(commonEntity)
-                .travelTitle("여행지 소개")
-                .travelDescription("여행지 소개")
-                .travelAddress("인천광역시 서구")
-                .travelZipCode("123-456")
-                .favoriteCount(1)
-                .viewCount(0)
-                .popular(false)
-                .visible("Y")
-                .build();
-
-        travelDTO = TravelEntity.toDto(travelEntity);
-    }
-
-    @BeforeEach
-    @EventListener(ApplicationReadyEvent.class)
-    public void init() {
-        createTravel();
-    }
 
     @Test
     @DisplayName("여행지소개리스트조회테스트")

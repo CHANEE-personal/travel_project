@@ -1,5 +1,6 @@
 package com.travel.api.user;
 
+import com.travel.api.FrontCommonServiceTest;
 import com.travel.api.common.domain.CommonEntity;
 import com.travel.api.travel.domain.schedule.TravelScheduleDTO;
 import com.travel.api.travel.domain.schedule.TravelScheduleEntity;
@@ -7,16 +8,13 @@ import com.travel.api.user.domain.*;
 import lombok.RequiredArgsConstructor;
 import org.json.JSONArray;
 import org.json.JSONException;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.InOrder;
 import org.mockito.Mock;
-import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.event.EventListener;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.TestConstructor;
 import org.springframework.test.context.TestPropertySource;
@@ -44,36 +42,12 @@ import static org.springframework.test.context.TestConstructor.AutowireMode.ALL;
 @RequiredArgsConstructor
 @AutoConfigureTestDatabase(replace = NONE)
 @DisplayName("유저 Service Test")
-class UserServiceTest {
+class UserServiceTest extends FrontCommonServiceTest {
     @Mock
     private UserService mockUserService;
     private final UserService userService;
     private final EntityManager em;
     private final PasswordEncoder passwordEncoder;
-
-    private UserEntity userEntity;
-    private UserDTO userDTO;
-
-    void createUser() {
-        userEntity = UserEntity.builder()
-                .userId("test111")
-                .password("test111")
-                .email("test@naver.com")
-                .name("test")
-                .role(Role.ROLE_TRAVEL_USER)
-                .visible("Y")
-                .build();
-
-        em.persist(userEntity);
-
-        userDTO = UserEntity.toDto(userEntity);
-    }
-
-    @BeforeEach
-    @EventListener(ApplicationReadyEvent.class)
-    public void init() {
-        createUser();
-    }
 
     @Test
     @DisplayName("관리자 로그인 처리 테스트")

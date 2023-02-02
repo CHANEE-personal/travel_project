@@ -1,5 +1,6 @@
 package com.travel.api.user;
 
+import com.travel.api.AdminCommonServiceTest;
 import com.travel.api.common.domain.CommonEntity;
 import com.travel.api.travel.domain.TravelEntity;
 import com.travel.api.travel.domain.group.TravelGroupDto;
@@ -13,19 +14,14 @@ import com.travel.api.user.domain.SignUpRequest;
 import com.travel.api.user.domain.UserDto;
 import com.travel.api.user.domain.UserEntity;
 import lombok.RequiredArgsConstructor;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.InOrder;
 import org.mockito.Mock;
-import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.event.EventListener;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.TestConstructor;
@@ -39,7 +35,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import static com.travel.api.user.domain.Role.ROLE_ADMIN;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -58,34 +53,12 @@ import static org.springframework.test.context.TestConstructor.AutowireMode.ALL;
 @RequiredArgsConstructor
 @AutoConfigureTestDatabase(replace = NONE)
 @DisplayName("유저 Service Test")
-class UserServiceTest {
+class UserServiceTest extends AdminCommonServiceTest {
     @Mock
     private UserService mockUserService;
     private final UserService userService;
     private final EntityManager em;
     private final PasswordEncoder passwordEncoder;
-
-    private UserEntity userEntity;
-    private UserDto userDTO;
-
-    void createUser() {
-        userEntity = UserEntity.builder()
-                .userId("test111")
-                .password("test111")
-                .email("test@naver.com")
-                .name("test")
-                .role(ROLE_ADMIN)
-                .visible("Y")
-                .build();
-
-        userDTO = UserEntity.toDto(userEntity);
-    }
-
-    @BeforeEach
-    @EventListener(ApplicationReadyEvent.class)
-    public void init() {
-        createUser();
-    }
 
     @Test
     @DisplayName("관리자 로그인 처리 테스트")

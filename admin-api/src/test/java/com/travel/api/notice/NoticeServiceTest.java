@@ -1,18 +1,16 @@
 package com.travel.api.notice;
 
+import com.travel.api.AdminCommonServiceTest;
 import com.travel.api.notice.domain.NoticeDto;
 import com.travel.api.notice.domain.NoticeEntity;
 import lombok.RequiredArgsConstructor;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.InOrder;
 import org.mockito.Mock;
-import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.event.EventListener;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -41,32 +39,10 @@ import static org.springframework.test.context.TestConstructor.AutowireMode.ALL;
 @RequiredArgsConstructor
 @AutoConfigureTestDatabase(replace = NONE)
 @DisplayName("공지사항 Service Test")
-class NoticeServiceTest {
+class NoticeServiceTest extends AdminCommonServiceTest {
     @Mock private NoticeService mockNoticeService;
     private final NoticeService noticeService;
     private final EntityManager em;
-
-    private NoticeEntity noticeEntity;
-    private NoticeDto noticeDTO;
-
-    void createNotice() {
-        noticeEntity = NoticeEntity.builder()
-                .title("공지사항 등록 테스트")
-                .description("공지사항 등록 테스트")
-                .topFixed(false)
-                .visible("Y")
-                .build();
-
-        em.persist(noticeEntity);
-
-        noticeDTO = NoticeEntity.toDto(noticeEntity);
-    }
-
-    @BeforeEach
-    @EventListener(ApplicationReadyEvent.class)
-    public void init() {
-        createNotice();
-    }
 
     @Test
     @DisplayName("공지사항 리스트 조회 Mockito 테스트")

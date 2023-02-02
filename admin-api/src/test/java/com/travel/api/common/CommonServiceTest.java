@@ -1,9 +1,9 @@
 package com.travel.api.common;
 
+import com.travel.api.AdminCommonServiceTest;
 import com.travel.api.common.domain.CommonDto;
 import com.travel.api.common.domain.CommonEntity;
 import lombok.RequiredArgsConstructor;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.InOrder;
@@ -11,15 +11,12 @@ import org.mockito.Mock;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.event.EventListener;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.test.context.TestConstructor;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.transaction.annotation.Transactional;
-
-import javax.persistence.EntityManager;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -40,32 +37,10 @@ import static org.springframework.test.context.TestConstructor.AutowireMode.ALL;
 @RequiredArgsConstructor
 @AutoConfigureTestDatabase(replace = NONE)
 @DisplayName("공통 코드 Service Test")
-class CommonServiceTest {
+class CommonServiceTest extends AdminCommonServiceTest {
     @Mock
     private CommonService mockCommonService;
     private final CommonService commonService;
-    private final EntityManager em;
-
-    private CommonEntity commonEntity;
-    private CommonDto commonDTO;
-
-    void createCommon() {
-        commonEntity = CommonEntity.builder()
-                .commonCode(1)
-                .commonName("서울")
-                .visible("Y")
-                .build();
-
-        em.persist(commonEntity);
-
-        commonDTO = CommonEntity.toDto(commonEntity);
-    }
-
-    @BeforeEach
-    @EventListener
-    public void init() {
-        createCommon();
-    }
 
     @Test
     @DisplayName("공통 코드 리스트 조회 Mockito 테스트")
@@ -180,15 +155,11 @@ class CommonServiceTest {
     @Test
     @DisplayName("공통 코드 삭제 테스트")
     void 공통코드삭제테스트() {
-        // given
-        em.persist(commonEntity);
-        commonDTO = CommonEntity.toDto(commonEntity);
-
         // when
-        when(mockCommonService.findOneCommon(commonEntity.getIdx())).thenReturn(commonDTO);
-        Long deleteIdx = commonService.deleteCommonCode(commonEntity.getIdx());
+        when(mockCommonService.findOneCommon(commonDTO.getIdx())).thenReturn(commonDTO);
+        Long deleteIdx = commonService.deleteCommonCode(commonDTO.getIdx());
 
         // then
-        assertThat(commonEntity.getIdx()).isEqualTo(deleteIdx);
+        assertThat(commonDTO.getIdx()).isEqualTo(deleteIdx);
     }
 }
