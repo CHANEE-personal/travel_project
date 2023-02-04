@@ -4,13 +4,17 @@ import com.travel.api.common.domain.CommonEntity;
 import com.travel.api.common.domain.repository.CommonRepository;
 import com.travel.api.travel.domain.group.TravelGroupEntity;
 import com.travel.api.travel.domain.group.repository.GroupRepository;
-import com.travel.api.travel.domain.group.repository.GroupUserRepository;
+import com.travel.api.travel.domain.reservation.TravelReservationEntity;
+import com.travel.api.travel.domain.reservation.repository.TravelReservationRepository;
 import com.travel.api.travel.domain.schedule.TravelScheduleDTO;
 import com.travel.api.travel.domain.schedule.TravelScheduleEntity;
 import com.travel.api.travel.domain.schedule.repository.ScheduleRepository;
 import com.travel.api.user.domain.*;
 import com.travel.api.user.domain.repository.UserQueryRepository;
 import com.travel.api.user.domain.repository.UserRepository;
+import com.travel.api.user.domain.reservation.UserReservationDTO;
+import com.travel.api.user.domain.reservation.UserReservationEntity;
+import com.travel.api.user.domain.reservation.reservation.UserReservationRepository;
 import com.travel.exception.TravelException;
 import com.travel.jwt.JwtUtil;
 import lombok.RequiredArgsConstructor;
@@ -38,7 +42,8 @@ public class UserService {
     private final ScheduleRepository scheduleRepository;
     private final CommonRepository commonRepository;
     private final GroupRepository groupRepository;
-    private final GroupUserRepository groupUserRepository;
+    private final UserReservationRepository userReservationRepository;
+    private final TravelReservationRepository travelReservationRepository;
     private final JwtUtil jwtUtil;
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
@@ -61,6 +66,11 @@ public class UserService {
     private TravelGroupEntity oneGroup(Long idx) {
         return groupRepository.findById(idx)
                 .orElseThrow(() -> new TravelException(NOT_FOUND_TRAVEL_GROUP));
+    }
+
+    private TravelReservationEntity oneReservation(Long idx) {
+        return travelReservationRepository.findById(idx)
+                .orElseThrow(() -> new TravelException(NOT_FOUND_RESERVATION));
     }
 
     @Transactional
@@ -306,6 +316,39 @@ public class UserService {
             return idx;
         } catch (Exception e) {
             throw new TravelException(ERROR_DELETE_TRAVEL_SCHEDULE);
+        }
+    }
+
+    /**
+     * <pre>
+     * 1. MethodName : travelReservation
+     * 2. ClassName  : TravelService.java
+     * 3. Comment    : 유저 여행 예약
+     * 4. 작성자      : CHO
+     * 5. 작성일      : 2023. 02. 04.
+     * </pre>
+     */
+    @Transactional
+    public UserReservationDTO travelReservation(Long userIdx, Long reservationIdx, UserReservationEntity userReservation) {
+        try {
+            TravelReservationEntity oneReservation = oneReservation(reservationIdx);
+
+            // 예약 가능 인원 체크
+            if (oneReservation.getPossibleCount() <= 0 || oneReservation.getPossibleCount() < userReservation.getUserCount()) {
+                throw new TravelException(POSSIBLE_COUNT);
+            }
+
+            // 예약 일자 체크
+            if (oneReservation.getStartDate().isAfter(userReservation.getStartDate()) &&
+                    oneReservation.getEndDate().isBefore(userReservation.getEndDate())) {
+                throw new TravelException(ERROR_RESERVATION);
+            }
+
+            // 여행지 예약
+            userReservation.addReservation(oneReservation);
+            return UserReservationEntity.toDto(userReservationRepository.save(userReservation));
+        } catch (Exception e) {
+            throw new TravelException(NOT_FOUND_TRAVEL);
         }
     }
 }
