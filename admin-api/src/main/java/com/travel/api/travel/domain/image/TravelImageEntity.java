@@ -3,9 +3,9 @@ package com.travel.api.travel.domain.image;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.travel.api.common.domain.EntityType;
 import com.travel.api.travel.domain.TravelEntity;
+import com.travel.api.travel.domain.reservation.TravelReservationEntity;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.*;
-import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.DynamicUpdate;
 import org.springframework.format.annotation.DateTimeFormat;
 
@@ -33,6 +33,10 @@ public class TravelImageEntity {
     @Column(name = "idx")
     @ApiModelProperty(value = "파일 IDX", required = true, hidden = true)
     private Long idx;
+
+    @Column(name = "type_idx")
+    @ApiModelProperty(value = "분야 IDX", required = true, hidden = true)
+    private Long typeIdx;
 
     @Column(name = "type_name")
     @Enumerated(EnumType.STRING)
@@ -74,8 +78,12 @@ public class TravelImageEntity {
     private LocalDateTime regDate;
 
     @ManyToOne(fetch = LAZY)
-    @JoinColumn(name = "type_idx", referencedColumnName = "idx", nullable = false)
+    @JoinColumn(name = "type_idx", referencedColumnName = "idx", insertable = false, updatable = false)
     private TravelEntity newTravelImageEntity;
+
+    @ManyToOne(fetch = LAZY)
+    @JoinColumn(name = "type_idx", referencedColumnName = "idx", insertable = false, updatable = false)
+    private TravelReservationEntity travelReservationEntity;
 
     public static TravelImageDto toDto(TravelImageEntity entity) {
         if (entity == null) return null;
