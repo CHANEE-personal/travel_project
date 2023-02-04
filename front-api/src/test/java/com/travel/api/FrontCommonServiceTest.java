@@ -12,12 +12,20 @@ import com.travel.api.notice.domain.repository.NoticeRepository;
 import com.travel.api.travel.TravelRepository;
 import com.travel.api.travel.domain.TravelDTO;
 import com.travel.api.travel.domain.TravelEntity;
+import com.travel.api.travel.domain.reservation.TravelReservationDTO;
+import com.travel.api.travel.domain.reservation.TravelReservationEntity;
+import com.travel.api.travel.domain.reservation.repository.TravelReservationRepository;
 import com.travel.api.user.domain.UserDTO;
 import com.travel.api.user.domain.UserEntity;
 import com.travel.api.user.domain.repository.UserRepository;
+import com.travel.api.user.domain.reservation.UserReservationDTO;
+import com.travel.api.user.domain.reservation.UserReservationEntity;
+import com.travel.api.user.domain.reservation.reservation.UserReservationRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
+
+import java.time.LocalDateTime;
 
 import static com.travel.api.user.domain.Role.ROLE_TRAVEL_USER;
 
@@ -28,6 +36,8 @@ public abstract class FrontCommonServiceTest {
     @Autowired private FaqRepository faqRepository;
     @Autowired private NoticeRepository noticeRepository;
     @Autowired private UserRepository userRepository;
+    @Autowired private TravelReservationRepository travelReservationRepository;
+    @Autowired private UserReservationRepository userReservationRepository;
 
     protected TravelEntity travelEntity;
     protected TravelDTO travelDTO;
@@ -39,6 +49,10 @@ public abstract class FrontCommonServiceTest {
     protected NoticeDTO noticeDTO;
     protected UserEntity userEntity;
     protected UserDTO userDTO;
+    protected TravelReservationEntity travelReservationEntity;
+    protected TravelReservationDTO travelReservationDTO;
+    protected UserReservationEntity userReservationEntity;
+    protected UserReservationDTO userReservationDTO;
 
     void createData() {
         // 공통 코드 등록
@@ -101,6 +115,37 @@ public abstract class FrontCommonServiceTest {
                         .build());
 
         userDTO = UserEntity.toDto(userEntity);
+
+        // 여행 예약 등록
+        travelReservationEntity = travelReservationRepository.save(
+                TravelReservationEntity.builder()
+                        .commonEntity(commonEntity)
+                        .title("예약 등록지")
+                        .description("예약 등록지")
+                        .address("서울 강남구")
+                        .zipCode("123-456")
+                        .price(50000)
+                        .possibleCount(10)
+                        .startDate(LocalDateTime.now())
+                        .endDate(LocalDateTime.now())
+                        .status(true)
+                        .popular(false)
+                        .build());
+
+        travelReservationDTO = TravelReservationEntity.toDto(travelReservationEntity);
+
+        // 유저 여행 예약 등록
+        userReservationEntity = userReservationRepository.save(
+                UserReservationEntity.builder()
+                        .newUserEntity(userEntity)
+                        .travelReservationEntity(travelReservationEntity)
+                        .price(travelReservationEntity.getPrice())
+                        .startDate(LocalDateTime.of(2022, 2, 1, 0, 0, 0))
+                        .endDate(LocalDateTime.of(2022, 2, 3, 23, 59, 59))
+                        .userCount(2)
+                        .build());
+
+        userReservationDTO = UserReservationEntity.toDto(userReservationEntity);
     }
 
     @BeforeEach

@@ -5,6 +5,8 @@ import com.travel.api.common.domain.CommonEntity;
 import com.travel.api.travel.domain.schedule.TravelScheduleDTO;
 import com.travel.api.travel.domain.schedule.TravelScheduleEntity;
 import com.travel.api.user.domain.*;
+import com.travel.api.user.domain.reservation.UserReservationDTO;
+import com.travel.api.user.domain.reservation.UserReservationEntity;
 import lombok.RequiredArgsConstructor;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -446,5 +448,40 @@ class UserServiceTest extends FrontCommonServiceTest {
         Long deleteIdx = userService.deleteTravelSchedule(oneSchedule.getIdx());
 
         assertThat(deleteIdx).isEqualTo(oneSchedule.getIdx());
+    }
+
+    @Test
+    @DisplayName("유저 여행 예약 리스트 조회 테스트")
+    void 유저여행예약리스트조회테스트() {
+        List<UserReservationDTO> travelReservation = userService.findTravelReservation(userDTO.getIdx());
+
+        assertThat(travelReservation).isNotEmpty();
+        assertThat(travelReservation.get(0).getPrice()).isEqualTo(50000);
+        assertThat(travelReservation.get(0).getUserCount()).isEqualTo(2);
+    }
+
+    @Test
+    @DisplayName("유저 여행 예약 등록 테스트")
+    void 유저여행예약등록테스트() {
+        UserReservationEntity insertReservation = UserReservationEntity.builder()
+                .newUserEntity(userEntity)
+                .travelReservationEntity(travelReservationEntity)
+                .price(travelReservationEntity.getPrice())
+                .startDate(LocalDateTime.of(2022, 2, 1, 0, 0, 0))
+                .endDate(LocalDateTime.of(2022, 2, 3, 23, 59, 59))
+                .userCount(2)
+                .build();
+
+        UserReservationDTO insertUserReservation = userService.travelReservation(userDTO.getIdx(), travelReservationDTO.getIdx(), insertReservation);
+
+        assertThat(insertUserReservation.getUserDTO().getIdx()).isEqualTo(userDTO.getIdx());
+        assertThat(insertUserReservation.getTravelReservationDTO().getIdx()).isEqualTo(travelReservationDTO.getIdx());
+    }
+
+    @Test
+    @DisplayName("유저 여행 예약 취소 테스트")
+    void 유저여행예약취소테스트() {
+        Long deleteIdx = userService.deleteTravelReservation(userReservationDTO.getIdx());
+        assertThat(deleteIdx).isEqualTo(userReservationDTO.getIdx());
     }
 }

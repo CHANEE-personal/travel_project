@@ -1,16 +1,15 @@
 package com.travel.api.user.domain.reservation;
 
+import com.travel.api.common.domain.NewCommonMappedClass;
 import com.travel.api.travel.domain.reservation.TravelReservationEntity;
+import com.travel.api.user.domain.UserEntity;
 import lombok.*;
-import org.hibernate.annotations.BatchSize;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 
 import static javax.persistence.FetchType.LAZY;
 import static javax.persistence.GenerationType.IDENTITY;
@@ -18,10 +17,11 @@ import static javax.persistence.GenerationType.IDENTITY;
 @Entity
 @Getter
 @Setter
+@Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Table(name = "travel_user_reservation")
-public class UserReservationEntity {
+public class UserReservationEntity extends NewCommonMappedClass {
 
     @Id
     @GeneratedValue(strategy = IDENTITY)
@@ -47,15 +47,13 @@ public class UserReservationEntity {
     @NotNull(message = "인원은 필수입니다.")
     private int userCount;
 
-    @Builder.Default
-    @BatchSize(size = 20)
-    @OneToMany(mappedBy = "userReservation", fetch = LAZY, cascade = CascadeType.REMOVE, orphanRemoval = true)
-    private List<TravelReservationEntity> travelReservationList = new ArrayList<>();
+    @ManyToOne(fetch = LAZY)
+    @JoinColumn(name = "user_idx", referencedColumnName = "idx")
+    private UserEntity newUserEntity;
 
-    public void addReservation(TravelReservationEntity travelReservationEntity) {
-        travelReservationEntity.setUserReservation(this);
-        this.travelReservationList.add(travelReservationEntity);
-    }
+    @ManyToOne(fetch = LAZY)
+    @JoinColumn(name = "reservation_idx", referencedColumnName = "idx")
+    private TravelReservationEntity travelReservationEntity;
 
     public static UserReservationDTO toDto(UserReservationEntity entity) {
         if (entity == null) return null;
@@ -66,7 +64,8 @@ public class UserReservationEntity {
                 .startDate(entity.getStartDate())
                 .endDate(entity.getEndDate())
                 .userCount(entity.getUserCount())
-                .travelReservationList(entity.getTravelReservationList())
+                .userDTO(UserEntity.toDto(entity.newUserEntity))
+                .travelReservationDTO(TravelReservationEntity.toDto(entity.travelReservationEntity))
                 .build();
     }
 }

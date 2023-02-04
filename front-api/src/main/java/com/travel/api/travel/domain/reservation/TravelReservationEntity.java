@@ -85,9 +85,15 @@ public class TravelReservationEntity extends NewCommonMappedClass {
     @OneToMany(mappedBy = "travelReservationEntity", fetch = FetchType.LAZY)
     private List<TravelImageEntity> travelImageEntityList = new ArrayList<>();
 
-    @ManyToOne(fetch = LAZY)
-    @JoinColumn(name = "idx", referencedColumnName = "reservation_idx")
-    private UserReservationEntity userReservation;
+    @Builder.Default
+    @BatchSize(size = 20)
+    @OneToMany(mappedBy = "travelReservationEntity", fetch = LAZY, cascade = CascadeType.REMOVE, orphanRemoval = true)
+    private List<UserReservationEntity> userReservationList = new ArrayList<>();
+
+    public void addReservation(UserReservationEntity userReservationEntity) {
+        userReservationEntity.setTravelReservationEntity(this);
+        this.userReservationList.add(userReservationEntity);
+    }
 
     public void update(TravelReservationEntity travelReservationEntity) {
         this.title = travelReservationEntity.title;

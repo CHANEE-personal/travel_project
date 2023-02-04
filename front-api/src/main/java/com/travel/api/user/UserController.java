@@ -313,6 +313,30 @@ public class UserController {
             @ApiResponse(code = 404, message = "존재 하지 않음", response = HttpClientErrorException.NotFound.class),
             @ApiResponse(code = 500, message = "서버 에러", response = ServerError.class)
     })
+    @GetMapping("/{idx}/reservation")
+    public ResponseEntity<List<UserReservationDTO>> findTravelReservation(@PathVariable Long idx) {
+        return ResponseEntity.ok(userService.findTravelReservation(idx));
+    }
+
+    /**
+     * <pre>
+     * 1. MethodName : travelReservation
+     * 2. ClassName  : TravelController.java
+     * 3. Comment    : 유저 여행 예약
+     * 4. 작성자      : CHO
+     * 5. 작성일      : 2023. 02. 04.
+     * </pre>
+     */
+    @PreAuthorize("hasRole('ROLE_TRAVEL_USER')")
+    @ApiOperation(value = "유저 여행 예약", notes = "유저 여행을 예약한다.")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "유저 여행 예약 성공", response = TravelScheduleDTO.class),
+            @ApiResponse(code = 400, message = "잘못된 요청", response = HttpClientErrorException.BadRequest.class),
+            @ApiResponse(code = 401, message = "허용되지 않는 관리자", response = HttpClientErrorException.Unauthorized.class),
+            @ApiResponse(code = 403, message = "접근거부", response = HttpClientErrorException.class),
+            @ApiResponse(code = 404, message = "존재 하지 않음", response = HttpClientErrorException.NotFound.class),
+            @ApiResponse(code = 500, message = "서버 에러", response = ServerError.class)
+    })
     @PostMapping("/{idx}/reservation/{reservationIdx}")
     public ResponseEntity<UserReservationDTO> travelReservation(@PathVariable Long idx, @PathVariable Long reservationIdx, @RequestBody UserReservationEntity userReservation) {
         return ResponseEntity.created(URI.create("")).body(userService.travelReservation(idx, reservationIdx, userReservation));

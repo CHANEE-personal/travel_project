@@ -3,6 +3,7 @@ package com.travel.api.user.domain;
 import com.travel.api.common.domain.NewCommonMappedClass;
 import com.travel.api.travel.domain.group.TravelGroupUserEntity;
 import com.travel.api.travel.domain.schedule.TravelScheduleEntity;
+import com.travel.api.user.domain.reservation.UserReservationEntity;
 import com.vladmihalcea.hibernate.type.json.JsonStringType;
 import lombok.*;
 import org.hibernate.annotations.DynamicUpdate;
@@ -78,6 +79,10 @@ public class UserEntity extends NewCommonMappedClass {
     @OneToMany(mappedBy = "userEntity", cascade = CascadeType.REMOVE)
     private List<TravelScheduleEntity> userScheduleList = new ArrayList<>();
 
+    @Builder.Default
+    @OneToMany(mappedBy = "newUserEntity", cascade = CascadeType.REMOVE)
+    private List<UserReservationEntity> userReservationList = new ArrayList<>();
+
     public void update(UserEntity userEntity) {
         this.userId = userEntity.userId;
         this.password = userEntity.password;
@@ -103,6 +108,11 @@ public class UserEntity extends NewCommonMappedClass {
     public void addGroup(TravelGroupUserEntity travelGroupUserEntity) {
         travelGroupUserEntity.setUserEntity(this);
         this.userList.add(travelGroupUserEntity);
+    }
+
+    public void addUser(UserReservationEntity userReservation) {
+        userReservation.setNewUserEntity(this);
+        this.userReservationList.add(userReservation);
     }
 
     public static UserDTO toDto(UserEntity entity) {

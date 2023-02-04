@@ -1,7 +1,9 @@
 package com.travel.api.user.domain.reservation;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.travel.api.travel.domain.reservation.TravelReservationDTO;
 import com.travel.api.travel.domain.reservation.TravelReservationEntity;
+import com.travel.api.user.domain.UserDTO;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.*;
@@ -46,6 +48,9 @@ public class UserReservationDTO {
     @ApiModelProperty(value = "예약 인원수((ex)0)", example = "1")
     private int userCount;
 
-    @ApiModelProperty(value = "travelReservationList", hidden = true)
-    private List<TravelReservationEntity> travelReservationList = new ArrayList<>();
+    @ApiModelProperty(value = "userDTO", hidden = true)
+    private UserDTO userDTO;
+
+    @ApiModelProperty(value = "travelReservationDTO", hidden = true)
+    private TravelReservationDTO travelReservationDTO;
 }

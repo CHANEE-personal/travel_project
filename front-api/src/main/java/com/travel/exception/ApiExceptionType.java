@@ -57,6 +57,7 @@ public enum ApiExceptionType implements BaseExceptionType {
     ERROR_RESERVATION("ERROR_RESERVATION", 500, "여행 예약 에러"),
     ERROR_DELETE_RESERVATION("ERROR_DELETE_RESERVATION", 500, "여행 예약 취소 에러"),
     POSSIBLE_COUNT("POSSIBLE_COUNT", 500, "예약 가능한 수가 부족"),
+    POSSIBLE_DATE("POSSIBLE_DATE", 500, "예약 가능 일자 아님"),
 
     // 공지사항 관련
     NOT_FOUND_NOTICE_LIST("NOT_FOUND_NOTICE_LIST", 404, "공지사항 리스트 없음"),

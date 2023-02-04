@@ -321,6 +321,21 @@ public class UserService {
 
     /**
      * <pre>
+     * 1. MethodName : findTravelReservation
+     * 2. ClassName  : TravelService.java
+     * 3. Comment    : 유저 여행 예약 리스트 조회
+     * 4. 작성자      : CHO
+     * 5. 작성일      : 2023. 02. 04.
+     * </pre>
+     */
+    @Transactional(readOnly = true)
+    public List<UserReservationDTO> findTravelReservation(Long userIdx) {
+        return userReservationRepository.findUserReservationList(userIdx)
+                .stream().map(UserReservationEntity::toDto).collect(Collectors.toList());
+    }
+
+    /**
+     * <pre>
      * 1. MethodName : travelReservation
      * 2. ClassName  : TravelService.java
      * 3. Comment    : 유저 여행 예약
@@ -333,22 +348,47 @@ public class UserService {
         try {
             TravelReservationEntity oneReservation = oneReservation(reservationIdx);
 
-            // 예약 가능 인원 체크
-            if (oneReservation.getPossibleCount() <= 0 || oneReservation.getPossibleCount() < userReservation.getUserCount()) {
-                throw new TravelException(POSSIBLE_COUNT);
-            }
+            // 예약 가능 상태 체크
+            if (oneReservation.getStatus()) {
+                // 예약 가능 인원 체크
+                if (oneReservation.getPossibleCount() <= 0 || oneReservation.getPossibleCount() < userReservation.getUserCount()) {
+                    throw new TravelException(POSSIBLE_COUNT);
+                }
 
-            // 예약 일자 체크
-            if (oneReservation.getStartDate().isAfter(userReservation.getStartDate()) &&
-                    oneReservation.getEndDate().isBefore(userReservation.getEndDate())) {
-                throw new TravelException(ERROR_RESERVATION);
-            }
+                // 예약 일자 체크
+                if (oneReservation.getStartDate().isAfter(userReservation.getStartDate()) &&
+                        oneReservation.getEndDate().isBefore(userReservation.getEndDate())) {
+                    throw new TravelException(POSSIBLE_DATE);
+                }
 
-            // 여행지 예약
-            userReservation.addReservation(oneReservation);
-            return UserReservationEntity.toDto(userReservationRepository.save(userReservation));
+                // 여행지 예약
+                oneReservation(reservationIdx).addReservation(userReservation);
+                oneUser(userIdx).addUser(userReservation);
+                return UserReservationEntity.toDto(userReservationRepository.save(userReservation));
+            } else {
+                return null;
+            }
         } catch (Exception e) {
             throw new TravelException(NOT_FOUND_TRAVEL);
+        }
+    }
+
+    /**
+     * <pre>
+     * 1. MethodName : deleteTravelReservation
+     * 2. ClassName  : TravelService.java
+     * 3. Comment    : 유저 여행 예약 취소
+     * 4. 작성자      : CHO
+     * 5. 작성일      : 2023. 02. 04.
+     * </pre>
+     */
+    @Transactional
+    public Long deleteTravelReservation(Long idx) {
+        try {
+            userReservationRepository.deleteById(idx);
+            return idx;
+        } catch (Exception e) {
+            throw new TravelException(ERROR_DELETE_RESERVATION);
         }
     }
 }
