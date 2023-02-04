@@ -3,6 +3,7 @@ package com.travel.api.common.domain;
 import com.travel.api.faq.domain.FaqEntity;
 import com.travel.api.travel.domain.TravelEntity;
 import com.travel.api.travel.domain.festival.TravelFestivalEntity;
+import com.travel.api.travel.domain.reservation.TravelReservationEntity;
 import com.travel.api.travel.domain.schedule.TravelScheduleEntity;
 import lombok.*;
 import org.hibernate.annotations.DynamicUpdate;
@@ -63,9 +64,18 @@ public class CommonEntity extends NewCommonMappedClass implements Serializable {
     @OneToMany(mappedBy = "newFestivalCode", cascade = ALL, fetch = LAZY)
     private List<TravelFestivalEntity> festivalEntityList = new ArrayList<>();
 
+    @Builder.Default
+    @OneToMany(mappedBy = "commonEntity", cascade = ALL, fetch = LAZY)
+    private List<TravelReservationEntity> reservationList = new ArrayList<>();
+
     public void addCommon(FaqEntity faqEntity) {
         faqEntity.setNewFaqCode(this);
         this.faqEntityList.add(faqEntity);
+    }
+
+    public void addReservation(TravelReservationEntity travelReservationEntity) {
+        travelReservationEntity.setCommonEntity(this);
+        this.reservationList.add(travelReservationEntity);
     }
 
     public void addTravel(TravelEntity travelEntity) {

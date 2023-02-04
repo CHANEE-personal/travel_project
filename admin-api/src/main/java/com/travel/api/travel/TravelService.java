@@ -15,6 +15,9 @@ import com.travel.api.travel.domain.image.TravelImageEntity;
 import com.travel.api.travel.domain.recommend.TravelRecommendDto;
 import com.travel.api.travel.domain.recommend.TravelRecommendEntity;
 import com.travel.api.travel.domain.recommend.repository.RecommendRepository;
+import com.travel.api.travel.domain.reservation.TravelReservationDto;
+import com.travel.api.travel.domain.reservation.TravelReservationEntity;
+import com.travel.api.travel.domain.reservation.repository.ReservationRepository;
 import com.travel.api.travel.domain.review.TravelReviewDto;
 import com.travel.api.travel.domain.review.TravelReviewEntity;
 import com.travel.api.travel.domain.review.repository.ReviewRepository;
@@ -48,6 +51,7 @@ public class TravelService {
     private final FestivalRepository festivalRepository;
     private final ReviewRepository reviewRepository;
     private final GroupRepository groupRepository;
+    private final ReservationRepository reservationRepository;
 
     private CommonEntity oneCommon(Integer commonCode) {
         return commonRepository.findByCommonCode(commonCode)
@@ -77,6 +81,11 @@ public class TravelService {
     private TravelGroupEntity oneGroup(Long idx) {
         return groupRepository.findById(idx)
                 .orElseThrow(() -> new TravelException(NOT_FOUND_TRAVEL_GROUP));
+    }
+
+    private TravelReservationEntity oneReservation(Long idx) {
+        return reservationRepository.findById(idx)
+                .orElseThrow(() -> new TravelException(NOT_FOUND_RESERVATION));
     }
 
     /**
@@ -619,6 +628,88 @@ public class TravelService {
             return idx;
         } catch (Exception e) {
             throw new TravelException(ERROR_DELETE_FESTIVAL);
+        }
+    }
+
+    /**
+     * <pre>
+     * 1. MethodName : findTravelReservationList
+     * 2. ClassName  : TravelService.java
+     * 3. Comment    : 예약 리스트 조회
+     * 4. 작성자      : CHO
+     * 5. 작성일      : 2023. 01. 28.
+     * </pre>
+     */
+    public List<TravelReservationDto> findTravelReservationList() {
+        return reservationRepository.findAll()
+                .stream().map(TravelReservationEntity::toDto).collect(Collectors.toList());
+    }
+
+    /**
+     * <pre>
+     * 1. MethodName : findOneTravelReservation
+     * 2. ClassName  : TravelService.java
+     * 3. Comment    : 예약 상세 조회
+     * 4. 작성자      : CHO
+     * 5. 작성일      : 2023. 01. 28.
+     * </pre>
+     */
+    public TravelReservationDto findOneTravelReservation(Long idx) {
+        return TravelReservationEntity.toDto(reservationRepository.findByIdx(idx)
+                .orElseThrow(() -> new TravelException(NOT_FOUND_RESERVATION)));
+    }
+
+    /**
+     * <pre>
+     * 1. MethodName : insertTravelReservation
+     * 2. ClassName  : TravelService.java
+     * 3. Comment    : 예약 등록
+     * 4. 작성자      : CHO
+     * 5. 작성일      : 2023. 01. 28.
+     * </pre>
+     */
+    public TravelReservationDto insertTravelReservation(TravelReservationEntity travelReservationEntity) {
+        try {
+            oneCommon(travelReservationEntity.getCommonEntity().getCommonCode()).addReservation(travelReservationEntity);
+            return TravelReservationEntity.toDto(reservationRepository.save(travelReservationEntity));
+        } catch (Exception e) {
+            throw new TravelException(ERROR_RESERVATION);
+        }
+    }
+
+    /**
+     * <pre>
+     * 1. MethodName : updateTravelReservation
+     * 2. ClassName  : TravelService.java
+     * 3. Comment    : 예약 수정
+     * 4. 작성자      : CHO
+     * 5. 작성일      : 2023. 01. 28.
+     * </pre>
+     */
+    public TravelReservationDto updateTravelReservation(Long idx, TravelReservationEntity travelReservationEntity) {
+        try {
+            oneReservation(idx).update(travelReservationEntity);
+            return TravelReservationEntity.toDto(travelReservationEntity);
+        } catch (Exception e) {
+            throw new TravelException(ERROR_UPDATE_RESERVATION);
+        }
+    }
+
+    /**
+     * <pre>
+     * 1. MethodName : deleteTravelReservation
+     * 2. ClassName  : TravelService.java
+     * 3. Comment    : 예약 삭제
+     * 4. 작성자      : CHO
+     * 5. 작성일      : 2023. 01. 28.
+     * </pre>
+     */
+    public Long deleteTravelReservation(Long idx) {
+        try {
+            reservationRepository.deleteById(idx);
+            return idx;
+        } catch (Exception e) {
+            throw new TravelException(ERROR_DELETE_RESERVATION);
         }
     }
 }

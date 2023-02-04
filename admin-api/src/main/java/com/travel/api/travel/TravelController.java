@@ -11,6 +11,8 @@ import com.travel.api.travel.domain.image.TravelImageDto;
 import com.travel.api.travel.domain.image.TravelImageEntity;
 import com.travel.api.travel.domain.recommend.TravelRecommendDto;
 import com.travel.api.travel.domain.recommend.TravelRecommendEntity;
+import com.travel.api.travel.domain.reservation.TravelReservationDto;
+import com.travel.api.travel.domain.reservation.TravelReservationEntity;
 import com.travel.api.travel.domain.review.TravelReviewDto;
 import com.travel.api.travel.domain.review.TravelReviewEntity;
 import com.travel.common.Paging;
@@ -20,7 +22,6 @@ import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -749,6 +750,127 @@ public class TravelController {
     @DeleteMapping("/festival/{idx}")
     public ResponseEntity<Long> deleteTravelFestival(@PathVariable Long idx) {
         travelService.deleteTravelFestival(idx);
+        return ResponseEntity.noContent().build();
+    }
+
+    /**
+     * <pre>
+     * 1. MethodName : findTravelReservationList
+     * 2. ClassName  : TravelController.java
+     * 3. Comment    : 여행 예약 리스트 조회
+     * 4. 작성자      : CHO
+     * 5. 작성일      : 2023. 01. 28.
+     * </pre>
+     */
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @ApiOperation(value = "예약 리스트 조회", notes = "예약 리스트를 조회한다.")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "예약 리스트 조회 성공", response = List.class),
+            @ApiResponse(code = 400, message = "잘못된 요청", response = HttpClientErrorException.BadRequest.class),
+            @ApiResponse(code = 401, message = "허용되지 않는 관리자", response = HttpClientErrorException.Unauthorized.class),
+            @ApiResponse(code = 403, message = "접근거부", response = HttpClientErrorException.class),
+            @ApiResponse(code = 404, message = "존재 하지 않음", response = HttpClientErrorException.NotFound.class),
+            @ApiResponse(code = 500, message = "서버 에러", response = ServerError.class)
+    })
+    @GetMapping("/reservation")
+    public ResponseEntity<List<TravelReservationDto>> findTravelReservationList() {
+        return ResponseEntity.ok(travelService.findTravelReservationList());
+    }
+
+    /**
+     * <pre>
+     * 1. MethodName : findOneTravelReservation
+     * 2. ClassName  : TravelController.java
+     * 3. Comment    : 여행 예약 상세 조회
+     * 4. 작성자      : CHO
+     * 5. 작성일      : 2023. 01. 28.
+     * </pre>
+     */
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @ApiOperation(value = "예약 상세 조회", notes = "예약 상세 조회한다.")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "예약 상세 조회 성공", response = TravelReservationDto.class),
+            @ApiResponse(code = 400, message = "잘못된 요청", response = HttpClientErrorException.BadRequest.class),
+            @ApiResponse(code = 401, message = "허용되지 않는 관리자", response = HttpClientErrorException.Unauthorized.class),
+            @ApiResponse(code = 403, message = "접근거부", response = HttpClientErrorException.class),
+            @ApiResponse(code = 404, message = "존재 하지 않음", response = HttpClientErrorException.NotFound.class),
+            @ApiResponse(code = 500, message = "서버 에러", response = ServerError.class)
+    })
+    @GetMapping("/reservation/{idx}")
+    public ResponseEntity<TravelReservationDto> findOneTravelReservation(@PathVariable Long idx) {
+        return ResponseEntity.ok(travelService.findOneTravelReservation(idx));
+    }
+
+    /**
+     * <pre>
+     * 1. MethodName : insertTravelReservation
+     * 2. ClassName  : TravelController.java
+     * 3. Comment    : 여행 예약 등록
+     * 4. 작성자      : CHO
+     * 5. 작성일      : 2023. 01. 28.
+     * </pre>
+     */
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @ApiOperation(value = "예약 등록", notes = "예약을 등록한다.")
+    @ApiResponses(value = {
+            @ApiResponse(code = 201, message = "예약 등록 성공", response = TravelReservationDto.class),
+            @ApiResponse(code = 400, message = "잘못된 요청", response = HttpClientErrorException.BadRequest.class),
+            @ApiResponse(code = 401, message = "허용되지 않는 관리자", response = HttpClientErrorException.Unauthorized.class),
+            @ApiResponse(code = 403, message = "접근거부", response = HttpClientErrorException.class),
+            @ApiResponse(code = 404, message = "존재 하지 않음", response = HttpClientErrorException.NotFound.class),
+            @ApiResponse(code = 500, message = "서버 에러", response = ServerError.class)
+    })
+    @PostMapping("/reservation")
+    public ResponseEntity<TravelReservationDto> insertTravelReservation(@Valid @RequestBody TravelReservationEntity travelReservationEntity) {
+        return ResponseEntity.created(URI.create("")).body(travelService.insertTravelReservation(travelReservationEntity));
+    }
+
+    /**
+     * <pre>
+     * 1. MethodName : updateTravelReservation
+     * 2. ClassName  : TravelController.java
+     * 3. Comment    : 여행 예약 수정
+     * 4. 작성자      : CHO
+     * 5. 작성일      : 2023. 01. 28.
+     * </pre>
+     */
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @ApiOperation(value = "예약 수정", notes = "예약을 수정한다.")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "예약 수정 성공", response = TravelReservationDto.class),
+            @ApiResponse(code = 400, message = "잘못된 요청", response = HttpClientErrorException.BadRequest.class),
+            @ApiResponse(code = 401, message = "허용되지 않는 관리자", response = HttpClientErrorException.Unauthorized.class),
+            @ApiResponse(code = 403, message = "접근거부", response = HttpClientErrorException.class),
+            @ApiResponse(code = 404, message = "존재 하지 않음", response = HttpClientErrorException.NotFound.class),
+            @ApiResponse(code = 500, message = "서버 에러", response = ServerError.class)
+    })
+    @PutMapping("/reservation/{idx}")
+    public ResponseEntity<TravelReservationDto> updateTravelReservation(@PathVariable Long idx, @Valid @RequestBody TravelReservationEntity travelReservationEntity) {
+        return ResponseEntity.ok(travelService.updateTravelReservation(idx, travelReservationEntity));
+    }
+
+    /**
+     * <pre>
+     * 1. MethodName : deleteTravelReservation
+     * 2. ClassName  : TravelController.java
+     * 3. Comment    : 여행 예약 삭제
+     * 4. 작성자      : CHO
+     * 5. 작성일      : 2023. 01. 28.
+     * </pre>
+     */
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @ApiOperation(value = "예약 삭제", notes = "예약을 삭제한다.")
+    @ApiResponses(value = {
+            @ApiResponse(code = 204, message = "예약 삭제 성공", response = Long.class),
+            @ApiResponse(code = 400, message = "잘못된 요청", response = HttpClientErrorException.BadRequest.class),
+            @ApiResponse(code = 401, message = "허용되지 않는 관리자", response = HttpClientErrorException.Unauthorized.class),
+            @ApiResponse(code = 403, message = "접근거부", response = HttpClientErrorException.class),
+            @ApiResponse(code = 404, message = "존재 하지 않음", response = HttpClientErrorException.NotFound.class),
+            @ApiResponse(code = 500, message = "서버 에러", response = ServerError.class)
+    })
+    @DeleteMapping("/reservation/{idx}")
+    public ResponseEntity<Long> deleteTravelReservation(@PathVariable Long idx) {
+        travelService.deleteTravelReservation(idx);
         return ResponseEntity.noContent().build();
     }
 }

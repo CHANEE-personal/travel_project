@@ -9,6 +9,8 @@ import com.travel.api.travel.domain.group.TravelGroupDto;
 import com.travel.api.travel.domain.group.TravelGroupEntity;
 import com.travel.api.travel.domain.recommend.TravelRecommendDto;
 import com.travel.api.travel.domain.recommend.TravelRecommendEntity;
+import com.travel.api.travel.domain.reservation.TravelReservationDto;
+import com.travel.api.travel.domain.reservation.TravelReservationEntity;
 import com.travel.api.travel.domain.review.TravelReviewDto;
 import com.travel.api.travel.domain.review.TravelReviewEntity;
 import com.travel.api.travel.domain.search.SearchEntity;
@@ -1125,5 +1127,89 @@ class TravelServiceTest extends AdminCommonServiceTest {
         // 삭제
         Long deleteIdx = travelService.deleteTravelFestival(travelFestivalDTO.getIdx());
         assertThat(deleteIdx).isEqualTo(travelFestivalDTO.getIdx());
+    }
+
+    @Test
+    @DisplayName("여행 예약 리스트 조회 테스트")
+    void 여행예약리스트조회테스트() {
+        assertThat(travelService.findTravelReservationList()).isNotEmpty();
+        assertThat(travelService.findTravelReservationList().get(0).getTitle()).isEqualTo("예약 등록지");
+        assertThat(travelService.findTravelReservationList().get(0).getDescription()).isEqualTo("예약 등록지");
+        assertThat(travelService.findTravelReservationList().get(0).getPrice()).isEqualTo(50000);
+    }
+
+    @Test
+    @DisplayName("여행 예약 상세 조회")
+    void 여행예약상세조회테스트() {
+        TravelReservationDto oneTravelReservation = travelService.findOneTravelReservation(travelReservationDTO.getIdx());
+        assertThat(oneTravelReservation.getTitle()).isEqualTo("예약 등록지");
+        assertThat(oneTravelReservation.getDescription()).isEqualTo("예약 등록지");
+        assertThat(oneTravelReservation.getPrice()).isEqualTo(50000);
+        assertThat(oneTravelReservation.getAddress()).isEqualTo("서울 강남구");
+        assertThat(oneTravelReservation.getZipCode()).isEqualTo("123-456");
+    }
+
+    @Test
+    @DisplayName("여행 예약 등록 테스트")
+    void 여행예약등록테스트() {
+        // given
+        TravelReservationEntity insertReservation = TravelReservationEntity.builder()
+                .commonEntity(commonEntity)
+                .title("예약 등록지")
+                .description("예약 등록지")
+                .address("서울 강남구")
+                .zipCode("123-456")
+                .price(50000)
+                .possibleCount(10)
+                .startDate(LocalDateTime.now())
+                .endDate(LocalDateTime.now())
+                .status(true)
+                .popular(false)
+                .build();
+
+        // when
+        TravelReservationDto reservationDTO = travelService.insertTravelReservation(insertReservation);
+
+        // then
+        assertThat(reservationDTO.getTitle()).isEqualTo("예약 등록지");
+        assertThat(reservationDTO.getDescription()).isEqualTo("예약 등록지");
+        assertThat(reservationDTO.getPrice()).isEqualTo(50000);
+    }
+
+    @Test
+    @DisplayName("여행 예약 수정 테스트")
+    void 여행예약수정테스트() {
+        // given
+        TravelReservationDto oneTravelReservation = travelService.findOneTravelReservation(travelReservationDTO.getIdx());
+
+        TravelReservationEntity updateReservation = TravelReservationEntity.builder()
+                .idx(oneTravelReservation.getIdx())
+                .commonEntity(commonEntity)
+                .title("예약 수정지")
+                .description("예약 수정지")
+                .address("서울 강남구")
+                .zipCode("123-456")
+                .price(40000)
+                .possibleCount(10)
+                .startDate(LocalDateTime.now())
+                .endDate(LocalDateTime.now())
+                .status(true)
+                .popular(false)
+                .build();
+
+        // when
+        TravelReservationDto updateTravelReservation = travelService.updateTravelReservation(oneTravelReservation.getIdx(), updateReservation);
+
+        // then
+        assertThat(updateTravelReservation.getTitle()).isEqualTo("예약 수정지");
+        assertThat(updateTravelReservation.getDescription()).isEqualTo("예약 수정지");
+        assertThat(updateTravelReservation.getPrice()).isEqualTo(40000);
+    }
+
+    @Test
+    @DisplayName("여행 예약 삭제 테스트")
+    void 여행예약삭제테스트() {
+        Long deleteIdx = travelService.deleteTravelReservation(travelReservationDTO.getIdx());
+        assertThat(deleteIdx).isEqualTo(travelReservationDTO.getIdx());
     }
 }
