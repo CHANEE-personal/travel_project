@@ -481,7 +481,7 @@ class UserServiceTest extends FrontCommonServiceTest {
     @Test
     @DisplayName("유저 여행 예약 취소 테스트")
     void 유저여행예약취소테스트() {
-        Long deleteIdx = userService.deleteTravelReservation(userReservationDTO.getIdx());
+        Long deleteIdx = userService.deleteTravelReservation(userDTO.getIdx(), userReservationDTO.getIdx());
         assertThat(deleteIdx).isEqualTo(userReservationDTO.getIdx());
     }
 }

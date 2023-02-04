@@ -383,10 +383,14 @@ public class UserService {
      * </pre>
      */
     @Transactional
-    public Long deleteTravelReservation(Long idx) {
+    public Long deleteTravelReservation(Long userIdx, Long reservationIdx) {
         try {
-            userReservationRepository.deleteById(idx);
-            return idx;
+            if (oneUser(userIdx) != null) {
+                userReservationRepository.deleteById(reservationIdx);
+                return reservationIdx;
+            } else {
+                return null;
+            }
         } catch (Exception e) {
             throw new TravelException(ERROR_DELETE_RESERVATION);
         }
