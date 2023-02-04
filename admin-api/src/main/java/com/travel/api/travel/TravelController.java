@@ -765,7 +765,7 @@ public class TravelController {
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @ApiOperation(value = "예약 리스트 조회", notes = "예약 리스트를 조회한다.")
     @ApiResponses(value = {
-            @ApiResponse(code = 204, message = "예약 리스트 조회 성공", response = Long.class),
+            @ApiResponse(code = 200, message = "예약 리스트 조회 성공", response = List.class),
             @ApiResponse(code = 400, message = "잘못된 요청", response = HttpClientErrorException.BadRequest.class),
             @ApiResponse(code = 401, message = "허용되지 않는 관리자", response = HttpClientErrorException.Unauthorized.class),
             @ApiResponse(code = 403, message = "접근거부", response = HttpClientErrorException.class),
@@ -789,7 +789,7 @@ public class TravelController {
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @ApiOperation(value = "예약 상세 조회", notes = "예약 상세 조회한다.")
     @ApiResponses(value = {
-            @ApiResponse(code = 204, message = "예약 상세 조회 성공", response = Long.class),
+            @ApiResponse(code = 200, message = "예약 상세 조회 성공", response = TravelReservationDto.class),
             @ApiResponse(code = 400, message = "잘못된 요청", response = HttpClientErrorException.BadRequest.class),
             @ApiResponse(code = 401, message = "허용되지 않는 관리자", response = HttpClientErrorException.Unauthorized.class),
             @ApiResponse(code = 403, message = "접근거부", response = HttpClientErrorException.class),
@@ -813,7 +813,7 @@ public class TravelController {
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @ApiOperation(value = "예약 등록", notes = "예약을 등록한다.")
     @ApiResponses(value = {
-            @ApiResponse(code = 204, message = "예약 등록 성공", response = Long.class),
+            @ApiResponse(code = 201, message = "예약 등록 성공", response = TravelReservationDto.class),
             @ApiResponse(code = 400, message = "잘못된 요청", response = HttpClientErrorException.BadRequest.class),
             @ApiResponse(code = 401, message = "허용되지 않는 관리자", response = HttpClientErrorException.Unauthorized.class),
             @ApiResponse(code = 403, message = "접근거부", response = HttpClientErrorException.class),
@@ -821,7 +821,7 @@ public class TravelController {
             @ApiResponse(code = 500, message = "서버 에러", response = ServerError.class)
     })
     @PostMapping("/reservation")
-    public ResponseEntity<TravelReservationDto> insertTravelReservation(@RequestBody TravelReservationEntity travelReservationEntity) {
+    public ResponseEntity<TravelReservationDto> insertTravelReservation(@Valid @RequestBody TravelReservationEntity travelReservationEntity) {
         return ResponseEntity.created(URI.create("")).body(travelService.insertTravelReservation(travelReservationEntity));
     }
 
@@ -834,8 +834,18 @@ public class TravelController {
      * 5. 작성일      : 2023. 01. 28.
      * </pre>
      */
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @ApiOperation(value = "예약 수정", notes = "예약을 수정한다.")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "예약 수정 성공", response = TravelReservationDto.class),
+            @ApiResponse(code = 400, message = "잘못된 요청", response = HttpClientErrorException.BadRequest.class),
+            @ApiResponse(code = 401, message = "허용되지 않는 관리자", response = HttpClientErrorException.Unauthorized.class),
+            @ApiResponse(code = 403, message = "접근거부", response = HttpClientErrorException.class),
+            @ApiResponse(code = 404, message = "존재 하지 않음", response = HttpClientErrorException.NotFound.class),
+            @ApiResponse(code = 500, message = "서버 에러", response = ServerError.class)
+    })
     @PutMapping("/reservation/{idx}")
-    public ResponseEntity<TravelReservationDto> updateTravelReservation(@PathVariable Long idx, @RequestBody TravelReservationEntity travelReservationEntity) {
+    public ResponseEntity<TravelReservationDto> updateTravelReservation(@PathVariable Long idx, @Valid @RequestBody TravelReservationEntity travelReservationEntity) {
         return ResponseEntity.ok(travelService.updateTravelReservation(idx, travelReservationEntity));
     }
 
@@ -848,6 +858,16 @@ public class TravelController {
      * 5. 작성일      : 2023. 01. 28.
      * </pre>
      */
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @ApiOperation(value = "예약 삭제", notes = "예약을 삭제한다.")
+    @ApiResponses(value = {
+            @ApiResponse(code = 204, message = "예약 삭제 성공", response = Long.class),
+            @ApiResponse(code = 400, message = "잘못된 요청", response = HttpClientErrorException.BadRequest.class),
+            @ApiResponse(code = 401, message = "허용되지 않는 관리자", response = HttpClientErrorException.Unauthorized.class),
+            @ApiResponse(code = 403, message = "접근거부", response = HttpClientErrorException.class),
+            @ApiResponse(code = 404, message = "존재 하지 않음", response = HttpClientErrorException.NotFound.class),
+            @ApiResponse(code = 500, message = "서버 에러", response = ServerError.class)
+    })
     @DeleteMapping("/reservation/{idx}")
     public ResponseEntity<Long> deleteTravelReservation(@PathVariable Long idx) {
         travelService.deleteTravelReservation(idx);

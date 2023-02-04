@@ -67,13 +67,11 @@ public class TravelReservationEntity extends NewCommonMappedClass {
     private int possibleCount;
 
     @Column(name = "start_date")
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
-    @JsonFormat(shape = STRING, pattern = "yyyy-MM-dd", timezone = "Asia/Seoul")
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime startDate;
 
     @Column(name = "end_date")
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
-    @JsonFormat(shape = STRING, pattern = "yyyy-MM-dd", timezone = "Asia/Seoul")
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime endDate;
 
     @Column(name = "status")

@@ -60,7 +60,9 @@ public class TravelQueryRepository {
         String searchKeyword = getString(travelMap.get("searchKeyword"), "");
 
         // 검색어 저장
-        em.persist(SearchEntity.builder().searchKeyword(searchKeyword).build());
+        if(!Objects.equals(searchKeyword, "")) {
+            em.persist(SearchEntity.builder().searchKeyword(searchKeyword).build());
+        }
 
         return !Objects.equals(searchKeyword, "") ?
                 travelEntity.travelTitle.contains(searchKeyword).or(travelEntity.travelDescription.contains(searchKeyword)) :

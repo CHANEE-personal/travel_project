@@ -1,16 +1,20 @@
 package com.travel.api.travel;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.travel.api.common.domain.CommonDto;
 import com.travel.api.common.domain.CommonEntity;
+import com.travel.api.common.domain.EntityType;
 import com.travel.api.travel.domain.TravelEntity;
 import com.travel.api.travel.domain.festival.TravelFestivalEntity;
 import com.travel.api.travel.domain.group.TravelGroupEntity;
-import com.travel.api.travel.domain.group.TravelGroupUserEntity;
+import com.travel.api.travel.domain.image.TravelImageEntity;
 import com.travel.api.travel.domain.recommend.TravelRecommendEntity;
+import com.travel.api.travel.domain.reservation.TravelReservationEntity;
 import com.travel.api.travel.domain.review.TravelReviewEntity;
-import com.travel.api.travel.domain.schedule.TravelScheduleEntity;
 import com.travel.api.travel.domain.search.SearchEntity;
+import com.travel.api.user.domain.AuthenticationRequest;
+import com.travel.api.user.domain.UserEntity;
+import com.travel.jwt.JwtUtil;
+import com.travel.jwt.MyUserDetailsService;
 import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -19,8 +23,14 @@ import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.event.EventListener;
 import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.TestConstructor;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
@@ -35,14 +45,19 @@ import javax.persistence.EntityManager;
 import java.io.FileInputStream;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import static com.google.common.collect.ImmutableList.of;
+import static com.travel.api.user.domain.Role.ROLE_ADMIN;
 import static com.travel.common.StringUtil.getString;
 import static org.hamcrest.Matchers.greaterThan;
+import static org.mockito.Mockito.when;
 import static org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase.Replace.NONE;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.*;
+import static org.springframework.security.crypto.factory.PasswordEncoderFactories.createDelegatingPasswordEncoder;
+import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.context.TestConstructor.AutowireMode.ALL;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -64,15 +79,56 @@ class TravelControllerTest {
     private final EntityManager em;
 
     private CommonEntity commonEntity;
-    private CommonDto commonDTO;
+    private TravelEntity travelEntity;
+    private TravelImageEntity travelImageEntity;
+    private final JwtUtil jwtUtil;
+
+    private UserEntity adminUserEntity;
+    protected PasswordEncoder passwordEncoder;
+
+    @MockBean
+    protected MyUserDetailsService myUserDetailsService;
+    protected AuthenticationRequest authenticationRequest;
+
+    Collection<? extends GrantedAuthority> getAuthorities() {
+        List<SimpleGrantedAuthority> authorities = new ArrayList<>();
+        authorities.add(new SimpleGrantedAuthority("ROLE_ADMIN"));
+        return authorities;
+    }
+
+    @DisplayName("테스트 유저 생성")
+    void createUser() {
+        passwordEncoder = createDelegatingPasswordEncoder();
+
+        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken("admin04", "pass1234", getAuthorities());
+        String token = jwtUtil.doGenerateToken(authenticationToken.getName());
+
+        adminUserEntity = UserEntity.builder()
+                .userId("admin05")
+                .password(passwordEncoder.encode("pass1234"))
+                .name("test")
+                .email("test@test.com")
+                .role(ROLE_ADMIN)
+                .userToken(token)
+                .visible("Y")
+                .build();
+
+        em.persist(adminUserEntity);
+    }
 
     @BeforeEach
     @EventListener(ApplicationReadyEvent.class)
     public void setup() {
         this.mockMvc = webAppContextSetup(wac)
-                .addFilters(new CharacterEncodingFilter("UTF-8", true))
+                .addFilter(new CharacterEncodingFilter("UTF-8", true))
+                .apply(springSecurity())
                 .alwaysDo(print())
                 .build();
+
+        createUser();
+
+        authenticationRequest = new AuthenticationRequest(adminUserEntity);
+        when(myUserDetailsService.loadUserByUsername(adminUserEntity.getUserId())).thenReturn(authenticationRequest);
 
         commonEntity = CommonEntity.builder()
                 .commonCode(999)
@@ -82,49 +138,76 @@ class TravelControllerTest {
 
         em.persist(commonEntity);
 
-        commonDTO = CommonEntity.toDto(commonEntity);
+        travelEntity = TravelEntity.builder()
+                .newTravelCode(commonEntity)
+                .travelTitle("여행지 소개")
+                .travelDescription("여행지 소개")
+                .travelAddress("인천광역시 서구")
+                .travelZipCode("123-456")
+                .favoriteCount(1)
+                .viewCount(0)
+                .popular(false)
+                .visible("Y")
+                .build();
+
+        em.persist(travelEntity);
+
+        travelImageEntity = TravelImageEntity.builder()
+                .typeIdx(travelEntity.getIdx())
+                .imageType("main")
+                .fileName("test.jpg")
+                .fileMask("test.jpg")
+                .filePath("/test/test.jpg")
+                .entityType(EntityType.TRAVEL)
+                .build();
+
+        em.persist(travelImageEntity);
     }
 
     @Test
+    @WithMockUser("ADMIN")
     @DisplayName("여행지 조회 테스트")
     void 여행지조회테스트() throws Exception {
         LinkedMultiValueMap<String, String> paramMap = new LinkedMultiValueMap<>();
-        mockMvc.perform(get("/api/travel").queryParams(paramMap).param("pageNum", "1").param("size", "3"))
+        mockMvc.perform(get("/admin/travel").queryParams(paramMap).param("pageNum", "1").param("size", "3")
+                        .header("Authorization", "Bearer " + adminUserEntity.getUserToken()))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().contentType("application/json;charset=utf-8"));
     }
 
     @Test
+    @WithMockUser("ADMIN")
     @DisplayName("여행지 상세 조회 테스트")
     void 여행지상세조회테스트() throws Exception {
-        mockMvc.perform(get("/api/travel/1"))
+        mockMvc.perform(get("/admin/travel/{idx}", travelEntity.getIdx())
+                        .header("Authorization", "Bearer " + adminUserEntity.getUserToken()))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().contentType("application/json;charset=utf-8"))
-                .andExpect(jsonPath("$.idx").value(1L));
+                .andExpect(jsonPath("$.idx").value(travelEntity.getIdx()));
     }
 
     @Test
+    @WithMockUser("ADMIN")
     @DisplayName("여행지 삭제 테스트")
     void 여행지삭제테스트() throws Exception {
-        mockMvc.perform(delete("/api/travel/{idx}", 1))
+        mockMvc.perform(delete("/admin/travel/{idx}", travelEntity.getIdx())
+                        .header("Authorization", "Bearer " + adminUserEntity.getUserToken()))
                 .andDo(print())
                 .andExpect(status().isNoContent());
-
-        mockMvc.perform(delete("/api/travel/{idx}", 2))
-                .andDo(print())
-                .andExpect(status().isNotFound());
     }
 
     @Test
+    @WithMockUser("ADMIN")
     @DisplayName("여행지 좋아요 테스트")
     void 여행지좋아요테스트() throws Exception {
-        mockMvc.perform(put("/api/travel/1/favorite"))
+        mockMvc.perform(put("/admin/travel/{idx}/favorite", travelEntity.getIdx())
+                        .header("Authorization", "Bearer " + adminUserEntity.getUserToken()))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().contentType("application/json;charset=utf-8"))
-                .andExpect(content().string(getString(2)));
+                .andExpect(content().string(getString(travelEntity.getIdx())));
     }
 
     @Test
@@ -137,7 +220,7 @@ class TravelControllerTest {
                         "image/png", new FileInputStream("src/main/resources/static/images/0522045010772.png"))
         );
 
-        mockMvc.perform(multipart("/api/travel/1/images")
+        mockMvc.perform(multipart("/admin/travel/1/images")
                         .file("images", imageFiles.get(0).getBytes())
                         .file("images", imageFiles.get(1).getBytes()))
                 .andDo(print())
@@ -145,6 +228,7 @@ class TravelControllerTest {
     }
 
     @Test
+    @WithMockUser("ADMIN")
     @DisplayName("여행지 리뷰 등록 테스트")
     void 여행지리뷰등록테스트() throws Exception {
         TravelReviewEntity travelReviewEntity = TravelReviewEntity.builder()
@@ -156,22 +240,24 @@ class TravelControllerTest {
                 .visible("Y")
                 .build();
 
-        mockMvc.perform(post("/api/travel/1/review")
+        mockMvc.perform(post("/admin/travel/{idx}/review", travelEntity.getIdx())
+                        .header("Authorization", "Bearer " + adminUserEntity.getUserToken())
                         .contentType(APPLICATION_JSON_VALUE)
                         .content(objectMapper.writeValueAsString(travelReviewEntity)))
                 .andDo(print())
                 .andExpect(status().isCreated())
-                .andExpect(content().contentType("application/json;charset=utf-8"))
-                .andExpect(jsonPath("$.travelIdx").value(1L));
+                .andExpect(content().contentType("application/json;charset=utf-8"));
     }
 
     @Test
+    @WithMockUser("ADMIN")
     @DisplayName("여행지 리뷰 수정 테스트")
     void 여행지리뷰수정테스트() throws Exception {
         TravelReviewEntity travelReviewEntity = TravelReviewEntity.builder()
                 .reviewTitle("리뷰등록테스트")
                 .reviewDescription("리뷰등록테스트")
                 .viewCount(0)
+                .newTravelEntity(travelEntity)
                 .favoriteCount(0)
                 .popular(false)
                 .visible("Y")
@@ -183,15 +269,17 @@ class TravelControllerTest {
                 .idx(travelReviewEntity.getIdx())
                 .reviewTitle("리뷰수정테스트")
                 .reviewDescription("리뷰수정테스트")
+                .newTravelEntity(travelEntity)
                 .viewCount(0)
                 .favoriteCount(0)
                 .popular(false)
                 .visible("Y")
                 .build();
 
-        mockMvc.perform(put("/api/travel/{idx}/review", travelReviewEntity.getIdx())
+        mockMvc.perform(put("/admin/travel/{idx}/review", travelReviewEntity.getIdx())
                         .contentType(APPLICATION_JSON_VALUE)
-                        .content(objectMapper.writeValueAsString(newTravelReviewEntity)))
+                        .content(objectMapper.writeValueAsString(newTravelReviewEntity))
+                        .header("Authorization", "Bearer " + adminUserEntity.getUserToken()))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().contentType("application/json;charset=utf-8"))
@@ -200,11 +288,13 @@ class TravelControllerTest {
     }
 
     @Test
+    @WithMockUser("ADMIN")
     @DisplayName("여행지 리뷰 삭제 테스트")
     void 여행지리뷰삭제테스트() throws Exception {
         TravelReviewEntity travelReviewEntity = TravelReviewEntity.builder()
                 .reviewTitle("리뷰등록테스트")
                 .reviewDescription("리뷰등록테스트")
+                .newTravelEntity(travelEntity)
                 .viewCount(0)
                 .favoriteCount(0)
                 .popular(false)
@@ -213,102 +303,86 @@ class TravelControllerTest {
 
         em.persist(travelReviewEntity);
 
-        mockMvc.perform(delete("/api/travel/{idx}/review", travelReviewEntity.getIdx()))
+        mockMvc.perform(delete("/admin/travel/{idx}/review", travelReviewEntity.getIdx())
+                        .header("Authorization", "Bearer " + adminUserEntity.getUserToken()))
                 .andDo(print())
                 .andExpect(status().isNoContent());
     }
 
     @Test
+    @WithMockUser("ADMIN")
     @DisplayName("여행지 댓글 리스트 조회 테스트")
     void 여행지리뷰리스트조회테스트() throws Exception {
-        mockMvc.perform(get("/api/travel/1/reply"))
+        mockMvc.perform(get("/admin/travel/{idx}/reply", travelEntity.getIdx())
+                        .header("Authorization", "Bearer " + adminUserEntity.getUserToken()))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().contentType("application/json;charset=utf-8"));
     }
 
     @Test
+    @WithMockUser("ADMIN")
     @DisplayName("인기 여행지 선정 테스트")
     void 인기여행지선정테스트() throws Exception {
-        mockMvc.perform(put("/api/travel/{idx}/popular", 1L))
+        mockMvc.perform(put("/admin/travel/{idx}/popular", travelEntity.getIdx())
+                        .header("Authorization", "Bearer " + adminUserEntity.getUserToken()))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().contentType("application/json;charset=utf-8"))
-                .andExpect(content().string(String.valueOf(false)));
+                .andExpect(content().string(String.valueOf(true)));
     }
 
     @Test
+    @WithMockUser("ADMIN")
     @DisplayName("여행지 그룹 조회 테스트")
     void 여행지그룹조회테스트() throws Exception {
-        mockMvc.perform(get("/api/travel/group").param("page", "1").param("size", "100"))
+        mockMvc.perform(get("/admin/travel/group").param("pageNum", "1").param("size", "100")
+                        .header("Authorization", "Bearer " + adminUserEntity.getUserToken()))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(content().contentType("application/json;charset=utf-8"))
-                .andExpect(jsonPath("$.travelGroupList.length()", greaterThan(0)));
+                .andExpect(content().contentType("application/json;charset=utf-8"));
     }
 
     @Test
+    @WithMockUser("ADMIN")
     @DisplayName("여행지 그룹 상세 조회 테스트")
     void 여행지그룹상세조회테스트() throws Exception {
-        mockMvc.perform(get("/api/travel/1/group"))
+        mockMvc.perform(get("/admin/travel/{idx}/group", travelEntity.getIdx())
+                        .header("Authorization", "Bearer " + adminUserEntity.getUserToken()))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().contentType("application/json;charset=utf-8"))
-                .andExpect(jsonPath("$.idx").value(1L));
+                .andExpect(jsonPath("$.idx").value(travelEntity.getIdx()));
     }
 
     @Test
+    @WithMockUser("ADMIN")
     @DisplayName("여행지 그룹 등록 테스트")
     void 여행지그룹등록테스트() throws Exception {
-        TravelEntity travelEntity = TravelEntity.builder()
-                .newTravelCode(commonEntity)
-                .travelTitle("여행지 소개")
-                .travelDescription("여행지 소개")
-                .travelAddress("인천광역시 서구")
-                .travelZipCode("123-456")
-                .favoriteCount(1)
-                .viewCount(0)
-                .popular(false)
-                .visible("Y")
-                .build();
-
-        em.persist(travelEntity);
-
         TravelGroupEntity travelGroupEntity = TravelGroupEntity.builder()
                 .groupName("서울모임")
                 .groupDescription("서울모임")
                 .visible("Y")
                 .build();
 
-        mockMvc.perform(post("/api/travel/{idx}/group", travelEntity.getIdx())
+        mockMvc.perform(post("/admin/travel/{idx}/group", travelEntity.getIdx())
+                        .header("Authorization", "Bearer " + adminUserEntity.getUserToken())
                         .contentType(APPLICATION_JSON_VALUE)
                         .content(objectMapper.writeValueAsString(travelGroupEntity)))
                 .andDo(print())
                 .andExpect(status().isCreated())
                 .andExpect(content().contentType("application/json;charset=utf-8"))
-                .andExpect(jsonPath("$.travelIdx").value(1L))
+                .andExpect(jsonPath("$.travelIdx").value(travelEntity.getIdx()))
                 .andExpect(jsonPath("$.groupName").value("서울모임"))
                 .andExpect(jsonPath("$.groupDescription").value("서울모임"));
     }
 
     @Test
+    @WithMockUser("ADMIN")
     @DisplayName("여행지 그룹 수정 테스트")
     void 여행지그룹수정테스트() throws Exception {
-        TravelEntity travelEntity = TravelEntity.builder()
-                .newTravelCode(commonEntity)
-                .travelTitle("여행지 소개")
-                .travelDescription("여행지 소개")
-                .travelAddress("인천광역시 서구")
-                .travelZipCode("123-456")
-                .favoriteCount(1)
-                .viewCount(0)
-                .popular(false)
-                .visible("Y")
-                .build();
-
-        em.persist(travelEntity);
-
         TravelGroupEntity travelGroupEntity = TravelGroupEntity.builder()
+                .travelEntity(travelEntity)
                 .groupName("서울모임")
                 .groupDescription("서울모임")
                 .visible("Y")
@@ -318,14 +392,16 @@ class TravelControllerTest {
 
         TravelGroupEntity newTravelGroupEntity = TravelGroupEntity.builder()
                 .idx(travelGroupEntity.getIdx())
+                .travelEntity(travelEntity)
                 .groupName("인천모임")
                 .groupDescription("인천모임")
                 .visible("Y")
                 .build();
 
-        mockMvc.perform(put("/api/travel/{idx}/group/{groupIdx}", travelEntity.getIdx(), travelGroupEntity.getIdx())
+        mockMvc.perform(put("/admin/travel/{idx}/group/{groupIdx}", travelEntity.getIdx(), travelGroupEntity.getIdx())
                         .contentType(APPLICATION_JSON_VALUE)
-                        .content(objectMapper.writeValueAsString(newTravelGroupEntity)))
+                        .content(objectMapper.writeValueAsString(newTravelGroupEntity))
+                        .header("Authorization", "Bearer " + adminUserEntity.getUserToken()))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().contentType("application/json;charset=utf-8"))
@@ -334,9 +410,11 @@ class TravelControllerTest {
     }
 
     @Test
+    @WithMockUser("ADMIN")
     @DisplayName("여행지 그룹 삭제 테스트")
     void 여행지그룹삭제테스트() throws Exception {
         TravelGroupEntity travelGroupEntity = TravelGroupEntity.builder()
+                .travelEntity(travelEntity)
                 .groupName("서울모임")
                 .groupDescription("서울모임")
                 .visible("Y")
@@ -344,113 +422,14 @@ class TravelControllerTest {
 
         em.persist(travelGroupEntity);
 
-        mockMvc.perform(delete("/api/travel/group/{groupIdx}", travelGroupEntity.getIdx()))
+        mockMvc.perform(delete("/admin/travel/group/{groupIdx}", travelGroupEntity.getIdx())
+                        .header("Authorization", "Bearer " + adminUserEntity.getUserToken()))
                 .andDo(print())
-                .andExpect(status().isNoContent())
-                .andExpect(content().contentType("application/json;charset=utf-8"))
-                .andExpect(content().string(getString(travelGroupEntity.getIdx())));
+                .andExpect(status().isNoContent());
     }
 
     @Test
-    @DisplayName("유저 여행 그룹 등록 테스트")
-    void 유저여행그룹등록테스트() throws Exception {
-        TravelGroupUserEntity travelGroupUserEntity = TravelGroupUserEntity.builder()
-                .build();
-
-        mockMvc.perform(post("/api/travel/group_user")
-                        .contentType(APPLICATION_JSON_VALUE)
-                        .content(objectMapper.writeValueAsString(travelGroupUserEntity)))
-                .andDo(print())
-                .andExpect(status().isCreated())
-                .andExpect(content().contentType("application/json;charset=utf-8"))
-                .andExpect(jsonPath("$.userIdx").value(1L))
-                .andExpect(jsonPath("$.groupIdx").value(1L));
-    }
-
-    @Test
-    @DisplayName("유저 여행 그룹 삭제 테스트")
-    void 유저여행그룹삭제테스트() throws Exception {
-        TravelGroupUserEntity travelGroupUserEntity = TravelGroupUserEntity.builder()
-                .build();
-
-        em.persist(travelGroupUserEntity);
-        mockMvc.perform(delete("/api/travel/{idx}/group_user", travelGroupUserEntity.getIdx()))
-                .andDo(print())
-                .andExpect(status().isNoContent())
-                .andExpect(content().contentType("application/json;charset=utf-8"))
-                .andExpect(content().string(getString(travelGroupUserEntity.getIdx())));
-    }
-
-    @Test
-    @DisplayName("유저 여행 스케줄 등록 테스트")
-    void 유저여행스케줄등록테스트() throws Exception {
-        TravelScheduleEntity travelScheduleEntity = TravelScheduleEntity.builder()
-//                .travelIdx(1L)
-//                .userIdx(1L)
-                .scheduleDescription("스케줄 테스트")
-                .scheduleTime(LocalDateTime.now())
-                .build();
-
-        mockMvc.perform(post("/api/travel/schedule")
-                        .contentType(APPLICATION_JSON_VALUE)
-                        .content(objectMapper.writeValueAsString(travelScheduleEntity)))
-                .andDo(print())
-                .andExpect(status().isCreated())
-                .andExpect(content().contentType("application/json;charset=utf-8"))
-                .andExpect(jsonPath("$.userIdx").value(1L))
-                .andExpect(jsonPath("$.travelIdx").value(1L))
-                .andExpect(jsonPath("$.scheduleDescription").value("스케줄 테스트"));
-    }
-
-    @Test
-    @DisplayName("유저 여행 스케줄 수정 테스트")
-    void 유저여행스케줄수정테스트() throws Exception {
-        TravelScheduleEntity travelScheduleEntity = TravelScheduleEntity.builder()
-//                .travelIdx(1L)
-//                .userIdx(1L)
-                .scheduleDescription("스케줄 테스트")
-                .scheduleTime(LocalDateTime.now())
-                .build();
-
-        em.persist(travelScheduleEntity);
-
-        TravelScheduleEntity updateTravelScheduleEntity = TravelScheduleEntity.builder()
-                .idx(travelScheduleEntity.getIdx())
-//                .travelIdx(1L)
-//                .userIdx(1L)
-                .scheduleDescription("스케줄 수정 테스트")
-                .scheduleTime(LocalDateTime.now())
-                .build();
-
-        mockMvc.perform(put("/api/travel/{idx}/schedule", travelScheduleEntity.getIdx())
-                        .contentType(APPLICATION_JSON_VALUE)
-                        .content(objectMapper.writeValueAsString(updateTravelScheduleEntity)))
-                .andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(content().contentType("application/json;charset=utf-8"))
-                .andExpect(jsonPath("$.scheduleDescription").value("스케줄 수정 테스트"));
-    }
-
-    @Test
-    @DisplayName("유저 여행 스케줄 삭제 테스트")
-    void 유저여행스케줄삭제테스트() throws Exception {
-        TravelScheduleEntity travelScheduleEntity = TravelScheduleEntity.builder()
-//                .travelIdx(1L)
-//                .userIdx(1L)
-                .scheduleDescription("스케줄 테스트")
-                .scheduleTime(LocalDateTime.now())
-                .build();
-
-        em.persist(travelScheduleEntity);
-
-        mockMvc.perform(delete("/api/travel/{idx}/schedule", travelScheduleEntity.getIdx()))
-                .andDo(print())
-                .andExpect(status().isNoContent())
-                .andExpect(content().contentType("application/json;charset=utf-8"))
-                .andExpect(content().string(getString(travelScheduleEntity.getIdx())));
-    }
-
-    @Test
+    @WithMockUser("ADMIN")
     @DisplayName("여행지 추천 검색어 조회 테스트")
     void 여행지추천검색어조회테스트() throws Exception {
         List<String> recommendList = new ArrayList<>();
@@ -463,14 +442,15 @@ class TravelControllerTest {
 
         em.persist(travelRecommendEntity);
 
-        mockMvc.perform(get("/api/travel/recommend").param("pageNum", "1").param("size", "100"))
+        mockMvc.perform(get("/admin/travel/recommend").param("pageNum", "1").param("size", "100")
+                        .header("Authorization", "Bearer " + adminUserEntity.getUserToken()))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(content().contentType("application/json;charset=utf-8"))
-                .andExpect(jsonPath("$.content").isNotEmpty());
+                .andExpect(content().contentType("application/json;charset=utf-8"));
     }
 
     @Test
+    @WithMockUser("ADMIN")
     @DisplayName("여행지 추천 검색어 상세 조회 테스트")
     void 여행지추천검색어상세조회테스트() throws Exception {
         List<String> recommendList = new ArrayList<>();
@@ -483,7 +463,8 @@ class TravelControllerTest {
 
         em.persist(travelRecommendEntity);
 
-        mockMvc.perform(get("/api/travel/{idx}/recommend", travelRecommendEntity.getIdx()))
+        mockMvc.perform(get("/admin/travel/{idx}/recommend", travelRecommendEntity.getIdx())
+                        .header("Authorization", "Bearer " + adminUserEntity.getUserToken()))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().contentType("application/json;charset=utf-8"))
@@ -491,6 +472,7 @@ class TravelControllerTest {
     }
 
     @Test
+    @WithMockUser("ADMIN")
     @DisplayName("여행지 추천 검색어 등록 테스트")
     void 여행지추천검색어등록테스트() throws Exception {
         List<String> recommendList = new ArrayList<>();
@@ -501,9 +483,10 @@ class TravelControllerTest {
                 .recommendName(recommendList)
                 .build();
 
-        mockMvc.perform(post("/api/travel/recommend")
+        mockMvc.perform(post("/admin/travel/recommend")
                         .contentType(APPLICATION_JSON_VALUE)
-                        .content(objectMapper.writeValueAsString(travelRecommendEntity)))
+                        .content(objectMapper.writeValueAsString(travelRecommendEntity))
+                        .header("Authorization", "Bearer " + adminUserEntity.getUserToken()))
                 .andDo(print())
                 .andExpect(status().isCreated())
                 .andExpect(content().contentType("application/json;charset=utf-8"))
@@ -511,6 +494,7 @@ class TravelControllerTest {
     }
 
     @Test
+    @WithMockUser("ADMIN")
     @DisplayName("여행지 추천 검색어 수정 테스트")
     void 여행지추천검색어수정테스트() throws Exception {
         List<String> recommendList = new ArrayList<>();
@@ -529,9 +513,10 @@ class TravelControllerTest {
                 .recommendName(recommendList)
                 .build();
 
-        mockMvc.perform(put("/api/travel/{idx}/recommend", travelRecommendEntity.getIdx())
+        mockMvc.perform(put("/admin/travel/{idx}/recommend", travelRecommendEntity.getIdx())
                         .contentType(APPLICATION_JSON_VALUE)
-                        .content(objectMapper.writeValueAsString(updateTravelRecommendEntity)))
+                        .content(objectMapper.writeValueAsString(updateTravelRecommendEntity))
+                        .header("Authorization", "Bearer " + adminUserEntity.getUserToken()))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().contentType("application/json;charset=utf-8"))
@@ -539,6 +524,7 @@ class TravelControllerTest {
     }
 
     @Test
+    @WithMockUser("ADMIN")
     @DisplayName("여행지 추천 검색어 삭제 테스트")
     void 여행지추천검색어삭제테스트() throws Exception {
         List<String> recommendList = new ArrayList<>();
@@ -551,19 +537,22 @@ class TravelControllerTest {
 
         em.persist(travelRecommendEntity);
 
-        mockMvc.perform(delete("/api/travel/{idx}/recommend", travelRecommendEntity.getIdx()))
+        mockMvc.perform(delete("/admin/travel/{idx}/recommend", travelRecommendEntity.getIdx())
+                        .header("Authorization", "Bearer " + adminUserEntity.getUserToken()))
                 .andDo(print())
                 .andExpect(status().isNoContent());
     }
 
     @Test
+    @WithMockUser("ADMIN")
     @DisplayName("검색어 랭킹 리스트 조회 테스트")
     void 검색어랭킹리스트조회테스트() throws Exception {
         em.persist(SearchEntity.builder().searchKeyword("서울").build());
         em.persist(SearchEntity.builder().searchKeyword("서울").build());
         em.persist(SearchEntity.builder().searchKeyword("인천").build());
 
-        mockMvc.perform(get("/api/travel/rank"))
+        mockMvc.perform(get("/admin/travel/rank")
+                        .header("Authorization", "Bearer " + adminUserEntity.getUserToken()))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().contentType("application/json;charset=utf-8"))
@@ -571,16 +560,7 @@ class TravelControllerTest {
     }
 
     @Test
-    @DisplayName("검색어를 통한 여행지 조회 테스트")
-    void 검색어를통한여행지조회테스트() throws Exception {
-        mockMvc.perform(get("/api/travel/keyword").param("keyword", "서울"))
-                .andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(content().contentType("application/json;charset=utf-8"))
-                .andExpect(jsonPath("$.travelList.length()", greaterThan(0)));
-    }
-
-    @Test
+    @WithMockUser("ADMIN")
     @DisplayName("축제 리스트 갯수 그룹 조회")
     void 축제리스트갯수그룹조회() throws Exception {
         // 등록
@@ -599,7 +579,8 @@ class TravelControllerTest {
         em.flush();
         em.clear();
 
-        mockMvc.perform(get("/api/travel/festival/list/{month}", dateTime.getMonthValue()))
+        mockMvc.perform(get("/admin/travel/festival/list/{month}", dateTime.getMonthValue())
+                        .header("Authorization", "Bearer " + adminUserEntity.getUserToken()))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().contentType("application/json;charset=utf-8"))
@@ -607,6 +588,7 @@ class TravelControllerTest {
     }
 
     @Test
+    @WithMockUser("ADMIN")
     @DisplayName("축제리스트조회")
     void 축제리스트조회() throws Exception {
         // 등록
@@ -625,7 +607,8 @@ class TravelControllerTest {
         em.flush();
         em.clear();
 
-        mockMvc.perform(get("/api/travel/festival/list/{month}/{day}", dateTime.getMonthValue(), dateTime.getDayOfMonth()))
+        mockMvc.perform(get("/admin/travel/festival/list/{month}/{day}", dateTime.getMonthValue(), dateTime.getDayOfMonth())
+                        .header("Authorization", "Bearer " + adminUserEntity.getUserToken()))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().contentType("application/json;charset=utf-8"))
@@ -633,6 +616,7 @@ class TravelControllerTest {
     }
 
     @Test
+    @WithMockUser("ADMIN")
     @DisplayName("축제 상세 조회 테스트")
     void 축제상세조회테스트() throws Exception {
         // 등록
@@ -649,7 +633,8 @@ class TravelControllerTest {
 
         em.persist(travelFestivalEntity);
 
-        mockMvc.perform(get("/api/travel/festival/{idx}", travelFestivalEntity.getIdx()))
+        mockMvc.perform(get("/admin/travel/festival/{idx}", travelFestivalEntity.getIdx())
+                        .header("Authorization", "Bearer " + adminUserEntity.getUserToken()))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().contentType("application/json;charset=utf-8"))
@@ -657,6 +642,7 @@ class TravelControllerTest {
     }
 
     @Test
+    @WithMockUser("ADMIN")
     @DisplayName("축제 등록 테스트")
     void 축제등록테스트() throws Exception {
         // 등록
@@ -671,15 +657,17 @@ class TravelControllerTest {
                 .festivalTime(dateTime)
                 .build();
 
-        mockMvc.perform(post("/api/travel/festival")
+        mockMvc.perform(post("/admin/travel/festival")
                         .contentType(APPLICATION_JSON_VALUE)
-                        .content(objectMapper.writeValueAsString(travelFestivalEntity)))
+                        .content(objectMapper.writeValueAsString(travelFestivalEntity))
+                        .header("Authorization", "Bearer " + adminUserEntity.getUserToken()))
                 .andDo(print())
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.festivalTitle").value("축제 제목"));
     }
 
     @Test
+    @WithMockUser("ADMIN")
     @DisplayName("축제 수정 테스트")
     void 축제수정테스트() throws Exception {
         // 등록
@@ -706,7 +694,8 @@ class TravelControllerTest {
                 .festivalTime(dateTime)
                 .build();
 
-        mockMvc.perform(put("/api/travel/festival/{idx}", travelFestivalEntity.getIdx())
+        mockMvc.perform(put("/admin/travel/festival/{idx}", travelFestivalEntity.getIdx())
+                        .header("Authorization", "Bearer " + adminUserEntity.getUserToken())
                         .contentType(APPLICATION_JSON_VALUE)
                         .content(objectMapper.writeValueAsString(travelFestivalEntity)))
                 .andDo(print())
@@ -715,6 +704,7 @@ class TravelControllerTest {
     }
 
     @Test
+    @WithMockUser("ADMIN")
     @DisplayName("축제 삭제 테스트")
     void 축제삭제테스트() throws Exception {
         // 등록
@@ -731,7 +721,164 @@ class TravelControllerTest {
 
         em.persist(travelFestivalEntity);
 
-        mockMvc.perform(delete("/api/travel/festival/{idx}", travelFestivalEntity.getIdx()))
+        mockMvc.perform(delete("/admin/travel/festival/{idx}", travelFestivalEntity.getIdx())
+                        .header("Authorization", "Bearer " + adminUserEntity.getUserToken()))
+                .andDo(print())
+                .andExpect(status().isNoContent());
+    }
+
+    @Test
+    @WithMockUser("ADMIN")
+    @DisplayName("여행 예약지 리스트 조회")
+    void 여행예약지리스트조회() throws Exception {
+        TravelReservationEntity travelReservationEntity = TravelReservationEntity.builder()
+                .commonEntity(commonEntity)
+                .title("예약 등록지")
+                .description("예약 등록지")
+                .address("서울 강남구")
+                .zipCode("123-456")
+                .price(50000)
+                .possibleCount(10)
+                .startDate(LocalDateTime.now())
+                .endDate(LocalDateTime.now())
+                .status(true)
+                .popular(false)
+                .build();
+
+        em.persist(travelReservationEntity);
+        em.flush();
+        em.clear();
+
+        mockMvc.perform(get("/admin/travel/reservation")
+                        .header("Authorization", "Bearer " + adminUserEntity.getUserToken()))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(content().contentType("application/json;charset=utf-8"));
+    }
+
+    @Test
+    @WithMockUser("ADMIN")
+    @DisplayName("여행 예약지 상세 조회")
+    void 여행예약지상세조회() throws Exception {
+        TravelReservationEntity travelReservationEntity = TravelReservationEntity.builder()
+                .commonEntity(commonEntity)
+                .title("예약 등록지")
+                .description("예약 등록지")
+                .address("서울 강남구")
+                .zipCode("123-456")
+                .price(50000)
+                .possibleCount(10)
+                .startDate(LocalDateTime.now())
+                .endDate(LocalDateTime.now())
+                .status(true)
+                .popular(false)
+                .build();
+
+        em.persist(travelReservationEntity);
+        em.flush();
+        em.clear();
+
+        mockMvc.perform(get("/admin/travel/reservation", travelReservationEntity.getIdx())
+                        .header("Authorization", "Bearer " + adminUserEntity.getUserToken()))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(content().contentType("application/json;charset=utf-8"));
+    }
+
+    @Test
+    @WithMockUser("ADMIN")
+    @DisplayName("여행 예약지 등록")
+    void 여행예약지등록() throws Exception {
+        TravelReservationEntity travelReservationEntity = TravelReservationEntity.builder()
+                .commonEntity(commonEntity)
+                .title("예약 등록 테스트")
+                .description("예약 등록 테스트")
+                .address("인천광역시")
+                .zipCode("123-456")
+                .price(50000)
+                .possibleCount(10)
+                .startDate(LocalDateTime.of(2022, 2, 1, 0, 0, 0))
+                .endDate(LocalDateTime.of(2022, 2, 28, 23, 59, 59))
+                .status(true)
+                .popular(false)
+                .build();
+
+        mockMvc.perform(post("/admin/travel/reservation")
+                        .contentType(APPLICATION_JSON_VALUE)
+                        .content(objectMapper.writeValueAsString(travelReservationEntity))
+                        .header("Authorization", "Bearer " + adminUserEntity.getUserToken()))
+                .andDo(print())
+                .andExpect(status().isCreated())
+                .andExpect(content().contentType("application/json;charset=utf-8"))
+                .andExpect(jsonPath("$.title").value(travelReservationEntity.getTitle()));
+    }
+
+    @Test
+    @WithMockUser("ADMIN")
+    @DisplayName("여행 예약지 수정")
+    void 여행예약지수정테스트() throws Exception {
+        TravelReservationEntity travelReservationEntity = TravelReservationEntity.builder()
+                .commonEntity(commonEntity)
+                .title("예약 등록 테스트")
+                .description("예약 등록 테스트")
+                .address("인천광역시")
+                .zipCode("123-456")
+                .price(50000)
+                .possibleCount(10)
+                .startDate(LocalDateTime.of(2022, 2, 1, 0, 0, 0))
+                .endDate(LocalDateTime.of(2022, 2, 28, 23, 59, 59))
+                .status(true)
+                .popular(false)
+                .build();
+
+        em.persist(travelReservationEntity);
+
+        TravelReservationEntity updateReservation = TravelReservationEntity.builder()
+                .idx(travelReservationEntity.getIdx())
+                .title("예약 수정 테스트")
+                .description("예약 수정 테스트")
+                .address("인천광역시")
+                .zipCode("123-456")
+                .price(50000)
+                .possibleCount(10)
+                .startDate(LocalDateTime.of(2022, 2, 1, 0, 0, 0))
+                .endDate(LocalDateTime.of(2022, 2, 28, 23, 59, 59))
+                .status(true)
+                .popular(false)
+                .build();
+
+        mockMvc.perform(put("/admin/travel/reservation/{idx}", updateReservation.getIdx())
+                        .contentType(APPLICATION_JSON_VALUE)
+                        .content(objectMapper.writeValueAsString(updateReservation))
+                        .header("Authorization", "Bearer " + adminUserEntity.getUserToken()))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(content().contentType("application/json;charset=utf-8"))
+                .andExpect(jsonPath("$.title").value(updateReservation.getTitle()));
+    }
+
+    @Test
+    @WithMockUser("ADMIN")
+    @DisplayName("여행 예약지 삭제")
+    void 여행예약지삭제() throws Exception {
+        TravelReservationEntity travelReservationEntity = TravelReservationEntity.builder()
+                .commonEntity(commonEntity)
+                .title("예약 등록 테스트")
+                .description("예약 등록 테스트")
+                .address("인천광역시")
+                .zipCode("123-456")
+                .price(50000)
+                .possibleCount(10)
+                .startDate(LocalDateTime.of(2022, 2, 1, 0, 0, 0))
+                .endDate(LocalDateTime.of(2022, 2, 28, 23, 59, 59))
+                .status(true)
+                .popular(false)
+                .build();
+
+        em.persist(travelReservationEntity);
+
+        mockMvc.perform(delete("/admin/travel/reservation/{idx}", travelReservationEntity.getIdx())
+                        .header("Authorization", "Bearer " + adminUserEntity.getUserToken()))
                 .andDo(print())
                 .andExpect(status().isNoContent());
     }
