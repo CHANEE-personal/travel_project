@@ -3,14 +3,21 @@ package com.travel.api.user;
 import com.travel.api.common.domain.CommonEntity;
 import com.travel.api.common.domain.repository.CommonRepository;
 import com.travel.api.travel.domain.group.TravelGroupEntity;
+import com.travel.api.travel.domain.group.TravelGroupUserDTO;
+import com.travel.api.travel.domain.group.TravelGroupUserEntity;
 import com.travel.api.travel.domain.group.repository.GroupRepository;
 import com.travel.api.travel.domain.group.repository.GroupUserRepository;
+import com.travel.api.travel.domain.reservation.TravelReservationEntity;
+import com.travel.api.travel.domain.reservation.repository.TravelReservationRepository;
 import com.travel.api.travel.domain.schedule.TravelScheduleDTO;
 import com.travel.api.travel.domain.schedule.TravelScheduleEntity;
 import com.travel.api.travel.domain.schedule.repository.ScheduleRepository;
 import com.travel.api.user.domain.*;
 import com.travel.api.user.domain.repository.UserQueryRepository;
 import com.travel.api.user.domain.repository.UserRepository;
+import com.travel.api.user.domain.reservation.UserReservationDTO;
+import com.travel.api.user.domain.reservation.UserReservationEntity;
+import com.travel.api.user.domain.reservation.reservation.UserReservationRepository;
 import com.travel.exception.TravelException;
 import com.travel.jwt.JwtUtil;
 import lombok.RequiredArgsConstructor;
@@ -39,6 +46,8 @@ public class UserService {
     private final CommonRepository commonRepository;
     private final GroupRepository groupRepository;
     private final GroupUserRepository groupUserRepository;
+    private final UserReservationRepository userReservationRepository;
+    private final TravelReservationRepository travelReservationRepository;
     private final JwtUtil jwtUtil;
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
@@ -61,6 +70,11 @@ public class UserService {
     private TravelGroupEntity oneGroup(Long idx) {
         return groupRepository.findById(idx)
                 .orElseThrow(() -> new TravelException(NOT_FOUND_TRAVEL_GROUP));
+    }
+
+    private TravelReservationEntity oneReservation(Long idx) {
+        return travelReservationRepository.findById(idx)
+                .orElseThrow(() -> new TravelException(NOT_FOUND_RESERVATION));
     }
 
     @Transactional
@@ -307,5 +321,111 @@ public class UserService {
         } catch (Exception e) {
             throw new TravelException(ERROR_DELETE_TRAVEL_SCHEDULE);
         }
+    }
+
+    /**
+     * <pre>
+     * 1. MethodName : findTravelReservation
+     * 2. ClassName  : TravelService.java
+     * 3. Comment    : 유저 여행 예약 리스트 조회
+     * 4. 작성자      : CHO
+     * 5. 작성일      : 2023. 02. 04.
+     * </pre>
+     */
+    @Transactional(readOnly = true)
+    public List<UserReservationDTO> findTravelReservation(Long userIdx) {
+        return userReservationRepository.findUserReservationList(userIdx)
+                .stream().map(UserReservationEntity::toDto).collect(Collectors.toList());
+    }
+
+    /**
+     * <pre>
+     * 1. MethodName : travelReservation
+     * 2. ClassName  : TravelService.java
+     * 3. Comment    : 유저 여행 예약
+     * 4. 작성자      : CHO
+     * 5. 작성일      : 2023. 02. 04.
+     * </pre>
+     */
+    @Transactional
+    public UserReservationDTO travelReservation(Long userIdx, Long reservationIdx, UserReservationEntity userReservation) {
+        TravelReservationEntity oneReservation = oneReservation(reservationIdx);
+
+        // 예약 가능 상태 체크
+        if (oneReservation.getStatus()) {
+            // 예약 가능 인원 체크
+            if (oneReservation.getPossibleCount() <= 0 || oneReservation.getPossibleCount() < userReservation.getUserCount()) {
+                throw new TravelException(POSSIBLE_COUNT);
+            }
+
+            // 예약 일자 체크
+            if (oneReservation.getStartDate().isAfter(userReservation.getStartDate()) &&
+                    oneReservation.getEndDate().isBefore(userReservation.getEndDate())) {
+                throw new TravelException(POSSIBLE_DATE);
+            }
+
+            // 여행지 예약
+            oneReservation(reservationIdx).addReservation(userReservation);
+            oneUser(userIdx).addUser(userReservation);
+            return UserReservationEntity.toDto(userReservationRepository.save(userReservation));
+        } else {
+            throw new TravelException(ERROR_RESERVATION);
+        }
+    }
+
+    /**
+     * <pre>
+     * 1. MethodName : deleteTravelReservation
+     * 2. ClassName  : TravelService.java
+     * 3. Comment    : 유저 여행 예약 취소
+     * 4. 작성자      : CHO
+     * 5. 작성일      : 2023. 02. 04.
+     * </pre>
+     */
+    @Transactional
+    public Long deleteTravelReservation(Long userIdx, Long reservationIdx) {
+        if (oneUser(userIdx) != null) {
+            userReservationRepository.deleteById(reservationIdx);
+            return reservationIdx;
+        } else {
+            return null;
+        }
+    }
+
+    /**
+     * <pre>
+     * 1. MethodName : insertTravelGroup
+     * 2. ClassName  : TravelService.java
+     * 3. Comment    : 유저 여행 그룹 가입
+     * 4. 작성자      : CHO
+     * 5. 작성일      : 2023. 02. 05.
+     * </pre>
+     */
+    @Transactional
+    public TravelGroupUserDTO insertTravelGroup(Long userIdx, Long groupIdx) {
+        return TravelGroupUserEntity.toDto(groupUserRepository.save(
+                TravelGroupUserEntity.builder()
+                        .userEntity(oneUser(userIdx))
+                        .travelGroupEntity(oneGroup(groupIdx))
+                        .build()));
+    }
+
+    /**
+     * <pre>
+     * 1. MethodName : deleteTravelGroup
+     * 2. ClassName  : TravelService.java
+     * 3. Comment    : 유저 여행 그룹 탈퇴
+     * 4. 작성자      : CHO
+     * 5. 작성일      : 2023. 02. 05.
+     * </pre>
+     */
+    @Transactional
+    public Long deleteTravelGroup(Long userIdx, Long groupIdx) {
+        TravelGroupUserEntity travelGroupUserEntity = groupUserRepository.findByUserGroup(userIdx, groupIdx)
+                .orElseThrow(() -> new TravelException(NOT_FOUND_TRAVEL_GROUP));
+
+        // 여행 그룹 탈퇴
+        groupUserRepository.delete(travelGroupUserEntity);
+        return travelGroupUserEntity.getIdx();
     }
 }
