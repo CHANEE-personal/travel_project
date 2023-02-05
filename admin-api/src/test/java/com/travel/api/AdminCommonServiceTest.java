@@ -4,6 +4,9 @@ import com.travel.api.common.domain.CommonDto;
 import com.travel.api.common.domain.CommonEntity;
 import com.travel.api.common.domain.EntityType;
 import com.travel.api.common.domain.repository.CommonRepository;
+import com.travel.api.coupon.domain.CouponDto;
+import com.travel.api.coupon.domain.CouponEntity;
+import com.travel.api.coupon.domain.repository.CouponRepository;
 import com.travel.api.faq.domain.FaqDto;
 import com.travel.api.faq.domain.FaqEntity;
 import com.travel.api.faq.domain.repository.FaqRepository;
@@ -45,6 +48,7 @@ public abstract class AdminCommonServiceTest {
     @Autowired private PostRepository postRepository;
     @Autowired private UserRepository userRepository;
     @Autowired private ReservationRepository reservationRepository;
+    @Autowired private CouponRepository couponRepository;
 
     protected CommonEntity commonEntity;
     protected CommonDto commonDTO;
@@ -62,6 +66,8 @@ public abstract class AdminCommonServiceTest {
     protected UserDto userDTO;
     protected TravelReservationEntity travelReservationEntity;
     protected TravelReservationDto travelReservationDTO;
+    protected CouponEntity couponEntity;
+    protected CouponDto couponDTO;
 
     void createData() {
         // 공통 코드 등록
@@ -177,6 +183,22 @@ public abstract class AdminCommonServiceTest {
                 .entityType(EntityType.RESERVATION)
                 .build();
         travelImageRepository.save(travelImageEntity);
+
+        // 쿠폰 등록
+        couponEntity = couponRepository.save(
+                CouponEntity.builder()
+                        .title("10% 쿠폰")
+                        .description("10% 쿠폰")
+                        .salePrice(0)
+                        .percentage(10)
+                        .percentageStatus(true)
+                        .count(1)
+                        .startDate(LocalDateTime.of(2022, 2, 1, 0, 0, 0))
+                        .endDate(LocalDateTime.of(2022, 2, 28, 23, 59, 59))
+                        .status(true)
+                        .build());
+
+        couponDTO = CouponEntity.toDto(couponEntity);
     }
 
     @BeforeEach

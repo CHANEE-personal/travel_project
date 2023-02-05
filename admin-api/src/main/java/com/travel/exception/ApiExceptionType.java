@@ -97,7 +97,14 @@ public enum ApiExceptionType implements BaseExceptionType {
     NOT_FOUND_FAQ("NOT_FOUND_FAQ", 404, "FAQ 상세 없음"),
     ERROR_FAQ("ERROR_FAQ", 500, "FAQ 등록 에러"),
     ERROR_UPDATE_FAQ("ERROR_UPDATE_FAQ", 500, "FAQ 수정 에러"),
-    ERROR_DELETE_FAQ("ERROR_DELETE_FAQ", 500, "FAQ 삭제 에러");
+    ERROR_DELETE_FAQ("ERROR_DELETE_FAQ", 500, "FAQ 삭제 에러"),
+
+    // 쿠폰 관련
+    NOT_FOUND_COUPON_LIST("NOT_FOUND_COUPON_LIST", 404, "쿠폰 리스트 없음"),
+    NOT_FOUND_COUPON("NOT_FOUND_COUPON", 404, "쿠폰 상세 없음"),
+    ERROR_COUPON("ERROR_COUPON", 500, "쿠폰 등록 에러"),
+    ERROR_UPDATE_COUPON("ERROR_UPDATE_COUPON", 500, "쿠폰 수정 에러"),
+    ERROR_DELETE_COUPON("ERROR_DELETE_COUPON", 500, "쿠폰 삭제 에러");
 
 
     private final String errorCode;
