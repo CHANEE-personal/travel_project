@@ -349,31 +349,27 @@ public class UserService {
      */
     @Transactional
     public UserReservationDTO travelReservation(Long userIdx, Long reservationIdx, UserReservationEntity userReservation) {
-        try {
-            TravelReservationEntity oneReservation = oneReservation(reservationIdx);
+        TravelReservationEntity oneReservation = oneReservation(reservationIdx);
 
-            // 예약 가능 상태 체크
-            if (oneReservation.getStatus()) {
-                // 예약 가능 인원 체크
-                if (oneReservation.getPossibleCount() <= 0 || oneReservation.getPossibleCount() < userReservation.getUserCount()) {
-                    throw new TravelException(POSSIBLE_COUNT);
-                }
-
-                // 예약 일자 체크
-                if (oneReservation.getStartDate().isAfter(userReservation.getStartDate()) &&
-                        oneReservation.getEndDate().isBefore(userReservation.getEndDate())) {
-                    throw new TravelException(POSSIBLE_DATE);
-                }
-
-                // 여행지 예약
-                oneReservation(reservationIdx).addReservation(userReservation);
-                oneUser(userIdx).addUser(userReservation);
-                return UserReservationEntity.toDto(userReservationRepository.save(userReservation));
-            } else {
-                return null;
+        // 예약 가능 상태 체크
+        if (oneReservation.getStatus()) {
+            // 예약 가능 인원 체크
+            if (oneReservation.getPossibleCount() <= 0 || oneReservation.getPossibleCount() < userReservation.getUserCount()) {
+                throw new TravelException(POSSIBLE_COUNT);
             }
-        } catch (Exception e) {
-            throw new TravelException(NOT_FOUND_TRAVEL);
+
+            // 예약 일자 체크
+            if (oneReservation.getStartDate().isAfter(userReservation.getStartDate()) &&
+                    oneReservation.getEndDate().isBefore(userReservation.getEndDate())) {
+                throw new TravelException(POSSIBLE_DATE);
+            }
+
+            // 여행지 예약
+            oneReservation(reservationIdx).addReservation(userReservation);
+            oneUser(userIdx).addUser(userReservation);
+            return UserReservationEntity.toDto(userReservationRepository.save(userReservation));
+        } else {
+            throw new TravelException(ERROR_RESERVATION);
         }
     }
 
@@ -388,15 +384,11 @@ public class UserService {
      */
     @Transactional
     public Long deleteTravelReservation(Long userIdx, Long reservationIdx) {
-        try {
-            if (oneUser(userIdx) != null) {
-                userReservationRepository.deleteById(reservationIdx);
-                return reservationIdx;
-            } else {
-                return null;
-            }
-        } catch (Exception e) {
-            throw new TravelException(ERROR_DELETE_RESERVATION);
+        if (oneUser(userIdx) != null) {
+            userReservationRepository.deleteById(reservationIdx);
+            return reservationIdx;
+        } else {
+            return null;
         }
     }
 

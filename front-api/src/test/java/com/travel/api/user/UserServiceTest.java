@@ -3,6 +3,7 @@ package com.travel.api.user;
 import com.travel.api.FrontCommonServiceTest;
 import com.travel.api.common.domain.CommonEntity;
 import com.travel.api.travel.domain.group.TravelGroupUserDTO;
+import com.travel.api.travel.domain.reservation.TravelReservationEntity;
 import com.travel.api.travel.domain.schedule.TravelScheduleDTO;
 import com.travel.api.travel.domain.schedule.TravelScheduleEntity;
 import com.travel.api.user.domain.*;
@@ -466,6 +467,36 @@ class UserServiceTest extends FrontCommonServiceTest {
     @Test
     @DisplayName("유저 여행 예약 등록 테스트")
     void 유저여행예약등록테스트() {
+        TravelReservationEntity impossibleReservation = TravelReservationEntity.builder()
+                .commonEntity(commonEntity)
+                .title("예약 등록지")
+                .description("예약 등록지")
+                .address("서울 강남구")
+                .zipCode("123-456")
+                .price(50000)
+                .possibleCount(0)
+                .startDate(LocalDateTime.now())
+                .endDate(LocalDateTime.now())
+                .status(true)
+                .popular(false)
+                .build();
+
+        em.persist(impossibleReservation);
+
+        // 여행예약불가능 케이스
+        UserReservationEntity impossible = UserReservationEntity.builder()
+                .newUserEntity(userEntity)
+                .travelReservationEntity(travelReservationEntity)
+                .price(travelReservationEntity.getPrice())
+                .startDate(LocalDateTime.of(2022, 2, 1, 0, 0, 0))
+                .endDate(LocalDateTime.of(2022, 2, 3, 23, 59, 59))
+                .userCount(2)
+                .build();
+
+        assertThatThrownBy(() -> userService.travelReservation(userDTO.getIdx(), impossibleReservation.getIdx(), impossible))
+                .isInstanceOf(TravelException.class).hasMessage("예약 가능한 수가 부족");
+
+        // 여행예약가능 케이스
         UserReservationEntity insertReservation = UserReservationEntity.builder()
                 .newUserEntity(userEntity)
                 .travelReservationEntity(travelReservationEntity)
