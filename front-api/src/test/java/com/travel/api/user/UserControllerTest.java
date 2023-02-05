@@ -2,6 +2,9 @@ package com.travel.api.user;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.travel.api.common.domain.CommonEntity;
+import com.travel.api.travel.domain.TravelEntity;
+import com.travel.api.travel.domain.group.TravelGroupEntity;
+import com.travel.api.travel.domain.group.TravelGroupUserEntity;
 import com.travel.api.travel.domain.reservation.TravelReservationEntity;
 import com.travel.api.user.domain.Role;
 import com.travel.api.user.domain.UserEntity;
@@ -454,6 +457,100 @@ class UserControllerTest {
         em.persist(userReservationEntity);
 
         mockMvc.perform(delete("/front/user/{idx}/reservation/{reservationIdx}", userEntity.getIdx(), userReservationEntity.getIdx())
+                        .header("Authorization", "Bearer " + userEntity.getUserToken()))
+                .andDo(print())
+                .andExpect(status().isNoContent());
+    }
+
+    @Test
+    @WithMockUser("TRAVEL_USER")
+    @DisplayName("유저 여행 그룹 가입 테스트")
+    void 유저여행그룹가입테스트() throws Exception {
+        CommonEntity commonEntity = CommonEntity.builder()
+                .commonCode(100)
+                .commonName("서울")
+                .visible("Y")
+                .build();
+
+        em.persist(commonEntity);
+
+        // 여행지 등록
+        TravelEntity travelEntity = TravelEntity.builder()
+                .newTravelCode(commonEntity)
+                .travelTitle("여행지 소개")
+                .travelDescription("여행지 소개")
+                .travelAddress("인천광역시 서구")
+                .travelZipCode("123-456")
+                .favoriteCount(1)
+                .viewCount(0)
+                .popular(false)
+                .visible("Y")
+                .build();
+
+        em.persist(travelEntity);
+
+        // 여행 그룹 등록
+        TravelGroupEntity travelGroupEntity = TravelGroupEntity.builder()
+                .travelEntity(travelEntity)
+                .groupName("서울 그룹")
+                .groupDescription("서울 그룹")
+                .visible("Y")
+                .build();
+
+        em.persist(travelGroupEntity);
+
+        mockMvc.perform(post("/front/user/{idx}/group/{groupIdx}", userEntity.getIdx(), travelGroupEntity.getIdx())
+                        .header("Authorization", "Bearer " + userEntity.getUserToken()))
+                .andDo(print())
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.userDTO.idx").value(userEntity.getIdx()));
+    }
+
+    @Test
+    @WithMockUser("TRAVEL_USER")
+    @DisplayName("유저 여행 그룹 탈퇴 테스트")
+    void 유저여행그룹탈퇴테스트() throws Exception {
+        CommonEntity commonEntity = CommonEntity.builder()
+                .commonCode(100)
+                .commonName("서울")
+                .visible("Y")
+                .build();
+
+        em.persist(commonEntity);
+
+        // 여행지 등록
+        TravelEntity travelEntity = TravelEntity.builder()
+                .newTravelCode(commonEntity)
+                .travelTitle("여행지 소개")
+                .travelDescription("여행지 소개")
+                .travelAddress("인천광역시 서구")
+                .travelZipCode("123-456")
+                .favoriteCount(1)
+                .viewCount(0)
+                .popular(false)
+                .visible("Y")
+                .build();
+
+        em.persist(travelEntity);
+
+        // 여행 그룹 등록
+        TravelGroupEntity travelGroupEntity = TravelGroupEntity.builder()
+                .travelEntity(travelEntity)
+                .groupName("서울 그룹")
+                .groupDescription("서울 그룹")
+                .visible("Y")
+                .build();
+
+        em.persist(travelGroupEntity);
+
+        TravelGroupUserEntity travelGroupUserEntity = TravelGroupUserEntity.builder()
+                .userEntity(userEntity)
+                .travelGroupEntity(travelGroupEntity)
+                .build();
+
+        em.persist(travelGroupUserEntity);
+
+        mockMvc.perform(delete("/front/user/{idx}/group/{groupIdx}", userEntity.getIdx(), travelGroupEntity.getIdx())
                         .header("Authorization", "Bearer " + userEntity.getUserToken()))
                 .andDo(print())
                 .andExpect(status().isNoContent());

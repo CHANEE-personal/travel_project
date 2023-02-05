@@ -52,11 +52,6 @@ public class TravelGroupEntity extends NewCommonMappedClass {
     @JoinColumn(name = "travel_idx", referencedColumnName = "idx")
     private TravelEntity travelEntity;
 
-    public void addGroup(TravelGroupUserEntity travelGroupUserEntity) {
-        travelGroupUserEntity.setTravelGroupEntity(this);
-        this.travelGroupList.add(travelGroupUserEntity);
-    }
-
     public void update(TravelGroupEntity travelGroupEntity) {
         this.groupName = travelGroupEntity.groupName;
         this.groupDescription = travelGroupEntity.groupDescription;

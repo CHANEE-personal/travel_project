@@ -105,11 +105,6 @@ public class UserEntity extends NewCommonMappedClass {
         this.userScheduleList.add(travelScheduleEntity);
     }
 
-    public void addGroup(TravelGroupUserEntity travelGroupUserEntity) {
-        travelGroupUserEntity.setUserEntity(this);
-        this.userList.add(travelGroupUserEntity);
-    }
-
     public void addUser(UserReservationEntity userReservation) {
         userReservation.setNewUserEntity(this);
         this.userReservationList.add(userReservation);

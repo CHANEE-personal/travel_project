@@ -12,6 +12,9 @@ import com.travel.api.notice.domain.repository.NoticeRepository;
 import com.travel.api.travel.TravelRepository;
 import com.travel.api.travel.domain.TravelDTO;
 import com.travel.api.travel.domain.TravelEntity;
+import com.travel.api.travel.domain.group.TravelGroupDTO;
+import com.travel.api.travel.domain.group.TravelGroupEntity;
+import com.travel.api.travel.domain.group.repository.GroupRepository;
 import com.travel.api.travel.domain.reservation.TravelReservationDTO;
 import com.travel.api.travel.domain.reservation.TravelReservationEntity;
 import com.travel.api.travel.domain.reservation.repository.TravelReservationRepository;
@@ -38,6 +41,7 @@ public abstract class FrontCommonServiceTest {
     @Autowired private UserRepository userRepository;
     @Autowired private TravelReservationRepository travelReservationRepository;
     @Autowired private UserReservationRepository userReservationRepository;
+    @Autowired private GroupRepository groupRepository;
 
     protected TravelEntity travelEntity;
     protected TravelDTO travelDTO;
@@ -53,6 +57,8 @@ public abstract class FrontCommonServiceTest {
     protected TravelReservationDTO travelReservationDTO;
     protected UserReservationEntity userReservationEntity;
     protected UserReservationDTO userReservationDTO;
+    protected TravelGroupEntity travelGroupEntity;
+    protected TravelGroupDTO travelGroupDTO;
 
     void createData() {
         // 공통 코드 등록
@@ -146,6 +152,17 @@ public abstract class FrontCommonServiceTest {
                         .build());
 
         userReservationDTO = UserReservationEntity.toDto(userReservationEntity);
+
+        // 여행 그룹 등록
+        travelGroupEntity = groupRepository.save(
+                TravelGroupEntity.builder()
+                        .travelEntity(travelEntity)
+                        .groupName("서울 그룹")
+                        .groupDescription("서울 그룹")
+                        .visible("Y")
+                        .build());
+
+        travelGroupDTO = TravelGroupEntity.toDto(travelGroupEntity);
     }
 
     @BeforeEach

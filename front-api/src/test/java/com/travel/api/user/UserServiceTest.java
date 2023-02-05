@@ -2,11 +2,13 @@ package com.travel.api.user;
 
 import com.travel.api.FrontCommonServiceTest;
 import com.travel.api.common.domain.CommonEntity;
+import com.travel.api.travel.domain.group.TravelGroupUserDTO;
 import com.travel.api.travel.domain.schedule.TravelScheduleDTO;
 import com.travel.api.travel.domain.schedule.TravelScheduleEntity;
 import com.travel.api.user.domain.*;
 import com.travel.api.user.domain.reservation.UserReservationDTO;
 import com.travel.api.user.domain.reservation.UserReservationEntity;
+import com.travel.exception.TravelException;
 import lombok.RequiredArgsConstructor;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -29,6 +31,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.*;
@@ -483,5 +486,27 @@ class UserServiceTest extends FrontCommonServiceTest {
     void 유저여행예약취소테스트() {
         Long deleteIdx = userService.deleteTravelReservation(userDTO.getIdx(), userReservationDTO.getIdx());
         assertThat(deleteIdx).isEqualTo(userReservationDTO.getIdx());
+    }
+
+    @Test
+    @DisplayName("유저 여행 그룹 가입 테스트")
+    void 유저여행그룹가입테스트() {
+        // 유저 없음
+        assertThatThrownBy(() -> userService.insertTravelGroup(9999L, travelGroupDTO.getIdx()))
+                .isInstanceOf(TravelException.class).hasMessage("해당 유저 없음");
+
+        // 여행 그룹 없음
+        assertThatThrownBy(() -> userService.insertTravelGroup(userDTO.getIdx(), 9999L))
+                .isInstanceOf(TravelException.class).hasMessage("여행 그룹 상세 없음");
+
+        assertThat(userService.insertTravelGroup(userDTO.getIdx(), travelGroupDTO.getIdx()).getUserDTO().getIdx()).isEqualTo(userDTO.getIdx());
+        assertThat(userService.insertTravelGroup(userDTO.getIdx(), travelGroupDTO.getIdx()).getGroupDTO().getIdx()).isEqualTo(travelGroupDTO.getIdx());
+    }
+
+    @Test
+    @DisplayName("유저 여행 그룹 탈퇴 테스트")
+    void 유저여행그룹탈퇴테스트() {
+        TravelGroupUserDTO insertTravelGroup = userService.insertTravelGroup(userDTO.getIdx(), travelGroupDTO.getIdx());
+        assertThat(userService.deleteTravelGroup(userDTO.getIdx(), travelGroupDTO.getIdx())).isEqualTo(insertTravelGroup.getIdx());
     }
 }
