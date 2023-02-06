@@ -19,6 +19,7 @@ import org.springframework.context.ApplicationEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.restdocs.RestDocumentationContextProvider;
 import org.springframework.restdocs.RestDocumentationExtension;
+import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -149,7 +150,7 @@ class CommonControllerTest {
 
         em.persist(commonEntity);
 
-        mockMvc.perform(get("/admin/common/{idx}", commonEntity.getIdx())
+        mockMvc.perform(RestDocumentationRequestBuilders.get("/admin/common/{idx}", commonEntity.getIdx())
                         .header("Authorization", "Bearer " + adminUserEntity.getUserToken()))
                 .andDo(print())
                 .andDo(document("GET-COMMON", pathParameters(
@@ -171,7 +172,7 @@ class CommonControllerTest {
                 .visible("Y")
                 .build();
 
-        mockMvc.perform(post("/admin/common")
+        mockMvc.perform(RestDocumentationRequestBuilders.post("/admin/common")
                         .header("Authorization", "Bearer " + adminUserEntity.getUserToken())
                         .contentType(APPLICATION_JSON_VALUE)
                         .content(objectMapper.writeValueAsString(commonEntity)))

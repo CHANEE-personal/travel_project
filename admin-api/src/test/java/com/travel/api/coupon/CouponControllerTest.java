@@ -10,12 +10,16 @@ import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.event.EventListener;
+import org.springframework.restdocs.RestDocumentationContextProvider;
+import org.springframework.restdocs.RestDocumentationExtension;
+import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -39,7 +43,16 @@ import static com.travel.api.user.domain.Role.ROLE_ADMIN;
 import static org.mockito.Mockito.when;
 import static org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase.Replace.NONE;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
+import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.documentationConfiguration;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.*;
+import static org.springframework.restdocs.operation.preprocess.Preprocessors.*;
+import static org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint;
+import static org.springframework.restdocs.payload.JsonFieldType.*;
+import static org.springframework.restdocs.payload.PayloadDocumentation.*;
+import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
+import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
+import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
 import static org.springframework.security.crypto.factory.PasswordEncoderFactories.createDelegatingPasswordEncoder;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.context.TestConstructor.AutowireMode.ALL;
@@ -49,6 +62,7 @@ import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppC
 
 @SpringBootTest
 @Transactional
+@ExtendWith(RestDocumentationExtension.class)
 @AutoConfigureMockMvc
 @TestPropertySource(locations = "classpath:application.properties")
 @TestConstructor(autowireMode = ALL)
@@ -101,10 +115,11 @@ class CouponControllerTest {
 
     @BeforeEach
     @EventListener(ApplicationReadyEvent.class)
-    public void setup() {
+    public void setup(RestDocumentationContextProvider restDocumentationContextProvider) {
         this.mockMvc = webAppContextSetup(wac)
                 .addFilter(new CharacterEncodingFilter("UTF-8", true))
                 .apply(springSecurity())
+                .apply(documentationConfiguration(restDocumentationContextProvider))
                 .alwaysDo(print())
                 .build();
 
@@ -144,9 +159,12 @@ class CouponControllerTest {
     @WithMockUser("ADMIN")
     @DisplayName("쿠폰 상세 조회 테스트")
     void 쿠폰상세조회테스트() throws Exception {
-        mockMvc.perform(get("/admin/coupon/{idx}", couponEntity.getIdx())
-                .header("Authorization", "Bearer " + adminUserEntity.getUserToken()))
+        mockMvc.perform(RestDocumentationRequestBuilders.get("/admin/coupon/{idx}", couponEntity.getIdx())
+                        .header("Authorization", "Bearer " + adminUserEntity.getUserToken()))
                 .andDo(print())
+                .andDo(document("GET-COUPON", pathParameters(
+                        parameterWithName("idx").description("쿠폰 IDX")
+                )))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType("application/json;charset=utf-8"))
                 .andExpect(jsonPath("$.title").value("10% 쿠폰"))
@@ -169,11 +187,36 @@ class CouponControllerTest {
                 .status(true)
                 .build();
 
-        mockMvc.perform(post("/admin/coupon")
+        mockMvc.perform(RestDocumentationRequestBuilders.post("/admin/coupon")
                         .header("Authorization", "Bearer " + adminUserEntity.getUserToken())
                         .contentType(APPLICATION_JSON_VALUE)
                         .content(objectMapper.writeValueAsString(couponEntity)))
                 .andDo(print())
+                .andDo(document("INSERT-COUPON",
+                        preprocessRequest(prettyPrint()),
+                        preprocessResponse(prettyPrint()),
+                        relaxedRequestFields(
+                                fieldWithPath("title").type(STRING).description("쿠폰명"),
+                                fieldWithPath("description").type(STRING).description("쿠폰상세"),
+                                fieldWithPath("salePrice").type(NUMBER).description("할인금액"),
+                                fieldWithPath("percentage").type(NUMBER).description("할인퍼센트"),
+                                fieldWithPath("percentageStatus").type(BOOLEAN).description("할인퍼센트여부"),
+                                fieldWithPath("count").type(NUMBER).description("발급갯수"),
+                                fieldWithPath("startDate").type(STRING).description("시작 일자"),
+                                fieldWithPath("endDate").type(STRING).description("마감 일자"),
+                                fieldWithPath("status").type(BOOLEAN).description("쿠폰 사용 가능 여부")
+                        ),
+                        relaxedResponseFields(
+                                fieldWithPath("title").type(STRING).description("쿠폰명"),
+                                fieldWithPath("description").type(STRING).description("쿠폰상세"),
+                                fieldWithPath("salePrice").type(NUMBER).description("할인금액"),
+                                fieldWithPath("percentage").type(NUMBER).description("할인퍼센트"),
+                                fieldWithPath("percentageStatus").type(BOOLEAN).description("할인퍼센트여부"),
+                                fieldWithPath("count").type(NUMBER).description("발급갯수"),
+                                fieldWithPath("startDate").type(STRING).description("시작 일자"),
+                                fieldWithPath("endDate").type(STRING).description("마감 일자"),
+                                fieldWithPath("status").type(BOOLEAN).description("쿠폰 사용 가능 여부")
+                        )))
                 .andExpect(status().isCreated())
                 .andExpect(content().contentType("application/json;charset=utf-8"))
                 .andExpect(jsonPath("$.title").value("20% 쿠폰"));
@@ -196,11 +239,36 @@ class CouponControllerTest {
                 .status(true)
                 .build();
 
-        mockMvc.perform(put("/admin/coupon/{idx}", updateCouponEntity.getIdx())
+        mockMvc.perform(RestDocumentationRequestBuilders.put("/admin/coupon/{idx}", updateCouponEntity.getIdx())
                         .header("Authorization", "Bearer " + adminUserEntity.getUserToken())
                         .contentType(APPLICATION_JSON_VALUE)
                         .content(objectMapper.writeValueAsString(updateCouponEntity)))
                 .andDo(print())
+                .andDo(document("UPDATE-COUPON",
+                        preprocessRequest(prettyPrint()),
+                        preprocessResponse(prettyPrint()),
+                        relaxedRequestFields(
+                                fieldWithPath("title").type(STRING).description("쿠폰명"),
+                                fieldWithPath("description").type(STRING).description("쿠폰상세"),
+                                fieldWithPath("salePrice").type(NUMBER).description("할인금액"),
+                                fieldWithPath("percentage").type(NUMBER).description("할인퍼센트"),
+                                fieldWithPath("percentageStatus").type(BOOLEAN).description("할인퍼센트여부"),
+                                fieldWithPath("count").type(NUMBER).description("발급갯수"),
+                                fieldWithPath("startDate").type(STRING).description("시작 일자"),
+                                fieldWithPath("endDate").type(STRING).description("마감 일자"),
+                                fieldWithPath("status").type(BOOLEAN).description("쿠폰 사용 가능 여부")
+                        ),
+                        relaxedResponseFields(
+                                fieldWithPath("title").type(STRING).description("쿠폰명"),
+                                fieldWithPath("description").type(STRING).description("쿠폰상세"),
+                                fieldWithPath("salePrice").type(NUMBER).description("할인금액"),
+                                fieldWithPath("percentage").type(NUMBER).description("할인퍼센트"),
+                                fieldWithPath("percentageStatus").type(BOOLEAN).description("할인퍼센트여부"),
+                                fieldWithPath("count").type(NUMBER).description("발급갯수"),
+                                fieldWithPath("startDate").type(STRING).description("시작 일자"),
+                                fieldWithPath("endDate").type(STRING).description("마감 일자"),
+                                fieldWithPath("status").type(BOOLEAN).description("쿠폰 사용 가능 여부")
+                        )))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType("application/json;charset=utf-8"))
                 .andExpect(jsonPath("$.title").value("20% 쿠폰"));
@@ -210,9 +278,12 @@ class CouponControllerTest {
     @WithMockUser("ADMIN")
     @DisplayName("쿠폰 삭제 테스트")
     void 쿠폰삭제테스트() throws Exception {
-        mockMvc.perform(delete("/admin/coupon/{idx}", couponEntity.getIdx())
+        mockMvc.perform(RestDocumentationRequestBuilders.delete("/admin/coupon/{idx}", couponEntity.getIdx())
                         .header("Authorization", "Bearer " + adminUserEntity.getUserToken()))
                 .andDo(print())
+                .andDo(document("DELETE-COUPON", pathParameters(
+                        parameterWithName("idx").description("쿠폰 IDX")
+                )))
                 .andExpect(status().isNoContent());
     }
 }
