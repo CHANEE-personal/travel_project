@@ -34,6 +34,10 @@ public class TravelImageEntity {
     @ApiModelProperty(value = "파일 IDX", required = true, hidden = true)
     private Long idx;
 
+    @Column(name = "type_idx")
+    @ApiModelProperty(value = "분야 IDX", required = true, hidden = true)
+    private Long typeIdx;
+
     @Column(name = "type_name")
     @Enumerated(EnumType.STRING)
     @ApiModelProperty(value = "분야명", required = true, hidden = true)
