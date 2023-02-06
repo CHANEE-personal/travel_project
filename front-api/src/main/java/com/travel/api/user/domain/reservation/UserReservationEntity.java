@@ -48,11 +48,11 @@ public class UserReservationEntity extends NewCommonMappedClass {
     private int userCount;
 
     @ManyToOne(fetch = LAZY)
-    @JoinColumn(name = "user_idx", referencedColumnName = "idx")
+    @JoinColumn(name = "user_idx", referencedColumnName = "idx", nullable = false)
     private UserEntity newUserEntity;
 
     @ManyToOne(fetch = LAZY)
-    @JoinColumn(name = "reservation_idx", referencedColumnName = "idx")
+    @JoinColumn(name = "reservation_idx", referencedColumnName = "idx", nullable = false)
     private TravelReservationEntity travelReservationEntity;
 
     public static UserReservationDTO toDto(UserReservationEntity entity) {
