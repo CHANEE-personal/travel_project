@@ -10,7 +10,6 @@ import com.travel.jwt.JwtUtil;
 import com.travel.jwt.MyUserDetailsService;
 import io.swagger.annotations.*;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -160,6 +159,7 @@ public class UserController {
      * 5. 작성일      : 2022. 10. 11.
      * </pre>
      */
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @ApiOperation(value = "유저 정보 수정 처리", notes = "유저 정보 수정 처리한다.")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "유저 정보 수정 성공", response = UserDto.class),
@@ -170,7 +170,7 @@ public class UserController {
             @ApiResponse(code = 500, message = "서버 에러", response = ServerError.class)
     })
     @PutMapping("/{idx}")
-    public ResponseEntity<UserDto> updateUser(@PathVariable Long idx, @CurrentUser UserEntity userEntity) {
+    public ResponseEntity<UserDto> updateUser(@PathVariable Long idx, @CurrentUser @RequestBody UserEntity userEntity) {
         return ResponseEntity.ok(userService.updateUser(idx, userEntity));
     }
 
@@ -193,7 +193,7 @@ public class UserController {
             @ApiResponse(code = 500, message = "서버 에러", response = ServerError.class)
     })
     @DeleteMapping
-    public ResponseEntity<Void> deleteUser(@CurrentUser UserEntity userEntity) {
+    public ResponseEntity<Void> deleteUser(@CurrentUser @RequestBody UserEntity userEntity) {
         userService.deleteUser(userEntity);
         return ResponseEntity.noContent().build();
     }
