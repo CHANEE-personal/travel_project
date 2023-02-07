@@ -1,26 +1,37 @@
 package com.travel.api.travel;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.travel.api.common.domain.CommonDTO;
 import com.travel.api.common.domain.CommonEntity;
+import com.travel.api.common.domain.EntityType;
+import com.travel.api.travel.domain.TravelEntity;
 import com.travel.api.travel.domain.festival.TravelFestivalEntity;
+import com.travel.api.travel.domain.image.TravelImageEntity;
 import com.travel.api.travel.domain.recommend.TravelRecommendEntity;
 import com.travel.api.travel.domain.review.TravelReviewEntity;
 import com.travel.api.travel.domain.schedule.TravelScheduleEntity;
 import com.travel.api.travel.domain.search.SearchEntity;
-import com.travel.api.user.domain.Role;
-import com.travel.api.user.domain.UserDTO;
+import com.travel.api.user.domain.AuthenticationRequest;
 import com.travel.api.user.domain.UserEntity;
+import com.travel.jwt.JwtUtil;
+import com.travel.jwt.MyUserDetailsService;
 import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.event.EventListener;
-import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.restdocs.RestDocumentationContextProvider;
+import org.springframework.restdocs.RestDocumentationExtension;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.TestConstructor;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
@@ -33,14 +44,23 @@ import javax.persistence.EntityManager;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
+import static com.travel.api.user.domain.Role.ROLE_TRAVEL_USER;
 import static com.travel.common.StringUtil.getString;
 import static org.hamcrest.Matchers.greaterThan;
+import static org.mockito.Mockito.when;
 import static org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase.Replace.NONE;
 import static org.springframework.http.MediaType.*;
+import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
+import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.documentationConfiguration;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.put;
+import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
+import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
+import static org.springframework.security.crypto.factory.PasswordEncoderFactories.createDelegatingPasswordEncoder;
+import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.context.TestConstructor.AutowireMode.ALL;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -49,6 +69,7 @@ import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppC
 
 @SpringBootTest
 @Transactional
+@ExtendWith(RestDocumentationExtension.class)
 @AutoConfigureMockMvc
 @TestPropertySource(locations = "classpath:application.properties")
 @TestConstructor(autowireMode = ALL)
@@ -62,17 +83,57 @@ class TravelControllerTest {
     private final EntityManager em;
 
     private CommonEntity commonEntity;
-    private CommonDTO commonDTO;
     private UserEntity userEntity;
-    private UserDTO userDTO;
+    private TravelEntity travelEntity;
+    private TravelImageEntity travelImageEntity;
+
+    private final JwtUtil jwtUtil;
+    protected PasswordEncoder passwordEncoder;
+
+    @MockBean
+    protected MyUserDetailsService myUserDetailsService;
+    protected AuthenticationRequest authenticationRequest;
+
+    Collection<? extends GrantedAuthority> getAuthorities() {
+        List<SimpleGrantedAuthority> authorities = new ArrayList<>();
+        authorities.add(new SimpleGrantedAuthority("ROLE_ADMIN"));
+        return authorities;
+    }
+
+    @DisplayName("테스트 유저 생성")
+    void createUser() {
+        passwordEncoder = createDelegatingPasswordEncoder();
+
+        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken("admin04", "pass1234", getAuthorities());
+        String token = jwtUtil.doGenerateToken(authenticationToken.getName());
+
+        userEntity = UserEntity.builder()
+                .userId("admin05")
+                .password(passwordEncoder.encode("pass1234"))
+                .name("test")
+                .email("test@test.com")
+                .role(ROLE_TRAVEL_USER)
+                .userToken(token)
+                .visible("Y")
+                .build();
+
+        em.persist(userEntity);
+    }
 
     @BeforeEach
     @EventListener(ApplicationReadyEvent.class)
-    public void setup() {
+    public void setup(RestDocumentationContextProvider restDocumentationContextProvider) {
         this.mockMvc = webAppContextSetup(wac)
-                .addFilters(new CharacterEncodingFilter("UTF-8", true))
+                .addFilter(new CharacterEncodingFilter("UTF-8", true))
+                .apply(springSecurity())
+                .apply(documentationConfiguration(restDocumentationContextProvider))
                 .alwaysDo(print())
                 .build();
+
+        createUser();
+
+        authenticationRequest = new AuthenticationRequest(userEntity);
+        when(myUserDetailsService.loadUserByUsername(userEntity.getUserId())).thenReturn(authenticationRequest);
 
         commonEntity = CommonEntity.builder()
                 .commonCode(999)
@@ -82,18 +143,38 @@ class TravelControllerTest {
 
         em.persist(commonEntity);
 
-        commonDTO = CommonEntity.toDto(commonEntity);
-
-        userEntity = UserEntity.builder()
-                .userId("test111")
-                .password("test111")
-                .email("test@naver.com")
-                .name("test")
-                .role(Role.ROLE_TRAVEL_USER)
+        commonEntity = CommonEntity.builder()
+                .commonCode(999)
+                .commonName("서울")
                 .visible("Y")
                 .build();
-        em.persist(userEntity);
-        userDTO = UserEntity.toDto(userEntity);
+
+        em.persist(commonEntity);
+
+        travelEntity = TravelEntity.builder()
+                .newTravelCode(commonEntity)
+                .travelTitle("여행지 소개")
+                .travelDescription("여행지 소개")
+                .travelAddress("인천광역시 서구")
+                .travelZipCode("123-456")
+                .favoriteCount(1)
+                .viewCount(0)
+                .popular(false)
+                .visible("Y")
+                .build();
+
+        em.persist(travelEntity);
+
+        travelImageEntity = TravelImageEntity.builder()
+                .typeIdx(travelEntity.getIdx())
+                .imageType("main")
+                .fileName("test.jpg")
+                .fileMask("test.jpg")
+                .filePath("/test/test.jpg")
+                .entityType(EntityType.TRAVEL)
+                .build();
+
+        em.persist(travelImageEntity);
     }
 
     @Test
@@ -117,10 +198,15 @@ class TravelControllerTest {
     }
 
     @Test
+    @WithMockUser("TRAVEL_USER")
     @DisplayName("여행지 좋아요 테스트")
     void 여행지좋아요테스트() throws Exception {
-        mockMvc.perform(put("/api/travel/1/favorite"))
+        mockMvc.perform(put("/front/travel/{idx}/favorite", travelEntity.getIdx())
+                        .header("Authorization", "Bearer " + userEntity.getUserToken()))
                 .andDo(print())
+                .andDo(document("/front/travel/{idx}/favorite", pathParameters(
+                        parameterWithName("idx").description("여행 IDX")
+                )))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType("application/json;charset=utf-8"))
                 .andExpect(content().string(getString(2)));

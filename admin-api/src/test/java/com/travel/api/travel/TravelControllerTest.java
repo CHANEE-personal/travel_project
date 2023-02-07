@@ -19,6 +19,7 @@ import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -26,6 +27,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.event.EventListener;
 import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.restdocs.RestDocumentationContextProvider;
+import org.springframework.restdocs.RestDocumentationExtension;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -50,12 +53,18 @@ import java.util.List;
 
 import static com.google.common.collect.ImmutableList.of;
 import static com.travel.api.user.domain.Role.ROLE_ADMIN;
-import static com.travel.common.StringUtil.getString;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.mockito.Mockito.when;
 import static org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase.Replace.NONE;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
+import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.documentationConfiguration;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.*;
+import static org.springframework.restdocs.operation.preprocess.Preprocessors.*;
+import static org.springframework.restdocs.payload.JsonFieldType.*;
+import static org.springframework.restdocs.payload.PayloadDocumentation.*;
+import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
+import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
 import static org.springframework.security.crypto.factory.PasswordEncoderFactories.createDelegatingPasswordEncoder;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.context.TestConstructor.AutowireMode.ALL;
@@ -66,6 +75,7 @@ import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppC
 
 @SpringBootTest
 @Transactional
+@ExtendWith(RestDocumentationExtension.class)
 @AutoConfigureMockMvc
 @TestPropertySource(locations = "classpath:application.properties")
 @TestConstructor(autowireMode = ALL)
@@ -118,10 +128,11 @@ class TravelControllerTest {
 
     @BeforeEach
     @EventListener(ApplicationReadyEvent.class)
-    public void setup() {
+    public void setup(RestDocumentationContextProvider restDocumentationContextProvider) {
         this.mockMvc = webAppContextSetup(wac)
                 .addFilter(new CharacterEncodingFilter("UTF-8", true))
                 .apply(springSecurity())
+                .apply(documentationConfiguration(restDocumentationContextProvider))
                 .alwaysDo(print())
                 .build();
 
@@ -183,9 +194,103 @@ class TravelControllerTest {
         mockMvc.perform(get("/admin/travel/{idx}", travelEntity.getIdx())
                         .header("Authorization", "Bearer " + adminUserEntity.getUserToken()))
                 .andDo(print())
+                .andDo(document("GET-TRAVEL", pathParameters(
+                        parameterWithName("idx").description("여행 IDX")
+                )))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType("application/json;charset=utf-8"))
                 .andExpect(jsonPath("$.idx").value(travelEntity.getIdx()));
+    }
+
+    @Test
+    @WithMockUser("ADMIN")
+    @DisplayName("여행지 등록 테스트")
+    void 여행지등록테스트() throws Exception {
+        travelEntity = TravelEntity.builder()
+                .newTravelCode(commonEntity)
+                .travelTitle("서울 여행지 소개")
+                .travelDescription("서울 여행지 소개")
+                .travelAddress("서울특별시 강남구")
+                .travelZipCode("123-456")
+                .favoriteCount(1)
+                .viewCount(0)
+                .popular(false)
+                .visible("Y")
+                .build();
+
+        mockMvc.perform(post("/admin/travel")
+                        .header("Authorization", "Bearer " + adminUserEntity.getUserToken())
+                        .contentType(APPLICATION_JSON_VALUE)
+                        .content(objectMapper.writeValueAsString(travelEntity)))
+                .andDo(print())
+                .andDo(document("INSERT-TRAVEL",
+                        preprocessRequest(prettyPrint()),
+                        preprocessResponse(prettyPrint()),
+                        relaxedRequestFields(
+                                fieldWithPath("newTravelCode").type(OBJECT).description("여행지 코드"),
+                                fieldWithPath("travelTitle").type(STRING).description("여행지명"),
+                                fieldWithPath("travelDescription").type(STRING).description("여행지 상세 내용"),
+                                fieldWithPath("travelAddress").type(STRING).description("여행지 주소"),
+                                fieldWithPath("travelZipCode").type(STRING).description("여행지 우편번호"),
+                                fieldWithPath("visible").type(STRING).description("여행지 노출 여부")
+                        ),
+                        relaxedResponseFields(
+                                fieldWithPath("newTravelCode").type(OBJECT).description("여행지 코드"),
+                                fieldWithPath("travelTitle").type(STRING).description("여행지명"),
+                                fieldWithPath("travelDescription").type(STRING).description("여행지 상세 내용"),
+                                fieldWithPath("travelAddress").type(STRING).description("여행지 주소"),
+                                fieldWithPath("travelZipCode").type(STRING).description("여행지 우편번호"),
+                                fieldWithPath("visible").type(STRING).description("여행지 노출 여부")
+                        )))
+                .andExpect(status().isCreated())
+                .andExpect(content().contentType("application/json;charset=utf-8"))
+                .andExpect(jsonPath("$.travelTitle").value("서울 여행지 소개"));
+    }
+
+    @Test
+    @WithMockUser("ADMIN")
+    @DisplayName("여행지 수정 테스트")
+    void 여행지수정테스트() throws Exception {
+        TravelEntity updateEntity = TravelEntity.builder()
+                .idx(travelEntity.getIdx())
+                .newTravelCode(commonEntity)
+                .travelTitle("서울 여행지 소개")
+                .travelDescription("서울 여행지 소개")
+                .travelAddress("서울특별시 강남구")
+                .travelZipCode("123-456")
+                .favoriteCount(1)
+                .viewCount(0)
+                .popular(false)
+                .visible("Y")
+                .build();
+
+        mockMvc.perform(put("/admin/travel/{idx}", travelEntity.getIdx())
+                        .header("Authorization", "Bearer " + adminUserEntity.getUserToken())
+                        .contentType(APPLICATION_JSON_VALUE)
+                        .content(objectMapper.writeValueAsString(updateEntity)))
+                .andDo(print())
+                .andDo(document("UPDATE-TRAVEL",
+                        preprocessRequest(prettyPrint()),
+                        preprocessResponse(prettyPrint()),
+                        relaxedRequestFields(
+                                fieldWithPath("newTravelCode").type(OBJECT).description("여행지 코드"),
+                                fieldWithPath("travelTitle").type(STRING).description("여행지명"),
+                                fieldWithPath("travelDescription").type(STRING).description("여행지 상세 내용"),
+                                fieldWithPath("travelAddress").type(STRING).description("여행지 주소"),
+                                fieldWithPath("travelZipCode").type(STRING).description("여행지 우편번호"),
+                                fieldWithPath("visible").type(STRING).description("여행지 노출 여부")
+                        ),
+                        relaxedResponseFields(
+                                fieldWithPath("newTravelCode").type(OBJECT).description("여행지 코드"),
+                                fieldWithPath("travelTitle").type(STRING).description("여행지명"),
+                                fieldWithPath("travelDescription").type(STRING).description("여행지 상세 내용"),
+                                fieldWithPath("travelAddress").type(STRING).description("여행지 주소"),
+                                fieldWithPath("travelZipCode").type(STRING).description("여행지 우편번호"),
+                                fieldWithPath("visible").type(STRING).description("여행지 노출 여부")
+                        )))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType("application/json;charset=utf-8"))
+                .andExpect(jsonPath("$.travelTitle").value("서울 여행지 소개"));
     }
 
     @Test
@@ -195,22 +300,14 @@ class TravelControllerTest {
         mockMvc.perform(delete("/admin/travel/{idx}", travelEntity.getIdx())
                         .header("Authorization", "Bearer " + adminUserEntity.getUserToken()))
                 .andDo(print())
+                .andDo(document("DELETE-TRAVEL", pathParameters(
+                        parameterWithName("idx").description("여행 IDX")
+                )))
                 .andExpect(status().isNoContent());
     }
 
     @Test
     @WithMockUser("ADMIN")
-    @DisplayName("여행지 좋아요 테스트")
-    void 여행지좋아요테스트() throws Exception {
-        mockMvc.perform(put("/admin/travel/{idx}/favorite", travelEntity.getIdx())
-                        .header("Authorization", "Bearer " + adminUserEntity.getUserToken()))
-                .andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(content().contentType("application/json;charset=utf-8"))
-                .andExpect(content().string(getString(travelEntity.getIdx())));
-    }
-
-    @Test
     @DisplayName("여행지 이미지 등록 테스트")
     void 여행지이미지등록테스트() throws Exception {
         List<MultipartFile> imageFiles = of(
@@ -220,11 +317,12 @@ class TravelControllerTest {
                         "image/png", new FileInputStream("src/main/resources/static/images/0522045010772.png"))
         );
 
-        mockMvc.perform(multipart("/admin/travel/1/images")
+        mockMvc.perform(multipart("/admin/travel/{idx}/images", travelEntity.getIdx())
                         .file("images", imageFiles.get(0).getBytes())
-                        .file("images", imageFiles.get(1).getBytes()))
+                        .file("images", imageFiles.get(1).getBytes())
+                        .header("Authorization", "Bearer " + adminUserEntity.getUserToken()))
                 .andDo(print())
-                .andExpect(status().isCreated());
+                .andExpect(status().isOk());
     }
 
     @Test
@@ -245,6 +343,19 @@ class TravelControllerTest {
                         .contentType(APPLICATION_JSON_VALUE)
                         .content(objectMapper.writeValueAsString(travelReviewEntity)))
                 .andDo(print())
+                .andDo(document("INSERT-TRAVEL-REVIEW",
+                        preprocessRequest(prettyPrint()),
+                        preprocessResponse(prettyPrint()),
+                        relaxedRequestFields(
+                                fieldWithPath("reviewTitle").type(STRING).description("리뷰 제목"),
+                                fieldWithPath("reviewDescription").type(STRING).description("리뷰 상세 내용"),
+                                fieldWithPath("visible").type(STRING).description("리뷰 노출 여부")
+                        ),
+                        relaxedResponseFields(
+                                fieldWithPath("reviewTitle").type(STRING).description("리뷰 제목"),
+                                fieldWithPath("reviewDescription").type(STRING).description("리뷰 상세 내용"),
+                                fieldWithPath("visible").type(STRING).description("리뷰 노출 여부")
+                        )))
                 .andExpect(status().isCreated())
                 .andExpect(content().contentType("application/json;charset=utf-8"));
     }
@@ -281,6 +392,19 @@ class TravelControllerTest {
                         .content(objectMapper.writeValueAsString(newTravelReviewEntity))
                         .header("Authorization", "Bearer " + adminUserEntity.getUserToken()))
                 .andDo(print())
+                .andDo(document("UPDATE-TRAVEL-REVIEW",
+                        preprocessRequest(prettyPrint()),
+                        preprocessResponse(prettyPrint()),
+                        relaxedRequestFields(
+                                fieldWithPath("reviewTitle").type(STRING).description("리뷰 제목"),
+                                fieldWithPath("reviewDescription").type(STRING).description("리뷰 상세 내용"),
+                                fieldWithPath("visible").type(STRING).description("리뷰 노출 여부")
+                        ),
+                        relaxedResponseFields(
+                                fieldWithPath("reviewTitle").type(STRING).description("리뷰 제목"),
+                                fieldWithPath("reviewDescription").type(STRING).description("리뷰 상세 내용"),
+                                fieldWithPath("visible").type(STRING).description("리뷰 노출 여부")
+                        )))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType("application/json;charset=utf-8"))
                 .andExpect(jsonPath("$.reviewTitle").value("리뷰수정테스트"))
@@ -306,6 +430,9 @@ class TravelControllerTest {
         mockMvc.perform(delete("/admin/travel/{idx}/review", travelReviewEntity.getIdx())
                         .header("Authorization", "Bearer " + adminUserEntity.getUserToken()))
                 .andDo(print())
+                .andDo(document("DELETE-TRAVEL-REVIEW", pathParameters(
+                        parameterWithName("idx").description("리뷰 IDX")
+                )))
                 .andExpect(status().isNoContent());
     }
 
@@ -327,6 +454,9 @@ class TravelControllerTest {
         mockMvc.perform(put("/admin/travel/{idx}/popular", travelEntity.getIdx())
                         .header("Authorization", "Bearer " + adminUserEntity.getUserToken()))
                 .andDo(print())
+                .andDo(document("UPDATE-POPULAR-TRAVEL", pathParameters(
+                        parameterWithName("idx").description("여행 IDX")
+                )))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType("application/json;charset=utf-8"))
                 .andExpect(content().string(String.valueOf(true)));
@@ -350,6 +480,9 @@ class TravelControllerTest {
         mockMvc.perform(get("/admin/travel/{idx}/group", travelEntity.getIdx())
                         .header("Authorization", "Bearer " + adminUserEntity.getUserToken()))
                 .andDo(print())
+                .andDo(document("GET-TRAVEL-GROUP", pathParameters(
+                        parameterWithName("idx").description("여행 IDX")
+                )))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType("application/json;charset=utf-8"))
                 .andExpect(jsonPath("$.idx").value(travelEntity.getIdx()));
@@ -370,6 +503,19 @@ class TravelControllerTest {
                         .contentType(APPLICATION_JSON_VALUE)
                         .content(objectMapper.writeValueAsString(travelGroupEntity)))
                 .andDo(print())
+                .andDo(document("INSERT-TRAVEL-GROUP",
+                        preprocessRequest(prettyPrint()),
+                        preprocessResponse(prettyPrint()),
+                        relaxedRequestFields(
+                                fieldWithPath("groupName").type(STRING).description("그룹명"),
+                                fieldWithPath("groupDescription").type(STRING).description("그룹 상세 내용"),
+                                fieldWithPath("visible").type(STRING).description("그룹 노출 여부")
+                        ),
+                        relaxedResponseFields(
+                                fieldWithPath("groupName").type(STRING).description("그룹명"),
+                                fieldWithPath("groupDescription").type(STRING).description("그룹 상세 내용"),
+                                fieldWithPath("visible").type(STRING).description("그룹 노출 여부")
+                        )))
                 .andExpect(status().isCreated())
                 .andExpect(content().contentType("application/json;charset=utf-8"))
                 .andExpect(jsonPath("$.travelIdx").value(travelEntity.getIdx()))
@@ -403,6 +549,19 @@ class TravelControllerTest {
                         .content(objectMapper.writeValueAsString(newTravelGroupEntity))
                         .header("Authorization", "Bearer " + adminUserEntity.getUserToken()))
                 .andDo(print())
+                .andDo(document("UPDATE-TRAVEL-GROUP",
+                        preprocessRequest(prettyPrint()),
+                        preprocessResponse(prettyPrint()),
+                        relaxedRequestFields(
+                                fieldWithPath("groupName").type(STRING).description("그룹명"),
+                                fieldWithPath("groupDescription").type(STRING).description("그룹 상세 내용"),
+                                fieldWithPath("visible").type(STRING).description("그룹 노출 여부")
+                        ),
+                        relaxedResponseFields(
+                                fieldWithPath("groupName").type(STRING).description("그룹명"),
+                                fieldWithPath("groupDescription").type(STRING).description("그룹 상세 내용"),
+                                fieldWithPath("visible").type(STRING).description("그룹 노출 여부")
+                        )))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType("application/json;charset=utf-8"))
                 .andExpect(jsonPath("$.groupName").value("인천모임"))
@@ -425,6 +584,9 @@ class TravelControllerTest {
         mockMvc.perform(delete("/admin/travel/group/{groupIdx}", travelGroupEntity.getIdx())
                         .header("Authorization", "Bearer " + adminUserEntity.getUserToken()))
                 .andDo(print())
+                .andDo(document("DELETE-TRAVEL-GROUP", pathParameters(
+                        parameterWithName("groupIdx").description("그룹 IDX")
+                )))
                 .andExpect(status().isNoContent());
     }
 
@@ -466,6 +628,9 @@ class TravelControllerTest {
         mockMvc.perform(get("/admin/travel/{idx}/recommend", travelRecommendEntity.getIdx())
                         .header("Authorization", "Bearer " + adminUserEntity.getUserToken()))
                 .andDo(print())
+                .andDo(document("GET-TRAVEL-RECOMMEND", pathParameters(
+                        parameterWithName("idx").description("검색어 IDX")
+                )))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType("application/json;charset=utf-8"))
                 .andExpect(jsonPath("$.idx").value(travelRecommendEntity.getIdx()));
@@ -488,6 +653,15 @@ class TravelControllerTest {
                         .content(objectMapper.writeValueAsString(travelRecommendEntity))
                         .header("Authorization", "Bearer " + adminUserEntity.getUserToken()))
                 .andDo(print())
+                .andDo(document("INSERT-TRAVEL-RECOMMEND",
+                        preprocessRequest(prettyPrint()),
+                        preprocessResponse(prettyPrint()),
+                        relaxedRequestFields(
+                                fieldWithPath("recommendName").type(ARRAY).description("추천검색어")
+                        ),
+                        relaxedResponseFields(
+                                fieldWithPath("recommendName").type(ARRAY).description("추천검색어")
+                        )))
                 .andExpect(status().isCreated())
                 .andExpect(content().contentType("application/json;charset=utf-8"))
                 .andExpect(jsonPath("$.recommendName").value(recommendList));
@@ -518,6 +692,15 @@ class TravelControllerTest {
                         .content(objectMapper.writeValueAsString(updateTravelRecommendEntity))
                         .header("Authorization", "Bearer " + adminUserEntity.getUserToken()))
                 .andDo(print())
+                .andDo(document("UPDATE-TRAVEL-RECOMMEND",
+                        preprocessRequest(prettyPrint()),
+                        preprocessResponse(prettyPrint()),
+                        relaxedRequestFields(
+                                fieldWithPath("recommendName").type(ARRAY).description("추천검색어")
+                        ),
+                        relaxedResponseFields(
+                                fieldWithPath("recommendName").type(ARRAY).description("추천검색어")
+                        )))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType("application/json;charset=utf-8"))
                 .andExpect(jsonPath("$.recommendName").value(recommendList));
@@ -540,6 +723,9 @@ class TravelControllerTest {
         mockMvc.perform(delete("/admin/travel/{idx}/recommend", travelRecommendEntity.getIdx())
                         .header("Authorization", "Bearer " + adminUserEntity.getUserToken()))
                 .andDo(print())
+                .andDo(document("DELETE-TRAVEL-RECOMMEND", pathParameters(
+                        parameterWithName("idx").description("검색어 IDX")
+                )))
                 .andExpect(status().isNoContent());
     }
 
@@ -636,6 +822,9 @@ class TravelControllerTest {
         mockMvc.perform(get("/admin/travel/festival/{idx}", travelFestivalEntity.getIdx())
                         .header("Authorization", "Bearer " + adminUserEntity.getUserToken()))
                 .andDo(print())
+                .andDo(document("GET-TRAVEL-FESTIVAL", pathParameters(
+                        parameterWithName("idx").description("축제 IDX")
+                )))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType("application/json;charset=utf-8"))
                 .andExpect(jsonPath("$.idx").value(travelFestivalEntity.getIdx()));
@@ -662,6 +851,23 @@ class TravelControllerTest {
                         .content(objectMapper.writeValueAsString(travelFestivalEntity))
                         .header("Authorization", "Bearer " + adminUserEntity.getUserToken()))
                 .andDo(print())
+                .andDo(document("INSERT-TRAVEL-FESTIVAL",
+                        preprocessRequest(prettyPrint()),
+                        preprocessResponse(prettyPrint()),
+                        relaxedRequestFields(
+                                fieldWithPath("festivalTitle").type(STRING).description("축제 제목"),
+                                fieldWithPath("festivalDescription").type(STRING).description("축제 내용"),
+                                fieldWithPath("festivalMonth").type(NUMBER).description("축제가 열리는 월"),
+                                fieldWithPath("festivalDay").type(NUMBER).description("축제가 열리는 일"),
+                                fieldWithPath("festivalTime").type(STRING).description("축제가 열리는 날짜")
+                        ),
+                        relaxedResponseFields(
+                                fieldWithPath("festivalTitle").type(STRING).description("축제 제목"),
+                                fieldWithPath("festivalDescription").type(STRING).description("축제 내용"),
+                                fieldWithPath("festivalMonth").type(NUMBER).description("축제가 열리는 월"),
+                                fieldWithPath("festivalDay").type(NUMBER).description("축제가 열리는 일"),
+                                fieldWithPath("festivalTime").type(STRING).description("축제가 열리는 날짜")
+                        )))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.festivalTitle").value("축제 제목"));
     }
@@ -699,6 +905,23 @@ class TravelControllerTest {
                         .contentType(APPLICATION_JSON_VALUE)
                         .content(objectMapper.writeValueAsString(travelFestivalEntity)))
                 .andDo(print())
+                .andDo(document("UPDATE-TRAVEL-FESTIVAL",
+                        preprocessRequest(prettyPrint()),
+                        preprocessResponse(prettyPrint()),
+                        relaxedRequestFields(
+                                fieldWithPath("festivalTitle").type(STRING).description("축제 제목"),
+                                fieldWithPath("festivalDescription").type(STRING).description("축제 내용"),
+                                fieldWithPath("festivalMonth").type(NUMBER).description("축제가 열리는 월"),
+                                fieldWithPath("festivalDay").type(NUMBER).description("축제가 열리는 일"),
+                                fieldWithPath("festivalTime").type(STRING).description("축제가 열리는 날짜")
+                        ),
+                        relaxedResponseFields(
+                                fieldWithPath("festivalTitle").type(STRING).description("축제 제목"),
+                                fieldWithPath("festivalDescription").type(STRING).description("축제 내용"),
+                                fieldWithPath("festivalMonth").type(NUMBER).description("축제가 열리는 월"),
+                                fieldWithPath("festivalDay").type(NUMBER).description("축제가 열리는 일"),
+                                fieldWithPath("festivalTime").type(STRING).description("축제가 열리는 날짜")
+                        )))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.festivalTitle").value("축제 수정 제목"));
     }
@@ -724,6 +947,9 @@ class TravelControllerTest {
         mockMvc.perform(delete("/admin/travel/festival/{idx}", travelFestivalEntity.getIdx())
                         .header("Authorization", "Bearer " + adminUserEntity.getUserToken()))
                 .andDo(print())
+                .andDo(document("DELETE-TRAVEL-FESTIVAL", pathParameters(
+                        parameterWithName("idx").description("축제 IDX")
+                )))
                 .andExpect(status().isNoContent());
     }
 
@@ -778,9 +1004,12 @@ class TravelControllerTest {
         em.flush();
         em.clear();
 
-        mockMvc.perform(get("/admin/travel/reservation", travelReservationEntity.getIdx())
+        mockMvc.perform(get("/admin/travel/reservation/{idx}", travelReservationEntity.getIdx())
                         .header("Authorization", "Bearer " + adminUserEntity.getUserToken()))
                 .andDo(print())
+                .andDo(document("GET-TRAVEL-RESERVATION", pathParameters(
+                        parameterWithName("idx").description("예약 IDX")
+                )))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType("application/json;charset=utf-8"));
     }
@@ -808,6 +1037,31 @@ class TravelControllerTest {
                         .content(objectMapper.writeValueAsString(travelReservationEntity))
                         .header("Authorization", "Bearer " + adminUserEntity.getUserToken()))
                 .andDo(print())
+                .andDo(document("INSERT-TRAVEL-RESERVATION",
+                        preprocessRequest(prettyPrint()),
+                        preprocessResponse(prettyPrint()),
+                        relaxedRequestFields(
+                                fieldWithPath("title").type(STRING).description("예약지 제목"),
+                                fieldWithPath("description").type(STRING).description("예약지 내용"),
+                                fieldWithPath("address").type(STRING).description("예약지 주소"),
+                                fieldWithPath("zipCode").type(STRING).description("예약지 우편번호"),
+                                fieldWithPath("price").type(NUMBER).description("예약 가격"),
+                                fieldWithPath("possibleCount").type(NUMBER).description("예약 가능 인원"),
+                                fieldWithPath("startDate").type(STRING).description("예약 시작 일자"),
+                                fieldWithPath("endDate").type(STRING).description("예약 마감 일자"),
+                                fieldWithPath("status").type(BOOLEAN).description("예약 가능 여부")
+                        ),
+                        relaxedResponseFields(
+                                fieldWithPath("title").type(STRING).description("예약지 제목"),
+                                fieldWithPath("description").type(STRING).description("예약지 내용"),
+                                fieldWithPath("address").type(STRING).description("예약지 주소"),
+                                fieldWithPath("zipCode").type(STRING).description("예약지 우편번호"),
+                                fieldWithPath("price").type(NUMBER).description("예약 가격"),
+                                fieldWithPath("possibleCount").type(NUMBER).description("예약 가능 인원"),
+                                fieldWithPath("startDate").type(STRING).description("예약 시작 일자"),
+                                fieldWithPath("endDate").type(STRING).description("예약 마감 일자"),
+                                fieldWithPath("status").type(BOOLEAN).description("예약 가능 여부")
+                        )))
                 .andExpect(status().isCreated())
                 .andExpect(content().contentType("application/json;charset=utf-8"))
                 .andExpect(jsonPath("$.title").value(travelReservationEntity.getTitle()));
@@ -852,6 +1106,31 @@ class TravelControllerTest {
                         .content(objectMapper.writeValueAsString(updateReservation))
                         .header("Authorization", "Bearer " + adminUserEntity.getUserToken()))
                 .andDo(print())
+                .andDo(document("UPDATE-TRAVEL-RESERVATION",
+                        preprocessRequest(prettyPrint()),
+                        preprocessResponse(prettyPrint()),
+                        relaxedRequestFields(
+                                fieldWithPath("title").type(STRING).description("예약지 제목"),
+                                fieldWithPath("description").type(STRING).description("예약지 내용"),
+                                fieldWithPath("address").type(STRING).description("예약지 주소"),
+                                fieldWithPath("zipCode").type(STRING).description("예약지 우편번호"),
+                                fieldWithPath("price").type(NUMBER).description("예약 가격"),
+                                fieldWithPath("possibleCount").type(NUMBER).description("예약 가능 인원"),
+                                fieldWithPath("startDate").type(STRING).description("예약 시작 일자"),
+                                fieldWithPath("endDate").type(STRING).description("예약 마감 일자"),
+                                fieldWithPath("status").type(BOOLEAN).description("예약 가능 여부")
+                        ),
+                        relaxedResponseFields(
+                                fieldWithPath("title").type(STRING).description("예약지 제목"),
+                                fieldWithPath("description").type(STRING).description("예약지 내용"),
+                                fieldWithPath("address").type(STRING).description("예약지 주소"),
+                                fieldWithPath("zipCode").type(STRING).description("예약지 우편번호"),
+                                fieldWithPath("price").type(NUMBER).description("예약 가격"),
+                                fieldWithPath("possibleCount").type(NUMBER).description("예약 가능 인원"),
+                                fieldWithPath("startDate").type(STRING).description("예약 시작 일자"),
+                                fieldWithPath("endDate").type(STRING).description("예약 마감 일자"),
+                                fieldWithPath("status").type(BOOLEAN).description("예약 가능 여부")
+                        )))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType("application/json;charset=utf-8"))
                 .andExpect(jsonPath("$.title").value(updateReservation.getTitle()));
@@ -880,6 +1159,9 @@ class TravelControllerTest {
         mockMvc.perform(delete("/admin/travel/reservation/{idx}", travelReservationEntity.getIdx())
                         .header("Authorization", "Bearer " + adminUserEntity.getUserToken()))
                 .andDo(print())
+                .andDo(document("DELETE-TRAVEL-RESERVATION", pathParameters(
+                        parameterWithName("idx").description("예약 IDX")
+                )))
                 .andExpect(status().isNoContent());
     }
 }

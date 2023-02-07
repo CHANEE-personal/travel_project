@@ -1,6 +1,5 @@
 package com.travel.api.user;
 
-import com.travel.api.travel.domain.group.TravelGroupDTO;
 import com.travel.api.travel.domain.group.TravelGroupUserDTO;
 import com.travel.api.travel.domain.schedule.TravelScheduleDTO;
 import com.travel.api.travel.domain.schedule.TravelScheduleEntity;
@@ -148,7 +147,7 @@ public class UserController {
             @ApiResponse(code = 500, message = "서버 에러", response = ServerError.class)
     })
     @PutMapping("/{idx}")
-    public ResponseEntity<UserDTO> updateUser(@PathVariable Long idx, @CurrentUser UserEntity userEntity) {
+    public ResponseEntity<UserDTO> updateUser(@PathVariable Long idx, @CurrentUser @RequestBody UserEntity userEntity) {
         return ResponseEntity.ok(userService.updateUser(idx, userEntity));
     }
 
