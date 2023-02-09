@@ -1,8 +1,6 @@
 package com.travel.api.travel;
 
 import com.travel.api.FrontCommonServiceTest;
-import com.travel.api.common.domain.CommonDTO;
-import com.travel.api.common.domain.CommonEntity;
 import com.travel.api.travel.domain.TravelDTO;
 import com.travel.api.travel.domain.TravelEntity;
 import com.travel.api.travel.domain.festival.TravelFestivalEntity;
@@ -13,16 +11,13 @@ import com.travel.api.travel.domain.review.TravelReviewEntity;
 import com.travel.api.travel.domain.search.SearchEntity;
 import com.travel.exception.TravelException;
 import lombok.RequiredArgsConstructor;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.InOrder;
 import org.mockito.Mock;
-import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.event.EventListener;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
