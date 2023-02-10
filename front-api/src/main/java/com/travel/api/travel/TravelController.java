@@ -145,7 +145,7 @@ public class TravelController {
             @ApiResponse(code = 404, message = "존재 하지 않음", response = HttpClientErrorException.NotFound.class),
             @ApiResponse(code = 500, message = "서버 에러", response = ServerError.class)
     })
-    @PostMapping(value = "/{idx}/review")
+    @PostMapping(value = "/review")
     public ResponseEntity<TravelReviewDTO> reviewTravel(@PathVariable Long idx, @Valid @RequestBody TravelReviewEntity travelReviewEntity) {
         return ResponseEntity.created(URI.create("")).body(travelService.reviewTravel(idx, travelReviewEntity));
     }

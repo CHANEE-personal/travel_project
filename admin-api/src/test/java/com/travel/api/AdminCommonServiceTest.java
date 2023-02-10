@@ -55,7 +55,6 @@ public abstract class AdminCommonServiceTest {
     protected TravelEntity travelEntity;
     protected TravelDto travelDTO;
     protected TravelImageEntity travelImageEntity;
-    protected TravelImageDto travelImageDTO;
     protected FaqEntity faqEntity;
     protected FaqDto faqDTO;
     protected NoticeEntity noticeEntity;
@@ -98,7 +97,7 @@ public abstract class AdminCommonServiceTest {
 
         // 여행지 이미지 등록
         travelImageEntity = TravelImageEntity.builder()
-                .typeIdx(travelDTO.getIdx())
+                .typeIdx(travelEntity.getIdx())
                 .imageType("main")
                 .fileName("test.jpg")
                 .fileMask("test.jpg")

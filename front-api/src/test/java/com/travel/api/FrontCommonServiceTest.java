@@ -2,6 +2,7 @@ package com.travel.api;
 
 import com.travel.api.common.domain.CommonDTO;
 import com.travel.api.common.domain.CommonEntity;
+import com.travel.api.common.domain.EntityType;
 import com.travel.api.common.domain.repository.CommonRepository;
 import com.travel.api.faq.domain.FaqDTO;
 import com.travel.api.faq.domain.FaqEntity;
@@ -9,12 +10,14 @@ import com.travel.api.faq.domain.repository.FaqRepository;
 import com.travel.api.notice.domain.NoticeDTO;
 import com.travel.api.notice.domain.NoticeEntity;
 import com.travel.api.notice.domain.repository.NoticeRepository;
+import com.travel.api.travel.TravelImageRepository;
 import com.travel.api.travel.TravelRepository;
 import com.travel.api.travel.domain.TravelDTO;
 import com.travel.api.travel.domain.TravelEntity;
 import com.travel.api.travel.domain.group.TravelGroupDTO;
 import com.travel.api.travel.domain.group.TravelGroupEntity;
 import com.travel.api.travel.domain.group.repository.GroupRepository;
+import com.travel.api.travel.domain.image.TravelImageEntity;
 import com.travel.api.travel.domain.reservation.TravelReservationDTO;
 import com.travel.api.travel.domain.reservation.TravelReservationEntity;
 import com.travel.api.travel.domain.reservation.repository.TravelReservationRepository;
@@ -35,6 +38,7 @@ import static com.travel.api.user.domain.Role.ROLE_TRAVEL_USER;
 public abstract class FrontCommonServiceTest {
 
     @Autowired private TravelRepository travelRepository;
+    @Autowired private TravelImageRepository travelImageRepository;
     @Autowired private CommonRepository commonRepository;
     @Autowired private FaqRepository faqRepository;
     @Autowired private NoticeRepository noticeRepository;
@@ -44,6 +48,7 @@ public abstract class FrontCommonServiceTest {
     @Autowired private GroupRepository groupRepository;
 
     protected TravelEntity travelEntity;
+    protected TravelImageEntity travelImageEntity;
     protected TravelDTO travelDTO;
     protected CommonEntity commonEntity;
     protected CommonDTO commonDTO;
@@ -80,12 +85,25 @@ public abstract class FrontCommonServiceTest {
                         .travelAddress("인천광역시 서구")
                         .travelZipCode("123-456")
                         .favoriteCount(1)
-                        .viewCount(0)
+                        .viewCount(1)
                         .popular(false)
                         .visible("Y")
                         .build());
 
         travelDTO = TravelEntity.toDto(travelEntity);
+
+        // 여행지 이미지 등록
+        travelImageEntity = TravelImageEntity.builder()
+                .typeIdx(travelDTO.getIdx())
+                .imageType("main")
+                .fileName("test.jpg")
+                .fileMask("test.jpg")
+                .filePath("/test/test.jpg")
+                .entityType(EntityType.TRAVEL)
+                .visible("Y")
+                .build();
+
+        travelImageRepository.save(travelImageEntity);
 
         // FAQ 등록
         faqEntity = faqRepository.save(FaqEntity.builder()

@@ -81,7 +81,7 @@ public class TravelEntity extends NewCommonMappedClass {
 
     @Builder.Default
     @BatchSize(size = 20)
-    @Where(clause = "type_name = 'travel'")
+    @Where(clause = "type_name = 'TRAVEL'")
     @OneToMany(mappedBy = "newTravelImageEntity", fetch = LAZY, cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<TravelImageEntity> travelImageEntityList = new ArrayList<>();
 

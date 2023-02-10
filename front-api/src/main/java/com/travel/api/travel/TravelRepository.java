@@ -10,7 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Optional;
 
 @Repository
-@Transactional(readOnly = true)
+@Transactional
 public interface TravelRepository extends JpaRepository<TravelEntity, Long> {
 
     @Query("select t from TravelEntity t join fetch t.newTravelCode join fetch t.travelImageEntityList where t.idx = :idx")
