@@ -4,17 +4,22 @@ import com.travel.api.post.domain.PostDTO;
 import com.travel.api.post.domain.PostEntity;
 import com.travel.api.post.domain.reply.ReplyDTO;
 import com.travel.api.post.domain.reply.ReplyEntity;
+import com.travel.api.post.domain.repository.PostQueryRepository;
+import com.travel.api.post.domain.repository.PostRepository;
 import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InOrder;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.event.EventListener;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -36,18 +41,19 @@ import static org.mockito.Mockito.*;
 import static org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase.Replace.NONE;
 import static org.springframework.test.context.TestConstructor.AutowireMode.ALL;
 
-@DataJpaTest
+@SpringBootTest
 @Transactional
+@AutoConfigureMockMvc
 @TestPropertySource(locations = "classpath:application.properties")
 @TestConstructor(autowireMode = ALL)
 @RequiredArgsConstructor
 @AutoConfigureTestDatabase(replace = NONE)
-@ExtendWith(MockitoExtension.class)
-@DisplayName("게시글 Service Test")
+@DisplayName("FAQ Service Test")
 class PostServiceTest {
 
-    @Mock
-    private PostService mockPostService;
+    @Mock private PostRepository postRepository;
+    @Mock private PostQueryRepository postQueryRepository;
+    @InjectMocks private PostService mockPostService;
     private final PostService postService;
     private final EntityManager em;
 
@@ -108,25 +114,24 @@ class PostServiceTest {
 
         Page<PostDTO> resultPage = new PageImpl<>(postList, pageRequest, postList.size());
 
-
         // when
-        when(mockPostService.findPostList(postMap, pageRequest)).thenReturn(resultPage);
+        when(postQueryRepository.findPostList(postMap, pageRequest)).thenReturn(resultPage);
         Page<PostDTO> newPostList = mockPostService.findPostList(postMap, pageRequest);
 
         List<PostDTO> findPostList = newPostList.stream().collect(Collectors.toList());
+
         // then
-        // 게시글 관련
         assertThat(findPostList.get(0).getIdx()).isEqualTo(postList.get(0).getIdx());
         assertThat(findPostList.get(0).getPostTitle()).isEqualTo("게시글 테스트");
         assertThat(findPostList.get(0).getPostDescription()).isEqualTo("게시글 테스트");
 
         // verify
-        verify(mockPostService, times(1)).findPostList(postMap, pageRequest);
-        verify(mockPostService, atLeastOnce()).findPostList(postMap, pageRequest);
-        verifyNoMoreInteractions(mockPostService);
+        verify(postQueryRepository, times(1)).findPostList(postMap, pageRequest);
+        verify(postQueryRepository, atLeastOnce()).findPostList(postMap, pageRequest);
+        verifyNoMoreInteractions(postQueryRepository);
 
-        InOrder inOrder = inOrder(mockPostService);
-        inOrder.verify(mockPostService).findPostList(postMap, pageRequest);
+        InOrder inOrder = inOrder(postQueryRepository);
+        inOrder.verify(postQueryRepository).findPostList(postMap, pageRequest);
     }
 
     @Test
@@ -147,7 +152,7 @@ class PostServiceTest {
     @DisplayName("게시글 상세 조회 Mockito 테스트")
     void 게시글상세조회Mockito테스트() {
         // when
-        when(mockPostService.findOnePost(postDTO.getIdx())).thenReturn(postDTO);
+        when(postQueryRepository.findOnePost(postDTO.getIdx())).thenReturn(postDTO);
         PostDTO onePost = mockPostService.findOnePost(postDTO.getIdx());
 
         // then
@@ -155,12 +160,12 @@ class PostServiceTest {
         assertThat(onePost.getPostDescription()).isEqualTo("게시글 테스트");
 
         // verify
-        verify(mockPostService, times(1)).findOnePost(postDTO.getIdx());
-        verify(mockPostService, atLeastOnce()).findOnePost(postDTO.getIdx());
-        verifyNoMoreInteractions(mockPostService);
+        verify(postQueryRepository, times(1)).findOnePost(postDTO.getIdx());
+        verify(postQueryRepository, atLeastOnce()).findOnePost(postDTO.getIdx());
+        verifyNoMoreInteractions(postQueryRepository);
 
-        InOrder inOrder = inOrder(mockPostService);
-        inOrder.verify(mockPostService).findOnePost(postDTO.getIdx());
+        InOrder inOrder = inOrder(postQueryRepository);
+        inOrder.verify(postQueryRepository).findOnePost(postDTO.getIdx());
     }
 
     @Test
@@ -174,23 +179,21 @@ class PostServiceTest {
                 .visible("Y")
                 .build();
 
-        PostDTO postInfo = postService.insertPost(insertEntity);
-
         // when
-        when(mockPostService.findOnePost(postInfo.getIdx())).thenReturn(postInfo);
-        PostDTO onePost = mockPostService.findOnePost(postInfo.getIdx());
+        when(postRepository.save(insertEntity)).thenReturn(insertEntity);
+        PostDTO onePost = mockPostService.findOnePost(insertEntity.getIdx());
 
         // then
         assertThat(onePost.getPostTitle()).isEqualTo("게시글 등록 테스트");
         assertThat(onePost.getPostDescription()).isEqualTo("게시글 등록 테스트");
 
         // verify
-        verify(mockPostService, times(1)).findOnePost(onePost.getIdx());
-        verify(mockPostService, atLeastOnce()).findOnePost(onePost.getIdx());
-        verifyNoMoreInteractions(mockPostService);
+        verify(postRepository, times(1)).save(insertEntity);
+        verify(postRepository, atLeastOnce()).save(insertEntity);
+        verifyNoMoreInteractions(postRepository);
 
-        InOrder inOrder = inOrder(mockPostService);
-        inOrder.verify(mockPostService).findOnePost(onePost.getIdx());
+        InOrder inOrder = inOrder(postRepository);
+        inOrder.verify(postRepository).save(insertEntity);
     }
 
     @Test

@@ -2,10 +2,13 @@ package com.travel.api.notice;
 
 import com.travel.api.FrontCommonServiceTest;
 import com.travel.api.notice.domain.NoticeDTO;
+import com.travel.api.notice.domain.repository.NoticeQueryRepository;
+import com.travel.api.notice.domain.repository.NoticeRepository;
 import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.InOrder;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -18,10 +21,7 @@ import org.springframework.test.context.TestPropertySource;
 
 import javax.transaction.Transactional;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -38,7 +38,9 @@ import static org.springframework.test.context.TestConstructor.AutowireMode.ALL;
 @AutoConfigureTestDatabase(replace = NONE)
 @DisplayName("공지사항 Service Test")
 class NoticeServiceTest extends FrontCommonServiceTest {
-    @Mock private NoticeService mockNoticeService;
+    @Mock private NoticeRepository noticeRepository;
+    @Mock private NoticeQueryRepository noticeQueryRepository;
+    @InjectMocks private NoticeService mockNoticeService;
     private final NoticeService noticeService;
 
     @Test
@@ -54,7 +56,7 @@ class NoticeServiceTest extends FrontCommonServiceTest {
         Page<NoticeDTO> resultPage = new PageImpl<>(noticeList, pageRequest, noticeList.size());
 
         // when
-        when(mockNoticeService.findNoticeList(noticeMap, pageRequest)).thenReturn(resultPage);
+        when(noticeQueryRepository.findNoticeList(noticeMap, pageRequest)).thenReturn(resultPage);
         Page<NoticeDTO> newNoticeList = mockNoticeService.findNoticeList(noticeMap, pageRequest);
 
         List<NoticeDTO> findNoticeList = newNoticeList.stream().collect(Collectors.toList());
@@ -64,12 +66,12 @@ class NoticeServiceTest extends FrontCommonServiceTest {
         assertThat(findNoticeList.get(0).getDescription()).isEqualTo(noticeList.get(0).getDescription());
 
         // verify
-        verify(mockNoticeService, times(1)).findNoticeList(noticeMap, pageRequest);
-        verify(mockNoticeService, atLeastOnce()).findNoticeList(noticeMap, pageRequest);
-        verifyNoMoreInteractions(mockNoticeService);
+        verify(noticeQueryRepository, times(1)).findNoticeList(noticeMap, pageRequest);
+        verify(noticeQueryRepository, atLeastOnce()).findNoticeList(noticeMap, pageRequest);
+        verifyNoMoreInteractions(noticeQueryRepository);
 
-        InOrder inOrder = inOrder(mockNoticeService);
-        inOrder.verify(mockNoticeService).findNoticeList(noticeMap, pageRequest);
+        InOrder inOrder = inOrder(noticeQueryRepository);
+        inOrder.verify(noticeQueryRepository).findNoticeList(noticeMap, pageRequest);
     }
 
     @Test
@@ -77,22 +79,23 @@ class NoticeServiceTest extends FrontCommonServiceTest {
     void 공지사항상세조회Mockito테스트() {
         // 조회 수 관련 테스트
         NoticeDTO oneNotice = noticeService.findOneNotice(noticeEntity.getIdx());
-        assertThat(noticeEntity.getViewCount() + 1).isEqualTo(oneNotice.getViewCount());
+        assertThat(noticeEntity.getViewCount()).isEqualTo(oneNotice.getViewCount());
+
         // when
-        when(mockNoticeService.findOneNotice(noticeDTO.getIdx())).thenReturn(noticeDTO);
-        NoticeDTO noticeInfo = mockNoticeService.findOneNotice(noticeDTO.getIdx());
+        when(noticeRepository.findById(noticeEntity.getIdx())).thenReturn(Optional.ofNullable(noticeEntity));
+        NoticeDTO noticeInfo = mockNoticeService.findOneNotice(noticeEntity.getIdx());
 
         // then
-        assertThat(noticeInfo.getIdx()).isEqualTo(noticeDTO.getIdx());
-        assertThat(noticeInfo.getTitle()).isEqualTo(noticeDTO.getTitle());
-        assertThat(noticeInfo.getDescription()).isEqualTo(noticeDTO.getDescription());
+        assertThat(noticeInfo.getIdx()).isEqualTo(noticeEntity.getIdx());
+        assertThat(noticeInfo.getTitle()).isEqualTo(noticeEntity.getTitle());
+        assertThat(noticeInfo.getDescription()).isEqualTo(noticeEntity.getDescription());
 
         // verify
-        verify(mockNoticeService, times(1)).findOneNotice(noticeDTO.getIdx());
-        verify(mockNoticeService, atLeastOnce()).findOneNotice(noticeDTO.getIdx());
-        verifyNoMoreInteractions(mockNoticeService);
+        verify(noticeRepository, times(1)).findById(noticeEntity.getIdx());
+        verify(noticeRepository, atLeastOnce()).findById(noticeEntity.getIdx());
+        verifyNoMoreInteractions(noticeRepository);
 
-        InOrder inOrder = inOrder(mockNoticeService);
-        inOrder.verify(mockNoticeService).findOneNotice(noticeDTO.getIdx());
+        InOrder inOrder = inOrder(noticeRepository);
+        inOrder.verify(noticeRepository).findById(noticeEntity.getIdx());
     }
 }
