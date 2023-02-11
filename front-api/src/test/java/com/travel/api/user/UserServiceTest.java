@@ -6,7 +6,9 @@ import com.travel.api.travel.domain.group.TravelGroupUserDTO;
 import com.travel.api.travel.domain.reservation.TravelReservationEntity;
 import com.travel.api.travel.domain.schedule.TravelScheduleDTO;
 import com.travel.api.travel.domain.schedule.TravelScheduleEntity;
+import com.travel.api.travel.domain.schedule.repository.ScheduleRepository;
 import com.travel.api.user.domain.*;
+import com.travel.api.user.domain.repository.UserRepository;
 import com.travel.api.user.domain.reservation.UserReservationDTO;
 import com.travel.api.user.domain.reservation.UserReservationEntity;
 import com.travel.exception.TravelException;
@@ -16,6 +18,7 @@ import org.json.JSONException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.InOrder;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -30,6 +33,7 @@ import javax.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -49,8 +53,10 @@ import static org.springframework.test.context.TestConstructor.AutowireMode.ALL;
 @AutoConfigureTestDatabase(replace = NONE)
 @DisplayName("유저 Service Test")
 class UserServiceTest extends FrontCommonServiceTest {
-    @Mock
-    private UserService mockUserService;
+
+    @Mock private UserRepository userRepository;
+    @Mock private ScheduleRepository scheduleRepository;
+    @InjectMocks private UserService mockUserService;
     private final UserService userService;
     private final EntityManager em;
     private final PasswordEncoder passwordEncoder;
@@ -81,19 +87,17 @@ class UserServiceTest extends FrontCommonServiceTest {
     @DisplayName("유저 회원가입 Mockito 테스트")
     void 유저회원가입Mockito테스트() {
         // given
-        SignUpRequest signUpRequest = SignUpRequest.builder()
+        UserEntity userEntity = UserEntity.builder()
                 .userId("test")
-                .password("test")
+                .password(passwordEncoder.encode("test"))
                 .name("test")
                 .email("test@test.com")
                 .visible("Y")
                 .build();
 
-        UserDTO insertUser = userService.insertUser(signUpRequest);
-
         // when
-        when(mockUserService.findOneUser(insertUser.getIdx())).thenReturn(insertUser);
-        UserDTO userInfo = mockUserService.findOneUser(insertUser.getIdx());
+        when(userRepository.save(userEntity)).thenReturn(userEntity);
+        UserDTO userInfo = mockUserService.insertUser(userEntity);
 
         // then
         assertThat(userInfo.getUserId()).isEqualTo("test");
@@ -101,31 +105,28 @@ class UserServiceTest extends FrontCommonServiceTest {
         assertThat(userInfo.getEmail()).isEqualTo("test@test.com");
 
         // verify
-        verify(mockUserService, times(1)).findOneUser(insertUser.getIdx());
-        verify(mockUserService, atLeastOnce()).findOneUser(insertUser.getIdx());
-        verifyNoMoreInteractions(mockUserService);
+        verify(userRepository, times(1)).save(userEntity);
+        verify(userRepository, atLeastOnce()).save(userEntity);
 
-        InOrder inOrder = inOrder(mockUserService);
-        inOrder.verify(mockUserService).findOneUser(insertUser.getIdx());
+        InOrder inOrder = inOrder(userRepository);
+        inOrder.verify(userRepository).save(userEntity);
     }
 
     @Test
     @DisplayName("유저 회원가입 BDD 테스트")
     void 유저회원가입BDD테스트() {
         // given
-        SignUpRequest signUpRequest = SignUpRequest.builder()
+        UserEntity userEntity = UserEntity.builder()
                 .userId("test")
-                .password("test")
+                .password(passwordEncoder.encode("test"))
                 .name("test")
                 .email("test@test.com")
                 .visible("Y")
                 .build();
 
-        UserDTO insertUser = userService.insertUser(signUpRequest);
-
         // when
-        given(mockUserService.findOneUser(insertUser.getIdx())).willReturn(insertUser);
-        UserDTO userInfo = mockUserService.findOneUser(insertUser.getIdx());
+        given(userRepository.save(userEntity)).willReturn(userEntity);
+        UserDTO userInfo = mockUserService.insertUser(userEntity);
 
         // then
         assertThat(userInfo.getUserId()).isEqualTo("test");
@@ -133,24 +134,24 @@ class UserServiceTest extends FrontCommonServiceTest {
         assertThat(userInfo.getEmail()).isEqualTo("test@test.com");
 
         // verify
-        then(mockUserService).should(times(1)).findOneUser(insertUser.getIdx());
-        then(mockUserService).should(atLeastOnce()).findOneUser(insertUser.getIdx());
-        then(mockUserService).shouldHaveNoMoreInteractions();
+        then(userRepository).should(times(1)).save(userEntity);
+        then(userRepository).should(atLeastOnce()).save(userEntity);
     }
 
     @Test
     @DisplayName("유저 회원수정 Mockito 테스트")
     void 유저회원수정Mockito테스트() {
         // given
-        SignUpRequest signUpRequest = SignUpRequest.builder()
-                .userId("test")
+        UserEntity userEntity = UserEntity.builder()
+                .userId("test123")
                 .password("test")
                 .name("test")
                 .email("test@test.com")
+                .role(Role.ROLE_TRAVEL_USER)
                 .visible("Y")
                 .build();
 
-        Long idx = userService.insertUser(signUpRequest).getIdx();
+        Long idx = userService.insertUser(userEntity).getIdx();
 
         UserEntity newUserEntity = UserEntity.builder()
                 .idx(idx)
@@ -162,65 +163,62 @@ class UserServiceTest extends FrontCommonServiceTest {
                 .visible("Y")
                 .build();
 
-        userService.updateUser(idx, newUserEntity);
-        UserDTO newUserDTO = UserEntity.toDto(newUserEntity);
-
         // when
-        when(mockUserService.findOneUser(newUserEntity.getIdx())).thenReturn(newUserDTO);
-        UserDTO userInfo = mockUserService.findOneUser(newUserEntity.getIdx());
+        when(userRepository.findById(newUserEntity.getIdx())).thenReturn(Optional.of(newUserEntity));
+        when(userRepository.save(newUserEntity)).thenReturn(newUserEntity);
+        UserDTO userInfo = mockUserService.updateUser(newUserEntity.getIdx(), newUserEntity);
 
         // then
         assertThat(userInfo.getUserId()).isEqualTo("test1");
         assertThat(userInfo.getName()).isEqualTo("test1");
 
         // verify
-        verify(mockUserService, times(1)).findOneUser(newUserEntity.getIdx());
-        verify(mockUserService, atLeastOnce()).findOneUser(newUserEntity.getIdx());
-        verifyNoMoreInteractions(mockUserService);
+        verify(userRepository, times(1)).findById(newUserEntity.getIdx());
+        verify(userRepository, atLeastOnce()).findById(newUserEntity.getIdx());
+        verifyNoMoreInteractions(userRepository);
 
-        InOrder inOrder = inOrder(mockUserService);
-        inOrder.verify(mockUserService).findOneUser(newUserEntity.getIdx());
+        InOrder inOrder = inOrder(userRepository);
+        inOrder.verify(userRepository).findById(newUserEntity.getIdx());
     }
 
     @Test
     @DisplayName("유저 회원수정 BDD 테스트")
     void 유저회원수정BDD테스트() {
         // given
-        SignUpRequest signUpRequest = SignUpRequest.builder()
-                .userId("test")
+        UserEntity userEntity = UserEntity.builder()
+                .userId("test123")
                 .password("test")
                 .name("test")
                 .email("test@test.com")
+                .role(Role.ROLE_TRAVEL_USER)
                 .visible("Y")
                 .build();
 
-        Long idx = userService.insertUser(signUpRequest).getIdx();
+        Long idx = userService.insertUser(userEntity).getIdx();
 
         UserEntity newUserEntity = UserEntity.builder()
                 .idx(idx)
                 .userId("test1")
                 .password("test1")
                 .name("test1")
-                .email("test1@test.com")
                 .role(Role.ROLE_TRAVEL_USER)
+                .email("test1@test.com")
                 .visible("Y")
                 .build();
 
-        userService.updateUser(idx, newUserEntity);
-        UserDTO newUserDTO = UserEntity.toDto(newUserEntity);
-
         // when
-        given(mockUserService.findOneUser(newUserEntity.getIdx())).willReturn(newUserDTO);
-        UserDTO userInfo = mockUserService.findOneUser(newUserEntity.getIdx());
+        given(userRepository.findById(newUserEntity.getIdx())).willReturn(Optional.of(newUserEntity));
+        given(userRepository.save(newUserEntity)).willReturn(newUserEntity);
+        UserDTO userInfo = mockUserService.updateUser(newUserEntity.getIdx(), newUserEntity);
 
         // then
         assertThat(userInfo.getUserId()).isEqualTo("test1");
         assertThat(userInfo.getName()).isEqualTo("test1");
 
         // verify
-        then(mockUserService).should(times(1)).findOneUser(newUserEntity.getIdx());
-        then(mockUserService).should(atLeastOnce()).findOneUser(newUserEntity.getIdx());
-        then(mockUserService).shouldHaveNoMoreInteractions();
+        then(userRepository).should(times(1)).findById(newUserEntity.getIdx());
+        then(userRepository).should(atLeastOnce()).findById(newUserEntity.getIdx());
+        then(userRepository).shouldHaveNoMoreInteractions();
     }
 
     @Test
@@ -236,15 +234,16 @@ class UserServiceTest extends FrontCommonServiceTest {
         List<String> list = new ArrayList<>();
         list.add("1");
 
-        SignUpRequest signUpRequest = SignUpRequest.builder()
+        UserEntity userEntity = UserEntity.builder()
                 .userId("test")
                 .password("test")
                 .name("test")
                 .email("test@test.com")
+                .role(Role.ROLE_TRAVEL_USER)
                 .visible("Y")
                 .build();
 
-        UserDTO oneUser = userService.insertUser(signUpRequest);
+        UserDTO oneUser = userService.insertUser(userEntity);
 
         userService.addFavoriteTravel(oneUser.getIdx(), 1L);
 
@@ -267,28 +266,32 @@ class UserServiceTest extends FrontCommonServiceTest {
     @DisplayName("유저가 작성한 스케줄 리스트 조회")
     void 유저가작성한스케줄리스트조회() {
         // given
-        TravelScheduleDTO travelScheduleEntity = TravelScheduleDTO.builder()
+        TravelScheduleEntity travelScheduleEntity = TravelScheduleEntity.builder()
+                .commonEntity(commonEntity)
+                .userEntity(userEntity)
                 .scheduleDescription("스케줄 테스트")
                 .scheduleTime(LocalDateTime.now())
                 .build();
 
-        List<TravelScheduleDTO> userSchedule = new ArrayList<>();
+        em.persist(travelScheduleEntity);
+
+        List<TravelScheduleEntity> userSchedule = new ArrayList<>();
         userSchedule.add(travelScheduleEntity);
 
         // when
-        when(mockUserService.findUserSchedule(1L)).thenReturn(userSchedule);
-        List<TravelScheduleDTO> scheduleList = mockUserService.findUserSchedule(1L);
+        when(scheduleRepository.findUserSchedule(userEntity.getIdx())).thenReturn(userSchedule);
+        List<TravelScheduleDTO> scheduleList = mockUserService.findUserSchedule(userEntity.getIdx());
 
         // then
         assertThat(scheduleList.get(0).getScheduleDescription()).isEqualTo("스케줄 테스트");
 
         // verify
-        verify(mockUserService, times(1)).findUserSchedule(1L);
-        verify(mockUserService, atLeastOnce()).findUserSchedule(1L);
-        verifyNoMoreInteractions(mockUserService);
+        verify(scheduleRepository, times(1)).findUserSchedule(userEntity.getIdx());
+        verify(scheduleRepository, atLeastOnce()).findUserSchedule(userEntity.getIdx());
+        verifyNoMoreInteractions(scheduleRepository);
 
-        InOrder inOrder = inOrder(mockUserService);
-        inOrder.verify(mockUserService).findUserSchedule(1L);
+        InOrder inOrder = inOrder(scheduleRepository);
+        inOrder.verify(scheduleRepository).findUserSchedule(userEntity.getIdx());
     }
 
     @Test
@@ -302,39 +305,40 @@ class UserServiceTest extends FrontCommonServiceTest {
 
         em.persist(commonEntity);
 
-        SignUpRequest signUpRequest = SignUpRequest.builder()
+        UserEntity userEntity = UserEntity.builder()
                 .userId("test")
                 .password("test")
                 .name("test")
                 .email("test@test.com")
                 .visible("Y")
+                .role(Role.ROLE_TRAVEL_USER)
                 .build();
 
-        UserDTO oneUser = userService.insertUser(signUpRequest);
+        UserDTO oneUser = userService.insertUser(userEntity);
         // given
         TravelScheduleEntity travelScheduleEntity = TravelScheduleEntity.builder()
                 .commonEntity(commonEntity)
+                .userEntity(userEntity)
                 .scheduleDescription("스케줄 테스트")
                 .scheduleTime(LocalDateTime.now())
                 .build();
 
-        userService.insertTravelSchedule(oneUser.getIdx(), travelScheduleEntity);
-        TravelScheduleDTO travelScheduleDTO = TravelScheduleEntity.toDto(travelScheduleEntity);
+        TravelScheduleDTO travelScheduleDTO = userService.insertTravelSchedule(oneUser.getIdx(), travelScheduleEntity);
 
         // when
-        when(mockUserService.findOneUserSchedule(travelScheduleDTO.getUserDTO().getIdx(), travelScheduleDTO.getIdx())).thenReturn(travelScheduleDTO);
+        when(scheduleRepository.findOneUserSchedule(travelScheduleDTO.getUserDTO().getIdx(), travelScheduleDTO.getIdx())).thenReturn(Optional.ofNullable(travelScheduleEntity));
         TravelScheduleDTO oneUserSchedule = mockUserService.findOneUserSchedule(travelScheduleDTO.getUserDTO().getIdx(), travelScheduleDTO.getIdx());
 
         // then
         assertThat(oneUserSchedule.getScheduleDescription()).isEqualTo("스케줄 테스트");
 
         // verify
-        verify(mockUserService, times(1)).findOneUserSchedule(travelScheduleDTO.getUserDTO().getIdx(), travelScheduleDTO.getIdx());
-        verify(mockUserService, atLeastOnce()).findOneUserSchedule(travelScheduleDTO.getUserDTO().getIdx(), travelScheduleDTO.getIdx());
-        verifyNoMoreInteractions(mockUserService);
+        verify(scheduleRepository, times(1)).findOneUserSchedule(travelScheduleDTO.getUserDTO().getIdx(), travelScheduleDTO.getIdx());
+        verify(scheduleRepository, atLeastOnce()).findOneUserSchedule(travelScheduleDTO.getUserDTO().getIdx(), travelScheduleDTO.getIdx());
+        verifyNoMoreInteractions(scheduleRepository);
 
-        InOrder inOrder = inOrder(mockUserService);
-        inOrder.verify(mockUserService).findOneUserSchedule(travelScheduleDTO.getUserDTO().getIdx(), travelScheduleDTO.getIdx());
+        InOrder inOrder = inOrder(scheduleRepository);
+        inOrder.verify(scheduleRepository).findOneUserSchedule(travelScheduleDTO.getUserDTO().getIdx(), travelScheduleDTO.getIdx());
     }
 
     @Test
@@ -348,15 +352,16 @@ class UserServiceTest extends FrontCommonServiceTest {
 
         em.persist(commonEntity);
 
-        SignUpRequest signUpRequest = SignUpRequest.builder()
+        UserEntity userEntity = UserEntity.builder()
                 .userId("test")
                 .password("test")
                 .name("test")
                 .email("test@test.com")
                 .visible("Y")
+                .role(Role.ROLE_TRAVEL_USER)
                 .build();
 
-        UserDTO oneUser = userService.insertUser(signUpRequest);
+        UserDTO oneUser = userService.insertUser(userEntity);
 
         // given
         TravelScheduleEntity travelScheduleEntity = TravelScheduleEntity.builder()
@@ -430,15 +435,16 @@ class UserServiceTest extends FrontCommonServiceTest {
 
         em.persist(commonEntity);
 
-        SignUpRequest signUpRequest = SignUpRequest.builder()
+        UserEntity userEntity = UserEntity.builder()
                 .userId("test")
                 .password("test")
                 .name("test")
                 .email("test@test.com")
                 .visible("Y")
+                .role(Role.ROLE_TRAVEL_USER)
                 .build();
 
-        UserDTO oneUser = userService.insertUser(signUpRequest);
+        UserDTO oneUser = userService.insertUser(userEntity);
 
         // given
         TravelScheduleEntity travelScheduleEntity = TravelScheduleEntity.builder()

@@ -1,8 +1,8 @@
 package com.travel.api.post.domain;
 
 import com.travel.api.common.domain.NewCommonMappedClass;
-import com.travel.api.post.domain.image.PostImageEntity;
 import com.travel.api.post.domain.reply.ReplyEntity;
+import com.travel.api.travel.domain.image.TravelImageEntity;
 import lombok.*;
 import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.DynamicUpdate;
@@ -64,11 +64,11 @@ public class PostEntity extends NewCommonMappedClass {
     @Builder.Default
     @BatchSize(size = 100)
     @Where(clause = "type_name = 'post'")
-    @OneToMany(mappedBy = "postImageEntity", fetch = LAZY, cascade = CascadeType.REMOVE, orphanRemoval = true)
-    private List<PostImageEntity> postImageList = new ArrayList<>();
+    @OneToMany(mappedBy = "newPostImageEntity", fetch = LAZY, cascade = CascadeType.REMOVE, orphanRemoval = true)
+    private List<TravelImageEntity> postImageList = new ArrayList<>();
 
-    public void addPostImage(PostImageEntity commonImageEntity) {
-        commonImageEntity.setPostImageEntity(this);
+    public void addPostImage(TravelImageEntity commonImageEntity) {
+        commonImageEntity.setNewPostImageEntity(this);
         this.postImageList.add(commonImageEntity);
     }
 
@@ -94,7 +94,7 @@ public class PostEntity extends NewCommonMappedClass {
                 .viewCount(entity.getViewCount())
                 .favoriteCount(entity.getFavoriteCount())
                 .postReplyList(ReplyEntity.toDtoList(entity.getReplyEntityList()))
-                .postImageList(PostImageEntity.toDtoList(entity.getPostImageList()))
+                .postImageList(TravelImageEntity.toDtoList(entity.getPostImageList()))
                 .build();
     }
 

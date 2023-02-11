@@ -9,6 +9,7 @@ import com.travel.api.post.domain.reply.ReplyEntity;
 import com.travel.api.post.domain.repository.PostQueryRepository;
 import com.travel.api.post.domain.repository.PostRepository;
 import com.travel.api.post.domain.repository.ReplyRepository;
+import com.travel.api.travel.domain.image.TravelImageEntity;
 import com.travel.common.SaveFile;
 import com.travel.exception.TravelException;
 import lombok.RequiredArgsConstructor;
@@ -98,7 +99,7 @@ public class PostService {
      * </pre>
      */
     @Transactional
-    public List<PostImageDTO> insertPostImage(Long idx, List<MultipartFile> files, PostImageEntity postImageEntity) {
+    public List<PostImageDTO> insertPostImage(Long idx, List<MultipartFile> files, TravelImageEntity postImageEntity) {
         try {
             return saveFile.savePostFile(onePost(idx), files, postImageEntity);
         } catch (Exception e) {

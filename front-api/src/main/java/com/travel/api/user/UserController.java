@@ -124,8 +124,8 @@ public class UserController {
             @ApiResponse(code = 500, message = "서버 에러", response = ServerError.class)
     })
     @PostMapping
-    public ResponseEntity<UserDTO> insertUser(@Valid @RequestBody SignUpRequest signUpRequest) {
-        return ResponseEntity.created(URI.create("")).body(userService.insertUser(signUpRequest));
+    public ResponseEntity<UserDTO> insertUser(@Valid @RequestBody UserEntity userEntity) {
+        return ResponseEntity.created(URI.create("")).body(userService.insertUser(userEntity));
     }
 
     /**

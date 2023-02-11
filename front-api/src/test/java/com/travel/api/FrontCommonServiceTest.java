@@ -10,6 +10,12 @@ import com.travel.api.faq.domain.repository.FaqRepository;
 import com.travel.api.notice.domain.NoticeDTO;
 import com.travel.api.notice.domain.NoticeEntity;
 import com.travel.api.notice.domain.repository.NoticeRepository;
+import com.travel.api.post.domain.PostDTO;
+import com.travel.api.post.domain.PostEntity;
+import com.travel.api.post.domain.reply.ReplyDTO;
+import com.travel.api.post.domain.reply.ReplyEntity;
+import com.travel.api.post.domain.repository.PostRepository;
+import com.travel.api.post.domain.repository.ReplyRepository;
 import com.travel.api.travel.TravelImageRepository;
 import com.travel.api.travel.TravelRepository;
 import com.travel.api.travel.domain.TravelDTO;
@@ -46,6 +52,8 @@ public abstract class FrontCommonServiceTest {
     @Autowired private TravelReservationRepository travelReservationRepository;
     @Autowired private UserReservationRepository userReservationRepository;
     @Autowired private GroupRepository groupRepository;
+    @Autowired private PostRepository postRepository;
+    @Autowired private ReplyRepository replyRepository;
 
     protected TravelEntity travelEntity;
     protected TravelImageEntity travelImageEntity;
@@ -64,6 +72,11 @@ public abstract class FrontCommonServiceTest {
     protected UserReservationDTO userReservationDTO;
     protected TravelGroupEntity travelGroupEntity;
     protected TravelGroupDTO travelGroupDTO;
+    protected PostEntity postEntity;
+    protected PostDTO postDTO;
+    protected ReplyEntity replyEntity;
+    protected ReplyDTO replyDTO;
+    protected ReplyEntity replyEntity2;
 
     void createData() {
         // 공통 코드 등록
@@ -181,6 +194,42 @@ public abstract class FrontCommonServiceTest {
                         .build());
 
         travelGroupDTO = TravelGroupEntity.toDto(travelGroupEntity);
+
+        // 게시글 등록
+        postEntity = postRepository.save(
+                PostEntity.builder()
+                .postTitle("게시글 테스트")
+                .postDescription("게시글 테스트")
+                .popular(false)
+                .viewCount(0)
+                .favoriteCount(0)
+                .visible("Y")
+                .build());
+
+        postDTO = PostEntity.toDto(postEntity);
+
+        // 게시글 댓글 등록
+        replyEntity = replyRepository.save(
+                ReplyEntity.builder()
+                .commentTitle("댓글 테스트")
+                .commentDescription("댓글 테스트")
+                .favoriteCount(0)
+                .postEntity(postEntity)
+                .visible("Y")
+                .build());
+
+        replyDTO = ReplyEntity.toDto(replyEntity);
+
+        // 게시글 대댓글 등록
+        replyEntity2 = replyRepository.save(
+                ReplyEntity.builder()
+                        .commentTitle("대댓글 테스트")
+                        .commentDescription("대댓글 테스트")
+                        .favoriteCount(0)
+                        .visible("Y")
+                        .postEntity(postEntity)
+                        .parent(replyEntity)
+                        .build());
     }
 
     @BeforeEach

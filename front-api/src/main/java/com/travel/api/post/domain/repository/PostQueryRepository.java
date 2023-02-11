@@ -6,6 +6,8 @@ import com.travel.api.post.domain.PostDTO;
 import com.travel.api.post.domain.PostEntity;
 import com.travel.api.post.domain.reply.QReplyEntity;
 import com.travel.api.post.domain.reply.ReplyEntity;
+import com.travel.api.travel.domain.image.QTravelImageEntity;
+import com.travel.api.travel.domain.image.TravelImageEntity;
 import com.travel.exception.TravelException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -17,6 +19,7 @@ import java.util.*;
 
 import static com.travel.api.post.domain.QPostEntity.postEntity;
 import static com.travel.api.post.domain.image.QPostImageEntity.postImageEntity1;
+import static com.travel.api.travel.domain.image.QTravelImageEntity.travelImageEntity;
 import static com.travel.common.StringUtil.getString;
 import static com.travel.exception.ApiExceptionType.NOT_FOUND_POST;
 
@@ -64,7 +67,7 @@ public class PostQueryRepository {
     public PostDTO findOnePost(Long idx) {
         PostEntity onePost = Optional.ofNullable(queryFactory
                 .selectFrom(postEntity)
-                .leftJoin(postEntity.postImageList, postImageEntity1)
+                .leftJoin(postEntity.postImageList, travelImageEntity)
                 .fetchJoin()
                 .where(postEntity.idx.eq(idx))
                 .fetchOne()).orElseThrow(() -> new TravelException(NOT_FOUND_POST));

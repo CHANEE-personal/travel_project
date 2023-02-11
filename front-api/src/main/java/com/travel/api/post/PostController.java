@@ -8,6 +8,7 @@ import com.travel.api.post.domain.image.PostImageEntity;
 import com.travel.api.post.domain.reply.ReplyDTO;
 import com.travel.api.post.domain.reply.ReplyEntity;
 import com.travel.api.travel.domain.image.TravelImageDTO;
+import com.travel.api.travel.domain.image.TravelImageEntity;
 import com.travel.common.Paging;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -129,7 +130,7 @@ public class PostController {
     })
     @PostMapping(value = "/{idx}/images", consumes = MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<List<PostImageDTO>> insertPostImage(@PathVariable Long idx, @RequestParam(value = "images") List<MultipartFile> fileName) {
-        return ResponseEntity.created(URI.create("")).body(postService.insertPostImage(idx, fileName, PostImageEntity.builder().entityType(EntityType.POST).build()));
+        return ResponseEntity.created(URI.create("")).body(postService.insertPostImage(idx, fileName, TravelImageEntity.builder().entityType(EntityType.POST).build()));
     }
 
     /**

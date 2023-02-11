@@ -44,7 +44,7 @@ public class SaveFile {
      * 5. 작성일      : 2022. 12. 11.
      * </pre>
      */
-    public List<PostImageDTO> savePostFile(PostEntity postEntity, List<MultipartFile> multipartFiles, PostImageEntity postImageEntity) throws IOException {
+    public List<PostImageDTO> savePostFile(PostEntity postEntity, List<MultipartFile> multipartFiles, TravelImageEntity postImageEntity) throws IOException {
         List<PostImageEntity> postImageEntityList = new ArrayList<>();
         int index = 0;
         for(MultipartFile multipartFile : multipartFiles) {
