@@ -3,10 +3,13 @@ package com.travel.api.notice;
 import com.travel.api.AdminCommonServiceTest;
 import com.travel.api.notice.domain.NoticeDto;
 import com.travel.api.notice.domain.NoticeEntity;
+import com.travel.api.notice.domain.repository.NoticeQueryRepository;
+import com.travel.api.notice.domain.repository.NoticeRepository;
 import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.InOrder;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -20,10 +23,7 @@ import org.springframework.test.context.TestPropertySource;
 import javax.persistence.EntityManager;
 import javax.transaction.Transactional;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -40,7 +40,9 @@ import static org.springframework.test.context.TestConstructor.AutowireMode.ALL;
 @AutoConfigureTestDatabase(replace = NONE)
 @DisplayName("공지사항 Service Test")
 class NoticeServiceTest extends AdminCommonServiceTest {
-    @Mock private NoticeService mockNoticeService;
+    @Mock private NoticeRepository noticeRepository;
+    @Mock private NoticeQueryRepository noticeQueryRepository;
+    @InjectMocks private NoticeService mockNoticeService;
     private final NoticeService noticeService;
     private final EntityManager em;
 
@@ -57,132 +59,105 @@ class NoticeServiceTest extends AdminCommonServiceTest {
         Page<NoticeDto> resultPage = new PageImpl<>(noticeList, pageRequest, noticeList.size());
 
         // when
-        when(mockNoticeService.findNoticeList(noticeMap, pageRequest)).thenReturn(resultPage);
+        when(noticeQueryRepository.findNoticeList(noticeMap, pageRequest)).thenReturn(resultPage);
         Page<NoticeDto> newNoticeList = mockNoticeService.findNoticeList(noticeMap, pageRequest);
 
         List<NoticeDto> findNoticeList = newNoticeList.stream().collect(Collectors.toList());
+
         // then
         assertThat(findNoticeList.get(0).getIdx()).isEqualTo(noticeList.get(0).getIdx());
         assertThat(findNoticeList.get(0).getTitle()).isEqualTo(noticeList.get(0).getTitle());
         assertThat(findNoticeList.get(0).getDescription()).isEqualTo(noticeList.get(0).getDescription());
 
         // verify
-        verify(mockNoticeService, times(1)).findNoticeList(noticeMap, pageRequest);
-        verify(mockNoticeService, atLeastOnce()).findNoticeList(noticeMap, pageRequest);
-        verifyNoMoreInteractions(mockNoticeService);
+        verify(noticeQueryRepository, times(1)).findNoticeList(noticeMap, pageRequest);
+        verify(noticeQueryRepository, atLeastOnce()).findNoticeList(noticeMap, pageRequest);
+        verifyNoMoreInteractions(noticeQueryRepository);
 
-        InOrder inOrder = inOrder(mockNoticeService);
-        inOrder.verify(mockNoticeService).findNoticeList(noticeMap, pageRequest);
+        InOrder inOrder = inOrder(noticeQueryRepository);
+        inOrder.verify(noticeQueryRepository).findNoticeList(noticeMap, pageRequest);
     }
 
     @Test
     @DisplayName("공지사항 상세 조회 Mockito 테스트")
     void 공지사항상세조회Mockito테스트() {
-        NoticeDto newNotice = noticeService.insertNotice(noticeEntity);
-
         // when
-        when(mockNoticeService.findOneNotice(newNotice.getIdx())).thenReturn(newNotice);
-        NoticeDto noticeInfo = mockNoticeService.findOneNotice(newNotice.getIdx());
+        when(noticeRepository.findById(noticeEntity.getIdx())).thenReturn(Optional.ofNullable(noticeEntity));
+        NoticeDto noticeInfo = mockNoticeService.findOneNotice(noticeEntity.getIdx());
 
         // then
-        assertThat(noticeInfo.getIdx()).isEqualTo(newNotice.getIdx());
-        assertThat(noticeInfo.getTitle()).isEqualTo(newNotice.getTitle());
-        assertThat(noticeInfo.getDescription()).isEqualTo(newNotice.getDescription());
+        assertThat(noticeInfo.getIdx()).isEqualTo(noticeEntity.getIdx());
+        assertThat(noticeInfo.getTitle()).isEqualTo(noticeEntity.getTitle());
+        assertThat(noticeInfo.getDescription()).isEqualTo(noticeEntity.getDescription());
 
         // verify
-        verify(mockNoticeService, times(1)).findOneNotice(newNotice.getIdx());
-        verify(mockNoticeService, atLeastOnce()).findOneNotice(newNotice.getIdx());
-        verifyNoMoreInteractions(mockNoticeService);
+        verify(noticeRepository, times(1)).findById(noticeEntity.getIdx());
+        verify(noticeRepository, atLeastOnce()).findById(noticeEntity.getIdx());
+        verifyNoMoreInteractions(noticeRepository);
 
-        InOrder inOrder = inOrder(mockNoticeService);
-        inOrder.verify(mockNoticeService).findOneNotice(newNotice.getIdx());
+        InOrder inOrder = inOrder(noticeRepository);
+        inOrder.verify(noticeRepository).findById(noticeEntity.getIdx());
     }
 
     @Test
     @DisplayName("공지사항 등록 Mockito 테스트")
     void 공지사항등록Mockito테스트() {
-        NoticeDto noticeInfo = noticeService.insertNotice(noticeEntity);
-
         // when
-        when(mockNoticeService.findOneNotice(noticeInfo.getIdx())).thenReturn(noticeInfo);
-        NoticeDto newNoticeDTO = mockNoticeService.findOneNotice(noticeInfo.getIdx());
+        when(noticeRepository.save(noticeEntity)).thenReturn(noticeEntity);
+        NoticeDto newNoticeDTO = mockNoticeService.insertNotice(noticeEntity);
 
         // then
-        assertThat(newNoticeDTO.getIdx()).isEqualTo(noticeInfo.getIdx());
-        assertThat(newNoticeDTO.getTitle()).isEqualTo(noticeInfo.getTitle());
-        assertThat(newNoticeDTO.getDescription()).isEqualTo(noticeInfo.getDescription());
+        assertThat(newNoticeDTO.getIdx()).isEqualTo(noticeEntity.getIdx());
+        assertThat(newNoticeDTO.getTitle()).isEqualTo(noticeEntity.getTitle());
+        assertThat(newNoticeDTO.getDescription()).isEqualTo(noticeEntity.getDescription());
 
         // verify
-        verify(mockNoticeService, times(1)).findOneNotice(noticeInfo.getIdx());
-        verify(mockNoticeService, atLeastOnce()).findOneNotice(noticeInfo.getIdx());
-        verifyNoMoreInteractions(mockNoticeService);
+        verify(noticeRepository, times(1)).save(noticeEntity);
+        verify(noticeRepository, atLeastOnce()).save(noticeEntity);
+        verifyNoMoreInteractions(noticeRepository);
 
-        InOrder inOrder = inOrder(mockNoticeService);
-        inOrder.verify(mockNoticeService).findOneNotice(noticeInfo.getIdx());
+        InOrder inOrder = inOrder(noticeRepository);
+        inOrder.verify(noticeRepository).save(noticeEntity);
     }
 
     @Test
     @DisplayName("공지사항 수정 Mockito 테스트")
     void 공지사항수정Mockito테스트() {
         // given
-        noticeEntity = NoticeEntity.builder()
-                .title("공지사항 등록 테스트")
-                .description("공지사항 등록 테스트")
-                .viewCount(0)
-                .visible("Y")
-                .build();
-
-        NoticeDto newNoticeDTO = noticeService.insertNotice(noticeEntity);
-
         NoticeEntity updateNoticeEntity = NoticeEntity.builder()
-                .idx(newNoticeDTO.getIdx())
+                .idx(noticeEntity.getIdx())
                 .title("공지사항 수정 테스트")
                 .description("공지사항 수정 테스트")
                 .viewCount(0)
                 .visible("Y")
                 .build();
 
-        NoticeDto updateNoticeDTO = noticeService.updateNotice(newNoticeDTO.getIdx(), updateNoticeEntity);
-
         // when
-        when(mockNoticeService.findOneNotice(updateNoticeDTO.getIdx())).thenReturn(updateNoticeDTO);
-        NoticeDto noticeInfo = mockNoticeService.findOneNotice(updateNoticeDTO.getIdx());
+        when(noticeRepository.findById(updateNoticeEntity.getIdx())).thenReturn(Optional.of(updateNoticeEntity));
+        when(noticeRepository.save(updateNoticeEntity)).thenReturn(updateNoticeEntity);
+        NoticeDto noticeInfo = mockNoticeService.updateNotice(updateNoticeEntity.getIdx(), updateNoticeEntity);
 
         // then
-        assertThat(noticeInfo.getIdx()).isEqualTo(updateNoticeDTO.getIdx());
-        assertThat(noticeInfo.getTitle()).isEqualTo(updateNoticeDTO.getTitle());
-        assertThat(noticeInfo.getDescription()).isEqualTo(updateNoticeDTO.getDescription());
+        assertThat(noticeInfo.getIdx()).isEqualTo(updateNoticeEntity.getIdx());
+        assertThat(noticeInfo.getTitle()).isEqualTo(updateNoticeEntity.getTitle());
+        assertThat(noticeInfo.getDescription()).isEqualTo(updateNoticeEntity.getDescription());
 
         // verify
-        verify(mockNoticeService, times(1)).findOneNotice(noticeInfo.getIdx());
-        verify(mockNoticeService, atLeastOnce()).findOneNotice(noticeInfo.getIdx());
-        verifyNoMoreInteractions(mockNoticeService);
+        verify(noticeRepository, times(1)).findById(updateNoticeEntity.getIdx());
+        verify(noticeRepository, atLeastOnce()).findById(updateNoticeEntity.getIdx());
+        verifyNoMoreInteractions(noticeRepository);
 
-        InOrder inOrder = inOrder(mockNoticeService);
-        inOrder.verify(mockNoticeService).findOneNotice(noticeInfo.getIdx());
+        InOrder inOrder = inOrder(noticeRepository);
+        inOrder.verify(noticeRepository).findById(updateNoticeEntity.getIdx());
     }
 
     @Test
-    @DisplayName("공지사항 삭제 Mockito 테스트")
-    void 공지사항삭제Mockito테스트() {
-        // given
-        em.persist(noticeEntity);
-        noticeDTO = NoticeEntity.toDto(noticeEntity);
-
-        // when
-        when(mockNoticeService.findOneNotice(noticeDTO.getIdx())).thenReturn(noticeDTO);
-        Long deleteIdx = noticeService.deleteNotice(noticeDTO.getIdx());
+    @DisplayName("공지사항 삭제 테스트")
+    void 공지사항삭제테스트() {
+        Long deleteIdx = noticeService.deleteNotice(noticeEntity.getIdx());
 
         // then
-        assertThat(mockNoticeService.findOneNotice(noticeDTO.getIdx()).getIdx()).isEqualTo(deleteIdx);
-
-        // verify
-        verify(mockNoticeService, times(1)).findOneNotice(noticeDTO.getIdx());
-        verify(mockNoticeService, atLeastOnce()).findOneNotice(noticeDTO.getIdx());
-        verifyNoMoreInteractions(mockNoticeService);
-
-        InOrder inOrder = inOrder(mockNoticeService);
-        inOrder.verify(mockNoticeService).findOneNotice(noticeDTO.getIdx());
+        assertThat(noticeEntity.getIdx()).isEqualTo(deleteIdx);
     }
 
     @Test

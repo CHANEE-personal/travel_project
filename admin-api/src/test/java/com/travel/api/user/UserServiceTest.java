@@ -2,26 +2,26 @@ package com.travel.api.user;
 
 import com.travel.api.AdminCommonServiceTest;
 import com.travel.api.common.domain.CommonEntity;
-import com.travel.api.travel.domain.TravelEntity;
-import com.travel.api.travel.domain.group.TravelGroupDto;
 import com.travel.api.travel.domain.group.TravelGroupEntity;
 import com.travel.api.travel.domain.group.TravelGroupUserDto;
 import com.travel.api.travel.domain.group.TravelGroupUserEntity;
 import com.travel.api.travel.domain.schedule.TravelScheduleDto;
 import com.travel.api.travel.domain.schedule.TravelScheduleEntity;
-import com.travel.api.user.domain.LoginRequest;
-import com.travel.api.user.domain.SignUpRequest;
-import com.travel.api.user.domain.UserDto;
-import com.travel.api.user.domain.UserEntity;
+import com.travel.api.travel.domain.schedule.repository.ScheduleRepository;
+import com.travel.api.user.domain.*;
+import com.travel.api.user.domain.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.InOrder;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.TestConstructor;
@@ -31,10 +31,7 @@ import javax.persistence.EntityManager;
 import javax.transaction.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static com.travel.api.user.domain.Role.ROLE_ADMIN;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -54,8 +51,10 @@ import static org.springframework.test.context.TestConstructor.AutowireMode.ALL;
 @AutoConfigureTestDatabase(replace = NONE)
 @DisplayName("유저 Service Test")
 class UserServiceTest extends AdminCommonServiceTest {
-    @Mock
-    private UserService mockUserService;
+
+    @Mock private UserRepository userRepository;
+    @Mock private ScheduleRepository scheduleRepository;
+    @InjectMocks private UserService mockUserService;
     private final UserService userService;
     private final EntityManager em;
     private final PasswordEncoder passwordEncoder;
@@ -102,15 +101,13 @@ class UserServiceTest extends AdminCommonServiceTest {
         Map<String, Object> userMap = new HashMap<>();
         PageRequest pageRequest = PageRequest.of(0, 3);
 
-        List<UserDto> userList = new ArrayList<>();
-        userList.add(UserDto.builder().idx(1L).userId("test01")
-                .name("조찬희").password("test01")
-                .email("test01@test.com").visible("Y").build());
+        List<UserEntity> userList = new ArrayList<>();
+        userList.add(userEntity);
 
-//        Page<UserDto> resultPage = new PageImpl<>(userList, pageRequest, userList.size());
+        Page<UserEntity> resultPage = new PageImpl<>(userList, pageRequest, userList.size());
 
         // when
-        when(mockUserService.findUserList(userMap, pageRequest)).thenReturn(userList);
+        when(userRepository.findAll(pageRequest)).thenReturn(resultPage);
         List<UserDto> newUserList = mockUserService.findUserList(userMap, pageRequest);
 
         // then
@@ -120,12 +117,12 @@ class UserServiceTest extends AdminCommonServiceTest {
         assertThat(newUserList.get(0).getEmail()).isEqualTo(userList.get(0).getEmail());
 
         // verify
-        verify(mockUserService, times(1)).findUserList(userMap, pageRequest);
-        verify(mockUserService, atLeastOnce()).findUserList(userMap, pageRequest);
-        verifyNoMoreInteractions(mockUserService);
+        verify(userRepository, times(1)).findAll(pageRequest);
+        verify(userRepository, atLeastOnce()).findAll(pageRequest);
+        verifyNoMoreInteractions(userRepository);
 
-        InOrder inOrder = inOrder(mockUserService);
-        inOrder.verify(mockUserService).findUserList(userMap, pageRequest);
+        InOrder inOrder = inOrder(userRepository);
+        inOrder.verify(userRepository).findAll(pageRequest);
     }
 
     @Test
@@ -135,16 +132,13 @@ class UserServiceTest extends AdminCommonServiceTest {
         Map<String, Object> userMap = new HashMap<>();
         PageRequest pageRequest = PageRequest.of(0, 3);
 
+        List<UserEntity> userList = new ArrayList<>();
+        userList.add(userEntity);
 
-        List<UserDto> userList = new ArrayList<>();
-        userList.add(UserDto.builder().idx(1L).userId("test01")
-                .name("조찬희").password("test01")
-                .email("test01@test.com").visible("Y").build());
-
-//        Page<UserDto> resultPage = new PageImpl<>(userList, pageRequest, userList.size());
+        Page<UserEntity> resultPage = new PageImpl<>(userList, pageRequest, userList.size());
 
         // when
-        given(mockUserService.findUserList(userMap, pageRequest)).willReturn(userList);
+        given(userRepository.findAll(pageRequest)).willReturn(resultPage);
         List<UserDto> newUserList = mockUserService.findUserList(userMap, pageRequest);
 
         // then
@@ -154,27 +148,27 @@ class UserServiceTest extends AdminCommonServiceTest {
         assertThat(newUserList.get(0).getEmail()).isEqualTo(userList.get(0).getEmail());
 
         // verify
-        then(mockUserService).should(times(1)).findUserList(userMap, pageRequest);
-        then(mockUserService).should(atLeastOnce()).findUserList(userMap, pageRequest);
-        then(mockUserService).shouldHaveNoMoreInteractions();
+        then(userRepository).should(times(1)).findAll(pageRequest);
+        then(userRepository).should(atLeastOnce()).findAll(pageRequest);
+        then(userRepository).shouldHaveNoMoreInteractions();
     }
 
     @Test
     @DisplayName("유저 회원가입 Mockito 테스트")
     void 유저회원가입Mockito테스트() {
         // given
-        SignUpRequest signUpRequest = SignUpRequest.builder()
+        UserEntity userEntity = UserEntity.builder()
                 .userId("test")
                 .password("test")
                 .name("test")
                 .email("test@test.com")
+                .role(ROLE_ADMIN)
                 .visible("Y")
                 .build();
-        UserDto insertUser = userService.insertUser(signUpRequest);
 
         // when
-        when(mockUserService.findOneUser(userEntity.getIdx())).thenReturn(insertUser);
-        UserDto userInfo = mockUserService.findOneUser(userEntity.getIdx());
+        when(userRepository.save(userEntity)).thenReturn(userEntity);
+        UserDto userInfo = mockUserService.insertUser(userEntity);
 
         // then
         assertThat(userInfo.getUserId()).isEqualTo("test");
@@ -182,30 +176,29 @@ class UserServiceTest extends AdminCommonServiceTest {
         assertThat(userInfo.getEmail()).isEqualTo("test@test.com");
 
         // verify
-        verify(mockUserService, times(1)).findOneUser(userEntity.getIdx());
-        verify(mockUserService, atLeastOnce()).findOneUser(userEntity.getIdx());
-        verifyNoMoreInteractions(mockUserService);
+        verify(userRepository, times(1)).save(userEntity);
+        verify(userRepository, atLeastOnce()).save(userEntity);
 
-        InOrder inOrder = inOrder(mockUserService);
-        inOrder.verify(mockUserService).findOneUser(userEntity.getIdx());
+        InOrder inOrder = inOrder(userRepository);
+        inOrder.verify(userRepository).save(userEntity);
     }
 
     @Test
     @DisplayName("유저 회원가입 BDD 테스트")
     void 유저회원가입BDD테스트() {
         // given
-        SignUpRequest signUpRequest = SignUpRequest.builder()
+        UserEntity userEntity = UserEntity.builder()
                 .userId("test")
-                .password("test")
+                .password(passwordEncoder.encode("test"))
                 .name("test")
                 .email("test@test.com")
+                .role(ROLE_ADMIN)
                 .visible("Y")
                 .build();
-        UserDto insertUser = userService.insertUser(signUpRequest);
 
         // when
-        given(mockUserService.findOneUser(userEntity.getIdx())).willReturn(insertUser);
-        UserDto userInfo = mockUserService.findOneUser(userEntity.getIdx());
+        given(userRepository.save(userEntity)).willReturn(userEntity);
+        UserDto userInfo = mockUserService.insertUser(userEntity);
 
         // then
         assertThat(userInfo.getUserId()).isEqualTo("test");
@@ -213,24 +206,24 @@ class UserServiceTest extends AdminCommonServiceTest {
         assertThat(userInfo.getEmail()).isEqualTo("test@test.com");
 
         // verify
-        then(mockUserService).should(times(1)).findOneUser(userEntity.getIdx());
-        then(mockUserService).should(atLeastOnce()).findOneUser(userEntity.getIdx());
-        then(mockUserService).shouldHaveNoMoreInteractions();
+        then(userRepository).should(times(1)).save(userEntity);
+        then(userRepository).should(atLeastOnce()).save(userEntity);
     }
 
     @Test
     @DisplayName("유저 회원수정 Mockito 테스트")
     void 유저회원수정Mockito테스트() {
         // given
-        SignUpRequest signUpRequest = SignUpRequest.builder()
+        UserEntity userEntity = UserEntity.builder()
                 .userId("test")
-                .password("test")
+                .password(passwordEncoder.encode("test"))
                 .name("test")
                 .email("test@test.com")
+                .role(ROLE_ADMIN)
                 .visible("Y")
                 .build();
 
-        Long idx = userService.insertUser(signUpRequest).getIdx();
+        Long idx = userService.insertUser(userEntity).getIdx();
 
         UserEntity newUserEntity = UserEntity.builder()
                 .idx(idx)
@@ -242,64 +235,62 @@ class UserServiceTest extends AdminCommonServiceTest {
                 .visible("Y")
                 .build();
 
-        userService.updateUser(idx, newUserEntity);
-        UserDto newUserDTO = UserEntity.toDto(newUserEntity);
-
         // when
-        when(mockUserService.findOneUser(newUserEntity.getIdx())).thenReturn(newUserDTO);
-        UserDto userInfo = mockUserService.findOneUser(newUserEntity.getIdx());
+        when(userRepository.findById(newUserEntity.getIdx())).thenReturn(Optional.of(newUserEntity));
+        when(userRepository.save(newUserEntity)).thenReturn(newUserEntity);
+        UserDto userInfo = mockUserService.updateUser(newUserEntity.getIdx(), newUserEntity);
 
         // then
         assertThat(userInfo.getUserId()).isEqualTo("test1");
         assertThat(userInfo.getName()).isEqualTo("test1");
 
         // verify
-        verify(mockUserService, times(1)).findOneUser(newUserEntity.getIdx());
-        verify(mockUserService, atLeastOnce()).findOneUser(newUserEntity.getIdx());
-        verifyNoMoreInteractions(mockUserService);
+        verify(userRepository, times(1)).findById(newUserEntity.getIdx());
+        verify(userRepository, atLeastOnce()).findById(newUserEntity.getIdx());
+        verifyNoMoreInteractions(userRepository);
 
-        InOrder inOrder = inOrder(mockUserService);
-        inOrder.verify(mockUserService).findOneUser(newUserEntity.getIdx());
+        InOrder inOrder = inOrder(userRepository);
+        inOrder.verify(userRepository).findById(newUserEntity.getIdx());
     }
 
     @Test
     @DisplayName("유저 회원수정 BDD 테스트")
     void 유저회원수정BDD테스트() {
         // given
-        SignUpRequest signUpRequest = SignUpRequest.builder()
+        UserEntity userEntity = UserEntity.builder()
                 .userId("test")
-                .password("test")
+                .password(passwordEncoder.encode("test"))
                 .name("test")
                 .email("test@test.com")
+                .role(ROLE_ADMIN)
                 .visible("Y")
                 .build();
 
-        Long idx = userService.insertUser(signUpRequest).getIdx();
+        Long idx = userService.insertUser(userEntity).getIdx();
 
         UserEntity newUserEntity = UserEntity.builder()
                 .idx(idx)
                 .userId("test1")
                 .password("test1")
                 .name("test1")
+                .role(ROLE_ADMIN)
                 .email("test1@test.com")
                 .visible("Y")
                 .build();
 
-        userService.updateUser(idx, newUserEntity);
-        UserDto newUserDTO = UserEntity.toDto(newUserEntity);
-
         // when
-        given(mockUserService.findOneUser(newUserEntity.getIdx())).willReturn(newUserDTO);
-        UserDto userInfo = mockUserService.findOneUser(newUserEntity.getIdx());
+        given(userRepository.findById(newUserEntity.getIdx())).willReturn(Optional.of(newUserEntity));
+        given(userRepository.save(newUserEntity)).willReturn(newUserEntity);
+        UserDto userInfo = mockUserService.updateUser(newUserEntity.getIdx(), newUserEntity);
 
         // then
         assertThat(userInfo.getUserId()).isEqualTo("test1");
         assertThat(userInfo.getName()).isEqualTo("test1");
 
         // verify
-        then(mockUserService).should(times(1)).findOneUser(newUserEntity.getIdx());
-        then(mockUserService).should(atLeastOnce()).findOneUser(newUserEntity.getIdx());
-        then(mockUserService).shouldHaveNoMoreInteractions();
+        then(userRepository).should(times(1)).findById(newUserEntity.getIdx());
+        then(userRepository).should(atLeastOnce()).findById(newUserEntity.getIdx());
+        then(userRepository).shouldHaveNoMoreInteractions();
     }
 
     @Test
@@ -313,30 +304,32 @@ class UserServiceTest extends AdminCommonServiceTest {
     @DisplayName("유저가 작성한 스케줄 리스트 조회")
     void 유저가작성한스케줄리스트조회() {
         // given
-        TravelScheduleDto travelScheduleEntity = TravelScheduleDto.builder()
+        TravelScheduleEntity travelScheduleEntity = TravelScheduleEntity.builder()
+                .commonEntity(commonEntity)
+                .userEntity(userEntity)
                 .scheduleDescription("스케줄 테스트")
                 .scheduleTime(LocalDateTime.now())
                 .build();
 
-        List<TravelScheduleDto> userSchedule = new ArrayList<>();
+        em.persist(travelScheduleEntity);
+
+        List<TravelScheduleEntity> userSchedule = new ArrayList<>();
         userSchedule.add(travelScheduleEntity);
 
-        userService.findUserSchedule(1L);
-
         // when
-        when(mockUserService.findUserSchedule(1L)).thenReturn(userSchedule);
-        List<TravelScheduleDto> scheduleList = mockUserService.findUserSchedule(1L);
+        when(scheduleRepository.findUserSchedule(userEntity.getIdx())).thenReturn(userSchedule);
+        List<TravelScheduleDto> scheduleList = mockUserService.findUserSchedule(userEntity.getIdx());
 
         // then
         assertThat(scheduleList.get(0).getScheduleDescription()).isEqualTo("스케줄 테스트");
 
         // verify
-        verify(mockUserService, times(1)).findUserSchedule(1L);
-        verify(mockUserService, atLeastOnce()).findUserSchedule(1L);
-        verifyNoMoreInteractions(mockUserService);
+        verify(scheduleRepository, times(1)).findUserSchedule(userEntity.getIdx());
+        verify(scheduleRepository, atLeastOnce()).findUserSchedule(userEntity.getIdx());
+        verifyNoMoreInteractions(scheduleRepository);
 
-        InOrder inOrder = inOrder(mockUserService);
-        inOrder.verify(mockUserService).findUserSchedule(1L);
+        InOrder inOrder = inOrder(scheduleRepository);
+        inOrder.verify(scheduleRepository).findUserSchedule(userEntity.getIdx());
     }
 
     @Test
@@ -350,152 +343,75 @@ class UserServiceTest extends AdminCommonServiceTest {
 
         em.persist(commonEntity);
 
-        SignUpRequest signUpRequest = SignUpRequest.builder()
+        UserEntity userEntity = UserEntity.builder()
                 .userId("test")
                 .password("test")
                 .name("test")
                 .email("test@test.com")
                 .visible("Y")
-                .build();
-
-        UserDto oneUser = userService.insertUser(signUpRequest);
-
-        UserEntity insertUser = UserEntity.builder()
-                .idx(oneUser.getIdx())
-                .userId(oneUser.getUserId())
-                .password(oneUser.getPassword())
-                .name(oneUser.getName())
-                .email(oneUser.getEmail())
                 .role(ROLE_ADMIN)
-                .userToken(oneUser.getUserToken())
-                .visible("Y")
                 .build();
+
+        em.persist(userEntity);
+
         // given
         TravelScheduleEntity travelScheduleEntity = TravelScheduleEntity.builder()
                 .commonEntity(commonEntity)
-                .userEntity(insertUser)
+                .userEntity(userEntity)
                 .scheduleDescription("스케줄 테스트")
                 .scheduleTime(LocalDateTime.now())
                 .build();
 
         em.persist(travelScheduleEntity);
-        TravelScheduleDto travelScheduleDTO = TravelScheduleEntity.toDto(travelScheduleEntity);
 
         // when
-        when(mockUserService.findOneUserSchedule(travelScheduleDTO.getUserDTO().getIdx(), travelScheduleDTO.getIdx())).thenReturn(travelScheduleDTO);
-        TravelScheduleDto oneUserSchedule = mockUserService.findOneUserSchedule(travelScheduleDTO.getUserDTO().getIdx(), travelScheduleDTO.getIdx());
+        when(scheduleRepository.findOneUserSchedule(travelScheduleEntity.getUserEntity().getIdx(), travelScheduleEntity.getIdx())).thenReturn(Optional.ofNullable(travelScheduleEntity));
+        TravelScheduleDto oneUserSchedule = mockUserService.findOneUserSchedule(travelScheduleEntity.getUserEntity().getIdx(), travelScheduleEntity.getIdx());
 
         // then
         assertThat(oneUserSchedule.getScheduleDescription()).isEqualTo("스케줄 테스트");
 
         // verify
-        verify(mockUserService, times(1)).findOneUserSchedule(travelScheduleDTO.getUserDTO().getIdx(), travelScheduleDTO.getIdx());
-        verify(mockUserService, atLeastOnce()).findOneUserSchedule(travelScheduleDTO.getUserDTO().getIdx(), travelScheduleDTO.getIdx());
-        verifyNoMoreInteractions(mockUserService);
+        verify(scheduleRepository, times(1)).findOneUserSchedule(travelScheduleEntity.getUserEntity().getIdx(), travelScheduleEntity.getIdx());
+        verify(scheduleRepository, atLeastOnce()).findOneUserSchedule(travelScheduleEntity.getUserEntity().getIdx(), travelScheduleEntity.getIdx());
+        verifyNoMoreInteractions(scheduleRepository);
 
-        InOrder inOrder = inOrder(mockUserService);
-        inOrder.verify(mockUserService).findOneUserSchedule(travelScheduleDTO.getUserDTO().getIdx(), travelScheduleDTO.getIdx());
+        InOrder inOrder = inOrder(scheduleRepository);
+        inOrder.verify(scheduleRepository).findOneUserSchedule(travelScheduleEntity.getUserEntity().getIdx(), travelScheduleEntity.getIdx());
     }
 
     @Test
     @DisplayName("유저 여행 그룹 등록 Mockito 테스트")
-    void 유저여행그룹등록Mockito테스트() {
+    void 유저여행그룹등록테스트() {
         // given
-        // 유저 등록
-        SignUpRequest signUpRequest = SignUpRequest.builder()
-                .userId("test")
-                .password("test")
-                .name("test")
-                .email("test@test.com")
-                .visible("Y")
-                .build();
-        UserDto insertUser = userService.insertUser(signUpRequest);
-
-        CommonEntity commonEntity = CommonEntity.builder()
-                .commonCode(999)
-                .commonName("서울")
-                .visible("Y")
-                .build();
-
-        em.persist(commonEntity);
-
-        TravelEntity travelEntity = TravelEntity.builder()
-                .newTravelCode(commonEntity)
-                .travelTitle("여행지 소개")
-                .travelDescription("여행지 소개")
-                .travelAddress("인천광역시 서구")
-                .travelZipCode("123-456")
-                .favoriteCount(1)
-                .viewCount(0)
-                .popular(false)
-                .visible("Y")
-                .build();
-
-        em.persist(travelEntity);
-
         TravelGroupEntity travelGroupEntity = TravelGroupEntity.builder()
                 .travelEntity(travelEntity)
                 .groupName("서울모임").groupDescription("서울모임").visible("Y").build();
 
         em.persist(travelGroupEntity);
 
-        TravelGroupDto travelGroupDTO = TravelGroupEntity.toDto(travelGroupEntity);
-
         TravelGroupUserEntity travelGroupUserEntity = TravelGroupUserEntity.builder().build();
 
-        TravelGroupUserDto travelGroupUserInfo = userService.insertTravelGroupUser(insertUser.getIdx(), travelGroupDTO.getIdx(), travelGroupUserEntity);
+        TravelGroupUserDto travelGroupUserInfo = userService.insertTravelGroupUser(userEntity.getIdx(), travelGroupEntity.getIdx(), travelGroupUserEntity);
 
         // then
-        assertThat(travelGroupUserInfo.getGroupDto().getIdx()).isEqualTo(travelGroupDTO.getIdx());
-        assertThat(travelGroupUserInfo.getUserDto().getIdx()).isEqualTo(insertUser.getIdx());
+        assertThat(travelGroupUserInfo.getGroupDto().getIdx()).isEqualTo(travelGroupEntity.getIdx());
+        assertThat(travelGroupUserInfo.getUserDto().getIdx()).isEqualTo(userEntity.getIdx());
     }
 
     @Test
     @DisplayName("유저 여행 그룹 삭제 Mockito 테스트")
     void 유저여행그룹삭제Mockito테스트() {
         // given
-        // 유저 등록
-        SignUpRequest signUpRequest = SignUpRequest.builder()
-                .userId("test")
-                .password("test")
-                .name("test")
-                .email("test@test.com")
-                .visible("Y")
-                .build();
-        UserDto insertUser = userService.insertUser(signUpRequest);
-
-        CommonEntity commonEntity = CommonEntity.builder()
-                .commonCode(999)
-                .commonName("서울")
-                .visible("Y")
-                .build();
-
-        em.persist(commonEntity);
-
-        TravelEntity travelEntity = TravelEntity.builder()
-                .newTravelCode(commonEntity)
-                .travelTitle("여행지 소개")
-                .travelDescription("여행지 소개")
-                .travelAddress("인천광역시 서구")
-                .travelZipCode("123-456")
-                .favoriteCount(1)
-                .viewCount(0)
-                .popular(false)
-                .visible("Y")
-                .build();
-
-        em.persist(travelEntity);
-
         TravelGroupEntity travelGroupEntity = TravelGroupEntity.builder()
                 .travelEntity(travelEntity)
                 .groupName("서울모임").groupDescription("서울모임").visible("Y").build();
 
         em.persist(travelGroupEntity);
-        TravelGroupDto travelGroupDTO = TravelGroupEntity.toDto(travelGroupEntity);
 
         TravelGroupUserEntity travelGroupUserEntity = TravelGroupUserEntity.builder().build();
 
-        TravelGroupUserDto travelGroupUserInfo = userService.insertTravelGroupUser(insertUser.getIdx(), travelGroupDTO.getIdx(), travelGroupUserEntity);
+        TravelGroupUserDto travelGroupUserInfo = userService.insertTravelGroupUser(userEntity.getIdx(), travelGroupEntity.getIdx(), travelGroupUserEntity);
 
         Long deleteIdx = userService.deleteTravelGroupUser(travelGroupUserInfo.getIdx());
 

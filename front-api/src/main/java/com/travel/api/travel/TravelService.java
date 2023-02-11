@@ -15,7 +15,6 @@ import com.travel.api.travel.domain.review.TravelReviewDTO;
 import com.travel.api.travel.domain.review.TravelReviewEntity;
 import com.travel.api.travel.domain.review.repository.ReviewRepository;
 import com.travel.api.travel.domain.search.SearchDTO;
-import com.travel.api.user.domain.repository.UserRepository;
 import com.travel.exception.TravelException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -39,7 +38,6 @@ public class TravelService {
     private final FestivalRepository festivalRepository;
     private final ReviewRepository reviewRepository;
     private final GroupRepository groupRepository;
-    private final UserRepository userRepository;
 
     private TravelEntity oneTravel(Long idx) {
         return travelRepository.findById(idx)

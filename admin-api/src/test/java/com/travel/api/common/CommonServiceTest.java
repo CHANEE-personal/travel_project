@@ -3,10 +3,13 @@ package com.travel.api.common;
 import com.travel.api.AdminCommonServiceTest;
 import com.travel.api.common.domain.CommonDto;
 import com.travel.api.common.domain.CommonEntity;
+import com.travel.api.common.domain.repository.CommonQueryRepository;
+import com.travel.api.common.domain.repository.CommonRepository;
 import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.InOrder;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -18,10 +21,7 @@ import org.springframework.test.context.TestConstructor;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -38,8 +38,9 @@ import static org.springframework.test.context.TestConstructor.AutowireMode.ALL;
 @AutoConfigureTestDatabase(replace = NONE)
 @DisplayName("공통 코드 Service Test")
 class CommonServiceTest extends AdminCommonServiceTest {
-    @Mock
-    private CommonService mockCommonService;
+    @Mock private CommonRepository commonRepository;
+    @Mock private CommonQueryRepository commonQueryRepository;
+    @InjectMocks private CommonService mockCommonService;
     private final CommonService commonService;
 
     @Test
@@ -57,7 +58,7 @@ class CommonServiceTest extends AdminCommonServiceTest {
         Page<CommonDto> resultPage = new PageImpl<>(commonList, pageRequest, commonList.size());
 
         // when
-        when(mockCommonService.findCommonList(commonMap, pageRequest)).thenReturn(resultPage);
+        when(commonQueryRepository.findCommonList(commonMap, pageRequest)).thenReturn(resultPage);
         Page<CommonDto> newCommonList = mockCommonService.findCommonList(commonMap, pageRequest);
 
         List<CommonDto> commonDtoList = newCommonList.stream().collect(Collectors.toList());
@@ -68,12 +69,12 @@ class CommonServiceTest extends AdminCommonServiceTest {
         assertThat(commonDtoList.get(0).getCommonName()).isEqualTo(commonList.get(0).getCommonName());
 
         // verify
-        verify(mockCommonService, times(1)).findCommonList(commonMap, pageRequest);
-        verify(mockCommonService, atLeastOnce()).findCommonList(commonMap, pageRequest);
-        verifyNoMoreInteractions(mockCommonService);
+        verify(commonQueryRepository, times(1)).findCommonList(commonMap, pageRequest);
+        verify(commonQueryRepository, atLeastOnce()).findCommonList(commonMap, pageRequest);
+        verifyNoMoreInteractions(commonQueryRepository);
 
-        InOrder inOrder = inOrder(mockCommonService);
-        inOrder.verify(mockCommonService).findCommonList(commonMap, pageRequest);
+        InOrder inOrder = inOrder(commonQueryRepository);
+        inOrder.verify(commonQueryRepository).findCommonList(commonMap, pageRequest);
     }
 
     @Test
@@ -83,7 +84,7 @@ class CommonServiceTest extends AdminCommonServiceTest {
         CommonDto newCommonDto = commonService.insertCommonCode(commonEntity);
 
         // when
-        when(mockCommonService.findOneCommon(newCommonDto.getIdx())).thenReturn(newCommonDto);
+        when(commonRepository.findById(newCommonDto.getIdx())).thenReturn(Optional.ofNullable(commonEntity));
         CommonDto commonInfo = mockCommonService.findOneCommon(newCommonDto.getIdx());
 
         // then
@@ -91,35 +92,32 @@ class CommonServiceTest extends AdminCommonServiceTest {
         assertThat(commonInfo.getCommonName()).isEqualTo(newCommonDto.getCommonName());
 
         // verify
-        verify(mockCommonService, times(1)).findOneCommon(newCommonDto.getIdx());
-        verify(mockCommonService, atLeastOnce()).findOneCommon(newCommonDto.getIdx());
-        verifyNoMoreInteractions(mockCommonService);
+        verify(commonRepository, times(1)).findById(newCommonDto.getIdx());
+        verify(commonRepository, atLeastOnce()).findById(newCommonDto.getIdx());
+        verifyNoMoreInteractions(commonRepository);
 
-        InOrder inOrder = inOrder(mockCommonService);
-        inOrder.verify(mockCommonService).findOneCommon(newCommonDto.getIdx());
+        InOrder inOrder = inOrder(commonRepository);
+        inOrder.verify(commonRepository).findById(newCommonDto.getIdx());
     }
 
     @Test
     @DisplayName("공통 코드 등록 Mockito 테스트")
     void 공통코드등록Mockito테스트() {
-        // given
-        CommonDto newCommonDto = commonService.insertCommonCode(commonEntity);
-
         // when
-        when(mockCommonService.findOneCommon(newCommonDto.getIdx())).thenReturn(newCommonDto);
-        CommonDto commonInfo = mockCommonService.findOneCommon(newCommonDto.getIdx());
+        when(commonRepository.save(commonEntity)).thenReturn(commonEntity);
+        CommonDto commonInfo = mockCommonService.insertCommonCode(commonEntity);
 
         // then
-        assertThat(commonInfo.getCommonCode()).isEqualTo(newCommonDto.getCommonCode());
-        assertThat(commonInfo.getCommonName()).isEqualTo(newCommonDto.getCommonName());
+        assertThat(commonInfo.getCommonCode()).isEqualTo(commonEntity.getCommonCode());
+        assertThat(commonInfo.getCommonName()).isEqualTo(commonEntity.getCommonName());
 
         // verify
-        verify(mockCommonService, times(1)).findOneCommon(newCommonDto.getIdx());
-        verify(mockCommonService, atLeastOnce()).findOneCommon(newCommonDto.getIdx());
-        verifyNoMoreInteractions(mockCommonService);
+        verify(commonRepository, times(1)).save(commonEntity);
+        verify(commonRepository, atLeastOnce()).save(commonEntity);
+        verifyNoMoreInteractions(commonRepository);
 
-        InOrder inOrder = inOrder(mockCommonService);
-        inOrder.verify(mockCommonService).findOneCommon(newCommonDto.getIdx());
+        InOrder inOrder = inOrder(commonRepository);
+        inOrder.verify(commonRepository).save(commonEntity);
     }
 
     @Test
@@ -131,32 +129,28 @@ class CommonServiceTest extends AdminCommonServiceTest {
                 .idx(commonEntity.getIdx())
                 .commonCode(2).commonName("인천").visible("Y").build();
 
-        commonService.updateCommonCode(commonEntity.getIdx(), newCommonEntity);
-
-        CommonDto newCommonInfo = CommonEntity.toDto(newCommonEntity);
-
         // when
-        when(mockCommonService.findOneCommon(newCommonEntity.getIdx())).thenReturn(newCommonInfo);
-        CommonDto commonInfo = mockCommonService.findOneCommon(newCommonEntity.getIdx());
+        when(commonRepository.findById(newCommonEntity.getIdx())).thenReturn(Optional.of(newCommonEntity));
+        when(commonRepository.save(newCommonEntity)).thenReturn(newCommonEntity);
+        CommonDto commonInfo = mockCommonService.updateCommonCode(newCommonEntity.getIdx(), newCommonEntity);
 
         // then
         assertThat(commonInfo.getCommonCode()).isEqualTo(newCommonEntity.getCommonCode());
         assertThat(commonInfo.getCommonName()).isEqualTo(newCommonEntity.getCommonName());
 
         // verify
-        verify(mockCommonService, times(1)).findOneCommon(newCommonEntity.getIdx());
-        verify(mockCommonService, atLeastOnce()).findOneCommon(newCommonEntity.getIdx());
-        verifyNoMoreInteractions(mockCommonService);
+        verify(commonRepository, times(1)).findById(newCommonEntity.getIdx());
+        verify(commonRepository, atLeastOnce()).findById(newCommonEntity.getIdx());
+        verifyNoMoreInteractions(commonRepository);
 
-        InOrder inOrder = inOrder(mockCommonService);
-        inOrder.verify(mockCommonService).findOneCommon(newCommonEntity.getIdx());
+        InOrder inOrder = inOrder(commonRepository);
+        inOrder.verify(commonRepository).findById(newCommonEntity.getIdx());
     }
 
     @Test
     @DisplayName("공통 코드 삭제 테스트")
     void 공통코드삭제테스트() {
         // when
-        when(mockCommonService.findOneCommon(commonDTO.getIdx())).thenReturn(commonDTO);
         Long deleteIdx = commonService.deleteCommonCode(commonDTO.getIdx());
 
         // then

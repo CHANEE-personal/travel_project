@@ -2,6 +2,7 @@ package com.travel.api.travel.domain.image;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.travel.api.common.domain.EntityType;
+import com.travel.api.post.domain.PostEntity;
 import com.travel.api.travel.domain.TravelEntity;
 import com.travel.api.travel.domain.reservation.TravelReservationEntity;
 import io.swagger.annotations.ApiModelProperty;
@@ -80,6 +81,10 @@ public class TravelImageEntity {
     @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "type_idx", referencedColumnName = "idx", insertable = false, updatable = false)
     private TravelEntity newTravelImageEntity;
+
+    @ManyToOne(fetch = LAZY)
+    @JoinColumn(name = "type_idx", referencedColumnName = "idx", insertable = false, updatable = false)
+    private PostEntity newPostImageEntity;
 
     @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "type_idx", referencedColumnName = "idx", insertable = false, updatable = false)

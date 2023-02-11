@@ -1,12 +1,16 @@
 package com.travel.api.faq;
 
 import com.travel.api.AdminCommonServiceTest;
+import com.travel.api.common.domain.repository.CommonRepository;
 import com.travel.api.faq.domain.FaqDto;
 import com.travel.api.faq.domain.FaqEntity;
+import com.travel.api.faq.domain.repository.FaqQueryRepository;
+import com.travel.api.faq.domain.repository.FaqRepository;
 import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.InOrder;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -19,10 +23,7 @@ import org.springframework.test.context.TestPropertySource;
 
 import javax.transaction.Transactional;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -39,7 +40,10 @@ import static org.springframework.test.context.TestConstructor.AutowireMode.ALL;
 @AutoConfigureTestDatabase(replace = NONE)
 @DisplayName("FAQ Service Test")
 class FaqServiceTest extends AdminCommonServiceTest {
-    @Mock private FaqService mockFaqService;
+    @Mock private FaqRepository faqRepository;
+    @Mock private CommonRepository commonRepository;
+    @Mock private FaqQueryRepository faqQueryRepository;
+    @InjectMocks private FaqService mockFaqService;
     private final FaqService faqService;
 
     @Test
@@ -55,7 +59,7 @@ class FaqServiceTest extends AdminCommonServiceTest {
         Page<FaqDto> resultPage = new PageImpl<>(faqList, pageRequest, faqList.size());
 
         // when
-        when(mockFaqService.findFaqList(faqMap, pageRequest)).thenReturn(resultPage);
+        when(faqQueryRepository.findFaqList(faqMap, pageRequest)).thenReturn(resultPage);
         Page<FaqDto> newFaqList = mockFaqService.findFaqList(faqMap, pageRequest);
 
         List<FaqDto> findFaqList = newFaqList.stream().collect(Collectors.toList());
@@ -67,19 +71,19 @@ class FaqServiceTest extends AdminCommonServiceTest {
         assertThat(findFaqList.get(0).getDescription()).isEqualTo(faqList.get(0).getDescription());
 
         // verify
-        verify(mockFaqService, times(1)).findFaqList(faqMap, pageRequest);
-        verify(mockFaqService, atLeastOnce()).findFaqList(faqMap, pageRequest);
-        verifyNoMoreInteractions(mockFaqService);
+        verify(faqQueryRepository, times(1)).findFaqList(faqMap, pageRequest);
+        verify(faqQueryRepository, atLeastOnce()).findFaqList(faqMap, pageRequest);
+        verifyNoMoreInteractions(faqQueryRepository);
 
-        InOrder inOrder = inOrder(mockFaqService);
-        inOrder.verify(mockFaqService).findFaqList(faqMap, pageRequest);
+        InOrder inOrder = inOrder(faqQueryRepository);
+        inOrder.verify(faqQueryRepository).findFaqList(faqMap, pageRequest);
     }
 
     @Test
     @DisplayName("FAQ 상세 조회 Mockito 테스트")
     void FAQ상세조회Mockito테스트() {
         // when
-        when(mockFaqService.findOneFaq(faqEntity.getIdx())).thenReturn(faqDTO);
+        when(faqQueryRepository.findOneFaq(faqEntity.getIdx())).thenReturn(faqDTO);
         FaqDto faqInfo = mockFaqService.findOneFaq(faqEntity.getIdx());
 
         // then
@@ -88,23 +92,21 @@ class FaqServiceTest extends AdminCommonServiceTest {
         assertThat(faqInfo.getDescription()).isEqualTo(faqEntity.getDescription());
 
         // verify
-        verify(mockFaqService, times(1)).findOneFaq(faqEntity.getIdx());
-        verify(mockFaqService, atLeastOnce()).findOneFaq(faqEntity.getIdx());
-        verifyNoMoreInteractions(mockFaqService);
+        verify(faqQueryRepository, times(1)).findOneFaq(faqEntity.getIdx());
+        verify(faqQueryRepository, atLeastOnce()).findOneFaq(faqEntity.getIdx());
+        verifyNoMoreInteractions(faqQueryRepository);
 
-        InOrder inOrder = inOrder(mockFaqService);
-        inOrder.verify(mockFaqService).findOneFaq(faqEntity.getIdx());
+        InOrder inOrder = inOrder(faqQueryRepository);
+        inOrder.verify(faqQueryRepository).findOneFaq(faqEntity.getIdx());
     }
 
     @Test
     @DisplayName("FAQ등록Mockito테스트")
     void FAQ등록Mockito테스트() {
-        // given
-        FaqDto faqInfo = faqService.insertFaq(faqEntity);
-
         // when
-        when(mockFaqService.findOneFaq(faqInfo.getIdx())).thenReturn(faqInfo);
-        FaqDto newFaqInfo = mockFaqService.findOneFaq(faqInfo.getIdx());
+        when(commonRepository.findByCommonCode(commonEntity.getCommonCode())).thenReturn(Optional.ofNullable(commonEntity));
+        when(faqRepository.save(faqEntity)).thenReturn(faqEntity);
+        FaqDto newFaqInfo = mockFaqService.insertFaq(faqEntity);
 
         // then
         assertThat(newFaqInfo.getIdx()).isEqualTo(newFaqInfo.getIdx());
@@ -113,66 +115,51 @@ class FaqServiceTest extends AdminCommonServiceTest {
         assertThat(newFaqInfo.getDescription()).isEqualTo(newFaqInfo.getDescription());
 
         // verify
-        verify(mockFaqService, times(1)).findOneFaq(faqInfo.getIdx());
-        verify(mockFaqService, atLeastOnce()).findOneFaq(faqInfo.getIdx());
-        verifyNoMoreInteractions(mockFaqService);
+        verify(faqRepository, times(1)).save(faqEntity);
+        verify(faqRepository, atLeastOnce()).save(faqEntity);
+        verifyNoMoreInteractions(faqRepository);
 
-        InOrder inOrder = inOrder(mockFaqService);
-        inOrder.verify(mockFaqService).findOneFaq(faqInfo.getIdx());
+        InOrder inOrder = inOrder(faqRepository);
+        inOrder.verify(faqRepository).save(faqEntity);
     }
 
     @Test
     @DisplayName("FAQ 수정 Mockito 테스트")
     void FAQ수정Mockito테스트() {
         // given
-        FaqDto faqInfo = faqService.insertFaq(faqEntity);
-
         FaqEntity updateFaqEntity = FaqEntity.builder()
-                .idx(faqInfo.getIdx())
+                .idx(faqEntity.getIdx())
                 .title("FAQ 수정 테스트")
                 .description("FAQ 수정 테스트")
                 .viewCount(1)
                 .visible("Y")
                 .build();
 
-        FaqDto newFaqInfo = faqService.updateFaq(faqInfo.getIdx(), updateFaqEntity);
-
         // when
-        when(mockFaqService.findOneFaq(newFaqInfo.getIdx())).thenReturn(newFaqInfo);
-        FaqDto findFaqInfo = mockFaqService.findOneFaq(newFaqInfo.getIdx());
+        when(faqRepository.findById(updateFaqEntity.getIdx())).thenReturn(Optional.of(updateFaqEntity));
+        when(faqRepository.save(updateFaqEntity)).thenReturn(updateFaqEntity);
+        FaqDto findFaqInfo = mockFaqService.updateFaq(updateFaqEntity.getIdx(), updateFaqEntity);
 
         // then
         assertThat(findFaqInfo.getTitle()).isEqualTo(updateFaqEntity.getTitle());
         assertThat(findFaqInfo.getDescription()).isEqualTo(updateFaqEntity.getDescription());
 
         // verify
-        verify(mockFaqService, times(1)).findOneFaq(newFaqInfo.getIdx());
-        verify(mockFaqService, atLeastOnce()).findOneFaq(newFaqInfo.getIdx());
-        verifyNoMoreInteractions(mockFaqService);
+        verify(faqRepository, times(1)).findById(updateFaqEntity.getIdx());
+        verify(faqRepository, atLeastOnce()).findById(updateFaqEntity.getIdx());
+        verifyNoMoreInteractions(faqRepository);
 
-        InOrder inOrder = inOrder(mockFaqService);
-        inOrder.verify(mockFaqService).findOneFaq(newFaqInfo.getIdx());
+        InOrder inOrder = inOrder(faqRepository);
+        inOrder.verify(faqRepository).findById(updateFaqEntity.getIdx());
     }
 
     @Test
-    @DisplayName("FAQ 삭제 Mockito 테스트")
-    void FAQ삭제Mockito테스트() {
-        // given
-        FaqDto faqInfo = faqService.insertFaq(faqEntity);
-
+    @DisplayName("FAQ 삭제 테스트")
+    void FAQ삭제테스트() {
         // when
-        when(mockFaqService.findOneFaq(faqInfo.getIdx())).thenReturn(faqInfo);
-        Long deleteIdx = faqService.deleteFaq(faqInfo.getIdx());
+        Long deleteIdx = faqService.deleteFaq(faqEntity.getIdx());
 
         // then
-        assertThat(mockFaqService.findOneFaq(faqInfo.getIdx()).getIdx()).isEqualTo(deleteIdx);
-
-        // verify
-        verify(mockFaqService, times(1)).findOneFaq(faqInfo.getIdx());
-        verify(mockFaqService, atLeastOnce()).findOneFaq(faqInfo.getIdx());
-        verifyNoMoreInteractions(mockFaqService);
-
-        InOrder inOrder = inOrder(mockFaqService);
-        inOrder.verify(mockFaqService).findOneFaq(faqInfo.getIdx());
+        assertThat(faqEntity.getIdx()).isEqualTo(deleteIdx);
     }
 }
