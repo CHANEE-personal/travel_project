@@ -158,20 +158,13 @@ public class UserService {
      * </pre>
      */
     @Transactional
-    public UserDto insertUser(SignUpRequest signUpRequest) {
+    public UserDto insertUser(UserEntity userEntity) {
         try {
-            if (userRepository.findByUserId(signUpRequest.getUserId()).isPresent()) {
+            if (userRepository.findByUserId(userEntity.getUserId()).isPresent()) {
                 throw new TravelException(EXIST_USER);
             }
 
-            return UserEntity.toDto(userRepository.save(UserEntity.builder()
-                    .userId(signUpRequest.getUserId())
-                    .password(passwordEncoder.encode(signUpRequest.getPassword()))
-                    .name(signUpRequest.getName())
-                    .email(signUpRequest.getEmail())
-                    .role(Role.ROLE_ADMIN)
-                    .visible("Y")
-                    .build()));
+            return UserEntity.toDto(userRepository.save(userEntity));
 
         } catch (Exception e) {
             throw new TravelException(ERROR_USER);

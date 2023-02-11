@@ -103,7 +103,9 @@ public abstract class AdminCommonServiceTest {
                 .fileMask("test.jpg")
                 .filePath("/test/test.jpg")
                 .entityType(EntityType.TRAVEL)
+                .visible("Y")
                 .build();
+
         travelImageRepository.save(travelImageEntity);
 
         // FAQ 등록

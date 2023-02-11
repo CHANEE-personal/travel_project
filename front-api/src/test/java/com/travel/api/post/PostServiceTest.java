@@ -40,7 +40,7 @@ import static org.springframework.test.context.TestConstructor.AutowireMode.ALL;
 @TestConstructor(autowireMode = ALL)
 @RequiredArgsConstructor
 @AutoConfigureTestDatabase(replace = NONE)
-@DisplayName("FAQ Service Test")
+@DisplayName("Post Service Test")
 class PostServiceTest extends FrontCommonServiceTest {
 
     @Mock private PostRepository postRepository;
