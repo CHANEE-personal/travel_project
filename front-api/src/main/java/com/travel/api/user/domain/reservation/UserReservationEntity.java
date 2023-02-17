@@ -58,14 +58,20 @@ public class UserReservationEntity extends NewCommonMappedClass {
     public static UserReservationDTO toDto(UserReservationEntity entity) {
         if (entity == null) return null;
         return UserReservationDTO.builder()
-                .idx(entity.getIdx())
-                .price(entity.getPrice())
-                .salePrice(entity.getSalePrice())
-                .startDate(entity.getStartDate())
-                .endDate(entity.getEndDate())
-                .userCount(entity.getUserCount())
-                .userDTO(UserEntity.toDto(entity.newUserEntity))
-                .travelReservationDTO(TravelReservationEntity.toDto(entity.travelReservationEntity))
+                .idx(entity.idx)
+                .price(entity.price)
+                .salePrice(entity.salePrice)
+                .startDate(entity.startDate)
+                .endDate(entity.endDate)
+                .userCount(entity.userCount)
+                .userId(entity.newUserEntity.getUserId())
+                .userName(entity.newUserEntity.getName())
+                .title(entity.travelReservationEntity.getTitle())
+                .description(entity.travelReservationEntity.getDescription())
+                .address(entity.travelReservationEntity.getAddress())
+                .zipCode(entity.travelReservationEntity.getZipCode())
+                .possibleCount(entity.travelReservationEntity.getPossibleCount())
+                .status(entity.travelReservationEntity.getStatus())
                 .build();
     }
 }

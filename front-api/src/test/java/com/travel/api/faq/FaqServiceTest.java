@@ -63,7 +63,7 @@ class FaqServiceTest extends FrontCommonServiceTest {
 
         // then
         assertThat(findFaqList.get(0).getIdx()).isEqualTo(faqList.get(0).getIdx());
-        assertThat(findFaqList.get(0).getNewFaqCode().getCommonCode()).isEqualTo(faqList.get(0).getNewFaqCode().getCommonCode());
+        assertThat(findFaqList.get(0).getFaqCode()).isEqualTo(faqList.get(0).getFaqCode());
         assertThat(findFaqList.get(0).getTitle()).isEqualTo(faqList.get(0).getTitle());
         assertThat(findFaqList.get(0).getDescription()).isEqualTo(faqList.get(0).getDescription());
 

@@ -1,6 +1,7 @@
 package com.travel.api.post.domain;
 
 import com.travel.api.common.domain.NewCommonMappedClass;
+import com.travel.api.post.domain.image.PostImageEntity;
 import com.travel.api.post.domain.reply.ReplyEntity;
 import com.travel.api.travel.domain.image.TravelImageEntity;
 import lombok.*;
@@ -65,9 +66,9 @@ public class PostEntity extends NewCommonMappedClass {
     @BatchSize(size = 100)
     @Where(clause = "type_name = 'post'")
     @OneToMany(mappedBy = "newPostImageEntity", fetch = LAZY, cascade = CascadeType.REMOVE, orphanRemoval = true)
-    private List<TravelImageEntity> postImageList = new ArrayList<>();
+    private List<PostImageEntity> postImageList = new ArrayList<>();
 
-    public void addPostImage(TravelImageEntity commonImageEntity) {
+    public void addPostImage(PostImageEntity commonImageEntity) {
         commonImageEntity.setNewPostImageEntity(this);
         this.postImageList.add(commonImageEntity);
     }
@@ -86,16 +87,23 @@ public class PostEntity extends NewCommonMappedClass {
 
     public static PostDTO toDto(PostEntity entity) {
         if (entity == null) return null;
-        return PostDTO.builder()
-                .idx(entity.getIdx())
-                .postTitle(entity.getPostTitle())
-                .postDescription(entity.getPostDescription())
-                .visible(entity.getVisible())
-                .viewCount(entity.getViewCount())
-                .favoriteCount(entity.getFavoriteCount())
-                .postReplyList(ReplyEntity.toDtoList(entity.getReplyEntityList()))
-                .postImageList(TravelImageEntity.toDtoList(entity.getPostImageList()))
-                .build();
+        PostDTO.PostDTOBuilder postDTO = PostDTO.builder()
+                .idx(entity.idx)
+                .postTitle(entity.postTitle)
+                .postDescription(entity.postDescription)
+                .visible(entity.visible)
+                .viewCount(entity.viewCount)
+                .favoriteCount(entity.favoriteCount);
+
+        if (entity.postImageList != null) {
+            postDTO.postImageList(PostImageEntity.toDtoList(entity.postImageList));
+        }
+
+        if (entity.replyEntityList != null) {
+            postDTO.postReplyList(ReplyEntity.toDtoList(entity.replyEntityList));
+        }
+
+        return postDTO.build();
     }
 
     public static List<PostDTO> toDtoList(List<PostEntity> entityList) {

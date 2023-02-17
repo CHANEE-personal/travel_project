@@ -130,7 +130,7 @@ public class PostController {
     })
     @PostMapping(value = "/{idx}/images", consumes = MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<List<PostImageDTO>> insertPostImage(@PathVariable Long idx, @RequestParam(value = "images") List<MultipartFile> fileName) {
-        return ResponseEntity.created(URI.create("")).body(postService.insertPostImage(idx, fileName, TravelImageEntity.builder().entityType(EntityType.POST).build()));
+        return ResponseEntity.created(URI.create("")).body(postService.insertPostImage(idx, fileName, PostImageEntity.builder().entityType(EntityType.POST).build()));
     }
 
     /**

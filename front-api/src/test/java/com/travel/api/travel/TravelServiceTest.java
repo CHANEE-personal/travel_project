@@ -50,10 +50,14 @@ import static org.springframework.test.context.TestConstructor.AutowireMode.ALL;
 @DisplayName("여행지 Service Test")
 class TravelServiceTest extends FrontCommonServiceTest {
 
-    @Mock private TravelRepository travelRepository;
-    @Mock private TravelQueryRepository travelQueryRepository;
-    @Mock private ReviewRepository reviewRepository;
-    @InjectMocks private TravelService mockTravelService;
+    @Mock
+    private TravelRepository travelRepository;
+    @Mock
+    private TravelQueryRepository travelQueryRepository;
+    @Mock
+    private ReviewRepository reviewRepository;
+    @InjectMocks
+    private TravelService mockTravelService;
     private final TravelService travelService;
     private final EntityManager em;
 
@@ -89,7 +93,8 @@ class TravelServiceTest extends FrontCommonServiceTest {
         PageRequest pageRequest = PageRequest.of(0, 3);
 
         List<TravelDTO> travelList = new ArrayList<>();
-        travelList.add(TravelDTO.builder().idx(1L).newTravelCode(commonDTO)
+        travelList.add(TravelDTO.builder().idx(1L).commonCode(commonDTO.getCommonCode())
+                .commonName(commonDTO.getCommonName())
                 .travelTitle("여행지 소개").travelDescription("여행지 소개")
                 .travelAddress("인천광역시 서구").travelZipCode("123-456").visible("Y").build());
 
@@ -103,7 +108,7 @@ class TravelServiceTest extends FrontCommonServiceTest {
 
         // then
         assertThat(findTravelList.get(0).getIdx()).isEqualTo(travelList.get(0).getIdx());
-        assertThat(findTravelList.get(0).getNewTravelCode().getCommonCode()).isEqualTo(travelList.get(0).getNewTravelCode().getCommonCode());
+        assertThat(findTravelList.get(0).getCommonCode()).isEqualTo(travelList.get(0).getCommonCode());
         assertThat(findTravelList.get(0).getTravelTitle()).isEqualTo(travelList.get(0).getTravelTitle());
         assertThat(findTravelList.get(0).getTravelDescription()).isEqualTo(travelList.get(0).getTravelDescription());
         assertThat(findTravelList.get(0).getTravelAddress()).isEqualTo(travelList.get(0).getTravelAddress());
@@ -126,7 +131,9 @@ class TravelServiceTest extends FrontCommonServiceTest {
         PageRequest pageRequest = PageRequest.of(0, 3);
 
         List<TravelDTO> travelList = new ArrayList<>();
-        travelList.add(TravelDTO.builder().idx(1L).newTravelCode(commonDTO)
+        travelList.add(TravelDTO.builder().idx(1L)
+                .commonCode(commonDTO.getCommonCode())
+                .commonName(commonDTO.getCommonName())
                 .travelTitle("여행지 소개").travelDescription("여행지 소개")
                 .travelAddress("인천광역시 서구").travelZipCode("123-456").visible("Y").build());
 
@@ -140,7 +147,7 @@ class TravelServiceTest extends FrontCommonServiceTest {
 
         // then
         assertThat(findTravelList.get(0).getIdx()).isEqualTo(travelList.get(0).getIdx());
-        assertThat(findTravelList.get(0).getNewTravelCode().getCommonCode()).isEqualTo(travelList.get(0).getNewTravelCode().getCommonCode());
+        assertThat(findTravelList.get(0).getCommonCode()).isEqualTo(travelList.get(0).getCommonCode());
         assertThat(findTravelList.get(0).getTravelTitle()).isEqualTo(travelList.get(0).getTravelTitle());
         assertThat(findTravelList.get(0).getTravelDescription()).isEqualTo(travelList.get(0).getTravelDescription());
         assertThat(findTravelList.get(0).getTravelAddress()).isEqualTo(travelList.get(0).getTravelAddress());
@@ -162,7 +169,8 @@ class TravelServiceTest extends FrontCommonServiceTest {
         PageRequest pageRequest = PageRequest.of(0, 3);
 
         List<TravelDTO> travelList = new ArrayList<>();
-        travelList.add(TravelDTO.builder().idx(1L).newTravelCode(commonDTO)
+        travelList.add(TravelDTO.builder().idx(1L).commonCode(commonDTO.getCommonCode())
+                .commonName(commonDTO.getCommonName())
                 .travelTitle("여행지 소개").travelDescription("여행지 소개")
                 .travelAddress("인천광역시 서구").travelZipCode("123-456").visible("Y").build());
 
@@ -176,7 +184,7 @@ class TravelServiceTest extends FrontCommonServiceTest {
 
         // then
         assertThat(findTravelList.get(0).getIdx()).isEqualTo(travelList.get(0).getIdx());
-        assertThat(findTravelList.get(0).getNewTravelCode().getCommonCode()).isEqualTo(travelList.get(0).getNewTravelCode().getCommonCode());
+        assertThat(findTravelList.get(0).getCommonCode()).isEqualTo(travelList.get(0).getCommonCode());
         assertThat(findTravelList.get(0).getTravelTitle()).isEqualTo(travelList.get(0).getTravelTitle());
         assertThat(findTravelList.get(0).getTravelDescription()).isEqualTo(travelList.get(0).getTravelDescription());
         assertThat(findTravelList.get(0).getTravelAddress()).isEqualTo(travelList.get(0).getTravelAddress());
@@ -194,7 +202,7 @@ class TravelServiceTest extends FrontCommonServiceTest {
     void 여행지상세조회테스트() {
         TravelDTO existTravel = travelService.findOneTravel(travelEntity.getIdx());
         assertThat(existTravel.getIdx()).isEqualTo(travelEntity.getIdx());
-        assertThat(existTravel.getNewTravelCode().getCommonCode()).isEqualTo(travelEntity.getNewTravelCode().getCommonCode());
+        assertThat(existTravel.getCommonCode()).isEqualTo(travelEntity.getNewTravelCode().getCommonCode());
         assertThat(existTravel.getTravelTitle()).isEqualTo(travelEntity.getTravelTitle());
 
         assertThatThrownBy(() -> travelService.findOneTravel(3L))
@@ -215,7 +223,7 @@ class TravelServiceTest extends FrontCommonServiceTest {
 
         // then
         assertThat(newAdminTravel.getIdx()).isEqualTo(travelEntity.getIdx());
-        assertThat(newAdminTravel.getNewTravelCode().getCommonCode()).isEqualTo(travelEntity.getNewTravelCode().getCommonCode());
+        assertThat(newAdminTravel.getCommonCode()).isEqualTo(travelEntity.getNewTravelCode().getCommonCode());
         assertThat(newAdminTravel.getTravelTitle()).isEqualTo(travelEntity.getTravelTitle());
         assertThat(newAdminTravel.getTravelDescription()).isEqualTo(travelEntity.getTravelDescription());
         assertThat(newAdminTravel.getTravelAddress()).isEqualTo(travelEntity.getTravelAddress());
@@ -244,7 +252,7 @@ class TravelServiceTest extends FrontCommonServiceTest {
 
         // then
         assertThat(newAdminTravel.getIdx()).isEqualTo(travelEntity.getIdx());
-        assertThat(newAdminTravel.getNewTravelCode().getCommonCode()).isEqualTo(travelEntity.getNewTravelCode().getCommonCode());
+        assertThat(newAdminTravel.getCommonCode()).isEqualTo(travelEntity.getNewTravelCode().getCommonCode());
         assertThat(newAdminTravel.getTravelTitle()).isEqualTo(travelEntity.getTravelTitle());
         assertThat(newAdminTravel.getTravelDescription()).isEqualTo(travelEntity.getTravelDescription());
         assertThat(newAdminTravel.getTravelAddress()).isEqualTo(travelEntity.getTravelAddress());
@@ -333,7 +341,7 @@ class TravelServiceTest extends FrontCommonServiceTest {
 
         // verify
         verify(reviewRepository, times(1)).findById(updateTravelReviewEntity.getIdx());
-        verify(reviewRepository,  atLeastOnce()).findById(updateTravelReviewEntity.getIdx());
+        verify(reviewRepository, atLeastOnce()).findById(updateTravelReviewEntity.getIdx());
         verifyNoMoreInteractions(reviewRepository);
 
         InOrder inOrder = inOrder(reviewRepository);
@@ -435,7 +443,7 @@ class TravelServiceTest extends FrontCommonServiceTest {
 
         // verify
         verify(reviewRepository, times(1)).findById(travelReviewEntity.getIdx());
-        verify(reviewRepository,  atLeastOnce()).findById(travelReviewEntity.getIdx());
+        verify(reviewRepository, atLeastOnce()).findById(travelReviewEntity.getIdx());
         verifyNoMoreInteractions(reviewRepository);
 
         InOrder inOrder = inOrder(reviewRepository);
@@ -486,6 +494,7 @@ class TravelServiceTest extends FrontCommonServiceTest {
         assertThat(travelService.rankingTravelKeyword().get(0).getSearchKeyword()).isEqualTo("서울");
         assertThat(travelService.rankingTravelKeyword().get(1).getSearchKeyword()).isEqualTo("인천");
     }
+
     @Test
     @DisplayName("추천 검색어 or 검색어 랭킹을 통한 여행지 검색 조회")
     void 추천검색어or검색어랭킹을통한여행지검색조회() {

@@ -34,8 +34,8 @@ public class SearchEntity extends NewCommonMappedClass {
     public static SearchDTO toDto(SearchEntity entity) {
         if (entity == null) return null;
         return SearchDTO.builder()
-                .idx(entity.getIdx())
-                .searchKeyword(entity.getSearchKeyword())
+                .idx(entity.idx)
+                .searchKeyword(entity.searchKeyword)
                 .build();
     }
 

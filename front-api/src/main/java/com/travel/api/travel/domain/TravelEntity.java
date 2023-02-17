@@ -110,17 +110,17 @@ public class TravelEntity extends NewCommonMappedClass {
     public static TravelDTO toDto(TravelEntity entity) {
         if (entity == null) return null;
         return TravelDTO.builder()
-                .idx(entity.getIdx())
-                .newTravelCode(CommonEntity.toDto(entity.newTravelCode))
-                .travelTitle(entity.getTravelTitle())
-                .travelDescription(entity.getTravelDescription())
-                .travelAddress(entity.getTravelAddress())
-                .travelZipCode(entity.getTravelZipCode())
-                .favoriteCount(entity.getFavoriteCount())
-                .viewCount(entity.getViewCount())
-                .visible(entity.getVisible())
-                .popular(entity.getPopular())
-                .imageList(TravelImageEntity.toDtoList(entity.getTravelImageEntityList()))
+                .idx(entity.idx)
+                .commonCode(entity.newTravelCode.getCommonCode())
+                .commonName(entity.newTravelCode.getCommonName())
+                .travelTitle(entity.travelTitle)
+                .travelDescription(entity.travelDescription)
+                .travelAddress(entity.travelAddress)
+                .travelZipCode(entity.travelZipCode)
+                .favoriteCount(entity.favoriteCount)
+                .viewCount(entity.viewCount)
+                .visible(entity.visible)
+                .popular(entity.popular)
                 .build();
     }
 

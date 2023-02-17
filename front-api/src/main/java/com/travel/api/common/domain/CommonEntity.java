@@ -76,10 +76,10 @@ public class CommonEntity extends NewCommonMappedClass implements Serializable {
     public static CommonDTO toDto(CommonEntity entity) {
         if (entity == null) return null;
         return CommonDTO.builder()
-                .idx(entity.getIdx())
-                .commonCode(entity.getCommonCode())
-                .commonName(entity.getCommonName())
-                .visible(entity.getVisible())
+                .idx(entity.idx)
+                .commonCode(entity.commonCode)
+                .commonName(entity.commonName)
+                .visible(entity.visible)
                 .build();
     }
 

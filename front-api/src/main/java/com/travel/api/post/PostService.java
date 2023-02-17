@@ -99,7 +99,7 @@ public class PostService {
      * </pre>
      */
     @Transactional
-    public List<PostImageDTO> insertPostImage(Long idx, List<MultipartFile> files, TravelImageEntity postImageEntity) {
+    public List<PostImageDTO> insertPostImage(Long idx, List<MultipartFile> files, PostImageEntity postImageEntity) {
         try {
             return saveFile.savePostFile(onePost(idx), files, postImageEntity);
         } catch (Exception e) {

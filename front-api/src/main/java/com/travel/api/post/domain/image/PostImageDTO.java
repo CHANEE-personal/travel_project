@@ -2,7 +2,6 @@ package com.travel.api.post.domain.image;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.travel.api.common.domain.EntityType;
-import com.travel.api.post.domain.PostDTO;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.*;
@@ -25,8 +24,11 @@ public class PostImageDTO {
     @ApiModelProperty(value = "파일 IDX", required = true, hidden = true, example = "1")
     private Long idx;
 
-    @ApiModelProperty(value = "분야 IDX", required = true, hidden = true, example = "1")
-    private PostDTO newPostDTO;
+    @ApiModelProperty(value = "게시글 제목", required = true, hidden = true)
+    private String postTitle;
+
+    @ApiModelProperty(value = "게시글 내용", required = true, hidden = true)
+    private String postDescription;
 
     @Enumerated(EnumType.STRING)
     @ApiModelProperty(value = "분야명", required = true, hidden = true)

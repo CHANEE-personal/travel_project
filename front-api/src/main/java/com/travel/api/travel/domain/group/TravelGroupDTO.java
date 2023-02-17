@@ -20,8 +20,20 @@ public class TravelGroupDTO extends NewCommonDTO {
     private Long idx;
 
     @NotNull(message = "여행지 코드 입력은 필수입니다.")
-    @ApiModelProperty(required = true, value = "여행지 idx((ex)1)")
-    private Long travelIdx;
+    @ApiModelProperty(required = true, value = "여행지 코드((ex)1)")
+    private Integer commonCode;
+
+    @NotNull(message = "여행지 코드명 입력은 필수입니다.")
+    @ApiModelProperty(required = true, value = "여행지 코드명((ex)서울)")
+    private String commonName;
+
+    @NotEmpty(message = "여행지명 입력은 필수입니다.")
+    @ApiModelProperty(required = true, value = "여행지명((ex)서울)")
+    private String travelTitle;
+
+    @NotEmpty(message = "여행지 상세 내용 입력은 필수입니다.")
+    @ApiModelProperty(required = true, value = "여행지명((ex)서울)")
+    private String travelDescription;
 
     @NotEmpty(message = "그룹명 입력은 필수입니다.")
     @ApiModelProperty(required = true, value = "그룹명((ex)서울모임)")

@@ -52,12 +52,12 @@ public class NoticeEntity extends NewCommonMappedClass {
 
     public static NoticeDTO toDto(NoticeEntity entity) {
         return NoticeDTO.builder()
-                .idx(entity.getIdx())
-                .title(entity.getTitle())
-                .description(entity.getDescription())
-                .topFixed(entity.getTopFixed())
-                .visible(entity.getVisible())
-                .viewCount(entity.getViewCount())
+                .idx(entity.idx)
+                .title(entity.title)
+                .description(entity.description)
+                .topFixed(entity.topFixed)
+                .visible(entity.visible)
+                .viewCount(entity.viewCount)
                 .build();
     }
 
