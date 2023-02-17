@@ -38,9 +38,11 @@ public class TravelGroupUserEntity {
     public static TravelGroupUserDto toDto(TravelGroupUserEntity entity) {
         if (entity == null) return null;
         return TravelGroupUserDto.builder()
-                .idx(entity.getIdx())
-                .userDto(UserEntity.toDto(entity.userEntity))
-                .groupDto(TravelGroupEntity.toDto(entity.travelGroupEntity))
+                .idx(entity.idx)
+                .userId(entity.userEntity.getUserId())
+                .userName(entity.userEntity.getName())
+                .groupName(entity.travelGroupEntity.getGroupName())
+                .groupDescription(entity.travelGroupEntity.getGroupDescription())
                 .build();
     }
 

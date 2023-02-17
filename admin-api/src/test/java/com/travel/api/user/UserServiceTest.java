@@ -395,8 +395,8 @@ class UserServiceTest extends AdminCommonServiceTest {
         TravelGroupUserDto travelGroupUserInfo = userService.insertTravelGroupUser(userEntity.getIdx(), travelGroupEntity.getIdx(), travelGroupUserEntity);
 
         // then
-        assertThat(travelGroupUserInfo.getGroupDto().getIdx()).isEqualTo(travelGroupEntity.getIdx());
-        assertThat(travelGroupUserInfo.getUserDto().getIdx()).isEqualTo(userEntity.getIdx());
+        assertThat(travelGroupUserInfo.getGroupName()).isEqualTo(travelGroupEntity.getGroupName());
+        assertThat(travelGroupUserInfo.getUserId()).isEqualTo(userEntity.getUserId());
     }
 
     @Test

@@ -3,7 +3,6 @@ package com.travel.api.travel.domain.review;
 import com.travel.api.common.domain.NewCommonMappedClass;
 import com.travel.api.travel.domain.TravelEntity;
 import lombok.*;
-import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.DynamicUpdate;
 
 import javax.persistence.*;
@@ -68,14 +67,15 @@ public class TravelReviewEntity extends NewCommonMappedClass {
     public static TravelReviewDto toDto(TravelReviewEntity entity) {
         if (entity == null) return null;
         return TravelReviewDto.builder()
-                .idx(entity.getIdx())
-                .travelDTO(TravelEntity.toDto(entity.newTravelEntity))
-                .reviewTitle(entity.getReviewTitle())
-                .reviewDescription(entity.getReviewDescription())
-                .favoriteCount(entity.getFavoriteCount())
-                .viewCount(entity.getViewCount())
-                .visible(entity.getVisible())
-                .popular(entity.getPopular())
+                .idx(entity.idx)
+                .travelTitle(entity.newTravelEntity.getTravelTitle())
+                .travelDescription(entity.newTravelEntity.getTravelDescription())
+                .reviewTitle(entity.reviewTitle)
+                .reviewDescription(entity.reviewDescription)
+                .favoriteCount(entity.favoriteCount)
+                .viewCount(entity.viewCount)
+                .visible(entity.visible)
+                .popular(entity.popular)
                 .build();
     }
 

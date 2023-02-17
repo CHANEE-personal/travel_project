@@ -115,7 +115,7 @@ class TravelQueryRepositoryTest {
     void 여행지상세조회테스트() {
         TravelDto existTravel = travelQueryRepository.findOneTravel(1L);
         assertThat(existTravel.getIdx()).isEqualTo(1L);
-        assertThat(existTravel.getNewTravelCode().getCommonCode()).isEqualTo(1);
+        assertThat(existTravel.getCommonCode()).isEqualTo(1);
         assertThat(existTravel.getTravelTitle()).isEqualTo("서울 여행지");
 
         assertThatThrownBy(() -> travelQueryRepository.findOneTravel(3L))
@@ -133,7 +133,7 @@ class TravelQueryRepositoryTest {
         PageRequest pageRequest = PageRequest.of(0, 3);
 
         List<TravelDto> travelList = new ArrayList<>();
-        travelList.add(TravelDto.builder().idx(1L).newTravelCode(commonDto)
+        travelList.add(TravelDto.builder().idx(1L).commonCode(commonDto.getCommonCode())
                 .travelTitle("여행지 소개").travelDescription("여행지 소개")
                 .travelAddress("인천광역시 서구").travelZipCode("123-456").visible("Y").build());
 
@@ -147,7 +147,7 @@ class TravelQueryRepositoryTest {
 
         // then
         assertThat(findTravelList.get(0).getIdx()).isEqualTo(travelList.get(0).getIdx());
-        assertThat(findTravelList.get(0).getNewTravelCode().getCommonCode()).isEqualTo(travelList.get(0).getNewTravelCode().getCommonCode());
+        assertThat(findTravelList.get(0).getCommonCode()).isEqualTo(travelList.get(0).getCommonCode());
         assertThat(findTravelList.get(0).getTravelTitle()).isEqualTo(travelList.get(0).getTravelTitle());
         assertThat(findTravelList.get(0).getTravelDescription()).isEqualTo(travelList.get(0).getTravelDescription());
         assertThat(findTravelList.get(0).getTravelAddress()).isEqualTo(travelList.get(0).getTravelAddress());
@@ -170,7 +170,7 @@ class TravelQueryRepositoryTest {
         PageRequest pageRequest = PageRequest.of(0, 3);
 
         List<TravelDto> travelList = new ArrayList<>();
-        travelList.add(TravelDto.builder().idx(1L).newTravelCode(commonDto)
+        travelList.add(TravelDto.builder().idx(1L).commonCode(commonDto.getCommonCode())
                 .travelTitle("여행지 소개").travelDescription("여행지 소개")
                 .travelAddress("인천광역시 서구").travelZipCode("123-456").visible("Y").build());
 
@@ -184,7 +184,7 @@ class TravelQueryRepositoryTest {
 
         // then
         assertThat(findTravelList.get(0).getIdx()).isEqualTo(travelList.get(0).getIdx());
-        assertThat(findTravelList.get(0).getNewTravelCode().getCommonCode()).isEqualTo(travelList.get(0).getNewTravelCode().getCommonCode());
+        assertThat(findTravelList.get(0).getCommonCode()).isEqualTo(travelList.get(0).getCommonCode());
         assertThat(findTravelList.get(0).getTravelTitle()).isEqualTo(travelList.get(0).getTravelTitle());
         assertThat(findTravelList.get(0).getTravelDescription()).isEqualTo(travelList.get(0).getTravelDescription());
         assertThat(findTravelList.get(0).getTravelAddress()).isEqualTo(travelList.get(0).getTravelAddress());
@@ -206,7 +206,7 @@ class TravelQueryRepositoryTest {
         PageRequest pageRequest = PageRequest.of(0, 3);
 
         List<TravelDto> travelList = new ArrayList<>();
-        travelList.add(TravelDto.builder().idx(1L).newTravelCode(commonDto)
+        travelList.add(TravelDto.builder().idx(1L).commonCode(commonDto.getCommonCode())
                 .travelTitle("여행지 소개").travelDescription("여행지 소개")
                 .travelAddress("인천광역시 서구").travelZipCode("123-456").visible("Y").build());
 
@@ -220,7 +220,7 @@ class TravelQueryRepositoryTest {
 
         // then
         assertThat(findTravelList.get(0).getIdx()).isEqualTo(travelList.get(0).getIdx());
-        assertThat(findTravelList.get(0).getNewTravelCode().getCommonCode()).isEqualTo(travelList.get(0).getNewTravelCode().getCommonCode());
+        assertThat(findTravelList.get(0).getCommonCode()).isEqualTo(travelList.get(0).getCommonCode());
         assertThat(findTravelList.get(0).getTravelTitle()).isEqualTo(travelList.get(0).getTravelTitle());
         assertThat(findTravelList.get(0).getTravelDescription()).isEqualTo(travelList.get(0).getTravelDescription());
         assertThat(findTravelList.get(0).getTravelAddress()).isEqualTo(travelList.get(0).getTravelAddress());
@@ -502,8 +502,11 @@ class TravelQueryRepositoryTest {
         PageRequest pageRequest = PageRequest.of(0, 3);
 
         List<TravelGroupDto> travelGroupList = new ArrayList<>();
-        travelGroupList.add(TravelGroupDto.builder().travelIdx(1L).groupName("서울모임")
-                .groupDescription("서울모임").visible("Y").build());
+        travelGroupList.add(TravelGroupDto.builder()
+                .commonCode(travelEntity.getNewTravelCode().getCommonCode())
+                .commonName(travelEntity.getNewTravelCode().getCommonName())
+                .travelTitle(travelEntity.getTravelTitle()).travelDescription(travelEntity.getTravelDescription())
+                .groupName("서울모임").groupDescription("서울모임").visible("Y").build());
 
         Page<TravelGroupDto> resultPage = new PageImpl<>(travelGroupList, pageRequest, travelGroupList.size());
 
@@ -514,7 +517,7 @@ class TravelQueryRepositoryTest {
         List<TravelGroupDto> findTravelGroupList = newTravelGroupList.stream().collect(Collectors.toList());
         // then
         assertThat(findTravelGroupList.get(0).getIdx()).isEqualTo(travelGroupList.get(0).getIdx());
-        assertThat(findTravelGroupList.get(0).getTravelIdx()).isEqualTo(travelGroupList.get(0).getTravelIdx());
+        assertThat(findTravelGroupList.get(0).getTravelTitle()).isEqualTo(travelGroupList.get(0).getTravelTitle());
         assertThat(findTravelGroupList.get(0).getGroupName()).isEqualTo(travelGroupList.get(0).getGroupName());
         assertThat(findTravelGroupList.get(0).getGroupDescription()).isEqualTo(travelGroupList.get(0).getGroupDescription());
 
@@ -532,7 +535,10 @@ class TravelQueryRepositoryTest {
     void 여행지그룹상세Mockito테스트() {
         // given
         TravelGroupDto travelGroupDTO = TravelGroupDto.builder()
-                .idx(1L).travelIdx(1L).groupName("서울모임").groupDescription("서울모임").visible("Y").build();
+                .commonCode(travelEntity.getNewTravelCode().getCommonCode())
+                .commonName(travelEntity.getNewTravelCode().getCommonName())
+                .travelTitle(travelEntity.getTravelTitle()).travelDescription(travelEntity.getTravelDescription())
+                .groupName("서울모임").groupDescription("서울모임").visible("Y").build();
 
         // when
         given(mockTravelQueryRepository.findOneTravelGroup(1L)).willReturn(travelGroupDTO);
@@ -540,7 +546,7 @@ class TravelQueryRepositoryTest {
 
         // then
         assertThat(newTravelGroupDTO.getIdx()).isEqualTo(1L);
-        assertThat(newTravelGroupDTO.getTravelIdx()).isEqualTo(1L);
+        assertThat(newTravelGroupDTO.getTravelTitle()).isEqualTo(travelEntity.getTravelTitle());
         assertThat(newTravelGroupDTO.getGroupName()).isEqualTo("서울모임");
         assertThat(newTravelGroupDTO.getGroupDescription()).isEqualTo("서울모임");
 

@@ -104,16 +104,15 @@ public class UserEntity extends NewCommonMappedClass {
     public static UserDto toDto(UserEntity entity) {
         if (entity == null) return null;
         return UserDto.builder()
-                .idx(entity.getIdx())
-                .userId(entity.getUserId())
-                .password(entity.getPassword())
-                .name(entity.getName())
-                .email(entity.getEmail())
-                .visible(entity.getVisible())
-                .userToken(entity.getUserToken())
-                .userRefreshToken(entity.getUserRefreshToken())
-                .favoriteTravelIdx(entity.getFavoriteTravelIdx())
-                .role(entity.getRole())
+                .idx(entity.idx)
+                .userId(entity.userId)
+                .name(entity.name)
+                .email(entity.email)
+                .visible(entity.visible)
+                .userToken(entity.userToken)
+                .userRefreshToken(entity.userRefreshToken)
+                .favoriteTravelIdx(entity.favoriteTravelIdx)
+                .role(entity.role)
                 .build();
     }
 

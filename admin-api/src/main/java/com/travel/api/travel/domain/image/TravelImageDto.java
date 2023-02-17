@@ -2,7 +2,6 @@ package com.travel.api.travel.domain.image;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.travel.api.common.domain.EntityType;
-import com.travel.api.travel.domain.TravelDto;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.*;
@@ -25,8 +24,11 @@ public class TravelImageDto {
     @ApiModelProperty(value = "파일 IDX", required = true, hidden = true, example = "1")
     private Long idx;
 
-    @ApiModelProperty(value = "분야 IDX", required = true, hidden = true, example = "1")
-    private TravelDto newTravelDto;
+    @ApiModelProperty(value = "여행 제목", required = true, hidden = true)
+    private String travelTitle;
+
+    @ApiModelProperty(value = "여행 상세 내용", required = true, hidden = true)
+    private String travelDescription;
 
     @Enumerated(EnumType.STRING)
     @ApiModelProperty(value = "분야명", required = true, hidden = true)

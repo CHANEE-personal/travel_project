@@ -90,16 +90,23 @@ public class PostEntity extends NewCommonMappedClass {
 
     public static PostDto toDto(PostEntity entity) {
         if (entity == null) return null;
-        return PostDto.builder()
-                .idx(entity.getIdx())
-                .postTitle(entity.getPostTitle())
-                .postDescription(entity.getPostDescription())
-                .visible(entity.getVisible())
-                .viewCount(entity.getViewCount())
-                .favoriteCount(entity.getFavoriteCount())
-                .postReplyList(ReplyEntity.toDtoList(entity.getReplyEntityList()))
-                .postImageList(PostImageEntity.toDtoList(entity.getPostImageList()))
-                .build();
+        PostDto.PostDtoBuilder postDto = PostDto.builder()
+                .idx(entity.idx)
+                .postTitle(entity.postTitle)
+                .postDescription(entity.postDescription)
+                .visible(entity.visible)
+                .viewCount(entity.viewCount)
+                .favoriteCount(entity.favoriteCount);
+
+        if (entity.postImageList != null) {
+            postDto.postImageList(PostImageEntity.toDtoList(entity.postImageList));
+        }
+
+        if (entity.replyEntityList != null) {
+            postDto.postReplyList(ReplyEntity.toDtoList(entity.replyEntityList));
+        }
+
+        return postDto.build();
     }
 
     public static List<PostDto> toDtoList(List<PostEntity> entityList) {
