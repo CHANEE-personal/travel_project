@@ -58,11 +58,13 @@ public class TravelScheduleEntity extends NewCommonMappedClass {
     public static TravelScheduleDTO toDto(TravelScheduleEntity entity) {
         if (entity == null) return null;
         return TravelScheduleDTO.builder()
-                .idx(entity.getIdx())
-                .userDTO(UserEntity.toDto(entity.userEntity))
-                .newTravelCode(CommonEntity.toDto(entity.commonEntity))
-                .scheduleDescription(entity.getScheduleDescription())
-                .scheduleTime(entity.getScheduleTime())
+                .idx(entity.idx)
+                .userId(entity.userEntity.getUserId())
+                .userName(entity.userEntity.getName())
+                .commonCode(entity.commonEntity.getCommonCode())
+                .commonName(entity.commonEntity.getCommonName())
+                .scheduleDescription(entity.scheduleDescription)
+                .scheduleTime(entity.scheduleTime)
                 .build();
     }
 

@@ -44,7 +44,7 @@ public class PostDTO extends NewCommonDTO {
     private Boolean popular;
 
     @ApiModelProperty(value = "postImageList", hidden = true)
-    private List<TravelImageDTO> postImageList = new ArrayList<>();
+    private List<PostImageDTO> postImageList = new ArrayList<>();
 
     @ApiModelProperty(value = "postReplyList", hidden = true)
     private List<ReplyDTO> postReplyList = new ArrayList<>();

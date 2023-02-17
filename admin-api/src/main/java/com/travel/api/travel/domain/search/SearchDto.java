@@ -1,10 +1,8 @@
 package com.travel.api.travel.domain.search;
 
-import com.travel.api.common.domain.NewCommonDto;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.*;
-import lombok.experimental.SuperBuilder;
 
 import javax.validation.constraints.NotEmpty;
 

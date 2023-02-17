@@ -40,8 +40,8 @@ public class TravelRecommendEntity extends NewCommonMappedClass {
     public static TravelRecommendDTO toDto(TravelRecommendEntity entity) {
         if (entity == null) return null;
         return TravelRecommendDTO.builder()
-                .idx(entity.getIdx())
-                .recommendName(entity.getRecommendName())
+                .idx(entity.idx)
+                .recommendName(entity.recommendName)
                 .build();
     }
 

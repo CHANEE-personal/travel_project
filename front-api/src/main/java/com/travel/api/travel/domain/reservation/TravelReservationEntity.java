@@ -110,17 +110,18 @@ public class TravelReservationEntity extends NewCommonMappedClass {
     public static TravelReservationDTO toDto(TravelReservationEntity entity) {
         if (entity == null) return null;
         return TravelReservationDTO.builder()
-                .idx(entity.getIdx())
-                .commonDto(CommonEntity.toDto(entity.commonEntity))
-                .title(entity.getTitle())
-                .description(entity.getDescription())
-                .address(entity.getAddress())
-                .zipCode(entity.getZipCode())
-                .price(entity.getPrice())
-                .possibleCount(entity.getPossibleCount())
-                .startDate(entity.getStartDate())
-                .endDate(entity.getEndDate())
-                .status(entity.getStatus())
+                .idx(entity.idx)
+                .commonCode(entity.commonEntity.getCommonCode())
+                .commonName(entity.commonEntity.getCommonName())
+                .title(entity.title)
+                .description(entity.description)
+                .address(entity.address)
+                .zipCode(entity.zipCode)
+                .price(entity.price)
+                .possibleCount(entity.possibleCount)
+                .startDate(entity.startDate)
+                .endDate(entity.endDate)
+                .status(entity.status)
                 .build();
     }
 }

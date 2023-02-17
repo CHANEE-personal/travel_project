@@ -73,13 +73,20 @@ public class ReplyEntity extends NewCommonMappedClass {
 
     public static ReplyDto toDto(ReplyEntity entity) {
         if (entity == null) return null;
-        return ReplyDto.builder()
-                .idx(entity.getIdx())
-                .commentTitle(entity.getCommentTitle())
-                .commentDescription(entity.getCommentDescription())
-                .visible(entity.getVisible())
-                .favoriteCount(entity.getFavoriteCount())
-                .build();
+        ReplyDto.ReplyDtoBuilder replyDto = ReplyDto.builder()
+                .postTitle(entity.postEntity.getPostTitle())
+                .postDescription(entity.postEntity.getPostDescription())
+                .commentTitle(entity.commentTitle)
+                .commentDescription(entity.commentDescription)
+                .visible(entity.visible)
+                .favoriteCount(entity.favoriteCount);
+
+        if (entity.parent != null) {
+            replyDto.parentTitle(entity.parent.commentTitle)
+                    .parentDescription(entity.parent.commentDescription);
+        }
+
+        return replyDto.build();
     }
 
     public static List<ReplyDto> toDtoList(List<ReplyEntity> entityList) {

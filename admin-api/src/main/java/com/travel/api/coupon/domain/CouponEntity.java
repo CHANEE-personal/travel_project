@@ -73,16 +73,16 @@ public class CouponEntity {
     public static CouponDto toDto(CouponEntity entity) {
         if (entity == null) return null;
         return CouponDto.builder()
-                .idx(entity.getIdx())
-                .title(entity.getTitle())
-                .description(entity.getDescription())
-                .percentageStatus(entity.getPercentageStatus())
-                .percentage(entity.getPercentage())
-                .salePrice(entity.getSalePrice())
-                .startDate(entity.getStartDate())
-                .endDate(entity.getEndDate())
-                .status(entity.getStatus())
-                .count(entity.getCount())
+                .idx(entity.idx)
+                .title(entity.title)
+                .description(entity.description)
+                .percentageStatus(entity.percentageStatus)
+                .percentage(entity.percentage)
+                .salePrice(entity.salePrice)
+                .startDate(entity.startDate)
+                .endDate(entity.endDate)
+                .status(entity.status)
+                .count(entity.count)
                 .build();
     }
 }

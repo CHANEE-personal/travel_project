@@ -1,10 +1,7 @@
 package com.travel.api.travel.domain.schedule;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.travel.api.common.domain.CommonDTO;
 import com.travel.api.common.domain.NewCommonDTO;
-import com.travel.api.user.domain.UserDTO;
-import com.travel.api.user.domain.UserEntity;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.*;
@@ -27,13 +24,21 @@ public class TravelScheduleDTO extends NewCommonDTO {
     @ApiModelProperty(required = true, value = "idx", hidden = true, example = "1")
     private Long idx;
 
-    @NotNull(message = "유저 IDX 입력은 필수입니다.")
-    @ApiModelProperty(required = true, value = "userIdx", example = "1")
-    private UserDTO userDTO;
+    @NotEmpty(message = "유저 아이디 입력은 필수입니다.")
+    @ApiModelProperty(required = true, value = "userId")
+    private String userId;
+
+    @NotEmpty(message = "유저명 입력은 필수입니다.")
+    @ApiModelProperty(required = true, value = "userName")
+    private String userName;
 
     @NotNull(message = "여행지 코드 입력은 필수입니다.")
-    @ApiModelProperty(required = true, value = "travelCode", example = "1")
-    private CommonDTO newTravelCode;
+    @ApiModelProperty(required = true, value = "commonCode", example = "1")
+    private Integer commonCode;
+
+    @NotEmpty(message = "공통 코드 내용 입력은 필수입니다.")
+    @ApiModelProperty(required = true, value = "commonName")
+    private String commonName;
 
     @NotEmpty(message = "스케줄 입력은 필수입니다.")
     @ApiModelProperty(required = true, value = "scheduleDescription")

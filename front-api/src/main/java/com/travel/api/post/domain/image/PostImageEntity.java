@@ -72,22 +72,23 @@ public class PostImageEntity {
 
     @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "type_idx", referencedColumnName = "idx", nullable = false)
-    private PostEntity postImageEntity;
+    private PostEntity newPostImageEntity;
 
     public static PostImageDTO toDto(PostImageEntity entity) {
         if (entity == null) return null;
         return PostImageDTO.builder()
-                .idx(entity.getIdx())
-                .entityType(entity.getEntityType())
-                .newPostDTO(PostEntity.toDto(entity.postImageEntity))
-                .fileMask(entity.getFileMask())
-                .fileSize(entity.getFileSize())
-                .fileName(entity.getFileName())
-                .fileNum(entity.getFileNum())
-                .filePath(entity.getFilePath())
-                .imageType(entity.getImageType())
-                .visible(entity.getVisible())
-                .regDate(entity.getRegDate())
+                .idx(entity.idx)
+                .entityType(entity.entityType)
+                .postTitle(entity.newPostImageEntity.getPostTitle())
+                .postDescription(entity.newPostImageEntity.getPostDescription())
+                .fileMask(entity.fileMask)
+                .fileSize(entity.fileSize)
+                .fileName(entity.fileName)
+                .fileNum(entity.fileNum)
+                .filePath(entity.filePath)
+                .imageType(entity.imageType)
+                .visible(entity.visible)
+                .regDate(entity.regDate)
                 .build();
     }
 

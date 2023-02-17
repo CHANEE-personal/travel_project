@@ -1,7 +1,6 @@
 package com.travel.api.travel.domain.reservation;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.travel.api.common.domain.CommonDto;
 import com.travel.api.travel.domain.image.TravelImageDto;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -26,7 +25,14 @@ public class TravelReservationDto {
 
     @ApiModelProperty(required = true, value = "idx", hidden = true, example = "1")
     private Long idx;
-    private CommonDto commonDto;
+
+    @NotNull(message = "여행지 공통 코드 입력은 필수입니다.")
+    @ApiModelProperty(required = true, value = "공통 코드((ex)1)")
+    private Integer commonCode;
+
+    @NotNull(message = "여행지 공통 코드명 입력은 필수입니다.")
+    @ApiModelProperty(required = true, value = "공통 코드명((ex)서울)")
+    private String commonName;
 
     @NotEmpty(message = "예약 제목 입력은 필수입니다.")
     @ApiModelProperty(required = true, value = "예약 제목((ex)이 여행지는...)")

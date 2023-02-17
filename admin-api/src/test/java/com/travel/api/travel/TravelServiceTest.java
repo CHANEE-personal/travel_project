@@ -102,7 +102,7 @@ class TravelServiceTest extends AdminCommonServiceTest {
         PageRequest pageRequest = PageRequest.of(0, 3);
 
         List<TravelDto> travelList = new ArrayList<>();
-        travelList.add(TravelDto.builder().idx(1L).newTravelCode(commonDTO)
+        travelList.add(TravelDto.builder().idx(1L).commonCode(commonDTO.getCommonCode())
                 .travelTitle("여행지 소개").travelDescription("여행지 소개")
                 .travelAddress("인천광역시 서구").travelZipCode("123-456").visible("Y").build());
 
@@ -116,7 +116,7 @@ class TravelServiceTest extends AdminCommonServiceTest {
 
         // then
         assertThat(findTravelList.get(0).getIdx()).isEqualTo(travelList.get(0).getIdx());
-        assertThat(findTravelList.get(0).getNewTravelCode().getCommonCode()).isEqualTo(travelList.get(0).getNewTravelCode().getCommonCode());
+        assertThat(findTravelList.get(0).getCommonCode()).isEqualTo(travelList.get(0).getCommonCode());
         assertThat(findTravelList.get(0).getTravelTitle()).isEqualTo(travelList.get(0).getTravelTitle());
         assertThat(findTravelList.get(0).getTravelDescription()).isEqualTo(travelList.get(0).getTravelDescription());
         assertThat(findTravelList.get(0).getTravelAddress()).isEqualTo(travelList.get(0).getTravelAddress());
@@ -139,7 +139,7 @@ class TravelServiceTest extends AdminCommonServiceTest {
         PageRequest pageRequest = PageRequest.of(0, 3);
 
         List<TravelDto> travelList = new ArrayList<>();
-        travelList.add(TravelDto.builder().idx(1L).newTravelCode(commonDTO)
+        travelList.add(TravelDto.builder().idx(1L).commonCode(commonDTO.getCommonCode())
                 .travelTitle("여행지 소개").travelDescription("여행지 소개")
                 .travelAddress("인천광역시 서구").travelZipCode("123-456").visible("Y").build());
 
@@ -153,7 +153,7 @@ class TravelServiceTest extends AdminCommonServiceTest {
 
         // then
         assertThat(findTravelList.get(0).getIdx()).isEqualTo(travelList.get(0).getIdx());
-        assertThat(findTravelList.get(0).getNewTravelCode().getCommonCode()).isEqualTo(travelList.get(0).getNewTravelCode().getCommonCode());
+        assertThat(findTravelList.get(0).getCommonCode()).isEqualTo(travelList.get(0).getCommonCode());
         assertThat(findTravelList.get(0).getTravelTitle()).isEqualTo(travelList.get(0).getTravelTitle());
         assertThat(findTravelList.get(0).getTravelDescription()).isEqualTo(travelList.get(0).getTravelDescription());
         assertThat(findTravelList.get(0).getTravelAddress()).isEqualTo(travelList.get(0).getTravelAddress());
@@ -175,7 +175,7 @@ class TravelServiceTest extends AdminCommonServiceTest {
         PageRequest pageRequest = PageRequest.of(0, 3);
 
         List<TravelDto> travelList = new ArrayList<>();
-        travelList.add(TravelDto.builder().idx(1L).newTravelCode(commonDTO)
+        travelList.add(TravelDto.builder().idx(1L).commonCode(commonDTO.getCommonCode())
                 .travelTitle("여행지 소개").travelDescription("여행지 소개")
                 .travelAddress("인천광역시 서구").travelZipCode("123-456").visible("Y").build());
 
@@ -189,7 +189,7 @@ class TravelServiceTest extends AdminCommonServiceTest {
 
         // then
         assertThat(findTravelList.get(0).getIdx()).isEqualTo(travelList.get(0).getIdx());
-        assertThat(findTravelList.get(0).getNewTravelCode().getCommonCode()).isEqualTo(travelList.get(0).getNewTravelCode().getCommonCode());
+        assertThat(findTravelList.get(0).getCommonCode()).isEqualTo(travelList.get(0).getCommonCode());
         assertThat(findTravelList.get(0).getTravelTitle()).isEqualTo(travelList.get(0).getTravelTitle());
         assertThat(findTravelList.get(0).getTravelDescription()).isEqualTo(travelList.get(0).getTravelDescription());
         assertThat(findTravelList.get(0).getTravelAddress()).isEqualTo(travelList.get(0).getTravelAddress());
@@ -207,7 +207,7 @@ class TravelServiceTest extends AdminCommonServiceTest {
     void 여행지상세조회테스트() {
         TravelDto existTravel = travelService.findOneTravel(travelDTO.getIdx());
         assertThat(existTravel.getIdx()).isEqualTo(travelDTO.getIdx());
-        assertThat(existTravel.getNewTravelCode().getCommonCode()).isEqualTo(travelDTO.getNewTravelCode().getCommonCode());
+        assertThat(existTravel.getCommonCode()).isEqualTo(travelDTO.getCommonCode());
         assertThat(existTravel.getTravelTitle()).isEqualTo(travelDTO.getTravelTitle());
 
         assertThatThrownBy(() -> travelService.findOneTravel(3L))
@@ -233,7 +233,7 @@ class TravelServiceTest extends AdminCommonServiceTest {
 
         // then
         assertThat(newAdminTravel.getIdx()).isEqualTo(travelEntity.getIdx());
-        assertThat(newAdminTravel.getNewTravelCode().getCommonCode()).isEqualTo(travelEntity.getNewTravelCode().getCommonCode());
+        assertThat(newAdminTravel.getCommonCode()).isEqualTo(travelEntity.getNewTravelCode().getCommonCode());
         assertThat(newAdminTravel.getTravelTitle()).isEqualTo(travelEntity.getTravelTitle());
         assertThat(newAdminTravel.getTravelDescription()).isEqualTo(travelEntity.getTravelDescription());
         assertThat(newAdminTravel.getTravelAddress()).isEqualTo(travelEntity.getTravelAddress());
@@ -261,7 +261,7 @@ class TravelServiceTest extends AdminCommonServiceTest {
 
         // then
         assertThat(newAdminTravel.getIdx()).isEqualTo(travelEntity.getIdx());
-        assertThat(newAdminTravel.getNewTravelCode().getCommonCode()).isEqualTo(travelEntity.getNewTravelCode().getCommonCode());
+        assertThat(newAdminTravel.getCommonCode()).isEqualTo(travelEntity.getNewTravelCode().getCommonCode());
         assertThat(newAdminTravel.getTravelTitle()).isEqualTo(travelEntity.getTravelTitle());
         assertThat(newAdminTravel.getTravelDescription()).isEqualTo(travelEntity.getTravelDescription());
         assertThat(newAdminTravel.getTravelAddress()).isEqualTo(travelEntity.getTravelAddress());
@@ -282,7 +282,7 @@ class TravelServiceTest extends AdminCommonServiceTest {
         TravelDto newAdminTravel = mockTravelService.insertTravel(travelEntity);
 
         // then
-        assertThat(newAdminTravel.getNewTravelCode().getCommonCode()).isEqualTo(travelEntity.getNewTravelCode().getCommonCode());
+        assertThat(newAdminTravel.getCommonCode()).isEqualTo(travelEntity.getNewTravelCode().getCommonCode());
         assertThat(newAdminTravel.getTravelTitle()).isEqualTo(travelEntity.getTravelTitle());
         assertThat(newAdminTravel.getTravelDescription()).isEqualTo(travelEntity.getTravelDescription());
         assertThat(newAdminTravel.getTravelAddress()).isEqualTo(travelEntity.getTravelAddress());
@@ -306,7 +306,7 @@ class TravelServiceTest extends AdminCommonServiceTest {
         TravelDto newAdminTravel = mockTravelService.insertTravel(travelEntity);
 
         // then
-        assertThat(newAdminTravel.getNewTravelCode().getCommonCode()).isEqualTo(travelEntity.getNewTravelCode().getCommonCode());
+        assertThat(newAdminTravel.getCommonCode()).isEqualTo(travelEntity.getNewTravelCode().getCommonCode());
         assertThat(newAdminTravel.getTravelTitle()).isEqualTo(travelEntity.getTravelTitle());
         assertThat(newAdminTravel.getTravelDescription()).isEqualTo(travelEntity.getTravelDescription());
         assertThat(newAdminTravel.getTravelAddress()).isEqualTo(travelEntity.getTravelAddress());
@@ -354,7 +354,7 @@ class TravelServiceTest extends AdminCommonServiceTest {
 
         // then
         assertThat(travelInfo.getIdx()).isEqualTo(newAdminTravelEntity.getIdx());
-        assertThat(travelInfo.getNewTravelCode().getCommonCode()).isEqualTo(newAdminTravelEntity.getNewTravelCode().getCommonCode());
+        assertThat(travelInfo.getCommonCode()).isEqualTo(newAdminTravelEntity.getNewTravelCode().getCommonCode());
         assertThat(travelInfo.getTravelTitle()).isEqualTo(newAdminTravelEntity.getTravelTitle());
 
         // verify
@@ -384,7 +384,7 @@ class TravelServiceTest extends AdminCommonServiceTest {
 
         // then
         assertThat(travelInfo.getIdx()).isEqualTo(newAdminTravelEntity.getIdx());
-        assertThat(travelInfo.getNewTravelCode().getCommonCode()).isEqualTo(newAdminTravelEntity.getNewTravelCode().getCommonCode());
+        assertThat(travelInfo.getCommonCode()).isEqualTo(newAdminTravelEntity.getNewTravelCode().getCommonCode());
         assertThat(travelInfo.getTravelTitle()).isEqualTo(newAdminTravelEntity.getTravelTitle());
 
         // verify
@@ -646,7 +646,7 @@ class TravelServiceTest extends AdminCommonServiceTest {
 
         // then
         assertThat(newTravelGroupList.get(0).getIdx()).isEqualTo(travelGroupList.get(0).getIdx());
-        assertThat(newTravelGroupList.get(0).getTravelIdx()).isEqualTo(travelGroupList.get(0).getTravelEntity().getIdx());
+        assertThat(newTravelGroupList.get(0).getTravelTitle()).isEqualTo(travelGroupList.get(0).getTravelEntity().getTravelTitle());
         assertThat(newTravelGroupList.get(0).getGroupName()).isEqualTo(travelGroupList.get(0).getGroupName());
         assertThat(newTravelGroupList.get(0).getGroupDescription()).isEqualTo(travelGroupList.get(0).getGroupDescription());
 
@@ -674,7 +674,7 @@ class TravelServiceTest extends AdminCommonServiceTest {
 
         // then
         assertThat(newTravelGroupDTO.getIdx()).isEqualTo(groupEntity.getIdx());
-        assertThat(newTravelGroupDTO.getTravelIdx()).isEqualTo(groupEntity.getTravelEntity().getIdx());
+        assertThat(newTravelGroupDTO.getTravelTitle()).isEqualTo(groupEntity.getTravelEntity().getTravelTitle());
         assertThat(newTravelGroupDTO.getGroupName()).isEqualTo(groupEntity.getGroupName());
         assertThat(newTravelGroupDTO.getGroupDescription()).isEqualTo(groupEntity.getGroupDescription());
 
@@ -701,7 +701,7 @@ class TravelServiceTest extends AdminCommonServiceTest {
 
         // then
         assertThat(newTravelGroupDTO.getIdx()).isEqualTo(travelGroupEntity.getIdx());
-        assertThat(newTravelGroupDTO.getTravelIdx()).isEqualTo(travelGroupEntity.getTravelEntity().getIdx());
+        assertThat(newTravelGroupDTO.getTravelTitle()).isEqualTo(travelGroupEntity.getTravelEntity().getTravelTitle());
         assertThat(newTravelGroupDTO.getGroupName()).isEqualTo(travelGroupEntity.getGroupName());
         assertThat(newTravelGroupDTO.getGroupDescription()).isEqualTo(travelGroupEntity.getGroupDescription());
 

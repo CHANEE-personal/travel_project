@@ -69,13 +69,14 @@ public class TravelFestivalEntity extends NewCommonMappedClass {
     public static TravelFestivalDTO toDto(TravelFestivalEntity entity) {
         if (entity == null) return null;
         return TravelFestivalDTO.builder()
-                .idx(entity.getIdx())
-                .travelCode(CommonEntity.toDto(entity.newFestivalCode))
-                .festivalTitle(entity.getFestivalTitle())
-                .festivalDescription(entity.getFestivalDescription())
-                .festivalMonth(entity.getFestivalMonth())
-                .festivalDay(entity.getFestivalDay())
-                .festivalTime(entity.getFestivalTime())
+                .idx(entity.idx)
+                .commonCode(entity.newFestivalCode.getCommonCode())
+                .commonName(entity.newFestivalCode.getCommonName())
+                .festivalTitle(entity.festivalTitle)
+                .festivalDescription(entity.festivalDescription)
+                .festivalMonth(entity.festivalMonth)
+                .festivalDay(entity.festivalDay)
+                .festivalTime(entity.festivalTime)
                 .build();
     }
 

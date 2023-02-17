@@ -58,12 +58,12 @@ public class FaqEntity {
     public static FaqDto toDto(FaqEntity entity) {
         if (entity == null) return null;
         return FaqDto.builder()
-                .idx(entity.getIdx())
-                .newFaqCode(CommonEntity.toDto(entity.newFaqCode))
-                .title(entity.getTitle())
-                .description(entity.getDescription())
-                .viewCount(entity.getViewCount())
-                .visible(entity.getVisible())
+                .idx(entity.idx)
+                .faqCode(entity.newFaqCode.getCommonCode())
+                .title(entity.title)
+                .description(entity.description)
+                .viewCount(entity.viewCount)
+                .visible(entity.visible)
                 .build();
     }
 

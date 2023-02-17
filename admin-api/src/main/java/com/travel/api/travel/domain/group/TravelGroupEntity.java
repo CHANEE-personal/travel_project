@@ -3,7 +3,6 @@ package com.travel.api.travel.domain.group;
 import com.travel.api.common.domain.NewCommonMappedClass;
 import com.travel.api.travel.domain.TravelEntity;
 import lombok.*;
-import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.DynamicUpdate;
 
 import javax.persistence.*;
@@ -67,11 +66,14 @@ public class TravelGroupEntity extends NewCommonMappedClass {
     public static TravelGroupDto toDto(TravelGroupEntity entity) {
         if (entity == null) return null;
         return TravelGroupDto.builder()
-                .idx(entity.getIdx())
-                .travelIdx(entity.getTravelEntity().getIdx())
-                .groupName(entity.getGroupName())
-                .groupDescription(entity.getGroupDescription())
-                .visible(entity.getVisible())
+                .idx(entity.idx)
+                .commonCode(entity.travelEntity.getNewTravelCode().getCommonCode())
+                .commonName(entity.travelEntity.getNewTravelCode().getCommonName())
+                .travelTitle(entity.travelEntity.getTravelTitle())
+                .travelDescription(entity.travelEntity.getTravelDescription())
+                .groupName(entity.groupName)
+                .groupDescription(entity.groupDescription)
+                .visible(entity.visible)
                 .build();
     }
 

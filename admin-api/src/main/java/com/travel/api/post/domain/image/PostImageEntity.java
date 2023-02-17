@@ -5,7 +5,6 @@ import com.travel.api.common.domain.EntityType;
 import com.travel.api.post.domain.PostEntity;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.*;
-import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.DynamicUpdate;
 import org.springframework.format.annotation.DateTimeFormat;
 
@@ -80,17 +79,17 @@ public class PostImageEntity {
     public static PostImageDto toDto(PostImageEntity entity) {
         if (entity == null) return null;
         return PostImageDto.builder()
-                .idx(entity.getIdx())
+                .idx(entity.idx)
                 .newPostDto(PostEntity.toDto(entity.newPostImageEntity))
-                .entityType(entity.getEntityType())
-                .fileMask(entity.getFileMask())
-                .fileSize(entity.getFileSize())
-                .fileName(entity.getFileName())
-                .fileNum(entity.getFileNum())
-                .filePath(entity.getFilePath())
-                .imageType(entity.getImageType())
-                .visible(entity.getVisible())
-                .regDate(entity.getRegDate())
+                .entityType(entity.entityType)
+                .fileMask(entity.fileMask)
+                .fileSize(entity.fileSize)
+                .fileName(entity.fileName)
+                .fileNum(entity.fileNum)
+                .filePath(entity.filePath)
+                .imageType(entity.imageType)
+                .visible(entity.visible)
+                .regDate(entity.regDate)
                 .build();
     }
 

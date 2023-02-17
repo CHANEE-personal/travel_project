@@ -93,17 +93,18 @@ public class TravelImageEntity {
     public static TravelImageDTO toDto(TravelImageEntity entity) {
         if (entity == null) return null;
         return TravelImageDTO.builder()
-                .idx(entity.getIdx())
-                .entityType(entity.getEntityType())
-                .newTravelDTO(TravelEntity.toDto(entity.newTravelImageEntity))
-                .fileMask(entity.getFileMask())
-                .fileSize(entity.getFileSize())
-                .fileName(entity.getFileName())
-                .fileNum(entity.getFileNum())
-                .filePath(entity.getFilePath())
-                .imageType(entity.getImageType())
-                .visible(entity.getVisible())
-                .regDate(entity.getRegDate())
+                .idx(entity.idx)
+                .travelTitle(entity.newTravelImageEntity.getTravelTitle())
+                .travelDescription(entity.newTravelImageEntity.getTravelDescription())
+                .entityType(entity.entityType)
+                .fileMask(entity.fileMask)
+                .fileSize(entity.fileSize)
+                .fileName(entity.fileName)
+                .fileNum(entity.fileNum)
+                .filePath(entity.filePath)
+                .imageType(entity.imageType)
+                .visible(entity.visible)
+                .regDate(entity.regDate)
                 .build();
     }
 

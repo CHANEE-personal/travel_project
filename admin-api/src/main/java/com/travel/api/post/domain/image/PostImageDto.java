@@ -6,7 +6,6 @@ import com.travel.api.post.domain.PostDto;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.*;
-import lombok.experimental.SuperBuilder;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.EnumType;
@@ -26,7 +25,7 @@ public class PostImageDto {
     @ApiModelProperty(value = "파일 IDX", required = true, hidden = true, example = "1")
     private Long idx;
 
-    @ApiModelProperty(value = "분야 IDX", required = true, hidden = true, example = "1")
+    @ApiModelProperty(value = "게시글", required = true, hidden = true, example = "1")
     private PostDto newPostDto;
 
     @Enumerated(EnumType.STRING)

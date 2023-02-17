@@ -326,19 +326,19 @@ class UserServiceTest extends FrontCommonServiceTest {
         TravelScheduleDTO travelScheduleDTO = userService.insertTravelSchedule(oneUser.getIdx(), travelScheduleEntity);
 
         // when
-        when(scheduleRepository.findOneUserSchedule(travelScheduleDTO.getUserDTO().getIdx(), travelScheduleDTO.getIdx())).thenReturn(Optional.ofNullable(travelScheduleEntity));
-        TravelScheduleDTO oneUserSchedule = mockUserService.findOneUserSchedule(travelScheduleDTO.getUserDTO().getIdx(), travelScheduleDTO.getIdx());
+        when(scheduleRepository.findOneUserSchedule(oneUser.getIdx(), travelScheduleDTO.getIdx())).thenReturn(Optional.ofNullable(travelScheduleEntity));
+        TravelScheduleDTO oneUserSchedule = mockUserService.findOneUserSchedule(oneUser.getIdx(), travelScheduleDTO.getIdx());
 
         // then
         assertThat(oneUserSchedule.getScheduleDescription()).isEqualTo("스케줄 테스트");
 
         // verify
-        verify(scheduleRepository, times(1)).findOneUserSchedule(travelScheduleDTO.getUserDTO().getIdx(), travelScheduleDTO.getIdx());
-        verify(scheduleRepository, atLeastOnce()).findOneUserSchedule(travelScheduleDTO.getUserDTO().getIdx(), travelScheduleDTO.getIdx());
+        verify(scheduleRepository, times(1)).findOneUserSchedule(oneUser.getIdx(), travelScheduleDTO.getIdx());
+        verify(scheduleRepository, atLeastOnce()).findOneUserSchedule(oneUser.getIdx(), travelScheduleDTO.getIdx());
         verifyNoMoreInteractions(scheduleRepository);
 
         InOrder inOrder = inOrder(scheduleRepository);
-        inOrder.verify(scheduleRepository).findOneUserSchedule(travelScheduleDTO.getUserDTO().getIdx(), travelScheduleDTO.getIdx());
+        inOrder.verify(scheduleRepository).findOneUserSchedule(oneUser.getIdx(), travelScheduleDTO.getIdx());
     }
 
     @Test
@@ -372,8 +372,8 @@ class UserServiceTest extends FrontCommonServiceTest {
 
         TravelScheduleDTO oneSchedule = userService.insertTravelSchedule(oneUser.getIdx(), travelScheduleEntity);
 
-        assertThat(oneSchedule.getUserDTO().getIdx()).isEqualTo(oneUser.getIdx());
-        assertThat(oneSchedule.getNewTravelCode().getCommonCode()).isEqualTo(commonEntity.getCommonCode());
+        assertThat(oneSchedule.getUserId()).isEqualTo(oneUser.getUserId());
+        assertThat(oneSchedule.getCommonCode()).isEqualTo(commonEntity.getCommonCode());
         assertThat(oneSchedule.getScheduleDescription()).isEqualTo("스케줄 테스트");
     }
 
@@ -420,8 +420,8 @@ class UserServiceTest extends FrontCommonServiceTest {
         em.clear();
 
         assertThat(updateSchedule.getScheduleDescription()).isEqualTo("스케줄 수정 테스트");
-        assertThat(updateSchedule.getUserDTO().getIdx()).isEqualTo(userEntity.getIdx());
-        assertThat(updateSchedule.getNewTravelCode().getCommonCode()).isEqualTo(commonEntity.getCommonCode());
+        assertThat(updateSchedule.getUserId()).isEqualTo(userEntity.getUserId());
+        assertThat(updateSchedule.getCommonCode()).isEqualTo(commonEntity.getCommonCode());
     }
 
     @Test
@@ -514,8 +514,8 @@ class UserServiceTest extends FrontCommonServiceTest {
 
         UserReservationDTO insertUserReservation = userService.travelReservation(userDTO.getIdx(), travelReservationDTO.getIdx(), insertReservation);
 
-        assertThat(insertUserReservation.getUserDTO().getIdx()).isEqualTo(userDTO.getIdx());
-        assertThat(insertUserReservation.getTravelReservationDTO().getIdx()).isEqualTo(travelReservationDTO.getIdx());
+        assertThat(insertUserReservation.getUserName()).isEqualTo(userDTO.getUserId());
+        assertThat(insertUserReservation.getTitle()).isEqualTo(travelReservationDTO.getTitle());
     }
 
     @Test
@@ -536,8 +536,8 @@ class UserServiceTest extends FrontCommonServiceTest {
         assertThatThrownBy(() -> userService.insertTravelGroup(userDTO.getIdx(), 9999L))
                 .isInstanceOf(TravelException.class).hasMessage("여행 그룹 상세 없음");
 
-        assertThat(userService.insertTravelGroup(userDTO.getIdx(), travelGroupDTO.getIdx()).getUserDTO().getIdx()).isEqualTo(userDTO.getIdx());
-        assertThat(userService.insertTravelGroup(userDTO.getIdx(), travelGroupDTO.getIdx()).getGroupDTO().getIdx()).isEqualTo(travelGroupDTO.getIdx());
+        assertThat(userService.insertTravelGroup(userDTO.getIdx(), travelGroupDTO.getIdx()).getUserId()).isEqualTo(userDTO.getUserId());
+        assertThat(userService.insertTravelGroup(userDTO.getIdx(), travelGroupDTO.getIdx()).getGroupName()).isEqualTo(travelGroupDTO.getGroupName());
     }
 
     @Test

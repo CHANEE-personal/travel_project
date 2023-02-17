@@ -9,6 +9,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.*;
 
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,6 +24,14 @@ public class TravelDTO extends NewCommonDTO {
     @ApiModelProperty(required = true, value = "idx", hidden = true, example = "1")
     private Long idx;
 
+    @NotNull(message = "공통 코드 입력은 필수입니다.")
+    @ApiModelProperty(required = true, value = "여행지 코드((ex)1(서울))")
+    private Integer commonCode;
+
+    @NotEmpty(message = "공통 코드명 입력은 필수입니다.")
+    @ApiModelProperty(required = true, value = "여행지 코드((ex)1(서울))")
+    private String commonName;
+
     @NotEmpty(message = "여행지 제목은 필수입니다.")
     @ApiModelProperty(required = true, value = "여행지 제목((ex)이 여행지는...)")
     private String travelTitle;
@@ -30,10 +39,6 @@ public class TravelDTO extends NewCommonDTO {
     @NotEmpty(message = "여행지 상세 내용 입력은 필수입니다.")
     @ApiModelProperty(required = true, value = "여행지 상세 내용((ex)이 여행지는...)")
     private String travelDescription;
-
-    @NotEmpty(message = "여행지 코드 입력은 필수입니다.")
-    @ApiModelProperty(required = true, value = "여행지 코드((ex)1(서울))")
-    private CommonDTO newTravelCode;
 
     @NotEmpty(message = "여행지 주소 입력은 필수입니다.")
     @ApiModelProperty(required = true, value = "여행지 상세 주소((ex)인천 광역시 서구...)")

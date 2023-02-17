@@ -2,7 +2,6 @@ package com.travel.api.travel.domain.search;
 
 import com.travel.api.common.domain.NewCommonMappedClass;
 import lombok.*;
-import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.DynamicUpdate;
 
 import javax.persistence.*;
@@ -36,8 +35,8 @@ public class SearchEntity extends NewCommonMappedClass {
     public static SearchDto toDto(SearchEntity entity) {
         if (entity == null) return null;
         return SearchDto.builder()
-                .idx(entity.getIdx())
-                .searchKeyword(entity.getSearchKeyword())
+                .idx(entity.idx)
+                .searchKeyword(entity.searchKeyword)
                 .build();
     }
 

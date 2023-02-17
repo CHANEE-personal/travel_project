@@ -22,7 +22,7 @@ public class FaqDTO extends NewCommonDTO {
 
     @NotNull(message = "FAQ CODE 입력은 필수입니다.")
     @ApiModelProperty(required = true, value = "faq_code")
-    private CommonDTO newFaqCode;
+    private Integer faqCode;
 
     @NotEmpty(message = "FAQ 제목 입력은 필수입니다.")
     @ApiModelProperty(required = true, value = "title")
