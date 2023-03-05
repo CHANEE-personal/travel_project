@@ -1,5 +1,7 @@
 package com.travel.configuration;
 
+import com.travel.configuration.info.jwt.JasyptInfo;
+import lombok.RequiredArgsConstructor;
 import org.jasypt.encryption.StringEncryptor;
 import org.jasypt.encryption.pbe.PooledPBEStringEncryptor;
 import org.jasypt.encryption.pbe.config.SimpleStringPBEConfig;
@@ -8,17 +10,19 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
+@RequiredArgsConstructor
 public class JasyptConfig {
 
-    @Value("${jasypt.encryptor.password}")
-    private String password;
+
+    private final JasyptInfo jasyptInfo;
+
 
     @Bean(name = "jasyptStringEncryptor")
     public StringEncryptor stringEncryptor() {
         PooledPBEStringEncryptor encryptor = new PooledPBEStringEncryptor();
 
         SimpleStringPBEConfig config = new SimpleStringPBEConfig();
-        config.setPassword(password);
+        config.setPassword(jasyptInfo.getPassword());
         config.setAlgorithm("PBEWithMD5AndDES");
         config.setKeyObtentionIterations("1000");
         config.setPoolSize("1");
