@@ -40,6 +40,7 @@ dependencies {
 
     annotationProcessor('org.projectlombok:lombok')
     annotationProcessor "org.projectlombok:lombok:1.18.22"
+    annotationProcessor "org.springframework.boot:spring-boot-configuration-processor"
     asciidoctor 'org.springframework.restdocs:spring-restdocs-asciidoctor'
 
     compile 'org.flywaydb:flyway-core:9.2.2'
