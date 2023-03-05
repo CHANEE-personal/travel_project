@@ -1,6 +1,5 @@
 package com.travel.common;
 
-import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.travel.api.common.domain.EntityType;
 import com.travel.api.post.domain.PostEntity;
 import com.travel.api.post.domain.image.PostImageDto;
@@ -8,8 +7,8 @@ import com.travel.api.post.domain.image.PostImageEntity;
 import com.travel.api.travel.domain.TravelEntity;
 import com.travel.api.travel.domain.image.TravelImageDto;
 import com.travel.api.travel.domain.image.TravelImageEntity;
+import com.travel.configuration.info.jwt.ImageInfo;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -30,11 +29,9 @@ import static com.travel.api.common.domain.EntityType.TRAVEL;
 @RequiredArgsConstructor
 public class SaveFile {
 
-    private final JPAQueryFactory queryFactory;
     private final EntityManager em;
+    private final ImageInfo imageInfo;
 
-    @Value("${image.uploadPath}")
-    private String fileDirPath;
 
     /**
      * <pre>
@@ -45,19 +42,22 @@ public class SaveFile {
      * 5. 작성일      : 2022. 12. 11.
      * </pre>
      */
-    public List<TravelImageDto> saveTravelFile(TravelEntity travelEntity, List<MultipartFile> multipartFiles, TravelImageEntity travelImageEntity) throws IOException {
+    public List<TravelImageDto> saveTravelFile(TravelEntity travelEntity, List<MultipartFile> multipartFiles,
+            TravelImageEntity travelImageEntity) throws IOException {
         List<TravelImageEntity> travelImageEntityList = new ArrayList<>();
         int index = 0;
         for(MultipartFile multipartFile : multipartFiles) {
-            if (!multipartFile.isEmpty()) {
+            if(!multipartFile.isEmpty()) {
                 travelEntity.addImage(travelImageEntity);
-                travelImageEntityList.add(saveTravelFile(multipartFile, travelImageEntity.getEntityType(), travelEntity, index));
+                travelImageEntityList.add(
+                        saveTravelFile(multipartFile, travelImageEntity.getEntityType(), travelEntity, index));
             }
             index++;
         }
         return travelImageEntityList.stream().map(TravelImageEntity::toDto).collect(Collectors.toList());
     }
 
+
     /**
      * <pre>
      * 1. MethodName : saveTravelFile
@@ -67,8 +67,9 @@ public class SaveFile {
      * 5. 작성일      : 2022. 12. 11.
      * </pre>
      */
-    public TravelImageEntity saveTravelFile(MultipartFile multipartFile, EntityType entityType, TravelEntity travelEntity, int index) throws IOException {
-        if (multipartFile.isEmpty()) {
+    public TravelImageEntity saveTravelFile(MultipartFile multipartFile, EntityType entityType,
+            TravelEntity travelEntity, int index) throws IOException {
+        if(multipartFile.isEmpty()) {
             return null;
         }
 
@@ -78,24 +79,17 @@ public class SaveFile {
 
         // 파일 업로드
         multipartFile.transferTo(new File(saveFilePath(fileId, entityType)));
-//        getRuntime().exec("chmod -R 755 " + saveFilePath(fileId, entityType));
+        //        getRuntime().exec("chmod -R 755 " + saveFilePath(fileId, entityType));
 
-        TravelImageEntity imageEntity = TravelImageEntity.builder()
-                .filePath(saveFilePath(fileId, entityType))
-                .fileName(multipartFile.getOriginalFilename())
-                .fileSize(fileSize)
-                .fileMask(fileId)
-                .fileNum(index)
-                .entityType(entityType)
-                .imageType(mainOrSub)
-                .visible("Y")
-                .regDate(LocalDateTime.now())
-                .build();
+        TravelImageEntity imageEntity = TravelImageEntity.builder().filePath(saveFilePath(fileId, entityType))
+                .fileName(multipartFile.getOriginalFilename()).fileSize(fileSize).fileMask(fileId).fileNum(index)
+                .entityType(entityType).imageType(mainOrSub).visible("Y").regDate(LocalDateTime.now()).build();
 
         em.persist(imageEntity);
 
         return imageEntity;
     }
+
 
     /**
      * <pre>
@@ -106,18 +100,21 @@ public class SaveFile {
      * 5. 작성일      : 2022. 12. 11.
      * </pre>
      */
-    public List<PostImageDto> savePostFile(PostEntity postEntity, List<MultipartFile> multipartFiles, PostImageEntity postImageEntity) throws IOException {
+    public List<PostImageDto> savePostFile(PostEntity postEntity, List<MultipartFile> multipartFiles,
+            PostImageEntity postImageEntity) throws IOException {
         List<PostImageEntity> postImageEntityList = new ArrayList<>();
         int index = 0;
         for(MultipartFile multipartFile : multipartFiles) {
-            if (!multipartFile.isEmpty()) {
+            if(!multipartFile.isEmpty()) {
                 postEntity.addPostImage(postImageEntity);
-                postImageEntityList.add(savePostFile(multipartFile, postImageEntity.getEntityType(), postEntity, index));
+                postImageEntityList.add(
+                        savePostFile(multipartFile, postImageEntity.getEntityType(), postEntity, index));
             }
             index++;
         }
         return postImageEntityList.stream().map(PostImageEntity::toDto).collect(Collectors.toList());
     }
+
 
     /**
      * <pre>
@@ -128,8 +125,9 @@ public class SaveFile {
      * 5. 작성일      : 2022. 12. 11.
      * </pre>
      */
-    public PostImageEntity savePostFile(MultipartFile multipartFile, EntityType entityType, PostEntity postEntity, int index) throws IOException {
-        if (multipartFile.isEmpty()) {
+    public PostImageEntity savePostFile(MultipartFile multipartFile, EntityType entityType, PostEntity postEntity,
+            int index) throws IOException {
+        if(multipartFile.isEmpty()) {
             return null;
         }
 
@@ -139,25 +137,18 @@ public class SaveFile {
 
         // 파일 업로드
         multipartFile.transferTo(new File(saveFilePath(fileId, entityType)));
-//        getRuntime().exec("chmod -R 755 " + saveFilePath(fileId, entityType));
+        //        getRuntime().exec("chmod -R 755 " + saveFilePath(fileId, entityType));
 
-        PostImageEntity imageEntity = PostImageEntity.builder()
-                .filePath(saveFilePath(fileId, entityType))
-                .fileName(multipartFile.getOriginalFilename())
-                .fileSize(fileSize)
-                .fileMask(fileId)
-                .fileNum(index)
-                .entityType(entityType)
-                .newPostImageEntity(postEntity)
-                .imageType(mainOrSub)
-                .visible("Y")
-                .regDate(LocalDateTime.now())
-                .build();
+        PostImageEntity imageEntity = PostImageEntity.builder().filePath(saveFilePath(fileId, entityType))
+                .fileName(multipartFile.getOriginalFilename()).fileSize(fileSize).fileMask(fileId).fileNum(index)
+                .entityType(entityType).newPostImageEntity(postEntity).imageType(mainOrSub).visible("Y")
+                .regDate(LocalDateTime.now()).build();
 
         em.persist(imageEntity);
 
         return imageEntity;
     }
+
 
     /**
      * <pre>
@@ -170,10 +161,12 @@ public class SaveFile {
      */
     public String saveFilePath(String saveFileName, EntityType entityType) {
         String typePath = (entityType == TRAVEL) ? "/travel/" : (entityType == REVIEW) ? "/review/" : "/post/";
-        File dir = new File(fileDirPath+typePath);
-        if (!dir.exists()) dir.mkdirs();
-        return fileDirPath + typePath + saveFileName;
+        File dir = new File(imageInfo.getUploadPath() + typePath);
+        if(!dir.exists())
+            dir.mkdirs();
+        return imageInfo.getUploadPath() + typePath + saveFileName;
     }
+
 
     /**
      * <pre>
@@ -190,6 +183,7 @@ public class SaveFile {
 
         return uuid + ext;
     }
+
 
     /**
      * <pre>

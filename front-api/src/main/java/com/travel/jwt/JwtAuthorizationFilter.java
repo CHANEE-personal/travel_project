@@ -26,30 +26,33 @@ import static org.springframework.security.core.context.SecurityContextHolder.ge
 @Component
 @RequiredArgsConstructor
 public class JwtAuthorizationFilter extends OncePerRequestFilter {
+
     private final JwtUtil jwtUtil;
     private final MyUserDetailsService userDetailsService;
     private final UserRepository userRepository;
 
+
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
+            throws ServletException, IOException {
 
         try {
             String accessToken = jwtUtil.resolveAccessToken(request);
             String refreshToken = jwtUtil.resolveRefreshToken(request);
 
             // 유효한 토큰인지 검사
-            if (accessToken != null) {
-                if (TRUE.equals(jwtUtil.validateToken(accessToken))) {
+            if(accessToken != null) {
+                if(TRUE.equals(jwtUtil.validateToken(accessToken))) {
                     this.setAuthentication(accessToken);
                 } else {
-                    if (refreshToken != null) {
+                    if(refreshToken != null) {
                         boolean validateRefreshToken = jwtUtil.validateToken(refreshToken);
 
                         UserEntity user = userRepository.findByUserRefreshToken(refreshToken)
                                 .orElseThrow(() -> new TravelException(NOT_FOUND_USER));
                         UserDetails userDetails = userDetailsService.loadUserByUsername(user.getUserId());
 
-                        if (validateRefreshToken) {
+                        if(validateRefreshToken) {
                             String newAccessToken = jwtUtil.doGenerateToken(userDetails.getUsername());
                             jwtUtil.setHeaderAccessToken(response, newAccessToken);
                             this.setAuthentication(newAccessToken);
@@ -57,16 +60,17 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
                     }
                 }
             }
-        } catch (ExpiredJwtException e) {
+        } catch(ExpiredJwtException e) {
             log.info("Security exception for user {} - {}", e.getClaims().getSubject(), e.getMessage());
             response.setStatus(SC_UNAUTHORIZED);
             log.debug("Exception " + e.getMessage());
-        } catch (Exception e) {
+        } catch(Exception e) {
             e.printStackTrace();
             throw new TravelException(NOT_FOUND_USER);
         }
         filterChain.doFilter(request, response);
     }
+
 
     public void setAuthentication(String token) {
         Authentication authentication = jwtUtil.getAuthentication(token);

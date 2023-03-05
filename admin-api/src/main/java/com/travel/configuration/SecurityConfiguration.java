@@ -3,6 +3,7 @@ package com.travel.configuration;
 import com.travel.jwt.JwtAuthenticationEntryPoint;
 import com.travel.jwt.JwtAuthenticationFilter;
 import com.travel.jwt.JwtAuthorizationFilter;
+import com.travel.jwt.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -31,6 +32,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
     private final JwtAuthorizationFilter jwtAuthorizationFilter;
+    private final JwtUtil jwtUtil;
 
     /**
      * <pre>
@@ -44,7 +46,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
      */
     @Bean
     public JwtAuthenticationFilter jwtAuthenticationFilter() throws Exception {
-        JwtAuthenticationFilter filter = new JwtAuthenticationFilter(authenticationManager());
+        JwtAuthenticationFilter filter = new JwtAuthenticationFilter(jwtUtil, authenticationManager());
         filter.setAuthenticationManager(authenticationManager());
         return filter;
     }
